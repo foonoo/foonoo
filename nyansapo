@@ -1,2 +1,33 @@
 #!/usr/bin/env php
 <?php
+
+require "lib/clearice/ClearICE.php";
+ClearICE::addOptions(
+    array(
+        'short' => 'i',
+        'long' => 'input',
+        'has_value' => true,
+        'help' => "specifies where the input files for the wiki are found."
+    ),
+    array(
+        'short' => 'o',
+        'long' => 'output',
+        'has_value' => true,
+        "help" => "specifies where the wiki should be written to"
+    )
+);
+ClearICE::addHelp();
+ClearICE::setStrict(true);
+
+$description = <<<EOT
+nyansapo wiki generator
+James Ekow Abaka Ainooson <jainooson@gmail.com>
+        
+A simple wiki generator engine to be used for the running of a git backed
+wiki. Takes an input of a structured folder and outputs a static web page.
+
+
+EOT;
+
+ClearICE::setDescription($description);
+$options = ClearICE::parse();

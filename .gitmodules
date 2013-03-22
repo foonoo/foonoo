@@ -3,4 +3,4 @@
 	url = git://github.com/ekowabaka/php-markdown.git
 [submodule "lib/clearice"]
 	path = lib/clearice
-	url = git://github.com/ekowabaka/clearice.git
+	url = git@github.com:ekowabaka/clearice.git
