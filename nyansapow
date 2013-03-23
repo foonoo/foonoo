@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
 
 require "lib/clearice/ClearICE.php";
 ClearICE::addOptions(
@@ -31,3 +32,26 @@ EOT;
 
 ClearICE::setDescription($description);
 $options = ClearICE::parse();
+
+if($options['input'] == '')
+{
+    fputs(STDERR, wordwrap("Please specify where your wiki source files are using the --input parameter. Try `{$argv[0]} --help for more info`\n"));
+}
+
+if(!file_exists($options['input']) && !is_dir($options['input'])) 
+{
+    fputs(STDERR, wordwrap("Input directory `{$options['input']}` does not exist or is not a directory\n"));
+    die();
+}
+
+$dir = dir($options['input']);
+
+while (false !== ($entry = $dir->read())) 
+{
+   //echo $entry."\n";
+    if(preg_match("/(.*)(.md)/i", $entry))
+    {
+        var_dump($entry);
+    }
+}
+

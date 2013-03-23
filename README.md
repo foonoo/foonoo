@@ -1,3 +1,3 @@
-nyansapɔ wiki engine
+nyansapɔw wiki engine
 ====================
 Generates HTML wiki pages from Markdown text files.
