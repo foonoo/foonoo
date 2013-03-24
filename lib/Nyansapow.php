@@ -7,6 +7,16 @@ class Nyansapow
     
     private function __construct($source, $options)
     {
+        if($source == '')
+        {
+            throw new NyansapowException("Please specify where your wiki source files are located.");
+        }
+        
+        if(!file_exists($source) && !is_dir($source)) 
+        {
+            throw new NyansapowException("Input directory `{$source}` does not exist or is not a directory.");
+        }
+        
         $this->source = $source;
         $this->options = $options;
     }
@@ -18,6 +28,17 @@ class Nyansapow
     
     public function write($destination)
     {
+        if($destination == '')
+        {
+            $destination = getcwd();
+        }
+
+        if(!file_exists($destination) && !is_dir($destination))
+        {
+            throw new NyansapowException("Output directory `{$destination}` does not exist or is not a directory.");
+        }
+        
+        
         $dir = dir($this->source);
 
         // Copy assets from the theme
@@ -115,8 +136,7 @@ class Nyansapow
     {
         if(!\is_writable(dirname($path)))
         {
-            fputs(STDERR, "You do not have permissions to create the $path directory\n");
-            die();
+            throw new NyansapowException("You do not have permissions to create the $path directory.");
         }
         else if(\is_dir($path))
         {
@@ -135,10 +155,4 @@ class NyansapowException extends Exception
 {
     
 }
-
-
-
-
-
-
 

@@ -46,28 +46,12 @@ EOT;
 ClearICE::setDescription($description);
 $options = ClearICE::parse();
 
-if($options['input'] == '')
-{
-    fputs(STDERR, wordwrap("Please specify where your wiki source files are using the --input parameter. Try `{$argv[0]} --help for more info`\n"));
-    die();
+try{
+    $nyansapow = Nyansapow::open($options['input'], $options);
+    $nyansapow->write($options['output']);
 }
-
-if(!file_exists($options['input']) && !is_dir($options['input'])) 
+catch(NyansapowException $e)
 {
-    fputs(STDERR, wordwrap("Input directory `{$options['input']}` does not exist or is not a directory.\n"));
-    die();
+    fputs(STDERR, wordwrap("{$e->getMessage()}\nTry `{$argv[0]} --help` for more information.\n"));
 }
-
-if($options['output'] == '')
-{
-    $options['output'] = getcwd();
-}
-
-if(!file_exists($options['output']) && !is_dir($options['output']))
-{
-    fputs(STDERR, wordwrap("Output directory `{$options['output']}` does not exist or is not a directory.\n"));
-    die();
-}
-$nyansapow = Nyansapow::open($options['input'], $options);
-$nyansapow->write($options['output']);
 
