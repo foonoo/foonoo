@@ -2,6 +2,7 @@
 <?php
 error_reporting(E_ALL ^ E_NOTICE);
 
+require "lib/Nyansapow.php";
 require "lib/clearice/ClearICE.php";
 require "lib/php-markdown/Michelf/Markdown.php";
 require "lib/php-markdown/Michelf/MarkdownExtra.php";
@@ -67,108 +68,6 @@ if(!file_exists($options['output']) && !is_dir($options['output']))
     fputs(STDERR, wordwrap("Output directory `{$options['output']}` does not exist or is not a directory.\n"));
     die();
 }
+$nyansapow = Nyansapow::open($options['input'], $options);
+$nyansapow->write($options['output']);
 
-
-$dir = dir($options['input']);
-
-// Copy assets from the theme
-copy_dir('themes/default/assets', "{$options['output']}");
-
-$m = new Mustache_Engine();
-$layout = file_get_contents('themes/default/templates/layout.mustache');
-
-$filesWritten = array();
-
-while (false !== ($entry = $dir->read())) 
-{
-    if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches))
-    {
-        switch($matches['page'])
-        {
-            case 'Home':
-                $output = "index.html";
-                break;
-            
-            default:
-                $output = "{$matches['page']}.html";
-                break;
-        }
-        
-        $outputFile = "{$options['output']}/~$output";
-        $inputFile = "{$options['input']}/$entry";
-        $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
-        
-        $webPage = $m->render(
-            $layout, 
-            array(
-                'body' => $content,
-                'title' => $options['name']
-            )
-        );
-        
-        file_put_contents($outputFile, $webPage);
-        $filesWritten[] = $output;
-    }
-}
-
-foreach($filesWritten as $fileWritten)
-{
-    $inputFile = fopen("{$options['output']}/~$fileWritten", 'r');
-    $outputFile = fopen("{$options['output']}/$fileWritten", 'w');
-    while(!feof($inputFile))
-    {
-        fputs($outputFile, parseNyansapow(fgets($inputFile)));
-    }
-    fclose($inputFile);
-    fclose($outputFile);
-    unlink("{$options['output']}/~$fileWritten");
-}
-
-function parseNyansapow($line)
-{
-    return preg_replace_callback(
-        "|\[\[(?<markup>.*)\]\]|",
-        function($matches)
-        {
-            $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-            return "<a href='{$link}.html'>{$matches['markup']}</a>";
-        },
-        $line
-    );
-}
-
-function copy_dir($source, $destination)
-{
-    foreach(glob($source) as $file)
-    {
-        $newFile = (is_dir($destination) ?  "$destination/" : ''). basename("$file");
-        
-        if(is_dir($file))
-        {
-            mkdir2($newFile);
-            copy_dir("$file/*", $newFile);
-        }
-        else
-        {
-            copy($file, $newFile);
-        }
-    }
-}
-
-function mkdir2($path)
-{
-    if(!\is_writable(dirname($path)))
-    {
-        fputs(STDERR, "You do not have permissions to create the $path directory\n");
-        die();
-    }
-    else if(\is_dir($path))
-    {
-        // Skip
-    }
-    else
-    {
-        mkdir($path);
-    }
-    return $path;
-}
