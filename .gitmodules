@@ -4,3 +4,6 @@
 [submodule "lib/clearice"]
 	path = lib/clearice
 	url = git@github.com:ekowabaka/clearice.git
+[submodule "lib/mustache"]
+	path = lib/mustache
+	url = git@github.com:ekowabaka/mustache.php.git
