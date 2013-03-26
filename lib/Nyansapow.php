@@ -1,4 +1,11 @@
 <?php
+
+require "php-markdown/Michelf/Markdown.php";
+require "php-markdown/Michelf/MarkdownExtra.php";
+require "mustache/src/Mustache/Autoloader.php";
+
+Mustache_Autoloader::register();
+
 class Nyansapow
 {
     private $options;
@@ -28,6 +35,8 @@ class Nyansapow
     
     public function write($destination)
     {
+        $home = dirname(__DIR__);
+        
         if($destination == '')
         {
             $destination = getcwd();
@@ -42,10 +51,10 @@ class Nyansapow
         $dir = dir($this->source);
 
         // Copy assets from the theme
-        self::copyDir('themes/default/assets', "{$destination}");
+        self::copyDir("$home/themes/default/assets", "{$destination}");
 
         $m = new Mustache_Engine();
-        $layout = file_get_contents('themes/default/templates/layout.mustache');
+        $layout = file_get_contents("$home/themes/default/templates/layout.mustache");
 
         while (false !== ($entry = $dir->read())) 
         {
@@ -149,7 +158,6 @@ class Nyansapow
         return $path;
     }    
 }
-
 
 class NyansapowException extends Exception
 {

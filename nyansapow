@@ -4,11 +4,6 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 require "lib/Nyansapow.php";
 require "lib/clearice/ClearICE.php";
-require "lib/php-markdown/Michelf/Markdown.php";
-require "lib/php-markdown/Michelf/MarkdownExtra.php";
-require "lib/mustache/src/Mustache/Autoloader.php";
-
-Mustache_Autoloader::register();
 
 ClearICE::addOptions(
     array(
@@ -28,8 +23,20 @@ ClearICE::addOptions(
         'long' => 'name',
         'has_value' => true,
         'help' => 'set the name for the entire wiki.This name would be shown in the header section.'
+    ),
+    array(
+        'short' => 's',
+        'long' => 'setup-git-hooks',
+        'help' => 'setup the nyansapow git hooks in a bare git repository'
+    ),
+    array(
+        'short' => 'r',
+        'long'  => 'git-repo',
+        'has_value' => true,
+        'help'  => 'specify the location of the git repository'
     )
 );
+
 ClearICE::addHelp();
 ClearICE::setStrict(true);
 
@@ -46,7 +53,38 @@ EOT;
 ClearICE::setDescription($description);
 $options = ClearICE::parse();
 
-try{
+if(count($options) == 0)
+{
+    echo ClearICE::getHelpMessage();
+    die();
+}
+else if(isset($options['setup-git-hooks']))
+{
+    if(is_writable('hooks') && is_dir('hooks'))
+    {
+
+        $home = __DIR__;
+        
+        $config = <<<EOT
+<?php
+\$input_directory = "{$options['input']}";
+\$output_directory = "{$options['output']}";
+\$nyansapow_home = "$home";
+EOT;
+
+        copy("$home/git_hooks/post-receive", 'hooks/post-receive');
+        file_put_contents('hooks/nyansapow.conf.php', $config);
+        chmod('hooks/post-receive', 0755);
+    }
+    else
+    {
+        fputs(STDERR, "Please ensure that this is a valid Git repository\n");
+    }
+    die();
+}
+
+try
+{
     $nyansapow = Nyansapow::open($options['input'], $options);
     $nyansapow->write($options['output']);
 }

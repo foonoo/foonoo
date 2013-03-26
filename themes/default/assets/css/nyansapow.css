@@ -1,6 +1,7 @@
 body{
     margin:0px;
-    font-family: Helvetica
+    font-family: Helvetica;
+    font-variant: normal;
 }
 
 #banner
