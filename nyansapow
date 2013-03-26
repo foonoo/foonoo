@@ -30,6 +30,11 @@ ClearICE::addOptions(
         'help' => 'setup the nyansapow git hooks in a bare git repository'
     ),
     array(
+        'short' => 'u',
+        'long' => 'update-git-hooks',
+        'help' => 'update the nyansapow git hooks in a bare git repository'
+    ),
+    array(
         'short' => 'r',
         'long'  => 'git-repo',
         'has_value' => true,
@@ -52,6 +57,7 @@ EOT;
 
 ClearICE::setDescription($description);
 $options = ClearICE::parse();
+$home = __DIR__;
 
 if(count($options) == 0)
 {
@@ -61,20 +67,19 @@ if(count($options) == 0)
 else if(isset($options['setup-git-hooks']))
 {
     if(is_writable('hooks') && is_dir('hooks'))
-    {
+    {        
 
-        $home = __DIR__;
-        
         $config = <<<EOT
 <?php
-\$input_directory = "{$options['input']}";
 \$output_directory = "{$options['output']}";
+\$name = "{$options['name']}";
 \$nyansapow_home = "$home";
 EOT;
 
         copy("$home/git_hooks/post-receive", 'hooks/post-receive');
         file_put_contents('hooks/nyansapow.conf.php', $config);
         chmod('hooks/post-receive', 0755);
+        mkdir('nyansapow_wiki');
     }
     else
     {
@@ -82,6 +87,14 @@ EOT;
     }
     die();
 }
+else if(isset($options['update-git-hooks']))
+{
+    unlink('hooks/post-receive');
+    copy("$home/git_hooks/post-receive", 'hooks/post-receive');
+    chmod('hooks/post-receive', 0755);    
+    die();
+}
+
 
 try
 {

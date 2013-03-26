@@ -14,13 +14,27 @@ while(!feof($file))
     {
         if($matches['from'] == '0000000000000000000000000000000000000000')
         {
-            echo "Generating the whole wiki\n";
-            $wiki = Nyansapow::open($input_directory);
+            echo "Generating a new wiki at `$output_directory`\n";
+            exec("git archive master | tar -x -C nyansapow_wiki");
+            $wiki = Nyansapow::open('nyansapow_wiki', array('name' => $name));
             $wiki->write($output_directory);
         }
         else 
         {
-            // Just regenerate files that changed
+            $output = popen("git diff-tree --name-only --no-commit-id master", 'r');
+            var_dump($output);
+            do{
+                if($output === false) break;
+                $file = fgets($output);
+                echo "$file\n";
+                sleep(10);
+            }while(!feof($output));
+            
+            //while(!feof($output))
+            //{
+            //    $file = fgets($output);
+            //    echo "$file\n";
+            //}
         }
     }
 }
