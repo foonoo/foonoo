@@ -26,6 +26,17 @@ body{
     padding-top:50px;
 }
 
+#timestamp
+{
+    margin-left:15%;
+    margin-right: 15%;
+    padding-bottom:50px;
+    margin-top:50px;
+    border-top:1px solid #f0f0f0;
+    font-size: x-small;
+    color:#202020;
+}
+
 h1{
     border-bottom: 2px solid #e0e0e0;
 }

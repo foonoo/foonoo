@@ -10,7 +10,8 @@ class Nyansapow
 {
     private $options;
     private $source;
-    private $filesWritten = array();
+    private $pages = array();
+    private $pageFiles = array();
     
     private function __construct($source, $options)
     {
@@ -24,6 +25,17 @@ class Nyansapow
             throw new NyansapowException("Input directory `{$source}` does not exist or is not a directory.");
         }
         
+        $dir = dir($source);
+        while (false !== ($entry = $dir->read())) 
+        {
+            if(!preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches))
+            {
+                continue;
+            }            
+            $this->pages[] = $matches['page'];
+            $this->pageFiles[] = $entry;
+        }        
+        
         $this->source = $source;
         $this->options = $options;
     }
@@ -33,7 +45,7 @@ class Nyansapow
         return new Nyansapow($source, $options);
     }
     
-    public function write($destination)
+    public function write($destination, $files = array())
     {
         $home = dirname(__DIR__);
         
@@ -47,48 +59,51 @@ class Nyansapow
             throw new NyansapowException("Output directory `{$destination}` does not exist or is not a directory.");
         }
         
-        
-        $dir = dir($this->source);
-
-        // Copy assets from the theme
-        self::copyDir("$home/themes/default/assets", "{$destination}");
-
-        $m = new Mustache_Engine();
-        $layout = file_get_contents("$home/themes/default/templates/layout.mustache");
-
-        while (false !== ($entry = $dir->read())) 
+        if(count($files) == 0)
         {
-            if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches))
-            {
-                switch($matches['page'])
-                {
-                    case 'Home':
-                        $output = "index.html";
-                        break;
-
-                    default:
-                        $output = "{$matches['page']}.html";
-                        break;
-                }
-
-                $outputFile = "{$destination}/~$output";
-                $inputFile = "{$this->source}/$entry";
-                $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
-
-                $webPage = $m->render(
-                    $layout, 
-                    array(
-                        'body' => $content,
-                        'title' => $this->options['name']
-                    )
-                );
-
-                file_put_contents($outputFile, $webPage);
-                $this->filesWritten[] = $output;
-            }
+            // Copy assets from the theme
+            self::copyDir("$home/themes/default/assets", "{$destination}");
+            $files = $this->pageFiles;
         }
+        
+        foreach($files as $file)
+        {
+            if(!preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
+            {
+                continue;
+            }
+            
+            switch($matches['page'])
+            {
+                case 'Home':
+                    $output = "index.html";
+                    break;
 
-        foreach($this->filesWritten as $fileWritten)
+                default:
+                    $output = "{$matches['page']}.html";
+                    break;
+            }
+
+            $outputFile = "{$destination}/~$output";
+            $inputFile = "{$this->source}/$file";
+            
+            $m = new Mustache_Engine();   
+            $layout = file_get_contents("$home/themes/default/templates/layout.mustache");
+            $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
+            $webPage = $m->render(
+                $layout, 
+                array(
+                    'body' => $content,
+                    'title' => $this->options['name'],
+                    'date' => date('jS F, Y H:i:s')
+                )
+            );
+
+            file_put_contents($outputFile, $webPage);
+            $filesWritten[] = $output;
+        }        
+
+        foreach($filesWritten as $fileWritten)
         {
             $inputFile = fopen("{$destination}/~$fileWritten", 'r');
             $outputFile = fopen("{$destination}/$fileWritten", 'w');
@@ -108,16 +123,16 @@ class Nyansapow
             "|\[\[(?<markup>.*)\]\]|",
             function($matches)
             {
-                $link = str_replace(array(' ', '/'), '-', $matches['markup']) . ".html";
-                foreach($this->filesWritten as $fileWritten)
+                $link = str_replace(array(' ', '/'), '-', $matches['markup']);
+                foreach($this->pages as $page)
                 {
-                    if(strtolower($fileWritten) == strtolower($link))
+                    if(strtolower($page) == strtolower($link))
                     {
-                        $link = $fileWritten;
+                        $link = $page;
                         break;
                     }
                 }
-                return "<a href='{$link}'>{$matches['markup']}</a>";
+                return "<a href='{$link}.html'>{$matches['markup']}</a>";
             },
             $line
         );

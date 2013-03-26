@@ -4,11 +4,11 @@
 require "nyansapow.conf.php";
 require "$nyansapow_home/lib/Nyansapow.php";
 
-$file = fopen("php://stdin", "r");
+$stdin = fopen("php://stdin", "r");
 
-while(!feof($file))
+while(!feof($stdin))
 {
-    $refs = fgets($file);
+    $refs = fgets($stdin);
     // Work only on refs pushed to master
     if(preg_match("/(?<from>[0-9a-f]+) (?<to>[0-9a-f]+) (refs\/heads\/master)/", $refs, $matches))
     {
@@ -21,20 +21,14 @@ while(!feof($file))
         }
         else 
         {
-            $output = popen("git diff-tree --name-only --no-commit-id master", 'r');
-            var_dump($output);
-            do{
-                if($output === false) break;
-                $file = fgets($output);
-                echo "$file\n";
-                sleep(10);
-            }while(!feof($output));
-            
-            //while(!feof($output))
-            //{
-            //    $file = fgets($output);
-            //    echo "$file\n";
-            //}
+            echo "Updating wiki at `$output_directory`\n";
+            exec("git diff-tree --name-only --no-commit-id master", $files);
+            foreach($files as $file)
+            {
+                exec ("git show master:{$file} > nyansapow_wiki/$file");
+            }
+            $wiki = Nyansapow::open('nyansapow_wiki', array('name' => $name));
+            $wiki->write($output_directory, $files);            
         }
     }
 }
