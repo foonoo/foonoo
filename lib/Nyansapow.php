@@ -90,11 +90,17 @@ class Nyansapow
             $m = new Mustache_Engine();   
             $layout = file_get_contents("$home/themes/default/templates/layout.mustache");
             $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
+            
+            $document = new DOMDocument();
+            @$document->loadHTML($content);
+            $h1s = $document->getElementsByTagName('h1');
+            
             $webPage = $m->render(
                 $layout, 
                 array(
                     'body' => $content,
-                    'title' => $this->options['name'],
+                    'title' => $h1s->item(0)->nodeValue,
+                    'name' => $this->options['name'],
                     'date' => date('jS F, Y H:i:s')
                 )
             );
