@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+require "nyansapow.conf.php";
+
+if(!is_dir($output_directory))
+{
+    echo "Error: output directory `$output_directory` does not exist\n";
+    exit(100);
+}
+
+if(!is_writable($output_directory))
+{
+    echo "Error: output directory `$output_directory` is not writable\n";
+    exit(100);
+}
+

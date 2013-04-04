@@ -77,8 +77,10 @@ else if(isset($options['setup-git-hooks']))
 EOT;
 
         copy("$home/git_hooks/post-receive", 'hooks/post-receive');
+        copy("$home/git_hooks/pre-receive", 'hooks/pre-receive');
         file_put_contents('hooks/nyansapow.conf.php', $config);
         chmod('hooks/post-receive', 0755);
+        chmod('hooks/pre-receive', 0755);
         mkdir('nyansapow_wiki');
     }
     else
