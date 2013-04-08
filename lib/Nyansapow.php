@@ -10,7 +10,7 @@ class Nyansapow
 {
     private $options;
     private $source;
-    private $pages = array();
+    public static $pages = array();
     private $pageFiles = array();
     
     private function __construct($source, $options)
@@ -32,7 +32,7 @@ class Nyansapow
             {
                 continue;
             }            
-            $this->pages[] = $matches['page'];
+            self::$pages[] = $matches['page'];
             $this->pageFiles[] = $entry;
         }        
         
@@ -123,14 +123,19 @@ class Nyansapow
         }        
     }
     
+    private static function parseLink($matches)
+    {
+        
+    }
+    
     private function parse($line)
     {
         return preg_replace_callback(
             "|\[\[(?<markup>.*)\]\]|",
-            function($matches)
-            {
-                $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-                foreach($this->pages as $page)
+            create_function(
+                '$matches',
+                '$link = str_replace(array(\' \', \'/\'), \'-\', $matches[\'markup\']);
+                foreach(Nyansapow::$pages as $page)
                 {
                     if(strtolower($page) == strtolower($link))
                     {
@@ -138,8 +143,8 @@ class Nyansapow
                         break;
                     }
                 }
-                return "<a href='{$link}.html'>{$matches['markup']}</a>";
-            },
+                return "<a href=\'{$link}.html\'>{$matches[\'markup\']}</a>";'
+            ),
             $line
         );
     }
