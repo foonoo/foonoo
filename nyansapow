@@ -91,9 +91,12 @@ EOT;
 }
 else if(isset($options['update-git-hooks']))
 {
-    unlink('hooks/post-receive');
+    @unlink('hooks/post-receive');
+    @unlink('hooks/pre-receive');
     copy("$home/git_hooks/post-receive", 'hooks/post-receive');
     chmod('hooks/post-receive', 0755);    
+    copy("$home/git_hooks/pre-receive", 'hooks/pre-receive');
+    chmod('hooks/pre-receive', 0755);    
     die();
 }
 
