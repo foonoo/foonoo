@@ -3,6 +3,7 @@
 require "php-markdown/Michelf/Markdown.php";
 require "php-markdown/Michelf/MarkdownExtra.php";
 require "mustache/src/Mustache/Autoloader.php";
+require "NyansapowParser.php";
 
 Mustache_Autoloader::register();
 
@@ -10,7 +11,7 @@ class Nyansapow
 {
     private $options;
     private $source;
-    public static $pages = array();
+    private $pages = array();
     private $pageFiles = array();
     
     private function __construct($source, $options)
@@ -32,7 +33,7 @@ class Nyansapow
             {
                 continue;
             }            
-            self::$pages[] = $matches['page'];
+            $this->pages[] = $matches['page'];
             $this->pageFiles[] = $entry;
         }        
         
@@ -63,6 +64,12 @@ class Nyansapow
         {
             // Copy assets from the theme
             self::copyDir("$home/themes/default/assets", "{$destination}");
+            
+            // Copy images
+            if(is_dir("{$this->source}/images"))
+            {
+                self::copyDir("{$this->source}/images", "{$destination}");
+            }
             $files = $this->pageFiles;
         }
         
@@ -108,6 +115,8 @@ class Nyansapow
             file_put_contents($outputFile, $webPage);
             $filesWritten[] = $output;
         }        
+        
+        NyansapowParser::setNyansapow($this);
 
         foreach($filesWritten as $fileWritten)
         {
@@ -115,38 +124,12 @@ class Nyansapow
             $outputFile = fopen("{$destination}/$fileWritten", 'w');
             while(!feof($inputFile))
             {
-                fputs($outputFile, Nyansapow::parse(fgets($inputFile)));
+                fputs($outputFile, NyansapowParser::parse(fgets($inputFile)));
             }
             fclose($inputFile);
             fclose($outputFile);
             unlink("{$destination}/~$fileWritten");
         }        
-    }
-    
-    private static function parseLink($matches)
-    {
-        
-    }
-    
-    private function parse($line)
-    {
-        return preg_replace_callback(
-            "|\[\[(?<markup>.*)\]\]|",
-            create_function(
-                '$matches',
-                '$link = str_replace(array(\' \', \'/\'), \'-\', $matches[\'markup\']);
-                foreach(Nyansapow::$pages as $page)
-                {
-                    if(strtolower($page) == strtolower($link))
-                    {
-                        $link = $page;
-                        break;
-                    }
-                }
-                return "<a href=\'{$link}.html\'>{$matches[\'markup\']}</a>";'
-            ),
-            $line
-        );
     }
 
     public static function copyDir($source, $destination)
@@ -183,6 +166,11 @@ class Nyansapow
         }
         return $path;
     }    
+    
+    public function getPages()
+    {
+        return $this->pages;
+    }
 }
 
 class NyansapowException extends Exception
