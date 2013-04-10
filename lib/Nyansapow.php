@@ -73,22 +73,36 @@ class Nyansapow
             $files = $this->pageFiles;
         }
         
+        $filesWritten = array();
+        
         foreach($files as $file)
         {
-            if(!preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
+            if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
             {
+                switch($matches['page'])
+                {
+                    case 'Home':
+                        $output = "index.html";
+                        break;
+
+                    default:
+                        $output = "{$matches['page']}.html";
+                        break;
+                }                
+            }
+            elseif(preg_match("/(?<dir>assets|images)(\/)(.*)(\.*)/", $file, $matches))
+            {
+                if(!is_dir($matches['dir']))
+                {
+                    self::mkdir("{$destination}/{$matches['dir']}");
+                }
+                copy("{$this->source}/$file", "{$destination}/{$file}");
                 continue;
             }
-            
-            switch($matches['page'])
+            else
             {
-                case 'Home':
-                    $output = "index.html";
-                    break;
-
-                default:
-                    $output = "{$matches['page']}.html";
-                    break;
+                // Do nothing
+                continue;
             }
 
             $outputFile = "{$destination}/~$output";
@@ -120,8 +134,20 @@ class Nyansapow
 
         foreach($filesWritten as $fileWritten)
         {
-            $inputFile = fopen("{$destination}/~$fileWritten", 'r');
-            $outputFile = fopen("{$destination}/$fileWritten", 'w');
+            $inputFilePath = "{$destination}/~$fileWritten";
+            $inputFile = fopen($inputFilePath, 'r');
+            if($inputFile === false)
+            {
+                die("could not open input file $inputFile\n");
+            }
+            
+            $outputFilePath = "{$destination}/$fileWritten";
+            $outputFile = fopen($outputFilePath, 'w');
+            if($outputFile == false)
+            {
+                die("could not open input file $outputFilePath\n");;
+            }
+            
             while(!feof($inputFile))
             {
                 fputs($outputFile, NyansapowParser::parse(fgets($inputFile)));

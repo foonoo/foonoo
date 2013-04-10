@@ -22,14 +22,31 @@ while(!feof($stdin))
         else 
         {
             echo "Updating wiki at `$output_directory`\n";
-            exec("git diff-tree --name-only --no-commit-id master", $files);
-            foreach($files as $file)
+            exec("git rev-list {$matches['from']}..{$matches['to']}", $revisions);
+            $modifiedFiles = array();
+            
+            foreach($revisions as $revision)
             {
-                exec ("git show master:{$file} > nyansapow_wiki/$file");
+                exec("git show --name-only --pretty=\"format:\" $revision", $files);
+                $modifiedFiles = array_merge($modifiedFiles, $files);                
             }
+            
+            $modifiedFiles = array_unique($modifiedFiles);
+            
+            foreach($modifiedFiles as $file)
+            {
+                if($file == '') continue;
+                echo "Writing $file ...\n";
+                $dir = dirname($file);
+                if($dir != '' && !is_dir($dir))
+                {
+                    @mkdir("nyansapow_wiki/$dir");
+                }
+                exec ("git show master:{$file} > nyansapow_wiki/$file");
+            }            
+            
             $wiki = Nyansapow::open('nyansapow_wiki', array('name' => $name));
-            $wiki->write($output_directory, $files);            
+            $wiki->write($output_directory, $modifiedFiles);            
         }
     }
 }
-
