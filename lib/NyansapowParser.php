@@ -12,7 +12,7 @@ class NyansapowParser
     { 
         // Match images
         $line = preg_replace_callback(
-            "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(?:\|(?<alt>[a-zA-Z0-9 ]*))+\]\]/",
+            "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
             "NyansapowParser::renderImageTag",
             $line
         );
@@ -22,14 +22,49 @@ class NyansapowParser
             "|\[\[(?<markup>.*)\]\]|",
             "NyansapowParser::renderPageLink",
             $line
-        );        
-        
+        );
+
         return $line;
+    }
+    
+    public static function getImageTagAttributes($string)
+    {
+        preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
+        $attributes = array();
+        foreach($matches['attribute'] as $key => $attribute)
+        {
+            if($matches['value'][$key] == '')
+            {
+                $attributes[$attribute] = true;
+            }
+            else
+            {
+                $attributes[$attribute] = $matches['value'][$key];
+            }
+        }
+        
+        return $attributes;
     }
     
     public static function renderImageTag($matches)
     {
-        return "<img src='images/{$matches['image']}' alt='{$matches['alt']}' />";
+        $attributes = self::getImageTagAttributes($matches['options']);
+        $style = "";
+        if($attributes['float'])
+        {
+            if($attributes['align'] == 'right')
+            {
+                $style .= 'float:right';
+            }
+            else
+            {
+                $style .= 'float:left';
+            }
+        }
+        
+        $style = $style == "" ? '' : "style='$style'";
+        
+        return "<img $style src='images/{$matches['image']}' alt='{$matches['alt']}' />";
     }
     
     public static function renderPageLink($matches)
