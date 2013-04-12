@@ -10,6 +10,12 @@ class NyansapowParser
     
     public static function parse($line)
     { 
+        $line = preg_replace_callback(
+            "/\[\[(http:\/\/)(?<link>.*)\]\]/",
+            "NyansapowParser::renderLink",
+            $line
+        );
+        
         // Match images
         $line = preg_replace_callback(
             "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
@@ -54,17 +60,31 @@ class NyansapowParser
         {
             if($attributes['align'] == 'right')
             {
-                $style .= 'float:right';
+                $style .= 'float:right;';
             }
             else
             {
-                $style .= 'float:left';
+                $style .= 'float:left;';
             }
         }
         
-        $style = $style == "" ? '' : "style='$style'";
         
-        return "<img $style src='images/{$matches['image']}' alt='{$matches['alt']}' />";
+        if($attributes['frame'])
+        {
+            if($attributes['align'] == 'center')
+            {
+                $frameStyle = "style='text-align:center'";
+            }
+            if($matches['alt'] != '')
+            {
+                $caption = "<p>{$matches['alt']}</p>";
+            }
+            $frameOpen = "<div class='img-frame' $frameStyle >";
+            $frameClose = "$caption</div>";
+        }
+        
+        $style = $style == "" ? '' : "style='$style'";
+        return "{$frameOpen}<img $style src='images/{$matches['image']}' alt='{$matches['alt']}' />{$frameClose}";
     }
     
     public static function renderPageLink($matches)
@@ -77,5 +97,10 @@ class NyansapowParser
                 return "<a href='{$page}.html'>{$matches['markup']}</a>";
             }
         }
+    }
+    
+    public static function renderLink($matches)
+    {
+        return "<a href='http://{$matches['link']}'>http://{$matches['link']}</a>";
     }
 }
