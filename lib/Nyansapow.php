@@ -11,11 +11,14 @@ class Nyansapow
 {
     private $options;
     private $source;
+    private $destination;
     private $pages = array();
     private $pageFiles = array();
+    private $home;
     
-    private function __construct($source, $options)
+    private function __construct($source, $destination, $options)
     {
+        $this->home = dirname(__DIR__);
         if($source == '')
         {
             throw new NyansapowException("Please specify where your wiki source files are located.");
@@ -25,6 +28,11 @@ class Nyansapow
         {
             throw new NyansapowException("Input directory `{$source}` does not exist or is not a directory.");
         }
+        
+        if($destination == '')
+        {
+            $destination = getcwd();
+        }        
         
         $dir = dir($source);
         while (false !== ($entry = $dir->read())) 
@@ -39,36 +47,34 @@ class Nyansapow
         
         $this->source = $source;
         $this->options = $options;
+        $this->destination = $destination;
     }
 
-    public static function open($source, $options = array())
+    public static function open($source, $destination, $options = array())
     {
-        return new Nyansapow($source, $options);
+        return new Nyansapow($source, $destination, $options);
     }
     
-    public function write($destination, $files = array())
+    public function writeAssets()
     {
-        $home = dirname(__DIR__);
-        
-        if($destination == '')
-        {
-            $destination = getcwd();
-        }
-
-        if(!file_exists($destination) && !is_dir($destination))
+        //echo "Writing assets ...\n";
+        self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
+    }
+    
+    public function write($files = array())
+    {
+        if(!file_exists($this->destination) && !is_dir($this->destination))
         {
             throw new NyansapowException("Output directory `{$destination}` does not exist or is not a directory.");
         }
         
         if(count($files) == 0)
         {
-            // Copy assets from the theme
-            self::copyDir("$home/themes/default/assets", "{$destination}");
-            
+            $this->writeAssets();
             // Copy images
             if(is_dir("{$this->source}/images"))
             {
-                self::copyDir("{$this->source}/images", "{$destination}");
+                self::copyDir("{$this->source}/images", "{$this->destination}");
             }
             $files = $this->pageFiles;
         }
@@ -94,9 +100,9 @@ class Nyansapow
             {
                 if(!is_dir($matches['dir']))
                 {
-                    self::mkdir("{$destination}/{$matches['dir']}");
+                    self::mkdir("{$this->destination}/{$matches['dir']}");
                 }
-                copy("{$this->source}/$file", "{$destination}/{$file}");
+                copy("{$this->source}/$file", "{$this->destination}/{$file}");
                 continue;
             }
             else
@@ -105,11 +111,11 @@ class Nyansapow
                 continue;
             }
 
-            $outputFile = "{$destination}/~$output";
+            $outputFile = "{$this->destination}/~$output";
             $inputFile = "{$this->source}/$file";
             
             $m = new Mustache_Engine();   
-            $layout = file_get_contents("$home/themes/default/templates/layout.mustache");
+            $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
             $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
             
             $document = new DOMDocument();
@@ -134,15 +140,17 @@ class Nyansapow
 
         foreach($filesWritten as $fileWritten)
         {
-            $inputFilePath = "{$destination}/~$fileWritten";
+            $inputFilePath = "{$this->destination}/~$fileWritten";
             $inputFile = fopen($inputFilePath, 'r');
+            
             if($inputFile === false)
             {
-                die("could not open input file $inputFile\n");
+                die("could not open input file $inputFilePath\n");
             }
             
-            $outputFilePath = "{$destination}/$fileWritten";
+            $outputFilePath = "{$this->destination}/$fileWritten";
             $outputFile = fopen($outputFilePath, 'w');
+            
             if($outputFile == false)
             {
                 die("could not open input file $outputFilePath\n");;
@@ -154,7 +162,7 @@ class Nyansapow
             }
             fclose($inputFile);
             fclose($outputFile);
-            unlink("{$destination}/~$fileWritten");
+            unlink("{$this->destination}/~$fileWritten");
         }        
     }
 
@@ -162,6 +170,7 @@ class Nyansapow
     {
         foreach(glob($source) as $file)
         {
+            print "Copying $file ...\n";
             $newFile = (is_dir($destination) ?  "$destination/" : ''). basename("$file");
 
             if(is_dir($file))

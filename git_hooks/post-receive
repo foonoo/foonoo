@@ -14,10 +14,7 @@ while(!feof($stdin))
     {
         if($matches['from'] == '0000000000000000000000000000000000000000')
         {
-            echo "Generating a new wiki at `$output_directory`\n";
-            exec("git archive master | tar -x -C nyansapow_wiki");
-            $wiki = Nyansapow::open('nyansapow_wiki', array('name' => $name));
-            $wiki->write($output_directory);
+            generate_entire_wiki();
         }
         else 
         {
@@ -32,11 +29,25 @@ while(!feof($stdin))
             }
             
             $modifiedFiles = array_unique($modifiedFiles);
+            $wiki = Nyansapow::open('nyansapow_wiki', $output_directory, array('name' => $name));
             
             foreach($modifiedFiles as $file)
             {
                 if($file == '') continue;
+                
+                if($file == 'render_all')
+                {
+                    generate_entire_wiki();
+                    break;
+                }
+                
+                if($file == 'copy_assets')
+                {
+                    $wiki->writeAssets();
+                }
+                
                 echo "Writing $file ...\n";
+                
                 $dir = dirname($file);
                 if($dir != '' && !is_dir($dir))
                 {
@@ -45,8 +56,16 @@ while(!feof($stdin))
                 exec ("git show master:{$file} > nyansapow_wiki/$file");
             }            
             
-            $wiki = Nyansapow::open('nyansapow_wiki', array('name' => $name));
-            $wiki->write($output_directory, $modifiedFiles);            
+            $wiki->write($modifiedFiles);            
         }
     }
+}
+
+function generate_entire_wiki()
+{
+    require "nyansapow.conf.php";
+    echo "Generating a new wiki at `$output_directory`\n";
+    exec("git archive master | tar -x -C nyansapow_wiki");
+    $wiki = Nyansapow::open('nyansapow_wiki', $output_directory, array('name' => $name));
+    $wiki->write($output_directory);    
 }
