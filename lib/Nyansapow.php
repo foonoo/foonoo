@@ -170,7 +170,6 @@ class Nyansapow
     {
         foreach(glob($source) as $file)
         {
-            print "Copying $file ...\n";
             $newFile = (is_dir($destination) ?  "$destination/" : ''). basename("$file");
 
             if(is_dir($file))
