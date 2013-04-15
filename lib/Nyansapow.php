@@ -21,7 +21,8 @@ class Nyansapow
         $this->home = dirname(__DIR__);
         if($source == '')
         {
-            throw new NyansapowException("Please specify where your wiki source files are located.");
+            $source = getcwd();
+            //throw new NyansapowException("Please specify where your wiki source files are located.");
         }
         
         if(!file_exists($source) && !is_dir($source)) 
@@ -31,7 +32,7 @@ class Nyansapow
         
         if($destination == '')
         {
-            $destination = getcwd();
+            $destination = getcwd() . "/wiki";
         }        
         
         $dir = dir($source);
