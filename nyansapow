@@ -39,6 +39,9 @@ ClearICE::addOptions(
         'long'  => 'git-repo',
         'has_value' => true,
         'help'  => 'specify the location of the git repository'
+    ),
+    array(
+        
     )/*,
     array(
         'short' => 'w',
@@ -64,12 +67,13 @@ ClearICE::setDescription($description);
 $options = ClearICE::parse();
 $home = __DIR__;
 
-if(count($options) == 0)
+/*if(count($options) == 0)
 {
     echo ClearICE::getHelpMessage();
     die();
 }
-else if(isset($options['setup-git-hooks']))
+else */
+if(isset($options['setup-git-hooks']))
 {
     if(is_writable('hooks') && is_dir('hooks'))
     {        

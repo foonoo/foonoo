@@ -66,7 +66,7 @@ class Nyansapow
     {
         if(!file_exists($this->destination) && !is_dir($this->destination))
         {
-            throw new NyansapowException("Output directory `{$destination}` does not exist or is not a directory.");
+            throw new NyansapowException("Output directory `{$this->destination}` does not exist or is not a directory.");
         }
         
         if(count($files) == 0)
