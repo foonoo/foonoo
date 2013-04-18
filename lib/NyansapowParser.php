@@ -10,20 +10,35 @@ class NyansapowParser
     
     public static function parse($line)
     { 
+        // Match begining and ending of special blocks
+        $line = preg_replace_callback(
+            "/\[\[block:(?<block_id>.*)\]\]/", 
+            "NyansapowParser::renderBlockOpenTag", 
+            $line
+        );
+        
+        // Match begining and ending of special blocks
+        $line = preg_replace_callback(
+            "/\[\[\/block\]\]/", 
+            "NyansapowParser::renderBlockCloseTag", 
+            $line
+        );        
+        
+        // Match http links [[http://example.com]]
         $line = preg_replace_callback(
             "/\[\[(http:\/\/)(?<link>.*)\]\]/",
             "NyansapowParser::renderLink",
             $line
         );
         
-        // Match images
+        // Match images [[something.imgext|Alt Text|options]]
         $line = preg_replace_callback(
             "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
             "NyansapowParser::renderImageTag",
             $line
         );
         
-        // Match page links
+        // Match page links [[Page Link]]
         $line =  preg_replace_callback(
             "|\[\[(?<markup>.*)\]\]|",
             "NyansapowParser::renderPageLink",
@@ -77,7 +92,7 @@ class NyansapowParser
             }
             if($matches['alt'] != '')
             {
-                $caption = "<p>{$matches['alt']}</p>";
+                $caption = "<div>{$matches['alt']}</div>";
             }
             $frameOpen = "<div class='img-frame' $frameStyle >";
             $frameClose = "$caption</div>";
@@ -102,5 +117,15 @@ class NyansapowParser
     public static function renderLink($matches)
     {
         return "<a href='http://{$matches['link']}'>http://{$matches['link']}</a>";
+    }
+    
+    public static function renderBlockOpenTag($matches)
+    {
+        return "<div id='{$matches['block_id']}'>";
+    }
+    
+    public static function renderBlockCloseTag($matches)
+    {
+        return "</div>";
     }
 }

@@ -82,6 +82,9 @@ class Nyansapow
         
         $filesWritten = array();
         
+        $m = new Mustache_Engine();   
+        $document = new DOMDocument();
+        
         foreach($files as $file)
         {
             if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
@@ -112,14 +115,26 @@ class Nyansapow
                 continue;
             }
 
-            $outputFile = "{$this->destination}/~$output";
             $inputFile = "{$this->source}/$file";
+            $nyansapowFile = "{$this->source}/~$output";
+            $outputFile = "{$this->destination}/$output";
             
-            $m = new Mustache_Engine();   
+            NyansapowParser::setNyansapow($this);
+            $inputFileHandle = fopen($inputFile, 'r');
+            $nyansapowFileHandle = fopen($nyansapowFile, 'w');
+            while(!feof($inputFileHandle))
+            {
+                fputs(
+                    $nyansapowFileHandle, 
+                    NyansapowParser::parse(fgets($inputFileHandle))
+                );
+            }
+            fclose($inputFileHandle);
+            fclose($nyansapowFileHandle);
+            
             $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
-            $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
+            $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($nyansapowFile));
             
-            $document = new DOMDocument();
             @$document->loadHTML($content);
             $h1s = $document->getElementsByTagName('h1');
             
@@ -135,36 +150,7 @@ class Nyansapow
 
             file_put_contents($outputFile, $webPage);
             $filesWritten[] = $output;
-        }        
-        
-        NyansapowParser::setNyansapow($this);
-
-        foreach($filesWritten as $fileWritten)
-        {
-            $inputFilePath = "{$this->destination}/~$fileWritten";
-            $inputFile = fopen($inputFilePath, 'r');
-            
-            if($inputFile === false)
-            {
-                die("could not open input file $inputFilePath\n");
-            }
-            
-            $outputFilePath = "{$this->destination}/$fileWritten";
-            $outputFile = fopen($outputFilePath, 'w');
-            
-            if($outputFile == false)
-            {
-                die("could not open input file $outputFilePath\n");;
-            }
-            
-            while(!feof($inputFile))
-            {
-                fputs($outputFile, NyansapowParser::parse(fgets($inputFile)));
-            }
-            fclose($inputFile);
-            fclose($outputFile);
-            unlink("{$this->destination}/~$fileWritten");
-        }        
+        }
     }
 
     public static function copyDir($source, $destination)

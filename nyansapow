@@ -39,9 +39,6 @@ ClearICE::addOptions(
         'long'  => 'git-repo',
         'has_value' => true,
         'help'  => 'specify the location of the git repository'
-    ),
-    array(
-        
     )/*,
     array(
         'short' => 'w',
