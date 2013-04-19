@@ -81,10 +81,17 @@ blockquote{
     font-size:smaller;
 }
 
-.img-frame > p {
+.img-frame{
+    margin-bottom:15px;
+    margin-top:15px;
+}
+
+.img-frame > div {
     padding:0px;
     margin:0px;
     font-weight:bold;
     font-size:smaller;
 }
+
+
 

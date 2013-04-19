@@ -12,7 +12,7 @@ class NyansapowParser
     { 
         // Match begining and ending of special blocks
         $line = preg_replace_callback(
-            "/\[\[block:(?<block_id>.*)\]\]/", 
+            "/\[\[block:(?<block_class>.*)\]\]/", 
             "NyansapowParser::renderBlockOpenTag", 
             $line
         );
@@ -92,7 +92,7 @@ class NyansapowParser
             }
             if($matches['alt'] != '')
             {
-                $caption = "<div>{$matches['alt']}</div>";
+                $caption = "<div class='img-caption'>{$matches['alt']}</div>";
             }
             $frameOpen = "<div class='img-frame' $frameStyle >";
             $frameClose = "$caption</div>";
@@ -121,7 +121,7 @@ class NyansapowParser
     
     public static function renderBlockOpenTag($matches)
     {
-        return "<div id='{$matches['block_id']}'>";
+        return "<div class='{$matches['block_class']}'>";
     }
     
     public static function renderBlockCloseTag($matches)
