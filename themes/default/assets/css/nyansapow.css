@@ -81,17 +81,28 @@ blockquote{
     font-size:smaller;
 }
 
+img{
+    margin:5px;
+}
+
 .img-frame{
     margin-bottom:15px;
     margin-top:15px;
 }
 
 .img-frame > div {
-    padding:0px;
-    margin:0px;
+    padding:5px;
     font-weight:bold;
     font-size:smaller;
 }
 
-
+.info{
+    background-color:#f3fafd;
+    padding:15px;
+    padding-left:94px;
+    min-height: 84px;
+    background-image:url(../images/info.png);
+    background-position:15px 20px;
+    background-repeat: no-repeat;
+}
 

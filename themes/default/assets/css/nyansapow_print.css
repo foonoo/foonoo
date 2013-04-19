@@ -1,1 +1,20 @@
+#body{
+    width:100%;
+}
 
+#banner{
+    position:absolute;
+    width:100%;
+    padding:0px;
+    background:none;
+}
+
+#banner a{
+    color:black;
+}
+
+#timestamp{
+    width:100%;
+    margin-left:0px;
+    margin-right:0px;
+}

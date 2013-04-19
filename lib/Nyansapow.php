@@ -116,24 +116,13 @@ class Nyansapow
             }
 
             $inputFile = "{$this->source}/$file";
-            $nyansapowFile = "{$this->source}/~$output";
             $outputFile = "{$this->destination}/$output";
             
             NyansapowParser::setNyansapow($this);
-            $inputFileHandle = fopen($inputFile, 'r');
-            $nyansapowFileHandle = fopen($nyansapowFile, 'w');
-            while(!feof($inputFileHandle))
-            {
-                fputs(
-                    $nyansapowFileHandle, 
-                    NyansapowParser::parse(fgets($inputFileHandle))
-                );
-            }
-            fclose($inputFileHandle);
-            fclose($nyansapowFileHandle);
             
+            $intermediate = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
             $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
-            $content = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($nyansapowFile));
+            $content = NyansapowParser::parse($intermediate);
             
             @$document->loadHTML($content);
             $h1s = $document->getElementsByTagName('h1');

@@ -8,11 +8,21 @@ class NyansapowParser
         self::$nyansapow = $nyansapow;
     }
     
-    public static function parse($line)
+    public static function parse($content)
+    {
+        $parsed = '';
+        foreach(explode("\n", $content) as $line)
+        {
+            $parsed .= NyansapowParser::parseLine($line) . "\n";
+        }
+        return $parsed;
+    }
+    
+    public static function parseLine($line)
     { 
         // Match begining and ending of special blocks
         $line = preg_replace_callback(
-            "/\[\[block:(?<block_class>.*)\]\]/", 
+            "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/", 
             "NyansapowParser::renderBlockOpenTag", 
             $line
         );
