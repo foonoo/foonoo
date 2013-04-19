@@ -50,10 +50,17 @@ class NyansapowParser
         
         // Match page links [[Page Link]]
         $line =  preg_replace_callback(
-            "|\[\[(?<markup>.*)\]\]|",
+            "|\[\[(?<markup>[a-zA-Z0-9 ]*)\]\]|",
             "NyansapowParser::renderPageLink",
             $line
         );
+        
+        // Match page links [[Title|Page Link]]
+        $line =  preg_replace_callback(
+            "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
+            "NyansapowParser::renderPageLink",
+            $line
+        );        
 
         return $line;
     }
@@ -119,7 +126,7 @@ class NyansapowParser
         {
             if(strtolower($page) == strtolower($link))
             {
-                return "<a href='{$page}.html'>{$matches['markup']}</a>";
+                return "<a href='{$page}.html'>" .(isset($matches['title']) ? $matches['title'] : $matches['markup']) . "</a>";
             }
         }
     }

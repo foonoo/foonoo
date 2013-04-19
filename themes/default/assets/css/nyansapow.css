@@ -97,12 +97,14 @@ img{
 }
 
 .info{
-    background-color:#f3fafd;
+    background-color:#fffabc;
     padding:15px;
     padding-left:94px;
     min-height: 84px;
     background-image:url(../images/info.png);
     background-position:15px 20px;
     background-repeat: no-repeat;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
 
