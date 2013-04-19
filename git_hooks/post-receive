@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 require "nyansapow.conf.php";
 require "$nyansapow_home/lib/Nyansapow.php";
 
@@ -35,13 +37,13 @@ while(!feof($stdin))
             {
                 if($file == '') continue;
                 
-                if($file == 'render_all')
+                if($file == 'generate')
                 {
                     generate_entire_wiki();
                     break;
                 }
                 
-                if($file == 'copy_assets')
+                if($file == 'assets')
                 {
                     $wiki->writeAssets();
                 }
@@ -53,7 +55,7 @@ while(!feof($stdin))
                 {
                     @mkdir("nyansapow_wiki/$dir");
                 }
-                exec ("git show master:{$file} > nyansapow_wiki/$file");
+                exec ("git show master:{$file} > 'nyansapow_wiki/$file'");
             }            
             
             $wiki->write($modifiedFiles);            
@@ -67,5 +69,5 @@ function generate_entire_wiki()
     echo "Generating a new wiki at `$output_directory`\n";
     exec("git archive master | tar -x -C nyansapow_wiki");
     $wiki = Nyansapow::open('nyansapow_wiki', $output_directory, array('name' => $name));
-    $wiki->write($output_directory);    
+    $wiki->write();    
 }
