@@ -39,12 +39,7 @@ ClearICE::addOptions(
         'long'  => 'git-repo',
         'has_value' => true,
         'help'  => 'specify the location of the git repository'
-    )/*,
-    array(
-        'short' => 'w',
-        'long' => 'rewrite-assets',
-        'help' => 'rewrite all the assets from the theme. Useful when theme is updated'
-    )*/
+    )
 );
 
 ClearICE::addHelp();
@@ -64,12 +59,6 @@ ClearICE::setDescription($description);
 $options = ClearICE::parse();
 $home = __DIR__;
 
-/*if(count($options) == 0)
-{
-    echo ClearICE::getHelpMessage();
-    die();
-}
-else */
 if(isset($options['setup-git-hooks']))
 {
     if(is_writable('hooks') && is_dir('hooks'))
@@ -109,10 +98,6 @@ else if(isset($options['update-git-hooks']))
 try
 {
     $nyansapow = Nyansapow::open($options['input'], $options['output'], $options);
-    /*if(isset($options['rewrite-assets']))
-    {
-        $nyansapow->writeAssets();
-    }*/   
     $nyansapow->write();
 }
 catch(NyansapowException $e)
