@@ -60,8 +60,8 @@ class NyansapowParser
             "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
             "NyansapowParser::renderPageLink",
             $line
-        );        
-
+        );
+        
         return $line;
     }
     

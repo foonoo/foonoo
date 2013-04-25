@@ -4,6 +4,7 @@ require "php-markdown/Michelf/Markdown.php";
 require "php-markdown/Michelf/MarkdownExtra.php";
 require "mustache/src/Mustache/Autoloader.php";
 require "NyansapowParser.php";
+require "Callbacks.php";
 
 Mustache_Autoloader::register();
 
@@ -120,6 +121,7 @@ class Nyansapow
             
             NyansapowParser::setNyansapow($this);
             
+            \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
             $intermediate = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
             $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
             $content = NyansapowParser::parse($intermediate);
