@@ -138,7 +138,7 @@ class NyansapowParser
     
     public static function renderBlockOpenTag($matches)
     {
-        return "<div class='{$matches['block_class']}'>";
+        return "<div class='block {$matches['block_class']}'>";
     }
     
     public static function renderBlockCloseTag($matches)

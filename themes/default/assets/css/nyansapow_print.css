@@ -22,3 +22,13 @@ body{
     margin-left:0px;
     margin-right:0px;
 }
+
+pre{
+    box-shadow:none;
+    border-radius: 0px;
+}
+
+.block{
+    box-shadow:none;
+    border-radius: 0px;
+}
