@@ -26,6 +26,8 @@ body{
 pre{
     box-shadow:none;
     border-radius: 0px;
+    overflow:visible;
+    overflow-wrap:break-word;
 }
 
 .block{
