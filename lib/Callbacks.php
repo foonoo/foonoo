@@ -1,6 +1,10 @@
 <?php
 require "geshi/geshi.php";
 
+/**
+ * Callback methods called from within php-markdown to allow for integration
+ * of other libraries.
+ */
 class Callbacks
 {
     public function codeBlock($codeblock, $lang = false)
