@@ -54,6 +54,15 @@ class Nyansapow
 
     public static function open($source, $destination, $options = array())
     {
+        $optionsFile = "{$source}wiki.ini";
+        if(file_exists($optionsFile))
+        {
+            $optionsFileData = parse_ini_file($optionsFile);
+            if(!isset($options['title']))
+            {
+                $options['title'] = $optionsFileData['title'];
+            }
+        }
         return new Nyansapow($source, $destination, $options);
     }
     
@@ -133,8 +142,8 @@ class Nyansapow
                 $layout, 
                 array(
                     'body' => $content,
-                    'title' => $h1s->item(0)->nodeValue,
-                    'name' => $this->options['name'],
+                    'page_title' => $h1s->item(0)->nodeValue,
+                    'title' => $this->options['title'],
                     'date' => date('jS F, Y H:i:s')
                 )
             );

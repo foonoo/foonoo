@@ -19,10 +19,10 @@ ClearICE::addOptions(
         "help" => "specifies where the wiki should be written to"
     ),
     array(
-        'short' => 'n',
-        'long' => 'name',
+        'short' => 't',
+        'long' => 'title',
         'has_value' => true,
-        'help' => 'set the name for the entire wiki.This name would be shown in the header section.'
+        'help' => 'set the title for the entire wiki.This title would be shown in the header section.'
     ),
     array(
         'short' => 's',
@@ -67,7 +67,7 @@ if(isset($options['setup-git-hooks']))
         $config = <<<EOT
 <?php
 \$output_directory = "{$options['output']}";
-\$name = "{$options['name']}";
+\$name = "{$options['title']}";
 \$nyansapow_home = "$home";
 EOT;
 

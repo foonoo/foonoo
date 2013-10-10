@@ -5,13 +5,15 @@ require "nyansapow.conf.php";
 
 if(!is_dir($output_directory))
 {
-    echo "Error: output directory `$output_directory` does not exist\n";
+    echo "Error: output directory `$output_directory` does not exist.\n";
+    echo "Error: Could not write wiki.\n";
     exit(100);
 }
 
 if(!is_writable($output_directory))
 {
     echo "Error: output directory `$output_directory` is not writable\n";
+    echo "Error: Could not write wiki.\n";
     exit(100);
 }
 
