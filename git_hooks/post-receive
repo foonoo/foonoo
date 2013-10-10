@@ -16,7 +16,7 @@ while(!feof($stdin))
     {
         if($matches['from'] == '0000000000000000000000000000000000000000')
         {
-            echo "Preparing to generate a new wiki.";
+            echo "Preparing to generate a new wiki.\n";
             generate_entire_wiki();
         }
         else 
@@ -69,6 +69,6 @@ function generate_entire_wiki()
     require "nyansapow.conf.php";
     echo "Generating entire wiki at `$output_directory`\n";
     exec("git archive master | tar -x -C nyansapow_wiki");
-    $wiki = Nyansapow::open('nyansapow_wiki', $output_directory, array('name' => $name));
+    $wiki = Nyansapow::open('nyansapow_wiki/', $output_directory, array('name' => $name));
     $wiki->write();    
 }
