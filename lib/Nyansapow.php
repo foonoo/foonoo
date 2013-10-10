@@ -55,6 +55,7 @@ class Nyansapow
     public static function open($source, $destination, $options = array())
     {
         $optionsFile = "{$source}wiki.ini";
+        print "$optionsFile\n";
         if(file_exists($optionsFile))
         {
             $optionsFileData = parse_ini_file($optionsFile);
