@@ -1,68 +1,101 @@
 <?php
+/**
+ * 
+ */
 class NyansapowParser
 {
     private static $nyansapow;
+    
+    private static $regexes = array(
+        'pre' => array(
+            array(
+                'regex' => "/\[\[_TOC_\]\]/",
+                'method' => 'NyansapowParser::renderTableOfContents'
+            )
+        ),
+        'post' => array(
+            
+            // Match begining and ending of special blocks
+            array(
+                'regex' => "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/", 
+                'method' => "NyansapowParser::renderBlockOpenTag"
+            ),
+        
+            // Match begining and ending of special blocks
+            array(
+                'regex' => "/\[\[\/block\]\]/", 
+                'method' => "NyansapowParser::renderBlockCloseTag"
+            ),
+                
+            // Match http links [[http://example.com]]
+            array(
+                'regex' => "/\[\[(http:\/\/)(?<link>.*)\]\]/",
+                'method' => "NyansapowParser::renderLink"
+            ),
+        
+            // Match images [[something.imgext|Alt Text|options]]
+            array(
+                'regex' => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
+                'method' => "NyansapowParser::renderImageTag"
+            ),
+        
+            // Match page links [[Page Link]]
+            array(
+                'regex' => "|\[\[(?<markup>[a-zA-Z0-9 ]*)\]\]|",
+                'method' => "NyansapowParser::renderPageLink"
+            ),
+        
+            // Match page links [[Title|Page Link]]
+            array(
+                'regex' => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
+                'method' => "NyansapowParser::renderPageLink"
+            )
+            
+        )
+    );
     
     public static function setNyansapow($nyansapow)
     {
         self::$nyansapow = $nyansapow;
     }
     
-    public static function parse($content)
+    public static function preParse($content)
+    {
+        return self::parse($content, 'pre');
+    }
+    
+    public static function postParse($content)
+    {
+        return self::parse($content, 'post');
+    }
+    
+    private static function parse($content, $mode)
     {
         $parsed = '';
         foreach(explode("\n", $content) as $line)
         {
-            $parsed .= NyansapowParser::parseLine($line) . "\n";
+            $parsed .= NyansapowParser::parseLine($line, $mode) . "\n";
         }
         return $parsed;
     }
     
-    public static function parseLine($line)
+    private static function parseLine($line, $mode)
     { 
-        // Match begining and ending of special blocks
-        $line = preg_replace_callback(
-            "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/", 
-            "NyansapowParser::renderBlockOpenTag", 
-            $line
-        );
-        
-        // Match begining and ending of special blocks
-        $line = preg_replace_callback(
-            "/\[\[\/block\]\]/", 
-            "NyansapowParser::renderBlockCloseTag", 
-            $line
-        );        
-        
-        // Match http links [[http://example.com]]
-        $line = preg_replace_callback(
-            "/\[\[(http:\/\/)(?<link>.*)\]\]/",
-            "NyansapowParser::renderLink",
-            $line
-        );
-        
-        // Match images [[something.imgext|Alt Text|options]]
-        $line = preg_replace_callback(
-            "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
-            "NyansapowParser::renderImageTag",
-            $line
-        );
-        
-        // Match page links [[Page Link]]
-        $line =  preg_replace_callback(
-            "|\[\[(?<markup>[a-zA-Z0-9 ]*)\]\]|",
-            "NyansapowParser::renderPageLink",
-            $line
-        );
-        
-        // Match page links [[Title|Page Link]]
-        $line =  preg_replace_callback(
-            "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
-            "NyansapowParser::renderPageLink",
-            $line
-        );
+        foreach(self::$regexes[$mode] as $regex)
+        {
+            $line = preg_replace_callback(
+                $regex['regex'],
+                $regex['method'],
+                $line
+            );
+        }
         
         return $line;
+    }
+    
+    public static function renderTag($matches)
+    {
+        
     }
     
     public static function getImageTagAttributes($string)
@@ -144,5 +177,12 @@ class NyansapowParser
     public static function renderBlockCloseTag($matches)
     {
         return "</div>";
+    }
+    
+    public static function renderTableOfContents($matches)
+    {
+        var_dump($matches[0]);
+        $toc = self::$nyansapow->getTableOfContents();
+        return "Hello!";
     }
 }

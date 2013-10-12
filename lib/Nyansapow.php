@@ -16,6 +16,7 @@ class Nyansapow
     private $pages = array();
     private $pageFiles = array();
     private $home;
+    private $currentDocument;
     
     private function __construct($source, $destination, $options)
     {
@@ -55,7 +56,6 @@ class Nyansapow
     public static function open($source, $destination, $options = array())
     {
         $optionsFile = "{$source}wiki.ini";
-        print "$optionsFile\n";
         if(file_exists($optionsFile))
         {
             $optionsFileData = parse_ini_file($optionsFile);
@@ -71,6 +71,22 @@ class Nyansapow
     {
         //echo "Writing assets ...\n";
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
+    }
+        
+    public function getTableOfContents($parent = null)
+    {
+        if($parent === null)
+        {
+            $headers = $this->currentDocument->getElementsByTagName('h1');
+            foreach($headers as $header)
+            {
+                var_dump($header->nodeValue);
+            }
+        }
+        else
+        {
+            var_dump($parent);
+        }
     }
     
     public function write($files = array())
@@ -94,7 +110,7 @@ class Nyansapow
         $filesWritten = array();
         
         $m = new Mustache_Engine();   
-        $document = new DOMDocument();
+        $this->currentDocument = new DOMDocument();
         
         foreach($files as $file)
         {
@@ -126,18 +142,20 @@ class Nyansapow
                 continue;
             }
 
-            $inputFile = "{$this->source}/$file";
+            $input = file_get_contents("{$this->source}/$file");
             $outputFile = "{$this->destination}/$output";
             
-            NyansapowParser::setNyansapow($this);
-            
+            $preParsed = NyansapowParser::preParse($input);
+                        
             \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
-            $intermediate = \Michelf\MarkdownExtra::defaultTransform(file_get_contents($inputFile));
+            $markedup = \Michelf\MarkdownExtra::defaultTransform($preParsed);
             $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
-            $content = NyansapowParser::parse($intermediate);
             
-            @$document->loadHTML($content);
-            $h1s = $document->getElementsByTagName('h1');
+            @$this->currentDocument->loadHTML($markedup);
+            $h1s = $this->currentDocument->getElementsByTagName('h1');
+            
+            NyansapowParser::setNyansapow($this);
+            $content = NyansapowParser::postParse($markedup);
             
             $webPage = $m->render(
                 $layout, 
