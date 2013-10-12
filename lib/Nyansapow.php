@@ -3,7 +3,7 @@
 require "php-markdown/Michelf/Markdown.php";
 require "php-markdown/Michelf/MarkdownExtra.php";
 require "mustache/src/Mustache/Autoloader.php";
-require "NyansapowParser.php";
+require "parser/NyansapowParser.php";
 require "Callbacks.php";
 
 Mustache_Autoloader::register();
@@ -73,20 +73,53 @@ class Nyansapow
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
         
-    public function getTableOfContents($parent = null)
+    public function getTableOfContents($level = 1, $index = 0)
     {
-        if($parent === null)
+        $tocTree = array();
+        
+        $xpath = new DOMXPath($this->currentDocument);;
+        $nodes = $xpath->query("//h1|//h2|//h3|//h4|//h5|//h6");
+        
+        for($i = $index; $i < $nodes->length; $i++)
         {
-            $headers = $this->currentDocument->getElementsByTagName('h1');
-            foreach($headers as $header)
+            if($nodes->item($i)->nodeName == "h{$level}")
             {
-                var_dump($header->nodeValue);
+                if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)
+                {
+                    $tocTree[] = array(
+                        'title' => $nodes->item($i)->nodeValue,
+                        'children' => array()
+                    );
+                }
+                else if($nodes->item($i + 1)->nodeName == "h" . ($level - 1))
+                {
+                    $tocTree[] = array(
+                        'title' => $nodes->item($i)->nodeValue,
+                        'children' => array()
+                    );
+                    break;
+                }
+                else
+                {
+                    $children = $this->getTableOfContents($level + 1, $i + 1);
+                    $newIndex = $children['index'];
+                    unset($children['index']);
+                    $tocTree[] = array(
+                        'title' => $nodes->item($i)->nodeValue,
+                        'children' => $children
+                    );       
+                    $i = $newIndex;
+                }
+            }
+            else 
+            {
+                break;
             }
         }
-        else
-        {
-            var_dump($parent);
-        }
+        
+        if($level > 1) $tocTree['index'] = $i;
+        
+        return $tocTree;
     }
     
     public function write($files = array())

@@ -1,12 +1,16 @@
 <?php
+
+require 'NyansapowContentParser.php';
+
 /**
  * 
  */
 class NyansapowParser
 {
-    private static $nyansapow;
+    public static $nyansapow;
     
     private static $regexes = array(
+        // Match gollum style TOC so that github wikis can be rendered //
         'pre' => array(
             array(
                 'regex' => "/\[\[_TOC_\]\]/",
@@ -14,6 +18,12 @@ class NyansapowParser
             )
         ),
         'post' => array(
+            
+            // Match special nyansapow blocs
+            array(
+                'regex' => "/\[\[nyansapow\:(?<content>[a-zA-Z0-9\_]*)\]\]/",
+                'method' => 'NyansapowParser::renderNyansapowContent'
+            ),
             
             // Match begining and ending of special blocks
             array(
@@ -50,7 +60,6 @@ class NyansapowParser
                 'regex' => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
                 'method' => "NyansapowParser::renderPageLink"
             )
-            
         )
     );
     
@@ -181,8 +190,16 @@ class NyansapowParser
     
     public static function renderTableOfContents($matches)
     {
-        var_dump($matches[0]);
-        $toc = self::$nyansapow->getTableOfContents();
-        return "Hello!";
+        return "[[nyansapow:toc]]";
+    }
+    
+    public static function renderNyansapowContent($matches)
+    {
+        switch($matches['content'])
+        {
+            case 'toc':
+                return NyansapowContentParser::renderTableOfContents();
+                break;
+        }
     }
 }
