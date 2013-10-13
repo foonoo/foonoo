@@ -73,21 +73,23 @@ class Nyansapow
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
         
-    public function getTableOfContents($level = 1, $index = 0)
+    public function getTableOfContents($level = 2, $index = 0)
     {
         $tocTree = array();
         
         $xpath = new DOMXPath($this->currentDocument);;
-        $nodes = $xpath->query("//h1|//h2|//h3|//h4|//h5|//h6");
+        $nodes = $xpath->query("//h2|//h3|//h4|//h5|//h6");
         
         for($i = $index; $i < $nodes->length; $i++)
         {
+            $nodes->item($i)->setAttribute('id', $nodes->item($i)->nodeValue);
             if($nodes->item($i)->nodeName == "h{$level}")
             {
                 if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)
                 {
                     $tocTree[] = array(
                         'title' => $nodes->item($i)->nodeValue,
+                        'level' => $level - 1,
                         'children' => array()
                     );
                 }
@@ -95,6 +97,7 @@ class Nyansapow
                 {
                     $tocTree[] = array(
                         'title' => $nodes->item($i)->nodeValue,
+                        'level' => $level - 1,
                         'children' => array()
                     );
                     break;
@@ -106,6 +109,7 @@ class Nyansapow
                     unset($children['index']);
                     $tocTree[] = array(
                         'title' => $nodes->item($i)->nodeValue,
+                        'level' => $level - 1,
                         'children' => $children
                     );       
                     $i = $newIndex;
@@ -117,7 +121,7 @@ class Nyansapow
             }
         }
         
-        if($level > 1) $tocTree['index'] = $i;
+        if($level > 2) $tocTree['index'] = $i;
         
         return $tocTree;
     }
@@ -188,7 +192,9 @@ class Nyansapow
             $h1s = $this->currentDocument->getElementsByTagName('h1');
             
             NyansapowParser::setNyansapow($this);
-            $content = NyansapowParser::postParse($markedup);
+            NyansapowParser::domCreated($this->currentDocument);
+            
+            $content = NyansapowParser::postParse($this->currentDocument->saveHTML());
             
             $webPage = $m->render(
                 $layout, 

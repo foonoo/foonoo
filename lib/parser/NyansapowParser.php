@@ -8,6 +8,7 @@ require 'NyansapowContentParser.php';
 class NyansapowParser
 {
     public static $nyansapow;
+    public static $dom;
     
     private static $regexes = array(
         // Match gollum style TOC so that github wikis can be rendered //
@@ -66,6 +67,12 @@ class NyansapowParser
     public static function setNyansapow($nyansapow)
     {
         self::$nyansapow = $nyansapow;
+    }
+    
+    public static function domCreated($dom)
+    {
+        self::$dom = $dom;
+        NyansapowContentParser::domCreated();
     }
     
     public static function preParse($content)
@@ -190,6 +197,7 @@ class NyansapowParser
     
     public static function renderTableOfContents($matches)
     {
+        NyansapowContentParser::$hasToc = true;
         return "[[nyansapow:toc]]";
     }
     
