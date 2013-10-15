@@ -1,6 +1,10 @@
-nyansapɔw wiki engine
-====================
-Generates HTML wiki pages from Markdown text files.
+nyansapɔw static sites
+======================
+A static site generator for generating websites. Nyasapow can 
+generate blogs, wikis, documentations and with a little creativity, websites.
+Like most static site generators out there, nyansapow processes directories 
+which contain markdown files and writes out static HTML files.
+
 
 License
 -------
