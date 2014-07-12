@@ -202,7 +202,7 @@ class Nyansapow
                     'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
                     'title' => $this->options['title'],
-                    'date' => date('jS F, Y H:i:s')
+                    'date' => @date('jS F, Y H:i:s')
                 )
             );
 

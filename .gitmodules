@@ -1,9 +1,0 @@
-[submodule "lib/php-markdown"]
-	path = lib/php-markdown
-	url = https://github.com/ekowabaka/php-markdown.git
-[submodule "lib/clearice"]
-	path = lib/clearice
-	url = https://github.com/ekowabaka/clearice.git
-[submodule "lib/mustache"]
-	path = lib/mustache
-	url = https://github.com/ekowabaka/mustache.php.git
