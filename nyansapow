@@ -12,23 +12,23 @@ ClearIce::addOptions(
         'short' => 'i',
         'long' => 'input',
         'has_value' => true,
-        'help' => "specifies where the input files for the wiki are found."
+        'help' => "specifies where the input files for the site are found."
     ),
     array(
         'short' => 'o',
         'long' => 'output',
         'has_value' => true,
-        "help" => "specifies where the wiki should be written to"
+        "help" => "specifies where the site should be written to"
     ),
     array(
-        'short' => 't',
-        'long' => 'title',
+        'short' => 'n',
+        'long' => 'site-name',
         'has_value' => true,
-        'help' => 'set the title for the entire wiki.This title would be shown in the header section.'
+        'help' => 'set the name for the entire site'
     ),
     array(
-        'short' => 's',
-        'long' => 'setup-git-hooks',
+        'short' => 'g',
+        'long' => 'init-git-hooks',
         'help' => 'setup the nyansapow git hooks in a bare git repository'
     ),
     array(
@@ -48,11 +48,13 @@ ClearIce::addHelp();
 ClearIce::setStrict(true);
 
 $description = <<<EOT
-nyansapo wiki generator
+nyansapow site generator
 James Ekow Abaka Ainooson <jainooson@gmail.com>
         
-A simple wiki generator engine to be used for the running of a git backed
-wiki. Takes an input of a structured folder and outputs a static web page.
+A simple static site generator engine to be used for generating static 
+wikis, blogs and any kind of site you can think of the running of. It
+also provides utility scripts to help you use git as the backend of
+for updating your site.
 
 
 EOT;
@@ -61,8 +63,14 @@ ClearIce::setDescription($description);
 $options = ClearIce::parse();
 $home = __DIR__;
 
-if(isset($options['setup-git-hooks']))
+if(isset($options['init-git-hooks']))
 {
+    if($options['output'] == '')
+    {
+        fputs(STDERR, "Please specify an output location for your site using the `--output` option.\n");
+        die();
+    }
+    
     if(is_writable('hooks') && is_dir('hooks'))
     {        
 
@@ -78,7 +86,7 @@ EOT;
         file_put_contents('hooks/nyansapow.conf.php', $config);
         chmod('hooks/post-receive', 0755);
         chmod('hooks/pre-receive', 0755);
-        mkdir('nyansapow_wiki');
+        mkdir('nyansapow_site');
     }
     else
     {
@@ -102,7 +110,7 @@ try
     $nyansapow = Nyansapow::open($options['input'], $options['output'], $options);
     $nyansapow->write();
 }
-catch(NyansapowException $e)
+catch(\nyansapow\Exception $e)
 {
     fputs(STDERR, wordwrap("{$e->getMessage()}\nTry `{$argv[0]} --help` for more information.\n"));
 }

@@ -18,7 +18,6 @@ class Nyansapow
         if($source == '')
         {
             $source = getcwd();
-            //throw new Exception("Please specify where your wiki source files are located.");
         }
         
         if(!file_exists($source) && !is_dir($source)) 
@@ -28,7 +27,7 @@ class Nyansapow
         
         if($destination == '')
         {
-            $destination = getcwd() . "/wiki";
+            $destination = getcwd() . "/_site";
         }        
         
         $dir = dir($source);
@@ -49,13 +48,13 @@ class Nyansapow
 
     public static function open($source, $destination, $options = array())
     {
-        $optionsFile = "{$source}wiki.ini";
+        $optionsFile = "{$source}site.ini";
         if(file_exists($optionsFile))
         {
             $optionsFileData = parse_ini_file($optionsFile);
-            if(!isset($options['title']))
+            if($options['site-name'] == '' && $optionsFileData['name'] != '')
             {
-                $options['title'] = $optionsFileData['title'];
+                $options['site-name'] = $optionsFileData['name'];
             }
         }
         return new Nyansapow($source, $destination, $options);
@@ -63,7 +62,6 @@ class Nyansapow
     
     public function writeAssets()
     {
-        //echo "Writing assets ...\n";
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
         
@@ -115,17 +113,20 @@ class Nyansapow
             }
         }
         
-        if($level > 2) $tocTree['index'] = $i;
+        if($level > 2) 
+        {
+            $tocTree['index'] = $i;
+        }
         
         return $tocTree;
     }
     
     public function write($files = array())
     {
-        if(!file_exists($this->destination) && !is_dir($this->destination))
+        /*if(!file_exists($this->destination) && !is_dir($this->destination))
         {
             throw new Exception("Output directory `{$this->destination}` does not exist or is not a directory.");
-        }
+        }*/
         
         if(count($files) == 0)
         {
@@ -158,7 +159,7 @@ class Nyansapow
                         break;
                 }                
             }
-            elseif(preg_match("/(?<dir>assets|images)(\/)(.*)(\.*)/", $file, $matches))
+            else if(preg_match("/(?<dir>assets|images)(\/)(.*)(\.*)/", $file, $matches))
             {
                 if(!is_dir($matches['dir']))
                 {
@@ -198,12 +199,12 @@ class Nyansapow
                 array(
                     'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
-                    'title' => $this->options['title'],
+                    'site_name' => $this->options['site-name'],
                     'date' => date('jS F, Y H:i:s')
                 )
             );
 
-            file_put_contents($outputFile, $webPage);
+            self::writeFile($outputFile, $webPage);
             $filesWritten[] = $output;
         }
     }
@@ -225,14 +226,28 @@ class Nyansapow
             }
         }
     }
+    
+    private static function writeFile($path, $contents)
+    {
+        if(!is_dir(dirname($path))) 
+        {
+            self::mkdir (dirname($path));
+        }
+        
+        file_put_contents($path, $contents);
+    }
 
     private static function mkdir($path)
     {
-        if(!\is_writable(dirname($path)))
+        if(!file_exists(dirname($path)))
+        {
+            self::mkdir(dirname($path));
+        }
+        else if(!is_writable(dirname($path)))
         {
             throw new Exception("You do not have permissions to create the $path directory.");
         }
-        else if(\is_dir($path))
+        else if(is_dir($path))
         {
             // Skip
         }

@@ -4,7 +4,9 @@
 error_reporting(E_ALL ^ E_NOTICE);
 
 require "nyansapow.conf.php";
-require "$nyansapow_home/lib/Nyansapow.php";
+require "$nyansapow_home/vendor/autoload.php";
+
+use nyansapow\Nyansapow;
 
 $stdin = fopen("php://stdin", "r");
 
@@ -16,12 +18,12 @@ while(!feof($stdin))
     {
         if($matches['from'] == '0000000000000000000000000000000000000000')
         {
-            echo "Preparing to generate a new wiki.\n";
-            generate_entire_wiki();
+            echo "Preparing to generate a new site.\n";
+            generate_entire_site();
         }
         else 
         {
-            echo "Updating wiki at `$output_directory`\n";
+            echo "Updating site at `$output_directory`\n";
             exec("git rev-list {$matches['from']}..{$matches['to']}", $revisions);
             $modifiedFiles = array();
             
@@ -31,22 +33,22 @@ while(!feof($stdin))
                 $modifiedFiles = array_merge($modifiedFiles, $files);                
             }
             
-            $modifiedFiles = array_unique($modifiedFiles);
-            $wiki = Nyansapow::open('nyansapow_wiki', $output_directory, array('name' => $name));
+            //$modifiedFiles = array_unique($modifiedFiles);
+            $site = Nyansapow::open('nyansapow_site', $output_directory, array('site-name' => $name));
             
-            foreach($modifiedFiles as $file)
+            foreach(array_unique($modifiedFiles) as $file)
             {
                 if($file == '') continue;
                 
-                if($file == 'wiki.ini')
+                if($file == 'site.ini')
                 {
-                    generate_entire_wiki();
+                    generate_entire_site();
                     break;
                 }
                 
                 if($file == 'assets')
                 {
-                    $wiki->writeAssets();
+                    $site->writeAssets();
                 }
                 
                 echo "Writing $file ...\n";
@@ -54,21 +56,21 @@ while(!feof($stdin))
                 $dir = dirname($file);
                 if($dir != '' && !is_dir($dir))
                 {
-                    @mkdir("nyansapow_wiki/$dir");
+                    @mkdir("nyansapow_site/$dir");
                 }
-                exec ("git show master:{$file} > 'nyansapow_wiki/$file'");
+                exec ("git show master:{$file} > 'nyansapow_site/$file'");
             }            
             
-            $wiki->write($modifiedFiles);            
+            $site->write($modifiedFiles);            
         }
     }
 }
 
-function generate_entire_wiki()
+function generate_entire_site()
 {
     require "nyansapow.conf.php";
-    echo "Generating entire wiki at `$output_directory`\n";
-    exec("git archive master | tar -x -C nyansapow_wiki");
-    $wiki = Nyansapow::open('nyansapow_wiki/', $output_directory, array('name' => $name));
-    $wiki->write();    
+    echo "Generating entire site at `$output_directory`\n";
+    exec("git archive master | tar -x -C nyansapow_site");
+    $site = Nyansapow::open('nyansapow_site/', $output_directory, array('site-name' => $name));
+    $site->write();    
 }

@@ -16,7 +16,7 @@ class TocGenerator
         
         foreach($toc as $node)
         {    
-            $output .= "<li><a href='#{$node['title']}'>{$node['title']}</a>" . self::getTableOfContentsMarkup($node['children']) . "</li>\n";
+            $output .= "<li><a href='#{$node['id']}'>{$node['title']}</a>" . self::getTableOfContentsMarkup($node['children']) . "</li>\n";
         }        
         
         return count($toc) > 0 ? "\n<ul class='toc toc-{$toc[0]['level']}'>\n$output\n </ul>\n" : '';
@@ -31,12 +31,14 @@ class TocGenerator
         
         for($i = $index; $i < $nodes->length; $i++)
         {
-            $nodes->item($i)->setAttribute('id', str_replace(array(" ", "\t"), "-", strtolower($nodes->item($i)->nodeValue)));
+            $nodeId = str_replace(array(" ", "\t"), "-", strtolower($nodes->item($i)->nodeValue));
+            $nodes->item($i)->setAttribute('id', $nodeId);
             if($nodes->item($i)->nodeName == "h{$level}")
             {
                 if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)
                 {
                     $tocTree[] = array(
+                        'id' => $nodeId,
                         'title' => $nodes->item($i)->nodeValue,
                         'level' => $level - 1,
                         'children' => array()
@@ -45,6 +47,7 @@ class TocGenerator
                 else if($nodes->item($i + 1)->nodeName == "h" . ($level - 1))
                 {
                     $tocTree[] = array(
+                        'id' => $nodeId,
                         'title' => $nodes->item($i)->nodeValue,
                         'level' => $level - 1,
                         'children' => array()
@@ -57,6 +60,7 @@ class TocGenerator
                     $newIndex = $children['index'];
                     unset($children['index']);
                     $tocTree[] = array(
+                        'id' => $nodeId,
                         'title' => $nodes->item($i)->nodeValue,
                         'level' => $level - 1,
                         'children' => $children
