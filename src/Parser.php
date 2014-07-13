@@ -194,8 +194,7 @@ class Parser
     public static function renderTableOfContents($matches)
     {
         TocGenerator::$hasToc = true;
-        return TocGenerator::renderTableOfContents();
-        //return "[[nyansapow:toc]]";
+        return "[[nyansapow:toc]]";
     }
     
     public static function renderNyansapowContent($matches)
