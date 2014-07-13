@@ -177,7 +177,7 @@ class Nyansapow
             $outputFile = "{$this->destination}/$output";
             
             $preParsed = Parser::preParse($input);
-                        
+            
             \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
             $markedup = \Michelf\MarkdownExtra::defaultTransform($preParsed);
             $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
@@ -188,7 +188,10 @@ class Nyansapow
             Parser::setNyansapow($this);
             Parser::domCreated($this->currentDocument);
             
-            $content = Parser::postParse($this->currentDocument->saveHTML());
+            $body = $this->currentDocument->getElementsByTagName('body');
+            $content = Parser::postParse(
+                str_replace(array('<body>', '</body>'), '', $this->currentDocument->saveHTML($body->item(0)))
+            );
             
             $webPage = $m->render(
                 $layout, 
@@ -196,7 +199,7 @@ class Nyansapow
                     'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
                     'title' => $this->options['title'],
-                    'date' => @date('jS F, Y H:i:s')
+                    'date' => date('jS F, Y H:i:s')
                 )
             );
 

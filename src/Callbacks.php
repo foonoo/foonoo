@@ -16,7 +16,7 @@ class Callbacks
         }
         else
         {
-            $geshi = new GeSHi($codeblock, $lang);
+            $geshi = new \GeSHi(htmlspecialchars_decode($codeblock), $lang);
             $geshi->set_header_type(GESHI_HEADER_PRE);
             $codeblock = $geshi->parse_code();
         }

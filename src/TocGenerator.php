@@ -16,10 +16,10 @@ class TocGenerator
         
         foreach($toc as $node)
         {    
-            $output .= "<li><a href='#{$node['title']}'>{$node['title']}" . self::getTableOfContentsMarkup($node['children']) . "</a></li>";
+            $output .= "<li><a href='#{$node['title']}'>{$node['title']}</a>" . self::getTableOfContentsMarkup($node['children']) . "</li>\n";
         }        
         
-        return count($toc) > 0 ? "<ul class='toc toc-{$toc[0]['level']}'>$output </ul>" : '';
+        return count($toc) > 0 ? "\n<ul class='toc toc-{$toc[0]['level']}'>\n$output\n </ul>\n" : '';
     }
     
     private static function getTableOfContentsTree($level = 2, $index = 0)
@@ -31,7 +31,7 @@ class TocGenerator
         
         for($i = $index; $i < $nodes->length; $i++)
         {
-            $nodes->item($i)->setAttribute('id', $nodes->item($i)->nodeValue);
+            $nodes->item($i)->setAttribute('id', str_replace(array(" ", "\t"), "-", strtolower($nodes->item($i)->nodeValue)));
             if($nodes->item($i)->nodeName == "h{$level}")
             {
                 if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)

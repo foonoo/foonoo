@@ -133,7 +133,6 @@ class Parser
     public static function renderImageTag($matches)
     {
         $attributes = self::getImageTagAttributes($matches['options']);
-        $style = "";
         if($attributes['float'])
         {
             if($attributes['align'] == 'right')
@@ -195,7 +194,8 @@ class Parser
     public static function renderTableOfContents($matches)
     {
         TocGenerator::$hasToc = true;
-        return "[[nyansapow:toc]]";
+        return TocGenerator::renderTableOfContents();
+        //return "[[nyansapow:toc]]";
     }
     
     public static function renderNyansapowContent($matches)
@@ -204,7 +204,6 @@ class Parser
         {
             case 'toc':
                 return TocGenerator::renderTableOfContents();
-                break;
         }
     }
 }
