@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6a317f78d46dab1a10b52187b6eb481b",
+    "hash": "0ef4babd0f468cde8dfb06b9ae87af4e",
     "packages": [
         {
             "name": "ekowabaka/clearice",

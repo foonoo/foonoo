@@ -10,7 +10,7 @@
                 "source": {
                     "url" : "https://github.com/ekowabaka/php-markdown",
                     "type": "git",
-                    "reference": "3a8f6c6d238a7fbc82c7ae69733c8cdffd075b94"
+                    "reference": "e3820458505d3c429b65b140ee18667d9ebf5d53"
                 },
                 "autoload": {
                     "psr-0": { "Michelf": "" }
