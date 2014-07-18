@@ -62,6 +62,7 @@ class Nyansapow
     
     public function writeAssets()
     {
+        var_dump($this->destination);
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
         

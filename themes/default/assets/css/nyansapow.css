@@ -147,6 +147,7 @@ table > tbody > tr > td{
 
 .toc {
     list-style: none;
+    margin-left: 5px;
 }
 
 .toc > li > a{
@@ -159,12 +160,12 @@ table > tbody > tr > td{
 }
 
 .toc-wrapper{
-    background-color:#fafeff;
+    background-color:#fafafa;
     padding:15px;
     float:right;
     margin-left:10px;
-    border-radius: 5px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);       
+    //border-radius: 5px;
+    //box-shadow: 2px 2px 10px rgba(0,0,0,0.1);       
 }
 
 .toc-wrapper > span{
