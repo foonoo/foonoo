@@ -30,39 +30,84 @@ class Nyansapow
             $destination = getcwd() . "/_site";
         }        
         
-        $dir = dir($source);
-        while (false !== ($entry = $dir->read())) 
-        {
-            if(!preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches))
-            {
-                continue;
-            }            
-            $this->pages[] = $matches['page'];
-            $this->pageFiles[] = $entry;
-        }        
+        $pageDetails = $this->getPageFiles($source);
+        $this->pageFiles = $pageDetails['files'];
+        $this->pages = $pageDetails['pages'];
         
         $this->source = $source;
         $this->options = $options;
         $this->destination = $destination;
     }
+    
+    private function appySettings($settings)
+    {
+        $settings = parse_ini_file($settings);
+        foreach($settings as $key => $value)
+        {
+            $this->options[$key] = $value;
+        }
+    }
+    
+    /**
+     * 
+     * @param type $source
+     * @return type
+     */
+    private function getPageFiles($source)
+    {
+        $dir = dir($source);
+        $pages = array();
+        $pageFiles = array();
+        $directories = array();
+        $settingsFile = false;
+
+        if(file_exists($source . "/site.ini"))
+        {
+            $settingsFile = $source . '/site.ini';
+            $pages[] = '__site_settings__';
+            $pageFiles[] = $settingsFile;
+        }
+            
+        while (false !== ($entry = $dir->read())) 
+        {
+            $file = "$source/$entry";
+            if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches) && !is_dir($file))
+            {
+                $pages[] = $matches['page'];
+                $pageFiles[] = $file;
+            }
+            else if(is_dir($file) && ($entry != '.' && $entry != '..'))
+            {
+                $directories[] = $file;
+            }
+        }
+        
+        foreach($directories as $directory)
+        {
+            $pageDetails = $this->getPageFiles($directory);
+            $pages = array_merge($pages, $pageDetails['pages']);
+            $pageFiles = array_merge($pageFiles, $pageDetails['files']);
+            if($settingsFile !== false)
+            {
+                $pages[] = '__site_settings__';
+                $pageFiles[] = $settingsFile;                
+            }
+        }
+        
+        return array(
+            'files' => $pageFiles,
+            'pages' => $pages
+        );
+    }
 
     public static function open($source, $destination, $options = array())
     {
-        $optionsFile = "{$source}site.ini";
-        if(file_exists($optionsFile))
-        {
-            $optionsFileData = parse_ini_file($optionsFile);
-            if($options['site-name'] == '' && $optionsFileData['name'] != '')
-            {
-                $options['site-name'] = $optionsFileData['name'];
-            }
-        }
         return new Nyansapow($source, $destination, $options);
     }
     
     public function writeAssets()
     {
-        var_dump($this->destination);
+        self::mkdir($this->destination);
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
         
@@ -124,11 +169,6 @@ class Nyansapow
     
     public function write($files = array())
     {
-        /*if(!file_exists($this->destination) && !is_dir($this->destination))
-        {
-            throw new Exception("Output directory `{$this->destination}` does not exist or is not a directory.");
-        }*/
-        
         if(count($files) == 0)
         {
             $this->writeAssets();
@@ -145,8 +185,20 @@ class Nyansapow
         $m = new \Mustache_Engine();   
         $this->currentDocument = new \DOMDocument();
         
-        foreach($files as $file)
+        foreach($files as $path)
         {
+            $file = basename($path);
+            $dir = substr(dirname($path), strlen(getcwd()) + 1);
+            $assetsLocation = '';
+            
+            if($dir != '')
+            {
+                $dir .= '/';
+                $assetsLocation = str_repeat('../', substr_count($dir, '/'));
+            }
+            
+            self::mkdir($dir);
+            
             if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
             {
                 switch($matches['page'])
@@ -166,7 +218,12 @@ class Nyansapow
                 {
                     self::mkdir("{$this->destination}/{$matches['dir']}");
                 }
-                copy("{$this->source}/$file", "{$this->destination}/{$file}");
+                copy($path, "{$this->destination}/{$file}");
+                continue;
+            }
+            else if($file == 'site.ini')
+            {
+                $this->appySettings($path);
                 continue;
             }
             else
@@ -174,10 +231,11 @@ class Nyansapow
                 // Do nothing
                 continue;
             }
+            
 
             $input = file_get_contents("{$this->source}/$file");
-            $outputFile = "{$this->destination}/$output";
-            
+            $outputFile = $this->destination . ($dir =='' ? '' : "/$dir") . "/$output";
+                        
             $preParsed = Parser::preParse($input);
             
             \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
@@ -201,7 +259,8 @@ class Nyansapow
                     'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
                     'site_name' => $this->options['site-name'],
-                    'date' => date('jS F, Y H:i:s')
+                    'date' => date('jS F, Y H:i:s'),
+                    'assets_location' => $assetsLocation
                 )
             );
 
@@ -240,6 +299,7 @@ class Nyansapow
 
     private static function mkdir($path)
     {
+        if($path == '') return false;
         if(!file_exists(dirname($path)))
         {
             self::mkdir(dirname($path));
