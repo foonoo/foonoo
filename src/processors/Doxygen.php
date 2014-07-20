@@ -46,6 +46,7 @@ class Doxygen extends \nyansapow\SiteProcessor
             $this->getDir() . 'index.html',
             array(
                 'body' => $classList,
+                'side-list' => $sideMenuItems,
                 'page_title' => "All Classes",
                 'site_name' => $this->settings['site-name'],
                 'date' => date('jS F, Y H:i:s'),

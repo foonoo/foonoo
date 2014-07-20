@@ -4,7 +4,7 @@ body{
     font-variant: normal;
 }
 
-#banner
+#banner, #banner-wide
 {
     background-color:#c0c0c0;
     font-weight: bold;
@@ -30,7 +30,14 @@ span#site-name, #timestamp, #body{
     margin-right:auto;
 }
 
-#banner a{
+#banner-wide span#site-name{
+    display:block;
+    width:100%;
+    padding-left:10px;
+    padding-right:10px;
+}
+
+#banner a, #banner-wide a{
     text-decoration: none;
     color:#fff;
 }
@@ -40,11 +47,25 @@ a{
     color:#0187cd;
 }
 
+#side-list{
+    width:25%;
+    float:left;
+    padding-top:50px;
+}
+
+#body-wide{
+    width:75%;
+    float:left;
+    padding-top:50px;
+}
+
 #body{
     margin-left:auto;
     margin-right:auto;
     padding-top:50px;
 }
+
+
 
 #timestamp
 {
