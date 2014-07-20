@@ -16,7 +16,6 @@ class Wiki extends \nyansapow\SiteProcessor
     public function outputSite() 
     {
         $currentDocument = new \DOMDocument();
-        $m = new \Mustache_Engine();
         
         foreach($this->getFiles() as $path)
         {
@@ -53,13 +52,12 @@ class Wiki extends \nyansapow\SiteProcessor
 
             
             $input = file_get_contents($page['path']);
-            $outputFile = self::$nyansapow->getDestination() . ($dir =='' ? '' : "/$dir") . "/$output";
+            $outputFile = ($dir =='' ? '' : "/$dir") . "/$output";
                         
             $preParsed = Parser::preParse($input);
             
             \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
             $markedup = \Michelf\MarkdownExtra::defaultTransform($preParsed);
-            $layout = file_get_contents(self::$nyansapow->getHome() . "/themes/default/templates/layout.mustache");
             
             @$currentDocument->loadHTML($markedup);
             $h1s = $currentDocument->getElementsByTagName('h1');
@@ -72,18 +70,16 @@ class Wiki extends \nyansapow\SiteProcessor
                 str_replace(array('<body>', '</body>'), '', $currentDocument->saveHTML($body->item(0)))
             );
             
-            $webPage = $m->render(
-                $layout, 
+            $this->outputPage(
+                $outputFile,
                 array(
                     'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
                     'site_name' => $this->settings['site-name'],
                     'date' => date('jS F, Y H:i:s'),
-                    'assets_location' => $assetsLocation
+                    'assets_location' => $assetsLocation                    
                 )
             );
-
-            self::writeFile($outputFile, $webPage);            
         }
     }
 }

@@ -142,7 +142,8 @@ class Nyansapow
             {
                 $processor->outputSite();
                 $settings = parse_ini_file($path);
-                $processor = SiteProcessor::get($settings);
+                self::mkdir($this->destination . '/' . $dir);
+                $processor = SiteProcessor::get($settings, $dir);
             }
             else
             {
