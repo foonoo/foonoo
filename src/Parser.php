@@ -4,7 +4,7 @@ namespace nyansapow;
 
 class Parser
 {
-    public static $nyansapow;
+    public static $wiki;
     public static $dom;
     
     private static $regexes = array(
@@ -61,9 +61,9 @@ class Parser
         )
     );
     
-    public static function setNyansapow($nyansapow)
+    public static function setProcessor($wiki)
     {
-        self::$nyansapow = $nyansapow;
+        self::$wiki = $wiki;
     }
     
     public static function domCreated($dom)
@@ -167,11 +167,11 @@ class Parser
     public static function renderPageLink($matches)
     {
         $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-        foreach(self::$nyansapow->getPages() as $page)
+        foreach(self::$wiki->getPages() as $page)
         {
-            if(strtolower($page) == strtolower($link))
+            if(strtolower($page['page']) == strtolower($link))
             {
-                return "<a href='{$page}.html'>" .(isset($matches['title']) ? $matches['title'] : $matches['markup']) . "</a>";
+                return "<a href='{$page['page']}.html'>" .(isset($matches['title']) ? $matches['title'] : $matches['markup']) . "</a>";
             }
         }
     }

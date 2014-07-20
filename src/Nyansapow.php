@@ -1,7 +1,10 @@
 <?php
-
 namespace nyansapow;
 
+/**
+ * The Nyansapow class which represents a nyansapow site. This class performs
+ * the task of converting the input files into the output site. 
+ */
 class Nyansapow
 {
     private $options;
@@ -10,7 +13,6 @@ class Nyansapow
     private $pages = array();
     private $pageFiles = array();
     private $home;
-    private $currentDocument;
     
     private function __construct($source, $destination, $options)
     {
@@ -39,14 +41,18 @@ class Nyansapow
         $this->destination = $destination;
     }
     
-    private function appySettings($settings)
+    
+    public function getDestination()
     {
-        $settings = parse_ini_file($settings);
-        foreach($settings as $key => $value)
-        {
-            $this->options[$key] = $value;
-        }
+        return $this->destination;
     }
+    
+    public function getHome()
+    {
+        return $this->home;
+    }
+    
+    //public function 
     
     /**
      * 
@@ -110,69 +116,12 @@ class Nyansapow
         self::mkdir($this->destination);
         self::copyDir("$this->home/themes/default/assets", "{$this->destination}");        
     }
-        
-    public function getTableOfContents($level = 2, $index = 0)
-    {
-        $tocTree = array();
-        
-        $xpath = new DOMXPath($this->currentDocument);;
-        $nodes = $xpath->query("//h2|//h3|//h4|//h5|//h6");
-        
-        for($i = $index; $i < $nodes->length; $i++)
-        {
-            $nodes->item($i)->setAttribute('id', $nodes->item($i)->nodeValue);
-            if($nodes->item($i)->nodeName == "h{$level}")
-            {
-                if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)
-                {
-                    $tocTree[] = array(
-                        'title' => $nodes->item($i)->nodeValue,
-                        'level' => $level - 1,
-                        'children' => array()
-                    );
-                }
-                else if($nodes->item($i + 1)->nodeName == "h" . ($level - 1))
-                {
-                    $tocTree[] = array(
-                        'title' => $nodes->item($i)->nodeValue,
-                        'level' => $level - 1,
-                        'children' => array()
-                    );
-                    break;
-                }
-                else
-                {
-                    $children = $this->getTableOfContents($level + 1, $i + 1);
-                    $newIndex = $children['index'];
-                    unset($children['index']);
-                    $tocTree[] = array(
-                        'title' => $nodes->item($i)->nodeValue,
-                        'level' => $level - 1,
-                        'children' => $children
-                    );       
-                    $i = $newIndex;
-                }
-            }
-            else 
-            {
-                break;
-            }
-        }
-        
-        if($level > 2) 
-        {
-            $tocTree['index'] = $i;
-        }
-        
-        return $tocTree;
-    }
     
     public function write($files = array())
     {
         if(count($files) == 0)
         {
             $this->writeAssets();
-            // Copy images
             if(is_dir("{$this->source}/images"))
             {
                 self::copyDir("{$this->source}/images", "{$this->destination}");
@@ -180,7 +129,30 @@ class Nyansapow
             $files = $this->pageFiles;
         }
         
-        $filesWritten = array();
+        $processor = SiteProcessor::init($this);
+        
+        foreach($files as $path)
+        {
+            $dir = substr(dirname($path), strlen($this->source) + 1);
+            $file = basename($path);
+            if($dir != '') $dir .= '/';
+            
+            // Switch the processor when the site.ini file has changed
+            if($file == 'site.ini')
+            {
+                $processor->outputSite();
+                $settings = parse_ini_file($path);
+                $processor = SiteProcessor::get($settings);
+            }
+            else
+            {
+                $processor->addFile($dir . $file);
+            }
+        }
+        
+        $processor->outputSite();
+        
+        /*$filesWritten = array();
         
         $m = new \Mustache_Engine();   
         $this->currentDocument = new \DOMDocument();
@@ -189,12 +161,12 @@ class Nyansapow
         {
             $file = basename($path);
             $dir = substr(dirname($path), strlen(getcwd()) + 1);
-            $assetsLocation = '';
+            $this->assetsLocation = '';
             
             if($dir != '')
             {
                 $dir .= '/';
-                $assetsLocation = str_repeat('../', substr_count($dir, '/'));
+                $this->assetsLocation = str_repeat('../', substr_count($dir, '/'));
             }
             
             self::mkdir($dir);
@@ -223,7 +195,7 @@ class Nyansapow
             }
             else if($file == 'site.ini')
             {
-                $this->appySettings($path);
+                
                 continue;
             }
             else
@@ -260,13 +232,13 @@ class Nyansapow
                     'page_title' => $h1s->item(0)->nodeValue,
                     'site_name' => $this->options['site-name'],
                     'date' => date('jS F, Y H:i:s'),
-                    'assets_location' => $assetsLocation
+                    'assets_location' => $this->assetsLocation
                 )
             );
 
             self::writeFile($outputFile, $webPage);
             $filesWritten[] = $output;
-        }
+        }*/
     }
 
     public static function copyDir($source, $destination)
@@ -286,18 +258,8 @@ class Nyansapow
             }
         }
     }
-    
-    private static function writeFile($path, $contents)
-    {
-        if(!is_dir(dirname($path))) 
-        {
-            self::mkdir (dirname($path));
-        }
-        
-        file_put_contents($path, $contents);
-    }
 
-    private static function mkdir($path)
+    public static function mkdir($path)
     {
         if($path == '') return false;
         if(!file_exists(dirname($path)))
