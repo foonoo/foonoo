@@ -47,6 +47,11 @@ class Nyansapow
         return $this->destination;
     }
     
+    public function getSource()
+    {
+        return $this->source;
+    }
+    
     public function getHome()
     {
         return $this->home;

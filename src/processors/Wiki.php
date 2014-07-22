@@ -49,9 +49,8 @@ class Wiki extends \nyansapow\SiteProcessor
                     $output = "{$page['page']}.html";
                     break;
             }                
-
             
-            $input = file_get_contents($page['path']);
+            $input = file_get_contents(self::$nyansapow->getSource() . '/' . $page['path']);
             $outputFile = ($dir =='' ? '' : "/$dir") . "/$output";
                         
             $preParsed = Parser::preParse($input);
