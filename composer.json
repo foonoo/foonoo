@@ -22,7 +22,6 @@
         "ekowabaka/clearice": "0.2.4",
         "mustache/mustache": "v2.6.1",
         "ekowabaka/php-markdown" : "1.4.1-patch1",
-        "geshi/geshi" : "dev-master#38887685c3377fd1d8c0a9d4e846596ee191f447",
         "netcarver/textile": "v3.5.5"
     },
     "license": "MIT",

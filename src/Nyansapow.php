@@ -77,6 +77,9 @@ class Nyansapow
         while (false !== ($entry = $dir->read())) 
         {
             $file = "$source/$entry";
+            
+            if($this->destination == "$source/$entry") continue;
+            
             if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $entry, $matches) && !is_dir($file))
             {
                 $pages[] = $matches['page'];
@@ -152,94 +155,6 @@ class Nyansapow
         }
         
         $processor->outputSite();
-        
-        /*$filesWritten = array();
-        
-        $m = new \Mustache_Engine();   
-        $this->currentDocument = new \DOMDocument();
-        
-        foreach($files as $path)
-        {
-            $file = basename($path);
-            $dir = substr(dirname($path), strlen(getcwd()) + 1);
-            $this->assetsLocation = '';
-            
-            if($dir != '')
-            {
-                $dir .= '/';
-                $this->assetsLocation = str_repeat('../', substr_count($dir, '/'));
-            }
-            
-            self::mkdir($dir);
-            
-            if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
-            {
-                switch($matches['page'])
-                {
-                    case 'Home':
-                        $output = "index.html";
-                        break;
-
-                    default:
-                        $output = "{$matches['page']}.html";
-                        break;
-                }                
-            }
-            else if(preg_match("/(?<dir>assets|images)(\/)(.*)(\.*)/", $file, $matches))
-            {
-                if(!is_dir($matches['dir']))
-                {
-                    self::mkdir("{$this->destination}/{$matches['dir']}");
-                }
-                copy($path, "{$this->destination}/{$file}");
-                continue;
-            }
-            else if($file == 'site.ini')
-            {
-                
-                continue;
-            }
-            else
-            {
-                // Do nothing
-                continue;
-            }
-            
-
-            $input = file_get_contents("{$this->source}/$file");
-            $outputFile = $this->destination . ($dir =='' ? '' : "/$dir") . "/$output";
-                        
-            $preParsed = Parser::preParse($input);
-            
-            \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
-            $markedup = \Michelf\MarkdownExtra::defaultTransform($preParsed);
-            $layout = file_get_contents("$this->home/themes/default/templates/layout.mustache");
-            
-            @$this->currentDocument->loadHTML($markedup);
-            $h1s = $this->currentDocument->getElementsByTagName('h1');
-            
-            Parser::setNyansapow($this);
-            Parser::domCreated($this->currentDocument);
-            
-            $body = $this->currentDocument->getElementsByTagName('body');
-            $content = Parser::postParse(
-                str_replace(array('<body>', '</body>'), '', $this->currentDocument->saveHTML($body->item(0)))
-            );
-            
-            $webPage = $m->render(
-                $layout, 
-                array(
-                    'body' => $content,
-                    'page_title' => $h1s->item(0)->nodeValue,
-                    'site_name' => $this->options['site-name'],
-                    'date' => date('jS F, Y H:i:s'),
-                    'assets_location' => $this->assetsLocation
-                )
-            );
-
-            self::writeFile($outputFile, $webPage);
-            $filesWritten[] = $output;
-        }*/
     }
 
     public static function copyDir($source, $destination)

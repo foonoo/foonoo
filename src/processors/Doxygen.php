@@ -3,15 +3,123 @@ namespace nyansapow\processors;
 
 class Doxygen extends \nyansapow\SiteProcessor
 {
+    private $paragraphMode = true;
+    private $noRefs = false;
+    
+    public function parseSimpleSect($node, $simpleNode)
+    {
+        $previousParagraphMode = $this->paragraphMode;
+        $this->paragraphMode = false;
+        switch($simpleNode['kind'])
+        {
+            case 'author':
+                $html .= '<dl>';
+                $html .= '<dt>Author</dt>';
+                $html .= '<dd>' . $this->parseText($node) . '</dd>';
+                $html .= '</dl>';
+                break;
+            
+            case 'see':
+                $html .= '<dl>';
+                $html .= '<dt>See also</dt>';
+                $html .= '<dd>' . $this->parseText($node) . '</dd>';
+                $html .= '</dl>';                
+                break;
+            
+            case 'warning':
+                $html .= '<div class="block warning">' . $this->parseText($node) . '</div>';
+                break;
+            
+            default:
+                echo "Unknown simplenode kind: '{$simpleNode['kind']}'\n";
+                $html .= $this->parseText($node);
+                break;
+        }
+        $this->paragraphMode = $previousParagraphMode;
+        
+        return $html;
+    }
+    
+    public function parsePara($node)
+    {
+        /*if($this->paragraphMode)
+        {
+            $html .= '<p>' . $this->parseText($node) . '</p>';
+        }
+        else
+        {*/
+            $html .= $this->parseText($node);
+        //}
+        return $html;
+    }
+    
+    public function parseRef($node)
+    {
+        if($this->noRefs) 
+        {
+            return $this->parseText($node);
+        }
+        else
+        {
+            $class = $this->parseText($node);
+            return "<a href='$class.html'>$class</a>";
+        }
+    }
+    
+    public function parseUlink($node, $simpleNode)
+    {
+        return "<a href='{$simpleNode['url']}'>" . $this->parseText($node) . "</a>";
+    }
+    
+    public function parseItemizedlist($node)
+    {
+        return '<ol>' . $this->parseText($node) . '</ol>';
+    }
+    
+    public function parseListitem($node)
+    {
+        return '<li>' . $this->parseText($node) . '</li>';
+    }
+    
+    public function parseProgramlisting($node)
+    {
+        return '<pre><code>' . $this->parseText($node) . '</code></pre>';
+    }
+    
+    public function parseXrefsect($node, $simple)
+    {
+        
+        $title = $simple->xreftitle;
+        return "<div class='block'><div><b>{$title}</b></div>" . $this->parseText(dom_import_simplexml($simple->xrefdescription)) . "</div>";
+    }
+    
+    public function parseElementNode($node)
+    {
+        $simpleNode = simplexml_import_dom($node);
+        
+        try {
+            $method = new \ReflectionMethod($this, "parse" . ucfirst($node->nodeName));
+            $html .= $method->invoke($this, $node, $simpleNode);
+        } catch (\Exception $ex) {
+            //print "Unkown node type {$node->nodeName}\n";
+            $html .= $this->parseText($node);
+        }     
+        
+        return $html;
+    }
+    
+    public function parseSp()
+    {
+        return ' ';
+    }
+    
     protected function parseText($textNodes)
     {
-        $html = '';
-        
         foreach($textNodes->childNodes as $node)
         {
             switch($node->nodeType){
                 case XML_ELEMENT_NODE:
-                    $html .= $this->parseText($node);
+                    $html .= $this->parseElementNode($node);
                     break;
                 case XML_TEXT_NODE:
                     $html .= $node->textContent;
@@ -45,6 +153,7 @@ class Doxygen extends \nyansapow\SiteProcessor
             $classXml = simplexml_load_file($this->getDir() . "xml/{$class['refid']}.xml");
             $parents = $classXml->compounddef->basecompoundref;
             $classIds[] = $class['refid'];
+            //print "###{$class->name}\n";
             $classDescription = array(
                 'name' => (string)$class->name,
                 'link' => (string)$class->name . ".html",

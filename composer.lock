@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0ef4babd0f468cde8dfb06b9ae87af4e",
+    "hash": "55182797d3f880559920658a63750628",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -57,43 +57,6 @@
                     "Michelf": ""
                 }
             }
-        },
-        {
-            "name": "geshi/geshi",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/GeSHi/geshi-1.0.git",
-                "reference": "38887685c3377fd1d8c0a9d4e846596ee191f447"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/GeSHi/geshi-1.0/zipball/4895d6d58860c254a8b83501660116ac1a86c265",
-                "reference": "38887685c3377fd1d8c0a9d4e846596ee191f447",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/geshi/",
-                    "src/geshi.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Benny Baumann",
-                    "email": "BenBE@geshi.org",
-                    "homepage": "http://blog.benny-baumann.de/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Generic Syntax Highlighter",
-            "homepage": "http://qbnz.com/highlighter/",
-            "time": "2012-08-18 03:19:15"
         },
         {
             "name": "mustache/mustache",
@@ -201,9 +164,9 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "geshi/geshi": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],
