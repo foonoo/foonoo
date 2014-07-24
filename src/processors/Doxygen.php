@@ -130,6 +130,75 @@ class Doxygen extends \nyansapow\SiteProcessor
         return $html;
     }
     
+    protected function getMarkup($node)
+    {
+        return $this->parseText(dom_import_simplexml($node));
+    }
+    
+    private function extractFieldDetails($label, $fields)
+    {
+        $fieldDetails = array();
+        
+        foreach($fields as $field)
+        {
+            $fieldDetails[] = array(
+                'name' => (string)$field->name,
+                'brief' => $this->parseText($field->briefdescription),
+                'description' => $this->parseText($field->detaileddescription),
+                'initializer' => (string)$field->initializer
+            );
+        }     
+        
+        if(count($fields) == 0)
+        {
+            return null;
+        }
+        else
+        {
+            return array(
+                'label' => $label,
+                'items' => $fieldDetails
+            );
+        }
+    }
+    
+    private function extractMethodDetails($label, $methods)
+    {
+        $methodDetails = array();
+        
+        foreach($methods as $method)
+        {
+            $params = array();
+
+            foreach($method->param as $param)
+            {
+                $params = array(
+                    'name' => $param->name
+                );
+            }
+
+            $methodDetails[] = array(
+                'name' => (string)$method->name,
+                'brief' => $this->getMarkup($method->briefdescription),
+                'description' => $this->getMarkup($method->detaileddescription),
+                'params' => $params,
+                'args_string' => (string)$method->argsstring
+            );
+        } 
+        
+        if(count($methods) == 0)
+        {
+            return null;
+        }
+        else
+        {
+            return array(
+                'label' => $label,
+                'items' => $methodDetails
+            );
+        }
+    }
+    
     public function outputSite() 
     {
         // Search for the index.xml file
@@ -157,10 +226,21 @@ class Doxygen extends \nyansapow\SiteProcessor
             $classDescription = array(
                 'name' => (string)$class->name,
                 'link' => (string)$class->name . ".html",
-                'brief' => $this->parseText(dom_import_simplexml($classXml->compounddef->briefdescription)),
-                'description' => $this->parseText(dom_import_simplexml($classXml->compounddef->detaileddescription)),
+                'brief' => $this->getMarkup($classXml->compounddef->briefdescription),
+                'description' => $this->getMarkup($classXml->compounddef->detaileddescription),
                 'access' => (string)$classXml->compounddef['prot'],
-                'parents' => array()
+                'parents' => array(),
+                'sections' => array(
+                    $this->extractFieldDetails('Constants', $classXml->xpath("//memberdef[type='const']")),
+                    $this->extractFieldDetails('Static Public Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='yes' and @prot='public']")),
+                    $this->extractFieldDetails('Public Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='no' and @prot='public' and type!='const']")),
+                    $this->extractMethodDetails('Static Public Methods', $classXml->xpath("//memberdef[@kind='function' and type='static' and @prot='public']")),
+                    $this->extractMethodDetails('Public Methods', $classXml->xpath("//memberdef[@kind='function' and @static='no' and @prot='public']")),
+                    $this->extractFieldDetails('Static Protected Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='yes' and @prot='protected']")),
+                    $this->extractFieldDetails('Protected Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='no' and @prot='protected' and type!='const']")),
+                    $this->extractMethodDetails('Static Protected Methods', $classXml->xpath("//memberdef[@kind='function' and type='static' and @prot='protected']")),
+                    $this->extractMethodDetails('Protected Methods', $classXml->xpath("//memberdef[@kind='function' and @static='no' and @prot='protected']"))
+                )
             );
             
             foreach($parents as $parent)
@@ -175,7 +255,10 @@ class Doxygen extends \nyansapow\SiteProcessor
         }
         
         //Write the index page lists summary of classes
-        $m = new \Mustache_Engine();
+        $m = new \Mustache_Engine(array(
+            'partials_loader' => new \Mustache_Loader_FilesystemLoader(self::$nyansapow->getHome() . "/themes/default/templates")
+        ));
+        
         $sideMenuItems = $m->render(
             file_get_contents(self::$nyansapow->getHome() . "/themes/default/templates/doxygen_side_menu.mustache"),
             array(
@@ -210,17 +293,18 @@ class Doxygen extends \nyansapow\SiteProcessor
                 $class
             );
             
-        $this->outputPage(
-            $this->getDir() . $class['name'] . '.html',
-            array(
-                'body' => $content,
-                'side-list' => $sideMenuItems,
-                'page_title' => $class['name'],
-                'site_name' => $this->settings['site-name'],
-                'date' => date('jS F, Y H:i:s'),
-                'assets_location' => \nyansapow\SiteProcessor::getAssetsLocation($this->getDir())
-            )
-        );               
+            $this->outputPage(
+                $this->getDir() . $class['name'] . '.html',
+                array(
+                    'body' => $content,
+                    'side-list' => $sideMenuItems,
+                    'page_title' => $class['name'],
+                    'site_name' => $this->settings['site-name'],
+                    'date' => date('jS F, Y H:i:s'),
+                    'assets_location' => \nyansapow\SiteProcessor::getAssetsLocation($this->getDir()),
+                    'sections' => $class['sections']
+                )
+            );               
         }
     }
 }
