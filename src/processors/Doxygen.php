@@ -30,6 +30,13 @@ class Doxygen extends \nyansapow\SiteProcessor
                 $html .= '<div class="block warning">' . $this->parseText($node) . '</div>';
                 break;
             
+            case 'return':
+                $html .= '<dl>';
+                $html .= '<dt>Returns</dt>';
+                $html .= '<dd>' . $this->parseText($node) . '</dd>';
+                $html .= '</dl>';                
+                break;
+            
             default:
                 echo "Unknown simplenode kind: '{$simpleNode['kind']}'\n";
                 $html .= $this->parseText($node);
@@ -93,6 +100,19 @@ class Doxygen extends \nyansapow\SiteProcessor
         return "<div class='block'><div><b>{$title}</b></div>" . $this->parseText(dom_import_simplexml($simple->xrefdescription)) . "</div>";
     }
     
+    public function parseParameterlist($node, $simple)
+    {
+        //if($simple['kind'] != 'params') return '';
+        $html = '<dl><dt>Parameters</dt><dd><table>';
+        foreach($simple->parameteritem as $param)
+        {
+            $description = $this->getMarkup($param->parameterdescription);
+            $html .= "<tr><td>{$param->parameternamelist->parametername}</td><td>$description</td></tr>";
+        }
+        $html .= '</table></dd></dl>';
+        return $html;
+    }
+    
     public function parseElementNode($node)
     {
         $simpleNode = simplexml_import_dom($node);
@@ -101,7 +121,7 @@ class Doxygen extends \nyansapow\SiteProcessor
             $method = new \ReflectionMethod($this, "parse" . ucfirst($node->nodeName));
             $html .= $method->invoke($this, $node, $simpleNode);
         } catch (\Exception $ex) {
-            //print "Unkown node type {$node->nodeName}\n";
+            print "Unkown node type {$node->nodeName}\n";
             $html .= $this->parseText($node);
         }     
         

@@ -6,8 +6,11 @@
 <p>{{{brief}}}{{{description}}}</p>
 
 <h2>Summary</h2>
-
 {{#sections}}
     {{> doxygen_summary.mustache}}
 {{/sections}}
 
+<h2>Details</h2>
+{{#sections}}
+    {{> doxygen_details.mustache}}
+{{/sections}}
