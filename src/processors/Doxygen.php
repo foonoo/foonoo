@@ -163,8 +163,8 @@ class Doxygen extends \nyansapow\SiteProcessor
         {
             $fieldDetails[] = array(
                 'name' => (string)$field->name,
-                'brief' => $this->parseText($field->briefdescription),
-                'description' => $this->parseText($field->detaileddescription),
+                'brief' => $this->getMarkup($field->briefdescription),
+                'description' => $this->getMarkup($field->detaileddescription),
                 'initializer' => (string)$field->initializer
             );
         }     
@@ -254,11 +254,11 @@ class Doxygen extends \nyansapow\SiteProcessor
                     $this->extractFieldDetails('Constants', $classXml->xpath("//memberdef[type='const']")),
                     $this->extractFieldDetails('Static Public Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='yes' and @prot='public']")),
                     $this->extractFieldDetails('Public Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='no' and @prot='public' and type!='const']")),
-                    $this->extractMethodDetails('Static Public Methods', $classXml->xpath("//memberdef[@kind='function' and type='static' and @prot='public']")),
+                    $this->extractMethodDetails('Static Public Methods', $classXml->xpath("//memberdef[@kind='function' and @static='yes' and @prot='public']")),
                     $this->extractMethodDetails('Public Methods', $classXml->xpath("//memberdef[@kind='function' and @static='no' and @prot='public']")),
                     $this->extractFieldDetails('Static Protected Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='yes' and @prot='protected']")),
                     $this->extractFieldDetails('Protected Fields', $classXml->xpath("//memberdef[@kind='variable' and @static='no' and @prot='protected' and type!='const']")),
-                    $this->extractMethodDetails('Static Protected Methods', $classXml->xpath("//memberdef[@kind='function' and type='static' and @prot='protected']")),
+                    $this->extractMethodDetails('Static Protected Methods', $classXml->xpath("//memberdef[@kind='function' and @static='yes' and @prot='protected']")),
                     $this->extractMethodDetails('Protected Methods', $classXml->xpath("//memberdef[@kind='function' and @static='no' and @prot='protected']"))
                 )
             );

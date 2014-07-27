@@ -105,7 +105,6 @@ pre {
     display:block;
     overflow: auto;
     font-weight: normal;
-    font-size:large;
 }
 
 blockquote{
@@ -162,7 +161,7 @@ table{
 }
 
 table > thead{
-    background-color: #f0f0f0;
+    background-color: #e8e8e8;
 }
 
 table > thead > tr > th{
@@ -174,7 +173,7 @@ table > tbody > tr > td{
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
-    border-bottom: 2px solid #fcfcfc;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .toc {
@@ -209,14 +208,14 @@ dt{
 }
 
 .detailed-info-box{
-    border:1px solid #f0f0f0;
+    border-bottom:1px solid #f0f0f0;
     margin-bottom: 10px;
 }
 
 .detailed-info-box h4{
     margin:0px;
     padding:10px;
-    background-color:#f0f0f0;
+    background-color:#e8e8e8;
 }
 
 .detailed-info-box div.description{
