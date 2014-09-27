@@ -19,10 +19,11 @@
         }
     ],
     "require": {
-        "ekowabaka/clearice": "0.2.4",
+        "ekowabaka/clearice": "0.3.*",
         "mustache/mustache": "v2.6.1",
         "ekowabaka/php-markdown" : "1.4.1-patch1",
-        "netcarver/textile": "v3.5.5"
+        "netcarver/textile": "v3.5.5",
+	"theseer/phpdox": "0.7.*"
     },
     "license": "MIT",
     "authors": [

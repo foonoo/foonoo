@@ -49,14 +49,7 @@ class Doxygen extends \nyansapow\SiteProcessor
     
     public function parsePara($node)
     {
-        /*if($this->paragraphMode)
-        {
-            $html .= '<p>' . $this->parseText($node) . '</p>';
-        }
-        else
-        {*/
-            $html .= $this->parseText($node);
-        //}
+        $html .= $this->parseText($node);
         return $html;
     }
     
@@ -102,7 +95,6 @@ class Doxygen extends \nyansapow\SiteProcessor
     
     public function parseParameterlist($node, $simple)
     {
-        //if($simple['kind'] != 'params') return '';
         $html = '<dl><dt>Parameters</dt><dd><table>';
         foreach($simple->parameteritem as $param)
         {
