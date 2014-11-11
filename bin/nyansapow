@@ -2,10 +2,10 @@
 <?php
 
 use nyansapow\Nyansapow;
+use clearice\ClearIce;
 
 error_reporting(E_ALL ^ E_NOTICE);
-
-require "vendor/autoload.php";
+require __DIR__ . "/../vendor/autoload.php";
 
 ClearIce::addOptions(
     array(
@@ -51,59 +51,13 @@ $description = <<<EOT
 nyansapow site generator
 James Ekow Abaka Ainooson <jainooson@gmail.com>
         
-A simple static site generator engine to be used for generating static 
-wikis, blogs and any kind of site you can think of the running of. It
-also provides utility scripts to help you use git as the backend of
-for updating your site.
-
+A simple static site generator engine to be used for generating static wikis, 
+blogs and any kind of site you can think of.
 
 EOT;
 
 ClearIce::setDescription($description);
 $options = ClearIce::parse();
-$home = __DIR__;
-
-if(isset($options['init-git-hooks']))
-{
-    if($options['output'] == '')
-    {
-        fputs(STDERR, "Please specify an output location for your site using the `--output` option.\n");
-        die();
-    }
-    
-    if(is_writable('hooks') && is_dir('hooks'))
-    {        
-
-        $config = <<<EOT
-<?php
-\$output_directory = "{$options['output']}";
-\$name = "{$options['title']}";
-\$nyansapow_home = "$home";
-EOT;
-
-        copy("$home/git_hooks/post-receive", 'hooks/post-receive');
-        copy("$home/git_hooks/pre-receive", 'hooks/pre-receive');
-        file_put_contents('hooks/nyansapow.conf.php', $config);
-        chmod('hooks/post-receive', 0755);
-        chmod('hooks/pre-receive', 0755);
-        mkdir('nyansapow_site');
-    }
-    else
-    {
-        fputs(STDERR, "Please ensure that this is a valid Git repository\n");
-    }
-    die();
-}
-else if(isset($options['update-git-hooks']))
-{
-    @unlink('hooks/post-receive');
-    @unlink('hooks/pre-receive');
-    copy("$home/git_hooks/post-receive", 'hooks/post-receive');
-    chmod('hooks/post-receive', 0755);    
-    copy("$home/git_hooks/pre-receive", 'hooks/pre-receive');
-    chmod('hooks/pre-receive', 0755);    
-    die();
-}
 
 try
 {

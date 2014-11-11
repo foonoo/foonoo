@@ -90,7 +90,7 @@ class Nyansapow
                 $pages[] = $matches['page'];
                 $pageFiles[] = $file;
             }
-            else if(is_dir($file) && ($entry != '.' && $entry != '..'))
+            else if(is_dir($file) && ($entry != '.' && $entry != '..' && $entry != '_site'))
             {
                 $directories[] = $file;
             }
@@ -212,4 +212,3 @@ class Exception extends \Exception
 {
     
 }
-

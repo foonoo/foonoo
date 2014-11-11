@@ -4,30 +4,33 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2d686596d052c84d3ed2ae66954b786a",
+    "hash": "8dcb2b03734f242fd0236e6ce1c319d5",
     "packages": [
         {
             "name": "ekowabaka/clearice",
-            "version": "0.2.4",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ekowabaka/clearice.git",
-                "reference": "3482588c7d41a30345c38f699869824b8efec478"
+                "reference": "9d1c4c51b2ec2bde686c6342159acd95e58dcceb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ekowabaka/clearice/zipball/3482588c7d41a30345c38f699869824b8efec478",
-                "reference": "3482588c7d41a30345c38f699869824b8efec478",
+                "url": "https://api.github.com/repos/ekowabaka/clearice/zipball/9d1c4c51b2ec2bde686c6342159acd95e58dcceb",
+                "reference": "9d1c4c51b2ec2bde686c6342159acd95e58dcceb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
+            "require-dev": {
+                "mikey179/vfsstream": "v1.3.0"
+            },
             "type": "library",
             "autoload": {
-                "files": [
-                    "ClearIce.php"
-                ]
+                "psr-4": {
+                    "clearice\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -40,8 +43,8 @@
                     "homepage": "http://ekowabaka.me"
                 }
             ],
-            "description": "A tool for parsing command line arguments",
-            "time": "2014-07-12 10:45:26"
+            "description": "A tool to help in the building of CLI apps. Provides command line parsing and simple console I/O interfaces.",
+            "time": "2014-10-22 09:55:49"
         },
         {
             "name": "ekowabaka/php-markdown",
@@ -162,12 +165,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "2b96ab8edccd5a0d0e7a826a7dc53c421ae64f94"
+                "reference": "a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/2b96ab8edccd5a0d0e7a826a7dc53c421ae64f94",
-                "reference": "2b96ab8edccd5a0d0e7a826a7dc53c421ae64f94",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1",
+                "reference": "a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1",
                 "shasum": ""
             },
             "require": {
@@ -199,7 +202,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2014-09-12 12:48:23"
+            "time": "2014-11-04 22:12:46"
         },
         {
             "name": "phpunit/php-timer",
@@ -290,12 +293,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/theseer/fDOMDocument.git",
-                "reference": "8792b1786353f88b4888867f1408ce0bbcce5278"
+                "reference": "6df9b02a04a321f3770c8bee346ef320bdc18d64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theseer/fDOMDocument/zipball/8792b1786353f88b4888867f1408ce0bbcce5278",
-                "reference": "8792b1786353f88b4888867f1408ce0bbcce5278",
+                "url": "https://api.github.com/repos/theseer/fDOMDocument/zipball/6df9b02a04a321f3770c8bee346ef320bdc18d64",
+                "reference": "6df9b02a04a321f3770c8bee346ef320bdc18d64",
                 "shasum": ""
             },
             "require": {
@@ -322,7 +325,7 @@
             ],
             "description": "The classes contained within this repository extend the standard DOM to use exceptions at all occasions of errors instead of PHP warnings or notices. They also add various custom methods and shortcuts for convenience and to simplify the usage of DOM.",
             "homepage": "https://github.com/theseer/fDOMDocument",
-            "time": "2014-09-13 14:56:40"
+            "time": "2014-10-09 22:33:26"
         },
         {
             "name": "theseer/fxsl",

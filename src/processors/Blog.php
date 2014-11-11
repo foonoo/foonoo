@@ -1,8 +1,24 @@
 <?php
+namespace nyansapow\processors;
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
+class Blog extends \nyansapow\SiteProcessor
+{
+    public function outputSite()
+    {
+        $files = $this->getFiles();
+        $structure = array();
+        
+        foreach($files as $file)
+        {
+            if(preg_match(
+                "/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[a-z0-9\-\_]*)\.(md)/", 
+                $file, $matches
+            )){
+                $structure[$matches['year']][$matches['month']][$matches['day']] = array(
+                    'file' => $file,
+                    'title' => $matches['title']
+                );
+            }
+        }
+    }
+}
