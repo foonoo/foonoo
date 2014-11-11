@@ -29,7 +29,7 @@ class Nyansapow
         
         if($destination == '')
         {
-            $destination = getcwd() . "/_site";
+            $destination = getcwd() . "/output_site";
         }        
         
         $pageDetails = $this->getPageFiles($source);
