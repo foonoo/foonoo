@@ -35,7 +35,6 @@ class Wiki extends \nyansapow\SiteProcessor
         {
             $file = $page['file'];
             $dir = dirname($page['path']);
-            $assetsLocation = \nyansapow\SiteProcessor::getAssetsLocation($dir);
             
             \nyansapow\Nyansapow::mkdir(self::$nyansapow->getDestination() . '/' . $dir);
             
@@ -54,9 +53,8 @@ class Wiki extends \nyansapow\SiteProcessor
             $outputFile = ($dir =='' ? '' : "/$dir") . "/$output";
                         
             $preParsed = Parser::preParse($input);
-            
-            \Michelf\MarkdownExtra::setCallbacks(new Callbacks());
-            $markedup = \Michelf\MarkdownExtra::defaultTransform($preParsed);
+            $parsedown = new \Parsedown();
+            $markedup = $parsedown->text($preParsed);
             
             @$currentDocument->loadHTML($markedup);
             $h1s = $currentDocument->getElementsByTagName('h1');
@@ -69,14 +67,10 @@ class Wiki extends \nyansapow\SiteProcessor
                 str_replace(array('<body>', '</body>'), '', $currentDocument->saveHTML($body->item(0)))
             );
             
-            $this->outputPage(
-                $outputFile,
+            $this->outputPage($outputFile, $content,
                 array(
-                    'body' => $content,
                     'page_title' => $h1s->item(0)->nodeValue,
-                    'site_name' => $this->settings['site-name'],
-                    'date' => date('jS F, Y H:i:s'),
-                    'assets_location' => $assetsLocation                    
+                    'date' => date('jS F, Y H:i:s')              
                 )
             );
         }

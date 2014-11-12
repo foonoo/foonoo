@@ -1,0 +1,42 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400,600,700,800);
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+body{
+    margin:0px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+}
+
+#banner{
+    background-color:#5ebdff;
+    height:250px;
+    width:100%;
+    text-align: center;
+    line-height: 250px;
+    font-family: "Montserrat", sans-serif
+}
+
+#banner a{
+    text-decoration: none;
+    color: #fff;
+    font-size: 3em;
+    font-weight: 700;
+}
+
+.post{
+    width:50%;
+    margin:30px;
+    margin-left:auto;
+    margin-right:auto;   
+}
+
+.post .time{
+    font-weight: bold;
+    color:#a0a0a0;
+    font-size: small;
+}
+
+.post-title{
+    margin:0px;
+    font-size: xx-large;
+}

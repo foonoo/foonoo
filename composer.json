@@ -1,27 +1,10 @@
 {
     "name": "ekowabaka/nyansapow",
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
-    "repositories":[
-        {
-            "type": "package",
-            "package": {
-                "name": "ekowabaka/php-markdown",
-                "version": "1.4.1-patch1",
-                "source": {
-                    "url" : "https://github.com/ekowabaka/php-markdown",
-                    "type": "git",
-                    "reference": "e3820458505d3c429b65b140ee18667d9ebf5d53"
-                },
-                "autoload": {
-                    "psr-0": { "Michelf": "" }
-                }
-            }
-        }
-    ],
     "require": {
         "ekowabaka/clearice": "0.3.*",
         "mustache/mustache": "v2.6.1",
-        "ekowabaka/php-markdown" : "1.4.1-patch1",
+        "erusev/parsedown" : "1.1.*",
         "netcarver/textile": "v3.5.5",
 	"theseer/phpdox": "0.7.*"
     },

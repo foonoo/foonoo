@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8dcb2b03734f242fd0236e6ce1c319d5",
+    "hash": "83dd9a8eaada74207a4abfdee257ecba",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -47,19 +47,43 @@
             "time": "2014-10-22 09:55:49"
         },
         {
-            "name": "ekowabaka/php-markdown",
-            "version": "1.4.1-patch1",
+            "name": "erusev/parsedown",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ekowabaka/php-markdown",
-                "reference": "3a8f6c6d238a7fbc82c7ae69733c8cdffd075b94"
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "da5d75e97e1ed19e57bd54fa6cb595a6a0879a67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/da5d75e97e1ed19e57bd54fa6cb595a6a0879a67",
+                "reference": "da5d75e97e1ed19e57bd54fa6cb595a6a0879a67",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "Michelf": ""
+                    "Parsedown": ""
                 }
-            }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2014-10-29 20:29:46"
         },
         {
             "name": "mustache/mustache",
