@@ -16,6 +16,10 @@ body{
     font-family: "Montserrat", sans-serif
 }
 
+h2{
+    font-family: "Montserrat"
+}
+
 #banner a{
     text-decoration: none;
     color: #fff;
@@ -40,3 +44,38 @@ body{
     margin:0px;
     font-size: xx-large;
 }
+
+.post p{
+    text-align: justify;
+}
+
+#footer{
+    font-size: xx-small;
+    text-align: center;
+    padding:50px;
+    margin-top:50px;
+    background-color:#f0f0f0;
+}
+
+#bottomnav{
+    margin-top:80px;
+}
+
+#bottomnav > div{
+    width:49%;
+    display: inline-block;
+}
+
+#bottomnav > #prev{
+    text-align: left;
+}
+
+#bottomnav > #next{
+    text-align: right;
+}
+
+a{
+    text-decoration: none;
+    color:#00a9fb;
+}
+

@@ -2,6 +2,18 @@
     <div class="time">{{date}} under {{category}}</div>
     <div>
         <h2 class='post-title'>{{title}}</h2>
-        <p>{{{body}}}</p>
+        {{{body}}}
+    </div>
+    <div id="bottomnav">
+        {{#prev}}
+        <div id="prev">
+            <a href="../../../{{prev.path}}">{{prev.frontmatter.title}}</a>
+        </div>
+        {{/prev}}
+        {{#next}}
+        <div id="next">
+            <a href="../../../{{next.path}}">{{next.frontmatter.title}}</a>
+        </div>
+        {{/next}}
     </div>
 </div>

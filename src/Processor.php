@@ -113,7 +113,8 @@ abstract class Processor
             array(
                 'body' => $content,
                 'assets_location' => $this->getAssetsLocation("{$this->baseDir}/{$file}"),
-                'site_name' => $this->settings['name']
+                'site_name' => $this->settings['name'],
+                'date' => date('jS F Y')
             ), 
             $overrides
         );
