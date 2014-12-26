@@ -3,9 +3,9 @@
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
     "require": {
         "ekowabaka/clearice": "0.3.*",
-        "mustache/mustache": "v2.6.1",
-        "erusev/parsedown" : "1.1.*",
-        "netcarver/textile": "v3.5.5",
+        "mustache/mustache": "2.*",
+        "erusev/parsedown" : "1.*",
+        "netcarver/textile": "3.*",
 	"theseer/phpdox": "0.7.*"
     },
     "license": "MIT",
@@ -17,7 +17,6 @@
     ],
     "autoload": {
         "psr-4": {"nyansapow\\": "src/"}
-    },    
-    "minimum-stability": "dev",
+    },
     "bin" : ["bin/nyansapow"]
 }

@@ -3,6 +3,8 @@ namespace nyansapow\processors;
 
 class Blog extends \nyansapow\Processor
 {
+    private $posts = array();
+    
     public function init()
     {
         $this->setTheme('blog');
@@ -69,8 +71,7 @@ class Blog extends \nyansapow\Processor
     {
         $files = $this->getFiles("posts");
         $parsedown = new \Parsedown();
-        $posts = array();
-        $years = array();
+        $archives = array();
         
         // Preprocess all the files
         foreach($files as $file)
@@ -80,29 +81,32 @@ class Blog extends \nyansapow\Processor
                 $file, $matches
             )){
                 $post = $this->readPost($file);
-                $posts[] = array(
-                    'body' => $post['post'],
+                $this->posts[] = array(
+                    'body' => $parsedown->text($post['post']),
+                    'title' => $post['frontmatter']['title'],
+                    'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
+                    'preview' => $parsedown->text($post['preview']),
+                    'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
+                    'category' => $post['frontmatter']['category'],
                     'frontmatter' => $post['frontmatter'],
-                    'preview' => $post['preview'],
-                    'file_info' => $matches,
-                    'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html"
+                    'info' => $matches
                 );
-                $years[$matches['year']] = array();
+                $archives[$matches['year']]['posts'] = array();
+                $archives[$matches['year']][$matches['month']]['posts'] = array();
+                $archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
             }
         }
         
-        foreach($posts as $i => $post)
+        foreach($this->posts as $i => $post)
         {
-            $posts[$i]['preview'] = $parsedown->text($post['preview']);
             $markedup = $this->mustache->render(
-                file_get_contents("{$this->templates}/post.mustache"),
-                array(
-                    'date' => date("jS F Y", strtotime("{$post['file_info']['year']}-{$post['file_info']['month']}-{$post['file_info']['day']}")),
-                    'title' => $post['frontmatter']['title'],
-                    'body' => $parsedown->text($post['body']),
-                    'category' => $post['frontmatter']['category'],
-                    'next' => isset($posts[$i + 1]) ? $posts[$i + 1] : false,
-                    'prev' => isset($posts[$i - 1]) ? $posts[$i - 1] : false,
+                'post',
+                array_merge(
+                    $post,
+                    array(
+                        'next' => isset($this->posts[$i - 1]) ? $this->posts[$i - 1] : false,
+                        'prev' => isset($this->posts[$i + 1]) ? $this->posts[$i + 1] : false,
+                    )
                 )
             );
             $this->outputPage(
@@ -113,45 +117,59 @@ class Blog extends \nyansapow\Processor
                 )
             );            
             
-            $years[$post['file_info']['year']][] = $i;
+            $archives[$post['info']['year']]['posts'][] = $i;
+            $archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
+            $archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
         }
                 
         // Write index page
-        foreach($posts as $post)
-        {
-            $body .= $this->mustache->render(
-                file_get_contents("{$this->templates}/post.mustache"),
-                array(
-                    'date' => date("jS F Y", strtotime("{$post['file_info']['year']}-{$post['file_info']['month']}-{$post['file_info']['day']}")),
-                    'title' => $post['frontmatter']['title'],
-                    'body' => $post['preview'],
-                    'category' => $post['frontmatter']['category']
-                )
-            );
-        }
-        $this->outputPage("index.html", $body);
+        $this->writeIndex('index.html');
+        $this->writeArchive($archives, array('months', 'days'), array('Y', 'F,', 'jS'));
         
-        // Write yearly archives
-        foreach($years as $year => $postIds)
-        {
-            $body = '';
-            foreach($postIds as $postId)
-            {
-                $post = $posts[$postId];
-                $body .= $this->mustache->render(
-                    file_get_contents("{$this->templates}/post.mustache"),
-                    array(
-                        'date' => date("jS F Y", strtotime("{$post['file_info']['year']}-{$post['file_info']['month']}-{$post['file_info']['day']}")),
-                        'title' => $post['frontmatter']['title'],
-                        'body' => $post['preview'],
-                        'category' => $post['frontmatter']['category']
-                    )
-                );                
-            }
-            $this->outputPage("$year/index.html", $body);
-        }
         // Write categories
+        $this-
         
         // Write tags
+    }
+    
+    private function writeArchive($archive, $order, $title = 'Archive', $baseUrl = '')
+    {
+        $nextStage = array_shift($order);
+        foreach($archive as $value => $posts)
+        {
+            $newTitle = "$value $title";
+            $newBaseUrl = "$baseUrl$value/";
+            $this->writeIndex("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
+            if($nextStage != null)
+            {
+                $this->writeArchive($posts[$nextStage], $order, $newTitle, $newBaseUrl);
+            }
+        }
+    }
+   
+    private function writeIndex($target, $posts = array(), $title = null)
+    {
+        if(count($posts))
+        {
+            $rebuiltPosts = array();
+            foreach($posts as $post)
+            {
+                $rebuiltPosts[] = $this->posts[$post];
+            }
+        }
+        else
+        {
+            $rebuiltPosts = $this->posts;
+        }
+        
+        $body = $this->mustache->render(
+            'listing',
+            array(
+                'listing_title' => $title,
+                'previews' => true,
+                'posts' => $rebuiltPosts,
+            )
+        );
+        $this->outputPage($target, $body);        
     }
 }

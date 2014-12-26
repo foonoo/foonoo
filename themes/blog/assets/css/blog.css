@@ -79,3 +79,14 @@ a{
     color:#00a9fb;
 }
 
+#listing_title{
+    width:50%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:30px;
+    font-weight: bold;
+    color:#808080;
+    font-size: large;
+    font-family: Montserrat
+}
+

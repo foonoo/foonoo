@@ -15,6 +15,11 @@ abstract class Processor
      * @var \nyansapow\Nyansapow
      */
     protected static $nyansapow;
+    
+    /**
+     *
+     * @var \Mustache_Engine
+     */
     protected $mustache;
     
     private function __construct($settings = array(), $dir = '')
@@ -53,12 +58,13 @@ abstract class Processor
             $theme = "{$this->dir}/{$theme}";
         }
         
-        Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");    
+        Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");  
         $this->templates = "$theme/templates";
-        
+        $this->mustache->setLoader(new \Mustache_Loader_FilesystemLoader($this->templates));
+                
         if($this->layout == '' && file_exists("$theme/templates/layout.mustache"))
         {
-            $this->layout = "$theme/templates/layout.mustache";
+            $this->layout = "layout";
         }
     }
     
@@ -118,7 +124,7 @@ abstract class Processor
             ), 
             $overrides
         );
-        $webPage = $this->mustache->render(file_get_contents($this->layout), $params);
+        $webPage = $this->mustache->render($this->layout, $params);
         self::writeFile(self::$nyansapow->getDestination() . "/{$this->baseDir}" . ($file[0] == '/' ? '' : '/') . $file, $webPage);            
     }
     
