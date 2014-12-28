@@ -44,7 +44,7 @@ class Parser
         
             // Match images [[something.imgext|Alt Text|options]]
             array(
-                'regex' => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z_=|:]+)?\]\]/",
+                'regex' => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif))(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
                 'method' => "\\nyansapow\\Parser::renderImageTag"
             ),
         
@@ -144,6 +144,7 @@ class Parser
             {
                 $style .= 'float:left;';
             }
+            unset($attributes['float']);
         }
         
         
@@ -160,9 +161,17 @@ class Parser
             $frameOpen = "<div class='img-frame' $frameStyle >";
             $frameClose = "$caption</div>";
         }
+        unset($attributes['align']);
+        unset($attributes['frame']);
+        
+        $attributeString = '';
+        foreach($attributes as $key => $value)
+        {
+            $attributeString .= "$key = '$value' ";
+        }
         
         $style = $style == "" ? '' : "style='$style'";
-        return "{$frameOpen}<img $style src='" . self::$pathToBase . "images/{$matches['image']}' alt='{$matches['alt']}' />{$frameClose}";
+        return "{$frameOpen}<img $style src='" . self::$pathToBase . "images/{$matches['image']}' alt='{$matches['alt']}' $attributeString />{$frameClose}";
     }
     
     public static function renderPageLink($matches)
