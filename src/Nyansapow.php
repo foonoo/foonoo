@@ -102,17 +102,21 @@ class Nyansapow
     public function write()
     {
         Processor::setup($this);
-        if(is_dir("{$this->source}/images"))
-        {
-            self::copyDir("{$this->source}/images", "{$this->destination}");
-        }
-        
         $sites = $this->getSites($this->source, true);
         
         foreach($sites as $path => $site)
         {
+            $baseDir = substr($path, strlen($this->source) + 1);
+            if($baseDir == '')
+            {
+                $baseDir = './';
+            }
+            if(is_dir("{$path}/images"))
+            {
+                self::copyDir("{$path}/images", "{$this->destination}/$baseDir");
+            }            
             $processor = Processor::get($site, $path);
-            $processor->setBaseDir(substr($path, strlen($this->source) + 1));
+            $processor->setBaseDir($baseDir);
             $processor->outputSite();
         }
     }

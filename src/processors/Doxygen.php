@@ -313,7 +313,7 @@ class Doxygen extends \nyansapow\SiteProcessor
                     'page_title' => $class['name'],
                     'site_name' => $this->settings['site-name'],
                     'date' => date('jS F, Y H:i:s'),
-                    'assets_location' => \nyansapow\SiteProcessor::getAssetsLocation($this->getDir()),
+                    'assets_location' => \nyansapow\Processor::getAssetsLocation($this->getDir()),
                     'sections' => $class['sections']
                 )
             );               

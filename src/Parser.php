@@ -4,8 +4,9 @@ namespace nyansapow;
 
 class Parser
 {
-    public static $wiki;
     public static $dom;
+    private static $baseDir;
+    private static $pathToBase;
     
     private static $regexes = array(
         // Match gollum style TOC so that github wikis can be rendered //
@@ -161,7 +162,7 @@ class Parser
         }
         
         $style = $style == "" ? '' : "style='$style'";
-        return "{$frameOpen}<img $style src='images/{$matches['image']}' alt='{$matches['alt']}' />{$frameClose}";
+        return "{$frameOpen}<img $style src='" . self::$pathToBase . "images/{$matches['image']}' alt='{$matches['alt']}' />{$frameClose}";
     }
     
     public static function renderPageLink($matches)
@@ -204,5 +205,15 @@ class Parser
             case 'toc':
                 return TocGenerator::renderTableOfContents();
         }
+    }
+    
+    public static function setBaseDir($baseDir)
+    {
+        self::$baseDir = $baseDir;
+    }
+    
+    public static function setPathToBase($pathToBase)
+    {
+        self::$pathToBase = $pathToBase;
     }
 }

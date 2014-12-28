@@ -2,7 +2,6 @@
 namespace nyansapow\processors;
 
 use nyansapow\Parser;
-use nyansapow\Callbacks;
 
 class Wiki extends \nyansapow\SiteProcessor
 {
@@ -15,7 +14,6 @@ class Wiki extends \nyansapow\SiteProcessor
     
     public function outputSite() 
     {
-        $currentDocument = new \DOMDocument();
         
         foreach($this->getFiles() as $path)
         {
@@ -52,7 +50,7 @@ class Wiki extends \nyansapow\SiteProcessor
             $input = file_get_contents(self::$nyansapow->getSource() . '/' . $page['path']);
             $outputFile = ($dir =='' ? '' : "/$dir") . "/$output";
                         
-            $preParsed = Parser::preParse($input);
+            /*$preParsed = Parser::preParse($input);
             $parsedown = new \Parsedown();
             $markedup = $parsedown->text($preParsed);
             
@@ -65,7 +63,7 @@ class Wiki extends \nyansapow\SiteProcessor
             $body = $currentDocument->getElementsByTagName('body');
             $content = Parser::postParse(
                 str_replace(array('<body>', '</body>'), '', $currentDocument->saveHTML($body->item(0)))
-            );
+            );*/
             
             $this->outputPage($outputFile, $content,
                 array(

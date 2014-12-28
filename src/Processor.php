@@ -9,6 +9,7 @@ abstract class Processor
     private $baseDir;
     private $theme;
     protected $templates;
+    private $outputPath;
     
     /**
      * 
@@ -87,6 +88,7 @@ abstract class Processor
     public function setBaseDir($baseDir)
     {
         $this->baseDir = $baseDir;
+        Parser::setBaseDir($baseDir);
     }
     
     protected function setLayout($layout, $core = false)
@@ -113,19 +115,20 @@ abstract class Processor
         return $files;
     }
     
-    protected function outputPage($file, $content, $overrides = array())
-    {
+    protected function outputPage($content, $overrides = array())
+    {       
         $params = array_merge(
             array(
                 'body' => $content,
-                'assets_location' => $this->getAssetsLocation("{$this->baseDir}/{$file}"),
+                'home_path' => $this->getAssetsLocation("{$this->baseDir}/{$this->outputPath}"),
+                'site_path' => $this->getAssetsLocation($this->outputPath),
                 'site_name' => $this->settings['name'],
                 'date' => date('jS F Y')
             ), 
             $overrides
         );
         $webPage = $this->mustache->render($this->layout, $params);
-        self::writeFile(self::$nyansapow->getDestination() . "/{$this->baseDir}" . ($file[0] == '/' ? '' : '/') . $file, $webPage);            
+        self::writeFile(self::$nyansapow->getDestination() . "/{$this->baseDir}" . ($this->outputPath[0] == '/' ? '' : '/') . $this->outputPath, $webPage);
     }
     
     protected static function writeFile($path, $contents)
@@ -148,6 +151,12 @@ abstract class Processor
             $assetsLocation = str_repeat('../', substr_count($dir, '/') - 1);
         }        
         return $assetsLocation;
+    }
+    
+    public function setOutputPath($path)
+    {
+        $this->outputPath = $path;
+        Parser::setPathToBase($this->getAssetsLocation($path));
     }
     
     public abstract function outputSite();
