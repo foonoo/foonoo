@@ -5,6 +5,10 @@ class Site extends \nyansapow\Processor
 {
     public function outputSite()
     {
-        $this->getFiles();
+        $files = $this->getFiles();
+        foreach($files as $file)
+        {
+            
+        }
     }
 }

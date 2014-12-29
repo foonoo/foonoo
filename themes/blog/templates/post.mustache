@@ -4,7 +4,7 @@
         <h2 class='post-title'>{{title}}</h2>
         {{#previews}}
             {{{preview}}}
-            {{#more_link}}<a href="{{depth}}{{path}}">Continue reading</a>{{/more_link}}
+            {{#more_link}}<a href="{{path_to_base}}{{path}}">Continue reading</a>{{/more_link}}
         {{/previews}}
         {{^previews}}
             {{{body}}}
