@@ -58,7 +58,7 @@ abstract class Processor
         {
             $theme = "{$this->dir}/{$theme}";
         }
-        
+                
         Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");  
         $this->templates = "$theme/templates";
         $this->mustache->setLoader(new \Mustache_Loader_FilesystemLoader($this->templates));
@@ -87,8 +87,11 @@ abstract class Processor
     
     public function setBaseDir($baseDir)
     {
+        if($baseDir == '')
+        {
+            $baseDir = './';
+        }
         $this->baseDir = $baseDir;
-        Parser::setBaseDir($baseDir);
     }
     
     protected function setLayout($layout, $core = false)
@@ -103,12 +106,14 @@ abstract class Processor
         while(false !== ($file = $dir->read()))
         {
             $path = "{$this->dir}/$base/$file";
+            if(self::$nyansapow->excluded($path)) continue;
             if(is_dir($path) && $recursive)
             {
                 $files = array_merge($files, $this->getFiles($path, true));
             }
             else if(!is_dir($path))
             {
+                $path = substr($path, strlen(self::$nyansapow->getSource() . $this->baseDir));
                 $files[] = $path;
             }
         }
@@ -120,7 +125,7 @@ abstract class Processor
         $params = array_merge(
             array(
                 'body' => $content,
-                'home_path' => $this->getAssetsLocation("{$this->baseDir}/{$this->outputPath}"),
+                'home_path' => $this->getAssetsLocation("{$this->baseDir}{$this->outputPath}"),
                 'site_path' => $this->getAssetsLocation($this->outputPath),
                 'site_name' => $this->settings['name'],
                 'date' => date('jS F Y')
@@ -128,7 +133,7 @@ abstract class Processor
             $overrides
         );
         $webPage = $this->mustache->render($this->layout, $params);
-        self::writeFile(self::$nyansapow->getDestination() . "/{$this->baseDir}" . ($this->outputPath[0] == '/' ? '' : '/') . $this->outputPath, $webPage);
+        self::writeFile($this->getDestinationPath($this->outputPath), $webPage);
     }
     
     protected static function writeFile($path, $contents)
@@ -137,7 +142,6 @@ abstract class Processor
         {
             Nyansapow::mkdir (dirname($path));
         }
-        
         file_put_contents($path, $contents);
     }
     
@@ -158,6 +162,57 @@ abstract class Processor
         $this->outputPath = $path;
         Parser::setPathToBase($this->getAssetsLocation($path));
     }
+    
+    protected function getSourcePath($path)
+    {
+        return self::$nyansapow->getSource() . $this->baseDir . $path;
+    }
+    
+    protected function getDestinationPath($path)
+    {
+        return self::$nyansapow->getDestination() . $this->baseDir . $path;
+    }   
+    
+    protected function readFile($textFile, $markup = true)
+    {
+        $file = fopen($this->getSourcePath($textFile), 'r');
+        $frontmatterRead = false;
+        $postStarted = false;
+        $body = '';
+        $frontmatter = '';
+        
+        while(!feof($file))
+        {
+            $line = fgets($file);
+            if(!$frontmatterRead && !$postStarted && (trim($line) === '<<<<' || trim($line) === '<<<'))
+            {
+                $frontmatter = $this->readFrontMatter($file);
+                $frontmatterRead = true;
+                continue;
+            }
+            $postStarted = true;
+            $body .= $line;
+        }
+        
+        return array(
+            'body' => $body,
+            'frontmatter' => $frontmatter
+        );
+    }
+    
+    private function readFrontMatter($file)
+    {
+        $frontmatter = '';
+        do
+        {
+            $line = fgets($file);
+            if(trim($line) === '>>>>' || trim($line) === '>>>') break;
+            $frontmatter .= $line;
+        }
+        while(!feof($file));
+        
+        return parse_ini_string($frontmatter, true);
+    }    
     
     public abstract function outputSite();
 }

@@ -5,7 +5,6 @@ namespace nyansapow;
 class Parser
 {
     public static $dom;
-    private static $baseDir;
     private static $pathToBase;
     
     private static $regexes = array(
@@ -171,7 +170,7 @@ class Parser
         }
         
         $style = $style == "" ? '' : "style='$style'";
-        return "{$frameOpen}<img $style src='" . self::$pathToBase . "images/{$matches['image']}' alt='{$matches['alt']}' $attributeString />{$frameClose}";
+        return "{$frameOpen}<img $style src='" . self::$pathToBase . "np_images/{$matches['image']}' alt='{$matches['alt']}' $attributeString />{$frameClose}";
     }
     
     public static function renderPageLink($matches)
@@ -214,11 +213,6 @@ class Parser
             case 'toc':
                 return TocGenerator::renderTableOfContents();
         }
-    }
-    
-    public static function setBaseDir($baseDir)
-    {
-        self::$baseDir = $baseDir;
     }
     
     public static function setPathToBase($pathToBase)

@@ -3,7 +3,7 @@ namespace nyansapow\processors;
 
 use nyansapow\Parser;
 
-class Wiki extends \nyansapow\SiteProcessor
+class Wiki extends \nyansapow\Processor
 {
     private $pages = array();
     

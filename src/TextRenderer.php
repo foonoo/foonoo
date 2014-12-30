@@ -6,14 +6,9 @@ class TextRenderer
 {
     private static $titles;
     
-    public static function render($file, $input = false)
+    public static function render($file, $input)
     {
-        $currentDocument = new \DOMDocument();  
-        if($input === false)
-        {
-            $input = file_get_contents($file);
-        }
-        
+        $currentDocument = new \DOMDocument();
         $preParsed = Parser::preParse($input);
         $markedup = self::parse($file, $preParsed);
         @$currentDocument->loadHTML($markedup);

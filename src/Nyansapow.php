@@ -12,7 +12,7 @@ class Nyansapow
     private $destination;
     private $pages = array();
     private $home;
-    private $excludedPaths = array('*.', '*..');
+    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git");
     
     private function __construct($source, $destination, $options)
     {
@@ -32,10 +32,10 @@ class Nyansapow
             $destination = getcwd() . "/output_site";
         }
         
-        $this->excludedPaths[] = $destination;
-        $this->source = $source;
+        $this->excludedPaths[] = realpath($destination);
+        $this->source = realpath($source) . '/';
         $this->options = $options;
-        $this->destination = $destination;
+        $this->destination = $destination . '/';
     }
     
     
@@ -59,8 +59,8 @@ class Nyansapow
         return new Nyansapow($source, $destination, $options);
     }
     
-    private function excluded($path)
-    {   
+    public function excluded($path)
+    {
         foreach($this->excludedPaths as $excludedPath)
         {
             if(fnmatch($excludedPath, $path))
@@ -76,11 +76,11 @@ class Nyansapow
     {
         $sites = array();
         $dir = dir($path);
-        if(file_exists("$path/site.ini"))
+        if(file_exists("{$path}site.ini"))
         {
-            $sites[$path] = parse_ini_file("$path/site.ini");
+            $sites[$path] = parse_ini_file("{$path}site.ini");
         }
-        else if(!file_exists("$path/site.ini") && $source === true)
+        else if(!file_exists("{$path}site.ini") && $source === true)
         {
             $sites[$path] = array(
                 'type' => 'site'
@@ -89,10 +89,10 @@ class Nyansapow
         
         while(false !== ($file = $dir->read()))
         {
-            if($this->excluded("$path/$file")) continue;
-            if(is_dir("$path/$file"))
+            if($this->excluded("{$path}{$file}")) continue;
+            if(is_dir("{$path}{$file}"))
             {
-                $sites = array_merge($sites, $this->getSites("$path/$file"));
+                $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
             }
         }
         
@@ -106,14 +106,10 @@ class Nyansapow
         
         foreach($sites as $path => $site)
         {
-            $baseDir = substr($path, strlen($this->source) + 1);
-            if($baseDir == '')
+            $baseDir = substr($path, strlen($this->source));
+            if(is_dir("{$path}np_images"))
             {
-                $baseDir = './';
-            }
-            if(is_dir("{$path}/images"))
-            {
-                self::copyDir("{$path}/images", "{$this->destination}/$baseDir");
+                self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
             }            
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);

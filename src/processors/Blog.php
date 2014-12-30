@@ -10,60 +10,35 @@ class Blog extends \nyansapow\Processor
         $this->setTheme('blog');
     }
     
-    private function readPost($postFile)
+    private function splitPost($post)
     {
-        $file = fopen($postFile, 'r');
-        $frontmatterRead = false;
-        $postStarted = false;
         $previewRead = false;
-        $post = '';
+        $lines = explode("\n", $post);
         $preview = '';
-        $frontmatter = '';
+        $body = '';
         $moreLink = false;
         
-        while(!feof($file))
+        foreach($lines as $line)
         {
-            $line = fgets($file);
-            if(!$frontmatterRead && !$postStarted && (trim($line) === '<<<<' || trim($line) === '<<<'))
-            {
-                $frontmatter = $this->readFrontMatter($file);
-                $frontmatterRead = true;
-                continue;
-            }
-            $postStarted = true;
             if(preg_match("/(?<preview>.*)(?<tag>\<\!\-\-\s*more\s*\-\-\>)(?<line>.*)/i", $line, $matches))
             {
                 $preview .= "{$matches['preview']}\n";
-                $post .= "{$matches['preview']} {$matches['line']}\n";
+                $body .= "{$matches['preview']} {$matches['line']}\n";
                 $previewRead = true;
                 $moreLink = true;
                 continue;
             }
-            if(!$previewRead) $preview .= $line;
-            $post .= $line;
+            if(!$previewRead) {
+                $preview .= "$line\n";
+            }
+            $body .= "$line\n";
         }
         
         return array(
-            'post' => $post,
+            'post' => $body,
             'preview' => $preview,
-            'frontmatter' => $frontmatter,
-            'more_link' => $moreLink
+            'more_link' =>$moreLink
         );
-    }
-    
-    private function readFrontMatter($file)
-    {
-        $frontmatter = '';
-        
-        do
-        {
-            $line = fgets($file);
-            if(trim($line) === '>>>>' || trim($line) === '>>>') break;
-            $frontmatter .= $line;
-        }
-        while(!feof($file));
-        
-        return parse_ini_string($frontmatter, true);
     }
     
     protected function getFiles($base = '', $recursive = false)
@@ -76,7 +51,6 @@ class Blog extends \nyansapow\Processor
     public function outputSite()
     {
         $files = $this->getFiles("posts");
-        $textRenderer = new \nyansapow\TextRenderer();
         $tags = array();
         $categories = array();
         $archives = array();
@@ -89,17 +63,18 @@ class Blog extends \nyansapow\Processor
                 $file, $matches
                 )
             ){
-                $post = $this->readPost($file);
+                $post = $this->readFile($file);
+                $splitPost = $this->splitPost($post['body']);
                 $this->posts[] = array(
-                    'body' => $post['post'],
+                    'body' => $splitPost['post'],
                     'title' => $post['frontmatter']['title'],
                     'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
-                    'preview' => $post['preview'],
+                    'preview' => $splitPost['preview'],
                     'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
                     'category' => $post['frontmatter']['category'],
                     'frontmatter' => $post['frontmatter'],
                     'info' => $matches,
-                    'more_link' => $post['more_link'],
+                    'more_link' => $splitPost['more_link'],
                     'file' => $file
                 );
                 $archives[$matches['year']]['posts'] = array();
@@ -111,8 +86,8 @@ class Blog extends \nyansapow\Processor
         foreach($this->posts as $i => $post)
         {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = $textRenderer->render($post['file'], $post['body']);
-            $this->posts[$i]['preview'] = $textRenderer->render($post['file'], $post['preview']);
+            $this->posts[$i]['body'] = \nyansapow\TextRenderer::render($post['file'], $post['body']);
+            $this->posts[$i]['preview'] = \nyansapow\TextRenderer::render($post['file'], $post['preview']);
             
             $markedup = $this->mustache->render(
                 'post',
@@ -150,7 +125,6 @@ class Blog extends \nyansapow\Processor
         $this->writeArchive($archives, array('months', 'days'), 'years');
         
         // Write categories
-        //$this->writeArchive()
         
         // Write tags
         
