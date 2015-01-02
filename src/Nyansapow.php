@@ -110,7 +110,11 @@ class Nyansapow
             if(is_dir("{$path}np_images"))
             {
                 self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
-            }            
+            }      
+            if(is_dir("{$path}np_assets"))
+            {
+                self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
+            }
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);
             $processor->outputSite();
