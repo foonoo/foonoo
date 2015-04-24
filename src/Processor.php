@@ -1,6 +1,8 @@
 <?php
 namespace nyansapow;
 
+use ntentan\honam\TemplateEngine;
+
 abstract class Processor
 {
     protected $settings;
@@ -17,17 +19,10 @@ abstract class Processor
      */
     protected static $nyansapow;
     
-    /**
-     *
-     * @var \Mustache_Engine
-     */
-    protected $mustache;
-    
     private function __construct($settings = array(), $dir = '')
     {
         $this->dir = $dir;
         $this->settings = $settings;
-        $this->mustache = new \Mustache_Engine();
         
         if(isset($settings['layout']))
         {
@@ -60,12 +55,13 @@ abstract class Processor
         }
                 
         Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");  
-        $this->templates = "$theme/templates";
-        $this->mustache->setLoader(new \Mustache_Loader_FilesystemLoader($this->templates));
+        TemplateEngine::prependPath("$theme/templates");
+        //$this->templates = "$theme/templates";
+        //$this->mustache->setLoader(new \Mustache_Loader_FilesystemLoader($this->templates));
                 
         if($this->layout == '' && file_exists("$theme/templates/layout.mustache"))
         {
-            $this->layout = "layout";
+            $this->layout = "layout.mustache";
         }
     }
     
@@ -132,7 +128,7 @@ abstract class Processor
             ), 
             $overrides
         );
-        $webPage = $this->mustache->render($this->layout, $params);
+        $webPage = TemplateEngine::render($this->layout, $params);
         self::writeFile($this->getDestinationPath($this->outputPath), $webPage);
     }
     

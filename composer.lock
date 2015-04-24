@@ -4,27 +4,28 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ee8d0f1b7f4fb01c301519abea8296a1",
+    "hash": "06cb25549080c177173a24e687fc5365",
     "packages": [
         {
             "name": "ekowabaka/clearice",
-            "version": "v0.3.2",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ekowabaka/clearice.git",
-                "reference": "9d1c4c51b2ec2bde686c6342159acd95e58dcceb"
+                "reference": "c9fb1b7355bc1c0c1d4f5279869fea02778b3735"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ekowabaka/clearice/zipball/9d1c4c51b2ec2bde686c6342159acd95e58dcceb",
-                "reference": "9d1c4c51b2ec2bde686c6342159acd95e58dcceb",
+                "url": "https://api.github.com/repos/ekowabaka/clearice/zipball/c9fb1b7355bc1c0c1d4f5279869fea02778b3735",
+                "reference": "c9fb1b7355bc1c0c1d4f5279869fea02778b3735",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "mikey179/vfsstream": "v1.3.0"
+                "mikey179/vfsstream": "1.*",
+                "phpunit/phpunit": "4.*"
             },
             "type": "library",
             "autoload": {
@@ -44,20 +45,20 @@
                 }
             ],
             "description": "A tool to help in the building of CLI apps. Provides command line parsing and simple console I/O interfaces.",
-            "time": "2014-10-22 09:55:49"
+            "time": "2015-01-31 14:28:44"
         },
         {
             "name": "erusev/parsedown",
-            "version": "1.1.4",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "495e7ac73bb5fde6b857b88ff2bb1b5e79a4263a"
+                "reference": "468d1e3da8bde049debee7f484a4f9c4b26b41ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/495e7ac73bb5fde6b857b88ff2bb1b5e79a4263a",
-                "reference": "495e7ac73bb5fde6b857b88ff2bb1b5e79a4263a",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/468d1e3da8bde049debee7f484a4f9c4b26b41ba",
+                "reference": "468d1e3da8bde049debee7f484a4f9c4b26b41ba",
                 "shasum": ""
             },
             "type": "library",
@@ -83,27 +84,28 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2014-11-29 02:29:14"
+            "time": "2015-03-18 18:44:57"
         },
         {
             "name": "mustache/mustache",
-            "version": "v2.7.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/mustache.php.git",
-                "reference": "fdf41dd673dc99b41d60992470dbae94ae0b6ba1"
+                "reference": "64c28cc73e01d5edcef7de8cb2b16782615f648a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/fdf41dd673dc99b41d60992470dbae94ae0b6ba1",
-                "reference": "fdf41dd673dc99b41d60992470dbae94ae0b6ba1",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/64c28cc73e01d5edcef7de8cb2b16782615f648a",
+                "reference": "64c28cc73e01d5edcef7de8cb2b16782615f648a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "fabpot/php-cs-fixer": "~1.6",
+                "phpunit/phpunit": "~3.7|~4.0"
             },
             "type": "library",
             "autoload": {
@@ -128,7 +130,49 @@
                 "mustache",
                 "templating"
             ],
-            "time": "2014-08-26 19:50:10"
+            "time": "2015-04-01 06:37:33"
+        },
+        {
+            "name": "natxet/CssMin",
+            "version": "3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/natxet/CssMin.git",
+                "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/natxet/CssMin/zipball/afdcdbdb5fc332313f47a79ae60346df3e69a572",
+                "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joe Scylla",
+                    "email": "joe.scylla@gmail.com",
+                    "homepage": "https://profiles.google.com/joe.scylla"
+                }
+            ],
+            "description": "Minifying CSS",
+            "homepage": "http://code.google.com/p/cssmin/",
+            "keywords": [
+                "css",
+                "minify"
+            ],
+            "time": "2013-07-02 20:53:35"
         },
         {
             "name": "netcarver/textile",
@@ -185,16 +229,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v1.0.2",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1"
+                "reference": "08f97eb4efa029e2fafb6d8c98b71731bf0cf621"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1",
-                "reference": "a8ffc6fcfcbae268656c8acf1298e378ac1ee5f1",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/08f97eb4efa029e2fafb6d8c98b71731bf0cf621",
+                "reference": "08f97eb4efa029e2fafb6d8c98b71731bf0cf621",
                 "shasum": ""
             },
             "require": {
@@ -204,7 +248,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -226,7 +270,86 @@
                 "parser",
                 "php"
             ],
-            "time": "2014-11-04 22:12:46"
+            "time": "2015-04-03 14:33:59"
+        },
+        {
+            "name": "ntentan/honam",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ntentan/honam.git",
+                "reference": "693f1467b79802cf3a1a7c67b820ad7bdcde34cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/693f1467b79802cf3a1a7c67b820ad7bdcde34cb",
+                "reference": "693f1467b79802cf3a1a7c67b820ad7bdcde34cb",
+                "shasum": ""
+            },
+            "require": {
+                "natxet/cssmin": "3.*",
+                "ntentan/utils": "0.*",
+                "tedivm/jshrink": "1.*"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.*",
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ntentan\\honam\\": "src/",
+                    "ntentan\\honam\\tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ekow Abaka Ainooson",
+                    "email": "jainooson@gmail.com"
+                }
+            ],
+            "description": "The views component of the ntentan framework.",
+            "time": "2015-04-24 12:19:31"
+        },
+        {
+            "name": "ntentan/utils",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ntentan/utils.git",
+                "reference": "e7b5fb75a71d4643108cfe68fc247edfd335c1bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/e7b5fb75a71d4643108cfe68fc247edfd335c1bb",
+                "reference": "e7b5fb75a71d4643108cfe68fc247edfd335c1bb",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ntentan\\utils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ekow Abaka Ainooson",
+                    "email": "jainooson@gmail.com"
+                }
+            ],
+            "description": "Common utility functions shared accross the ntentan framework.",
+            "time": "2015-04-20 08:22:24"
         },
         {
             "name": "phpunit/php-timer",
@@ -271,6 +394,52 @@
                 "timer"
             ],
             "time": "2013-08-02 07:42:54"
+        },
+        {
+            "name": "tedivm/jshrink",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tedious/JShrink.git",
+                "reference": "7575d9d96f113bc7c1c28ec8231ee086751a9078"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tedious/JShrink/zipball/7575d9d96f113bc7c1c28ec8231ee086751a9078",
+                "reference": "7575d9d96f113bc7c1c28ec8231ee086751a9078",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "0.4.0",
+                "phpunit/phpunit": "4.0.*",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JShrink": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Hafner",
+                    "email": "tedivm@tedivm.com"
+                }
+            ],
+            "description": "Javascript Minifier built in PHP",
+            "homepage": "http://github.com/tedious/JShrink",
+            "keywords": [
+                "javascript",
+                "minifier"
+            ],
+            "time": "2014-11-11 03:54:14"
         },
         {
             "name": "theseer/directoryscanner",
@@ -459,8 +628,11 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "ntentan/honam": 20
+    },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
 }

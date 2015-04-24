@@ -1,6 +1,8 @@
 <?php
 namespace nyansapow\processors;
 
+use ntentan\honam\TemplateEngine;
+
 class Blog extends \nyansapow\Processor
 {
     private $posts = array();
@@ -89,8 +91,8 @@ class Blog extends \nyansapow\Processor
             $this->posts[$i]['body'] = \nyansapow\TextRenderer::render($post['file'], $post['body']);
             $this->posts[$i]['preview'] = \nyansapow\TextRenderer::render($post['file'], $post['preview']);
             
-            $markedup = $this->mustache->render(
-                'post',
+            $markedup = TemplateEngine::render(
+                'post.mustache',
                 array_merge(
                     $this->posts[$i],
                     array(
@@ -201,8 +203,8 @@ class Blog extends \nyansapow\Processor
             $rebuiltPosts = $this->posts;
         }
         
-        $body = $this->mustache->render(
-            'listing',
+        $body = TemplateEngine::render(
+            'listing.mustache',
             array(
                 'listing_title' => $title,
                 'previews' => true,
