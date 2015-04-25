@@ -56,8 +56,6 @@ abstract class Processor
                 
         Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");  
         TemplateEngine::prependPath("$theme/templates");
-        //$this->templates = "$theme/templates";
-        //$this->mustache->setLoader(new \Mustache_Loader_FilesystemLoader($this->templates));
                 
         if($this->layout == '' && file_exists("$theme/templates/layout.mustache"))
         {
@@ -169,7 +167,7 @@ abstract class Processor
         return self::$nyansapow->getDestination() . $this->baseDir . $path;
     }   
     
-    protected function readFile($textFile, $markup = true)
+    protected function readFile($textFile)
     {
         $file = fopen($this->getSourcePath($textFile), 'r');
         $frontmatterRead = false;

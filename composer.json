@@ -7,7 +7,8 @@
         "erusev/parsedown" : "1.*",
         "netcarver/textile": "3.*",
 	"theseer/phpdox": "0.7.*",
-        "ntentan/honam": "dev-master"
+        "ntentan/honam": "dev-master",
+        "symfony/yaml" : "2.*"
     },
     "license": "MIT",
     "authors": [

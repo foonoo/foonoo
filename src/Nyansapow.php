@@ -1,6 +1,8 @@
 <?php
 namespace nyansapow;
 
+use ntentan\honam\TemplateEngine;
+
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
  * the task of converting the input files into the output site. 
@@ -115,8 +117,13 @@ class Nyansapow
             {
                 self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
             }
+            TemplateEngine::reset();
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);
+            if(is_dir("{$path}np_layouts"))
+            {
+                TemplateEngine::prependPath("{$path}np_layouts");
+            }
             $processor->outputSite();
         }
     }

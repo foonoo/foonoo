@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "06cb25549080c177173a24e687fc5365",
+    "hash": "7f334c00e9526b414d621382c147c889",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -278,12 +278,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "693f1467b79802cf3a1a7c67b820ad7bdcde34cb"
+                "reference": "f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/693f1467b79802cf3a1a7c67b820ad7bdcde34cb",
-                "reference": "693f1467b79802cf3a1a7c67b820ad7bdcde34cb",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f",
+                "reference": "f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f",
                 "shasum": ""
             },
             "require": {
@@ -313,7 +313,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2015-04-24 12:19:31"
+            "time": "2015-04-24 14:30:41"
         },
         {
             "name": "ntentan/utils",
@@ -394,6 +394,56 @@
                 "timer"
             ],
             "time": "2013-08-02 07:42:54"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v2.6.6",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml.git",
+                "reference": "174f009ed36379a801109955fc5a71a49fe62dd4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/174f009ed36379a801109955fc5a71a49fe62dd4",
+                "reference": "174f009ed36379a801109955fc5a71a49fe62dd4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2015-03-30 15:54:10"
         },
         {
             "name": "tedivm/jshrink",

@@ -88,8 +88,8 @@ class Blog extends \nyansapow\Processor
         foreach($this->posts as $i => $post)
         {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = \nyansapow\TextRenderer::render($post['file'], $post['body']);
-            $this->posts[$i]['preview'] = \nyansapow\TextRenderer::render($post['file'], $post['preview']);
+            $this->posts[$i]['body'] = \nyansapow\TextRenderer::render($post['body'], $post['file']);
+            $this->posts[$i]['preview'] = \nyansapow\TextRenderer::render($post['preview'], $post['file']);
             
             $markedup = TemplateEngine::render(
                 'post.mustache',
