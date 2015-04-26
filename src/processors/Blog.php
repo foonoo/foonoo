@@ -77,7 +77,8 @@ class Blog extends \nyansapow\Processor
                     'frontmatter' => $post['frontmatter'],
                     'info' => $matches,
                     'more_link' => $splitPost['more_link'],
-                    'file' => $file
+                    'file' => $file,
+                    'author' => $post['frontmatter']['author'] == '' ? $this->settings['author'] : $post['frontmatter']['author'] 
                 );
                 $archives[$matches['year']]['posts'] = array();
                 $archives[$matches['year']][$matches['month']]['posts'] = array();
@@ -125,6 +126,9 @@ class Blog extends \nyansapow\Processor
         // Write index page
         $this->writeIndex('index.html');
         $this->writeArchive($archives, array('months', 'days'), 'years');
+        
+        // Write RSS feed
+        $this->writeFeed();
         
         // Write categories
         
@@ -214,5 +218,19 @@ class Blog extends \nyansapow\Processor
         );
         $this->setOutputPath($target);
         $this->outputPage($body);        
+    }
+    
+    private function writeFeed()
+    {
+        $feed = TemplateEngine::render("feed.tpl.php",
+            array(
+                'posts' => $this->posts,
+                'title' => $this->settings['name'],
+                'description' => $this->settings['description'],
+                'url' => $this->settings['url']
+            )
+        );
+        $this->setOutputPath("feed.xml");
+        $this->outputPage($feed);
     }
 }
