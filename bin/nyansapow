@@ -64,8 +64,8 @@ try
     $nyansapow = Nyansapow::open($options['input'], $options['output'], $options);
     $nyansapow->write();
 }
-catch(\nyansapow\Exception $e)
+catch(\Exception $e)
 {
-    fputs(STDERR, wordwrap("{$e->getMessage()}\nTry `{$argv[0]} --help` for more information.\n"));
+    ClearIce::error($e->getMessage());
 }
 

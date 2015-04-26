@@ -12,6 +12,7 @@ abstract class Processor
     private $theme;
     protected $templates;
     private $outputPath;
+    protected $data;
     
     /**
      * 
@@ -206,7 +207,12 @@ abstract class Processor
         while(!feof($file));
         
         return parse_ini_string($frontmatter, true);
-    }    
+    }  
+    
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
     
     public abstract function outputSite();
 }

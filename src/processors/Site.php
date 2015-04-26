@@ -20,7 +20,7 @@ class Site extends \nyansapow\Processor
             {
                 $content = $this->readFile($file);
                 $this->setOutputPath($this->adjustExtension($file));
-                $markedup = TextRenderer::render($content['body'], $file);
+                $markedup = TextRenderer::render($content['body'], $file, $this->data);
                 $this->outputPage($markedup);
             }
             else

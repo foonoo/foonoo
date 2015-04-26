@@ -120,6 +120,10 @@ class Nyansapow
             TemplateEngine::reset();
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);
+            if(is_dir("{$path}np_data"))
+            {
+                $processor->setData(self::readData("{$path}np_data"));
+            }
             if(is_dir("{$path}np_layouts"))
             {
                 TemplateEngine::prependPath("{$path}np_layouts");
@@ -148,6 +152,24 @@ class Nyansapow
                 copy($file, $newFile);
             }
         }
+    }
+    
+    private static function readData($path)
+    {
+        $data = [];
+        $dir = dir($path);
+        $parser = new \Symfony\Component\Yaml\Parser();
+        
+        while(false !== ($file = $dir->read()))
+        {
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+            if($extension === 'yml' || $extension === 'yaml')
+            {
+                $data[pathinfo($file, PATHINFO_FILENAME)] = $parser->parse(file_get_contents("$path/$file"));
+            }
+        }    
+        
+        return $data;
     }
 
     public static function mkdir($path)

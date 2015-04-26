@@ -18,11 +18,11 @@ class TextRenderer
         return self::$info;
     }
     
-    public static function render($content, $filename)
+    public static function render($content, $filename, $data = [])
     {
         $currentDocument = new \DOMDocument();
         $preParsed = Parser::preParse($content);
-        $markedup = self::parse($preParsed, $filename);        
+        $markedup = self::parse($preParsed, $filename, $data);        
         @$currentDocument->loadHTML($markedup);
         self::$titles = $currentDocument->getElementsByTagName('h1');
         Parser::domCreated($currentDocument);
@@ -38,7 +38,7 @@ class TextRenderer
         return $this->titles;
     }
     
-    private static function parse($content, $filename)
+    private static function parse($content, $filename, $data)
     {
         $format = pathinfo($filename, PATHINFO_EXTENSION);
         switch($format)
@@ -49,7 +49,7 @@ class TextRenderer
             default: 
                 if(TemplateEngine::canRender($filename))
                 {
-                    return TemplateEngine::renderString($content, $format, array());
+                    return TemplateEngine::renderString($content, $format, $data);
                 }
                 else
                 {
