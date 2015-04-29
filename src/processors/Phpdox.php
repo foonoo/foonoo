@@ -9,6 +9,7 @@ class Phpdox extends Processor
 {
     private $index;
     private $namespaces = array();
+    private $templateData = array();
     
     public function init()
     {
@@ -49,30 +50,57 @@ class Phpdox extends Processor
         return $flat;
     }
     
+    private function generateClassDoc($class)
+    {
+        $classXml = simplexml_load_file($this->getSourcePath($class["xml"]));
+        $namespacePath = str_replace('\\', '/',$classXml['namespace']);
+        $this->setOutputPath("{$namespacePath}/{$class['name']}.html");
+        $this->outputPage(
+            TemplateEngine::render(
+                'class',
+                array(
+                    'class' => $classXml['name'],
+                    'namespace' => $classXml['namespace'],
+                    'summary' => $classXml->docblock->description['compact'],
+                    'detail' => $classXml->docblock->description
+                )
+            ),
+            $this->templateData
+        );
+    }
+    
     private function generateNamespaceDoc($namespace)
     {
         $namespacePath = str_replace('\\', '/',$namespace['name']);
         Nyansapow::mkdir($this->getDestinationPath($namespacePath));
-        $this->setOutputPath("{$namespacePath}/index.html");
         
         $classes = $this->flattenOutItems($namespace->class, $namespacePath);
         $interfaces  = $this->flattenOutItems($namespace->interface, $namespacePath);
+        
+        $this->templateData = array(
+            'namespaces' => $this->namespaces,
+            'classes' => $classes,
+            'interfaces' => $interfaces,
+            'namespace' => $namespace
+        );        
+        
+        foreach($namespace->class as $class)
+        {
+            $this->generateClassDoc($class);
+        }
                 
+        $this->setOutputPath("{$namespacePath}/index.html");
         $this->outputPage(
             TemplateEngine::render(
-                'namespace.mustache', 
+                'namespace', 
                 array(
                     'namespace' => $namespace['name'],
                     'classes' => $classes,
-                    'interfaces' => $interfaces
+                    'interfaces' => $interfaces,
+                    'site_path' => $this->getSitePath()
                 )
             ),
-            array(
-                'namespaces' => $this->namespaces,
-                'classes' => $classes,
-                'interfaces' => $interfaces,
-                'namespace' => $namespace
-            )
+            $this->templateData
         );
     }
 }

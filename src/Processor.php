@@ -29,6 +29,10 @@ abstract class Processor
         {
             $this->setLayout($settings['layout']);
         }
+        else
+        {
+            $this->setLayout('layout');
+        }
         
         if(isset($settings['theme']))
         {
@@ -115,13 +119,23 @@ abstract class Processor
         return $files;
     }
     
+    protected function getSitePath()
+    {
+        return $this->getAssetsLocation($this->outputPath);
+    }
+    
+    protected function getHomePath()
+    {
+        return $this->getAssetsLocation("{$this->baseDir}{$this->outputPath}");
+    }
+    
     protected function outputPage($content, $overrides = array())
     {       
         $params = array_merge(
             array(
                 'body' => $content,
-                'home_path' => $this->getAssetsLocation("{$this->baseDir}{$this->outputPath}"),
-                'site_path' => $this->getAssetsLocation($this->outputPath),
+                'home_path' => $this->getHomePath(),
+                'site_path' => $this->getSitePath(),
                 'site_name' => $this->settings['name'],
                 'date' => date('jS F Y')
             ), 

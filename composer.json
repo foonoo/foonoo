@@ -8,7 +8,8 @@
         "netcarver/textile": "3.*",
 	"theseer/phpdox": "0.7.*",
         "ntentan/honam": "dev-master",
-        "symfony/yaml" : "2.*"
+        "symfony/yaml" : "2.*",
+	"smarty/smarty": "3.*"
     },
     "license": "MIT",
     "authors": [

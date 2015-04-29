@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7f334c00e9526b414d621382c147c889",
+    "hash": "36f9e60bf96c28164612c05d96cf9801",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -278,12 +278,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f"
+                "reference": "7e56fc32b487815ad1c795fb10d0b98a43004801"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f",
-                "reference": "f9b2d1a2e1e6e4ad988f70e5e78c232ee6078d3f",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/7e56fc32b487815ad1c795fb10d0b98a43004801",
+                "reference": "7e56fc32b487815ad1c795fb10d0b98a43004801",
                 "shasum": ""
             },
             "require": {
@@ -293,7 +293,13 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "1.*",
-                "phpunit/phpunit": "4.*"
+                "mustache/mustache": "2.*",
+                "phpunit/phpunit": "4.*",
+                "smarty/smarty": "3.*"
+            },
+            "suggest": {
+                "mustache/mustache": "For mustache template support 2.*",
+                "smarty/smarty": "For smarty template support 3.*"
             },
             "type": "library",
             "autoload": {
@@ -313,7 +319,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2015-04-24 14:30:41"
+            "time": "2015-04-28 13:59:55"
         },
         {
             "name": "ntentan/utils",
@@ -394,6 +400,61 @@
                 "timer"
             ],
             "time": "2013-08-02 07:42:54"
+        },
+        {
+            "name": "smarty/smarty",
+            "version": "v3.1.21",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smarty-php/smarty.git",
+                "reference": "1f878e6d746ecc8ec8d00d9c75044cf7d23ad94a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/1f878e6d746ecc8ec8d00d9c75044cf7d23ad94a",
+                "reference": "1f878e6d746ecc8ec8d00d9c75044cf7d23ad94a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "libs/Smarty.class.php",
+                    "libs/SmartyBC.class.php",
+                    "libs/sysplugins/smarty_security.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Monte Ohrt",
+                    "email": "monte@ohrt.com"
+                },
+                {
+                    "name": "Uwe Tews",
+                    "email": "uwe.tews@googlemail.com"
+                },
+                {
+                    "name": "Rodney Rehm",
+                    "email": "rodney.rehm@medialize.de"
+                }
+            ],
+            "description": "Smarty - the compiling PHP template engine",
+            "homepage": "http://www.smarty.net",
+            "keywords": [
+                "templating"
+            ],
+            "time": "2014-10-31 04:22:20"
         },
         {
             "name": "symfony/yaml",

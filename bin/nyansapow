@@ -66,6 +66,6 @@ try
 }
 catch(\Exception $e)
 {
-    ClearIce::error($e->getMessage());
+    ClearIce::error($e->getMessage() . "\n");
 }
 
