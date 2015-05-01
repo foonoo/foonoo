@@ -1,4 +1,15 @@
 <?php if(count($items)): ?>
-    <b><?= $type ?></b>
-    <ul><?php foreach($items as $item): ?><li><a href="<?= $site_path.$item['name'] ?>.html"><?= $item['name'] ?></a></li><?php endforeach; ?></ul>
+    <span class="section-head"><?= $type ?></span>
+    <?php
+    $menuItems = [];
+    foreach($items as $item)
+    {
+        $menuItems[] = array(
+            'label' => $item['name'],
+            'url' => "{$site_path}{$item['path']}.html",
+            'id' => str_replace('/', '-', $item['path'])
+        );
+    }
+    ?>
+    <?= $helpers->menu($menuItems)->setCurrentUrl($site_path.$path) ?>
 <?php endif; ?>
