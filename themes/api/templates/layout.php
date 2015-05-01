@@ -15,12 +15,12 @@
                 $items = [];
                 foreach($namespaces as $namespace){
                     $items[] = array(
-                        'label' => "\\{$namespace['name']}",
-                        'url' => "{$site_path}{$namespace['path']}/index.html",
+                        'label' => "{$namespace['name']}",
+                        'url' => "{$site_path}{$namespace['path']}index.html",
                         'id' => str_replace('\\', '_', $namespace['name'])
                     );
                 }
-                echo $helpers->menu($items)->setCurrentUrl($site_path.$namespace_path. '/index.html');
+                echo $helpers->menu($items)->setCurrentUrl($site_path.$namespace_path. 'index.html');
                 ?>
             </div>
             <div id="namespace-items-list">

@@ -126,7 +126,7 @@ abstract class Processor
     
     protected function getHomePath()
     {
-        return $this->getAssetsLocation("{$this->baseDir}{$this->outputPath}");
+        return $this->getAssetsLocation($this->baseDir . $this->outputPath);
     }
     
     protected function outputPage($content, $overrides = array())
@@ -168,6 +168,10 @@ abstract class Processor
     
     public function setOutputPath($path)
     {
+        if($path[0] == '/')
+        {
+            $path = substr($path, 1);
+        }
         $this->outputPath = $path;
         Parser::setPathToBase($this->getAssetsLocation($path));
     }

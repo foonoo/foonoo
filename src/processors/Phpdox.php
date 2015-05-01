@@ -16,6 +16,16 @@ class Phpdox extends Processor
         $this->setTheme('api');
     }
     
+    private function getNamespacePath($namespace)
+    {
+        return str_replace('\\', '/',$namespace) . ($namespace != '' ? '/' : 'global_namespace/');
+    }
+    
+    private function getNamespaceName($namespace)
+    {
+        return $namespace == '' ? 'Global Namespace' : $namespace;
+    }
+    
     public function outputSite() 
     {
         $this->index = simplexml_load_file($this->getSourcePath('index.xml'));
@@ -24,10 +34,19 @@ class Phpdox extends Processor
         foreach($this->index->namespace as $namespace)
         {
             $this->namespaces[] = array(
-                'name' => $namespace['name'],
-                'path' => str_replace('\\', '/', $namespace['name'])
+                'sort_field' => $namespace['name'],
+                'name' => $this->getNamespaceName($namespace['name']),
+                'path' => $this->getNamespacePath($namespace['name'])
             );
         }
+        
+        uasort(
+            $this->namespaces,
+            function($a, $b)
+            {
+                return strcmp($a['sort_field'], $b['sort_field']);
+            }
+        );
         
         foreach($this->index->namespace as $namespace)
         {
@@ -43,9 +62,17 @@ class Phpdox extends Processor
             $flat[] = [
                 "name" => $item['name'],
                 "description" => $item['description'],
-                'path' => "$namespacePath/{$item['name']}"
+                'path' => "$namespacePath{$item['name']}"
             ];
         }
+        
+        uasort(
+            $flat,
+            function($a, $b)
+            {
+                return strcmp($a['name'], $b['name']);
+            }
+        );        
         
         return $flat;
     }
@@ -53,8 +80,8 @@ class Phpdox extends Processor
     private function generateClassDoc($class, $type = 'class')
     {
         $classXml = simplexml_load_file($this->getSourcePath($class["xml"]));
-        $namespacePath = str_replace('\\', '/',$classXml['namespace']);
-        $path = "{$namespacePath}/{$class['name']}.html";
+        $namespacePath = $this->getNamespacePath($classXml['namespace']);
+        $path = "{$namespacePath}{$class['name']}.html";
         $this->setOutputPath($path);
         
         $constants = array();
@@ -147,12 +174,12 @@ class Phpdox extends Processor
     
     private function generateNamespaceDoc($namespace)
     {
-        $namespacePath = str_replace('\\', '/',$namespace['name']);
+        $namespacePath = $this->getNamespacePath($namespace['name']);
         Nyansapow::mkdir($this->getDestinationPath($namespacePath));
         
         $classes = $this->flattenOutItems($namespace->class, $namespacePath);
         $interfaces  = $this->flattenOutItems($namespace->interface, $namespacePath);
-        $path = "{$namespacePath}/index.html";
+        $path = "{$namespacePath}index.html";
         
         $this->templateData = array(
             'namespaces' => $this->namespaces,
@@ -178,7 +205,7 @@ class Phpdox extends Processor
             TemplateEngine::render(
                 'namespace', 
                 array(
-                    'namespace' => $namespace['name'],
+                    'namespace' => $this->getNamespaceName($namespace['name']),
                     'classes' => $classes,
                     'interfaces' => $interfaces,
                     'site_path' => $this->getSitePath()
