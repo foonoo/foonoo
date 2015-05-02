@@ -22,7 +22,7 @@
 
 <?php if(count($methods) > 0): ?>
 <h4>Methods</h4>
-<table>
+<table id="methods-summary-table">
 <?php $methodPrototypes = array(); 
     foreach($methods as $i => $method): ?>
     <?php 

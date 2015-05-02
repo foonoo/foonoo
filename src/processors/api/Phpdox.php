@@ -1,20 +1,14 @@
 <?php
-namespace nyansapow\processors;
+namespace nyansapow\processors\api;
 
-use \nyansapow\Processor;
-use \nyansapow\Nyansapow;
-use \ntentan\honam\TemplateEngine;
-
-class Phpdox extends Processor
+/**
+ * Description of PhpdocSource
+ *
+ * @author ekow
+ */
+class Phpdox extends Source
 {
     private $index;
-    private $namespaces = array();
-    private $templateData = array();
-    
-    public function init()
-    {
-        $this->setTheme('api');
-    }
     
     private function getNamespacePath($namespace)
     {
@@ -24,45 +18,47 @@ class Phpdox extends Processor
     private function getNamespaceName($namespace)
     {
         return $namespace == '' ? 'Global Namespace' : $namespace;
-    }
+    }    
     
-    public function outputSite() 
+    public function getNamespaces() 
     {
-        $this->index = simplexml_load_file($this->getSourcePath('index.xml'));
+        $this->index = simplexml_load_file("{$this->sourcePath}/xml/index.xml");
+        $namespaces = [];
         
         // Flatten out namespaces
         foreach($this->index->namespace as $namespace)
         {
-            $this->namespaces[] = array(
+            $namespaces[] = array(
                 'sort_field' => $namespace['name'],
                 'name' => $this->getNamespaceName($namespace['name']),
-                'path' => $this->getNamespacePath($namespace['name'])
+                'path' => $this->getNamespacePath($namespace['name']),
+                'namespace' => $namespace
             );
         }
         
         uasort(
-            $this->namespaces,
+            $namespaces,
             function($a, $b)
             {
                 return strcmp($a['sort_field'], $b['sort_field']);
             }
-        );
+        );      
         
-        foreach($this->index->namespace as $namespace)
-        {
-            $this->generateNamespaceDoc($namespace);
-        }
+        return $namespaces;
     }
     
-    private function flattenOutItems($items, $namespacePath)
+    private function flattenOutItems($items, $namespace)
     {
+        $namespacePath = $this->getNamespacePath($namespace);
         $flat = [];
         foreach($items as $item)
         {
             $flat[] = [
                 "name" => $item['name'],
+                'namespace', $namespace,
                 "description" => $item['description'],
-                'path' => "$namespacePath{$item['name']}"
+                'path' => "$namespacePath{$item['name']}",
+                'item' => $item
             ];
         }
         
@@ -75,14 +71,28 @@ class Phpdox extends Processor
         );        
         
         return $flat;
-    }
-    
-    private function generateClassDoc($class, $type = 'class')
+    }    
+
+    public function getClasses($namespace) 
     {
-        $classXml = simplexml_load_file($this->getSourcePath($class["xml"]));
+        return $this->flattenOutItems(
+            $namespace['namespace']->class, 
+            $namespace['name']
+        );
+    }
+
+    public function getInterfaces($namespace) 
+    {
+        return $this->flattenOutItems(
+            $namespace['namespace']->interface, 
+            $namespace['name']
+        );
+    }
+
+    public function getClassDetails($class) 
+    {
+        $classXml = simplexml_load_file("{$this->sourcePath}/xml/{$class["item"]['xml']}");
         $namespacePath = $this->getNamespacePath($classXml['namespace']);
-        $path = "{$namespacePath}{$class['name']}.html";
-        $this->setOutputPath($path);
         
         $constants = array();
         $properties = array();
@@ -106,7 +116,8 @@ class Phpdox extends Processor
                 'name' => $member['name'],
                 'summary' => $member->docblock->description['compact'],
                 'details' => $member->docblock->description,
-                'type' => $member->docblock->var["type"],
+                'type' => $member->docblock->var->type ? $member->docblock->var->type['name'] : $member->docblock->var["type"],
+                'type_reference' => $member->docblock->var->type['full_name'],
                 'visibility' => $member['visibility'],
                 'default' => $member['default'],
                 'link' => "member_" . strtolower($member['name'])
@@ -149,69 +160,13 @@ class Phpdox extends Processor
                 ),
                 'link' => "method_" . strtolower($method['name'])
             );
-        }        
-        
-        $this->templateData['title'] = $classXml['name'];
-        $this->templateData['path'] = $path;
-        $this->templateData['namespace_path'] = $namespacePath;
-        $this->outputPage(
-            TemplateEngine::render(
-                'class',
-                array(
-                    'class' => $classXml['name'],
-                    'type' => $type,
-                    'namespace' => $classXml['namespace'],
-                    'summary' => $classXml->docblock->description['compact'],
-                    'detail' => $classXml->docblock->description,
-                    'constants' => $constants,
-                    'properties' => $properties,
-                    'methods' => $methods
-                )
-            ),
-            $this->templateData
-        );
-    }
-    
-    private function generateNamespaceDoc($namespace)
-    {
-        $namespacePath = $this->getNamespacePath($namespace['name']);
-        Nyansapow::mkdir($this->getDestinationPath($namespacePath));
-        
-        $classes = $this->flattenOutItems($namespace->class, $namespacePath);
-        $interfaces  = $this->flattenOutItems($namespace->interface, $namespacePath);
-        $path = "{$namespacePath}index.html";
-        
-        $this->templateData = array(
-            'namespaces' => $this->namespaces,
-            'classes' => $classes,
-            'interfaces' => $interfaces,
-            'namespace' => $namespace,
-        );        
-        
-        foreach($namespace->class as $class)
-        {
-            $this->generateClassDoc($class);
         }
         
-        foreach($namespace->interface as $interface)
-        {
-            $this->generateClassDoc($interface, 'interface');
-        }
-                
-        $this->setOutputPath($path);
-        $this->templateData['namespace_path'] = $namespacePath;
-        $this->templateData['path'] = null;
-        $this->outputPage(
-            TemplateEngine::render(
-                'namespace', 
-                array(
-                    'namespace' => $this->getNamespaceName($namespace['name']),
-                    'classes' => $classes,
-                    'interfaces' => $interfaces,
-                    'site_path' => $this->getSitePath()
-                )
-            ),
-            $this->templateData
+        return array(
+            'details' => $classXml->docblock->description,
+            'constants' => $constants,
+            'properties' => $properties,
+            'methods' => $methods
         );
     }
 }

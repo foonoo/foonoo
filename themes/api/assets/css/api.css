@@ -23,6 +23,7 @@ body{
     margin:0px;
     font-family: Roboto, sans;
     background-color:#fff;
+    font-size: 15px;
 }
 
 #header{
@@ -109,7 +110,7 @@ a{
 }
 
 #body-wrapper > table td{
-    padding:7px;
+    padding:10px;
     border:1px solid #f0f0f0;
 }
 
@@ -180,4 +181,9 @@ h4{
 .section-head{
     display:block;
     padding:10px;
+}
+
+#methods-summary-table p{
+    margin:0px;
+    margin-top:5px;
 }
