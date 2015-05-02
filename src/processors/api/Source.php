@@ -3,11 +3,11 @@ namespace nyansapow\processors\api;
 
 abstract class Source 
 {
-    protected $sourcePath;
+    protected $sitePath;
     
-    public function setSourcePath($sourcePath)
+    public function setSitePath($sitePath)
     {
-        $this->sourcePath = $sourcePath;
+        $this->sitePath = $sitePath;
     }
     
     abstract public function getNamespaces();

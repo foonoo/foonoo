@@ -6,7 +6,7 @@
 <h4>Constants</h4>
 <table>
 <?php foreach($constants as $constant): ?>
-    <tr><td><?= $constant['type'] ?></td><td><a href="#<?= $constant['link'] ?>"><?= $constant['name'] ?></a></td><td><?= $constant['summary'] ?></td></tr>
+    <tr><td><?= t('type_link', $constant['type']) ?></td><td><a href="#<?= $constant['link'] ?>"><?= $constant['name'] ?></a></td><td><?= $constant['summary'] ?></td></tr>
 <?php endforeach; ?>
 </table>
 <?php endif; ?>
@@ -15,7 +15,7 @@
 <h4>Properties</h4>
 <table>
 <?php foreach($properties as $property): ?>
-    <tr><td><?= $property['visibility'] ?> <?= $property['type'] ?></td><td><a href="#<?= $property['link'] ?>">$<?= $property['name'] ?></a></td><td><?= $property['summary'] ?></td></tr>
+    <tr><td><?= $property['visibility'] ?> <?= t('type_link', $property['type']) ?></td><td><a href="#<?= $property['link'] ?>">$<?= $property['name'] ?></a></td><td><?= $property['summary'] ?></td></tr>
 <?php endforeach; ?>
 </table>
 <?php endif; ?>
@@ -29,11 +29,11 @@
     $typedParams = array();
     foreach($method['parameters'] as $parameter)
     {
-        $typedParams[] = trim("{$parameter['type']} \${$parameter['name']}");
+        $typedParams[] = t('type_link', $parameter['type']) . " \${$parameter['name']}";
     }
     $methodPrototypes[$i] = implode(", ", $typedParams);
     ?>
-    <tr><td><?= $method['visibility'] ?> <?= $method['return']['type'] == '' ? 'void' : $method['return']['type'] ?></td><td><a href="#<?= $method['link'] ?>"><?= $method['name'] ?></a> (<?= $methodPrototypes[$i]?>)<p><?= $method['summary'] ?></p></td></tr>
+    <tr><td><?= $method['visibility'] ?> <?= t('type_link', $method['return']['type']) ?></td><td><a href="#<?= $method['link'] ?>"><?= $method['name'] ?></a> (<?= $methodPrototypes[$i]?>)<p><?= $method['summary'] ?></p></td></tr>
 <?php endforeach; ?>
 </table>
 <?php endif; ?>
@@ -43,7 +43,7 @@
 <?php foreach($constants as $constant): ?>
 <div class="prototype">
     <a name="<?= $constant['link'] ?>" class="prototype-anchor"></a>
-    <?= $constant['type'] ?> <span class="item-name"><?= $constant['name'] ?></span> = <?= $constant['value'] ?>
+    <?= t('type_link', $constant['type']) ?> <span class="item-name"><?= $constant['name'] ?></span> = <?= $constant['value'] ?>
 </div>
 <div class="prototype-description">
 <p><?= "{$constant['summary']} {$constant['details']}" ?></p>
@@ -56,7 +56,7 @@
 <?php foreach($properties as $property): ?>
 <div class="prototype">
     <a name="<?= $property['link'] ?>" class="prototype-anchor"></a>
-    <?= $property['visibility'] ?> <?= $property['type'] ?> <span class="item-name">$<?= $property['name'] ?></span> <?= ($property['default'] != '' ? " = {$property['default']}" : '' ) ?>
+    <?= $property['visibility'] ?> <?= t('type_link', $property['type']) ?> <span class="item-name">$<?= $property['name'] ?></span> <?= ($property['default'] != '' ? " = {$property['default']}" : '' ) ?>
 </div>
 <div class="prototype-description">
     <p><?= "{$property['summary']} {$property['details']}" ?></p>
@@ -69,7 +69,7 @@
 <?php foreach($methods as $i => $method): ?>
 <div class="prototype">
     <a name="<?= $method['link'] ?>" class="prototype-anchor"></a>
-    <?= $method['visibility'] ?> <?= $method['static'] ? 'static' : '' ?> <?= $method['abstract'] ? 'abstract' : '' ?> <?= $method['return']['type'] ?> <span class="item-name"><?= $method['name'] ?></span> (<?= $methodPrototypes[$i]?>)
+    <?= $method['visibility'] ?> <?= $method['static'] ? 'static' : '' ?> <?= $method['abstract'] ? 'abstract' : '' ?> <?=t('type_link', $method['return']['type']) ?> <span class="item-name"><?= $method['name'] ?></span> (<?= $methodPrototypes[$i]?>)
 </div>
 <div class="prototype-description">
     <p><?= "{$method['summary']} {$method['details']->u()}" ?></p>
@@ -78,16 +78,16 @@
         <table class="subheader-table">
         <?php foreach($method['parameters'] as $parameter): ?>
             <tr>
-                <td><?= $parameter['type'] ?> $<?= $parameter['name'] ?></td>
+                <td><?= t('type_link', $parameter['type']) ?> $<?= $parameter['name'] ?></td>
                 <td><?= $parameter['description'] ?></td>
             </tr>
         <?php endforeach; ?>
         </table>
     <?php endif; ?>
-    <?php if($method['return']['type'] != ''): ?>
+    <?php if($method['return']['type']['type'] != ''): ?>
         <div class="subheader">Return</div>
         <table class="subheader-table">
-            <tr><td><?= $method['return']['type'] ?></td><td><?= $method['return']['description'] ?></td></tr>
+            <tr><td><?= t('type_link', $method['return']['type']) ?></td><td><?= $method['return']['description'] ?></td></tr>
         </table>
     <?php endif; ?>
 </div>

@@ -8,21 +8,30 @@ namespace nyansapow\processors\api;
  */
 class Phpdoc extends Source
 {
-    public function getClassDetails($class) {
+    private $xml;
+    
+    public function __construct($source) 
+    {
+        $this->xml = simplexml_load_file("$source/api.xml");
+    }
+    
+    public function getClassDetails($class) 
+    {
         
     }
 
-    public function getClasses($namespace) {
+    public function getClasses($namespace) 
+    {
         
     }
 
-    public function getInterfaces($namespace) {
+    public function getInterfaces($namespace) 
+    {    
         
     }
 
-    public function getNamespaces() {
+    public function getNamespaces() 
+    {
         
     }
-
-//put your code here
 }

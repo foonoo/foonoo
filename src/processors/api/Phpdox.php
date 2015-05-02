@@ -9,6 +9,13 @@ namespace nyansapow\processors\api;
 class Phpdox extends Source
 {
     private $index;
+    private $sourcePath;
+    
+    public function __construct($sourcePath)
+    {
+        $this->index = simplexml_load_file("{$sourcePath}/xml/index.xml");
+        $this->sourcePath = $sourcePath;
+    }
     
     private function getNamespacePath($namespace)
     {
@@ -22,7 +29,6 @@ class Phpdox extends Source
     
     public function getNamespaces() 
     {
-        $this->index = simplexml_load_file("{$this->sourcePath}/xml/index.xml");
         $namespaces = [];
         
         // Flatten out namespaces
@@ -88,11 +94,37 @@ class Phpdox extends Source
             $namespace['name']
         );
     }
+    
+    private function getTypeLink($vars)
+    {
+        $varList = explode('|', $vars);
+        $types = [];
+        foreach($varList as $var)
+        {
+            if(preg_match("|(\\\\[a-zA-Z0-9_]+)+|", $var))
+            {
+                $breakDown = explode('\\', $var);
+                $type = array_pop($breakDown);
+                $link = $this->getNamespacePath(implode('\\', $breakDown)) . "$type.html";
+                $types[] = array(
+                    'type' => $type,
+                    'link' => $this->sitePath.  substr($link, 1)
+                );
+            }
+            else 
+            {
+                $types[] = array(
+                    'type' => $var,
+                    'link' => "http://php.net/$var"
+                );
+            }
+        }
+        return $types;
+    }
 
     public function getClassDetails($class) 
     {
         $classXml = simplexml_load_file("{$this->sourcePath}/xml/{$class["item"]['xml']}");
-        $namespacePath = $this->getNamespacePath($classXml['namespace']);
         
         $constants = array();
         $properties = array();
@@ -104,7 +136,7 @@ class Phpdox extends Source
                 'name' => $constant['name'],
                 'summary' => $constant->docblock->description['compact'],
                 'details' => $constant->docblock->description,
-                'type' => $constant->docblock->var["type"],
+                'type' => $this->getTypeLink($constant->docblock->var["type"]),
                 'value' => $constant['value'],
                 'link' => "constant_" . strtolower($constant['name'])
             );
@@ -116,8 +148,7 @@ class Phpdox extends Source
                 'name' => $member['name'],
                 'summary' => $member->docblock->description['compact'],
                 'details' => $member->docblock->description,
-                'type' => $member->docblock->var->type ? $member->docblock->var->type['name'] : $member->docblock->var["type"],
-                'type_reference' => $member->docblock->var->type['full_name'],
+                'type' => $this->getTypeLink($member->docblock->var->type ? $member->docblock->var->type['full'] : $member->docblock->var["type"]),
                 'visibility' => $member['visibility'],
                 'default' => $member['default'],
                 'link' => "member_" . strtolower($member['name'])
@@ -132,7 +163,7 @@ class Phpdox extends Source
             {
                 $parameters[(string)$parameter['name']] = array(
                     'name' => $parameter['name'],
-                    'type' => $parameter['type'] == '{unknown}' ? '' : $parameter['type']
+                    'type' => $this->getTypeLink($parameter['type'] == '{unknown}' ? '' : $parameter['type'])
                 );
             }
 
@@ -149,13 +180,12 @@ class Phpdox extends Source
                 'name' => $method['name'],
                 'summary' => $method->docblock->description['compact'],
                 'details' => \nyansapow\TextRenderer::render($method->docblock->description, 'description.md'),
-                'type' => $method->docblock->var["type"],
                 'visibility' => $method['visibility'],
                 'parameters' => $parameters,
                 'static' => (string)$method['static'] === 'true',
                 'abstract' => (string)$method['abstract'] === 'true',
                 'return' => array(
-                    'type' => $method->docblock->return['type'],
+                    'type' => $this->getTypeLink($method->docblock->return['type']),
                     'description' => $method->docblock->return['description']
                 ),
                 'link' => "method_" . strtolower($method['name'])

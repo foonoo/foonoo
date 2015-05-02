@@ -21,8 +21,7 @@ class Api extends Processor
         if($this->source === null)
         {
             $sourceClass = "\\nyansapow\\processors\\api\\" . ucfirst($this->settings['source']);
-            $this->source = new $sourceClass;
-            $this->source->setSourcePath($this->getSourcePath(''));        
+            $this->source = new $sourceClass($this->getSourcePath(''));
         }
         return $this->source;
     }
@@ -42,7 +41,7 @@ class Api extends Processor
         $source = $this->getSource();
         $classDetails = $source->getClassDetails($class);
         $path = "{$class['path']}.html";
-        $this->setOutputPath($path);        
+        $this->setOutputPath($path);    
         
         $this->templateData['title'] = $class['name'];
         $this->templateData['path'] = $path;
@@ -107,5 +106,11 @@ class Api extends Processor
             ),
             $this->templateData
         );
+    }
+    
+    public function setOutputPath($path) 
+    {
+        parent::setOutputPath($path);
+        $this->getSource()->setSitePath($this->getSitePath());
     }
 }
