@@ -15,7 +15,7 @@
 <h4>Properties</h4>
 <table>
 <?php foreach($properties as $property): ?>
-    <tr><td><?= $property['visibility'] ?> <?= t('type_link', $property['type']) ?></td><td><a href="#<?= $property['link'] ?>">$<?= $property['name'] ?></a></td><td><?= $property['summary'] ?></td></tr>
+    <tr><td><?= $property['visibility'] ?> <?= $property['static'] ? 'static' : '' ?> <?= t('type_link', $property['type']) ?></td><td><a href="#<?= $property['link'] ?>"><?= $property['name'] ?></a></td><td><?= $property['summary'] ?></td></tr>
 <?php endforeach; ?>
 </table>
 <?php endif; ?>
@@ -29,7 +29,7 @@
     $typedParams = array();
     foreach($method['parameters'] as $parameter)
     {
-        $typedParams[] = t('type_link', $parameter['type']) . " \${$parameter['name']}";
+        $typedParams[] = t('type_link', $parameter['type']) . " {$parameter['name']}";
     }
     $methodPrototypes[$i] = implode(", ", $typedParams);
     ?>
@@ -56,7 +56,7 @@
 <?php foreach($properties as $property): ?>
 <div class="prototype">
     <a name="<?= $property['link'] ?>" class="prototype-anchor"></a>
-    <?= $property['visibility'] ?> <?= t('type_link', $property['type']) ?> <span class="item-name">$<?= $property['name'] ?></span> <?= ($property['default'] != '' ? " = {$property['default']}" : '' ) ?>
+    <?= $property['visibility'] ?> <?= $property['static'] ? 'static' : '' ?> <?= t('type_link', $property['type']) ?> <span class="item-name"><?= $property['name'] ?></span> <?= ($property['default'] != '' ? " = <code>{$property['default']}</code>" : '' ) ?>
 </div>
 <div class="prototype-description">
     <p><?= "{$property['summary']} {$property['details']}" ?></p>
@@ -78,7 +78,7 @@
         <table class="subheader-table">
         <?php foreach($method['parameters'] as $parameter): ?>
             <tr>
-                <td><?= t('type_link', $parameter['type']) ?> $<?= $parameter['name'] ?></td>
+                <td><?= t('type_link', $parameter['type']->u()) ?> <?= $parameter['name'] ?></td>
                 <td><?= $parameter['description'] ?></td>
             </tr>
         <?php endforeach; ?>

@@ -54,7 +54,7 @@ class Api extends Processor
                     'type' => $type,
                     'namespace' => $class['namespace'],
                     'summary' => $class['summary'],
-                    'detail' => $classDetails['details'],
+                    'details' => $classDetails['details'],
                     'constants' => $classDetails['constants'],
                     'properties' => $classDetails['properties'],
                     'methods' => $classDetails['methods']

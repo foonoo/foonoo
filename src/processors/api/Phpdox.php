@@ -8,6 +8,8 @@ namespace nyansapow\processors\api;
  */
 class Phpdox extends Source
 {
+    use PhpApiUtils;
+    
     private $index;
     private $sourcePath;
     
@@ -15,17 +17,7 @@ class Phpdox extends Source
     {
         $this->index = simplexml_load_file("{$sourcePath}/xml/index.xml");
         $this->sourcePath = $sourcePath;
-    }
-    
-    private function getNamespacePath($namespace)
-    {
-        return str_replace('\\', '/',$namespace) . ($namespace != '' ? '/' : 'global_namespace/');
-    }
-    
-    private function getNamespaceName($namespace)
-    {
-        return $namespace == '' ? 'Global Namespace' : $namespace;
-    }    
+    } 
     
     public function getNamespaces() 
     {
@@ -42,15 +34,7 @@ class Phpdox extends Source
             );
         }
         
-        uasort(
-            $namespaces,
-            function($a, $b)
-            {
-                return strcmp($a['sort_field'], $b['sort_field']);
-            }
-        );      
-        
-        return $namespaces;
+        return $this->sortItems($namespaces, 'sort_field');
     }
     
     private function flattenOutItems($items, $namespace)
@@ -68,15 +52,7 @@ class Phpdox extends Source
             ];
         }
         
-        uasort(
-            $flat,
-            function($a, $b)
-            {
-                return strcmp($a['name'], $b['name']);
-            }
-        );        
-        
-        return $flat;
+        return $this->sortItems($flat, 'name');
     }    
 
     public function getClasses($namespace) 
@@ -93,33 +69,6 @@ class Phpdox extends Source
             $namespace['namespace']->interface, 
             $namespace['name']
         );
-    }
-    
-    private function getTypeLink($vars)
-    {
-        $varList = explode('|', $vars);
-        $types = [];
-        foreach($varList as $var)
-        {
-            if(preg_match("|(\\\\[a-zA-Z0-9_]+)+|", $var))
-            {
-                $breakDown = explode('\\', $var);
-                $type = array_pop($breakDown);
-                $link = $this->getNamespacePath(implode('\\', $breakDown)) . "$type.html";
-                $types[] = array(
-                    'type' => $type,
-                    'link' => $this->sitePath.  substr($link, 1)
-                );
-            }
-            else 
-            {
-                $types[] = array(
-                    'type' => $var,
-                    'link' => "http://php.net/$var"
-                );
-            }
-        }
-        return $types;
     }
 
     public function getClassDetails($class) 
@@ -145,14 +94,13 @@ class Phpdox extends Source
         foreach($classXml->member as $member)
         {
             $properties[] = array(
-                'name' => $member['name'],
+                'name' => "\${$member['name']}",
                 'summary' => $member->docblock->description['compact'],
                 'details' => $member->docblock->description,
                 'type' => $this->getTypeLink($member->docblock->var->type ? $member->docblock->var->type['full'] : $member->docblock->var["type"]),
                 'visibility' => $member['visibility'],
                 'default' => $member['default'],
-                'link' => "member_" . strtolower($member['name'])
-                   
+                'link' => "property_" . strtolower($member['name'])
             );
         }
         
@@ -172,7 +120,7 @@ class Phpdox extends Source
                 foreach($method->docblock->param as $parameter)
                 {
                     $parameters[(string)$parameter['name']]['description'] = $parameter['description'];
-                    $parameters[(string)$parameter['name']]['type'] = $parameter['type'];
+                    //$parameters[(string)$parameter['name']]['type'] = $parameter['type'];
                 }
             }
             

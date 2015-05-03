@@ -10,6 +10,23 @@ abstract class Source
         $this->sitePath = $sitePath;
     }
     
+    public function getSitePath()
+    {
+        return $this->sitePath;
+    }
+    
+    protected function sortItems($array, $sortField)
+    {
+        uasort(
+            $array,
+            function($a, $b) use($sortField)
+            {
+                return strcmp($a[$sortField], $b[$sortField]);
+            }
+        );            
+        return $array;
+    }
+    
     abstract public function getNamespaces();
     abstract public function getClasses($namespace);
     abstract public function getInterfaces($namespace);
