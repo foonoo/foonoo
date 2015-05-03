@@ -35,6 +35,17 @@ class Phpdoc extends Source
                 case 'return':
                     $newItem['return']['type'] = $this->getTypeLink($tag['type']);
                     $newItem['return']['description'] = $tag['description'];
+                    break;
+                case 'throws':
+                    $newItem['throws'][] = array(
+                        'type' => $this->getTypeLink($tag['type'])
+                    );
+                    break;
+                case 'see':
+                    $newItem['sees'][] = array(
+                        'type' => $this->getTypeLink($tag['link'])
+                    );
+                    break;
             }
         }       
         return $newItem;
@@ -47,16 +58,24 @@ class Phpdoc extends Source
             array(
                 'name' => (string)$item->name,
                 'summary' => (string)$item->docblock->description,
-                'details' => (string)$item->docblock->{'long-description'},                
+                'details' => \nyansapow\TextRenderer::render((string)$item->docblock->{'long-description'}, 'description.md'),
                 'type' => array(),
+                'sees' => array(),
                 'visibility' => $item['visibility'],
                 'value' => (string)$item->value,
                 'static' => (string)$item['static'] == 'true',
+                'final' => (string)$item['final'] == 'true',
                 'default' => (string)$item->default,
+                'abstract' => (string)$item['abstract'] === 'true',                             
                 'link' => "{$type}_{$item->name}"
             )
         );
-        return $this->processTags($item->docblock->tag, $details);
+        if($item->docblock->tag)
+        {
+            $details = $this->processTags($item->docblock->tag, $details);
+        }
+        
+        return $details;
     }
     
     public function getClassDetails($class) 
@@ -82,7 +101,8 @@ class Phpdoc extends Source
             {
                 $parameters[(string)$argument->name] = [
                     'name' => $argument->name,
-                    'type' => $this->getTypeLink($argument->type)
+                    'type' => $this->getTypeLink($argument->type),
+                    'byreference' => $argument['by_reference'] === 'true'
                 ];
             }
             
@@ -93,7 +113,8 @@ class Phpdoc extends Source
                     'return' => array(
                         'type' => array(),
                         'details' => null
-                    )
+                    ),
+                    'throws' => []
                 )
             );
             
@@ -102,12 +123,12 @@ class Phpdoc extends Source
             $methods[] = $newMethod;
         }
         
-        return array(
-            'details' => $class['item']->docblock->{'long-description'},
-            'constants' => $constants,
-            'properties' => $properties,
-            'methods' => $methods
-        );
+        $class = $this->getBasicDetails($class['item'], 'class');
+        $class['constants'] = $constants;
+        $class['properties'] = $properties;
+        $class['methods'] = $methods;
+        
+        return $class;
     }
     
     public function flattenOutItems($items, $namespace)
@@ -152,8 +173,8 @@ class Phpdoc extends Source
         {
             $namespace = (string)$namespaceElement['namespace'];
             $namespaces[$namespace] = array(
-                'sort_field' => $namespace,
-                'name' => $this->getNamespaceName($namespace),
+                'name' => $namespace,
+                'label' => $this->getNamespaceName($namespace),
                 'path' => $this->getNamespacePath($namespace),
             );
         }

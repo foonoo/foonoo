@@ -1,5 +1,5 @@
-<span class="type"><?= $type ?></span><h2><?= $class ?></h2>
-<p><?= $details == '' ? $summary : '' ?> <?= $details ?></p>
+<span class="type"><?= $abstract ? 'abstract ': '' ?><?php $final ? 'final ': '' ?><?= $type ?></span><h2><?= $class ?></h2>
+<p><?= $details == '' ? $summary : '' ?> <?= $details->u() ?></p>
 
 <h3>Summary</h3>
 <?php if(count($constants) > 0): ?>
@@ -29,11 +29,11 @@
     $typedParams = array();
     foreach($method['parameters'] as $parameter)
     {
-        $typedParams[] = t('type_link', $parameter['type']) . " {$parameter['name']}";
+        $typedParams[] = t('type_link', $parameter['type']) . ($parameter['byreference'] ? '&' : '') ." {$parameter['name']}";
     }
     $methodPrototypes[$i] = implode(", ", $typedParams);
     ?>
-    <tr><td><?= $method['visibility'] ?> <?= t('type_link', $method['return']['type']) ?></td><td><a href="#<?= $method['link'] ?>"><?= $method['name'] ?></a> (<?= $methodPrototypes[$i]?>)<p><?= $method['summary'] ?></p></td></tr>
+    <tr><td><?= $method['final'] ? 'final ' : '' ?><?= $method['visibility'] ?> <?= t('type_link', $method['return']['type']) ?></td><td><a href="#<?= $method['link'] ?>"><?= $method['name'] ?></a> (<?= $methodPrototypes[$i]?>)<p><?= $method['summary'] ?></p></td></tr>
 <?php endforeach; ?>
 </table>
 <?php endif; ?>
@@ -69,7 +69,7 @@
 <?php foreach($methods as $i => $method): ?>
 <div class="prototype">
     <a name="<?= $method['link'] ?>" class="prototype-anchor"></a>
-    <?= $method['visibility'] ?> <?= $method['static'] ? 'static' : '' ?> <?= $method['abstract'] ? 'abstract' : '' ?> <?=t('type_link', $method['return']['type']) ?> <span class="item-name"><?= $method['name'] ?></span> (<?= $methodPrototypes[$i]?>)
+    <?= $method['final'] ? 'final ' : '' ?><?= $method['visibility'] ?> <?= $method['static'] ? 'static ' : '' ?><?= $method['abstract'] ? 'abstract ' : '' ?><?=t('type_link', $method['return']['type']) ?> <span class="item-name"><?= $method['name'] ?></span> (<?= $methodPrototypes[$i]?>)
 </div>
 <div class="prototype-description">
     <p><?= "{$method['summary']} {$method['details']->u()}" ?></p>
@@ -90,6 +90,22 @@
             <tr><td><?= t('type_link', $method['return']['type']) ?></td><td><?= $method['return']['description'] ?></td></tr>
         </table>
     <?php endif; ?>
+    <?php if(count($method['throws'])): ?>
+        <div class="subheader">Throws</div>
+        <table class="subheader-table">
+            <?php foreach($method['throws'] as $throw): ?>
+            <tr><td><?= t('type_link', $throw['type']) ?></td></tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>  
+    <?php if(count($method['sees'])): ?>
+        <div class="subheader">See Also</div>
+        <table class="subheader-table">
+            <?php foreach($method['sees'] as $see): ?>
+            <tr><td><?= t('type_link', $see['type']) ?></td></tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>        
 </div>
 <?php endforeach; ?>
 <?php endif; ?>

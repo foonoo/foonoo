@@ -27,14 +27,14 @@ class Phpdox extends Source
         foreach($this->index->namespace as $namespace)
         {
             $namespaces[] = array(
-                'sort_field' => $namespace['name'],
-                'name' => $this->getNamespaceName($namespace['name']),
+                'name' => $namespace['name'],
+                'label' => $this->getNamespaceName($namespace['name']),
                 'path' => $this->getNamespacePath($namespace['name']),
                 'namespace' => $namespace
             );
         }
         
-        return $this->sortItems($namespaces, 'sort_field');
+        return $this->sortItems($namespaces, 'name');
     }
     
     private function flattenOutItems($items, $namespace)
@@ -70,6 +70,23 @@ class Phpdox extends Source
             $namespace['name']
         );
     }
+    
+    private function getBasicDetails($item, $type)
+    {
+        return [
+            'name' => $item['name'],
+            'summary' => $item->docblock->description['compact'],
+            'details' => \nyansapow\TextRenderer::render((string)$item->docblock->description, 'description.md'),
+            'type' => $this->getTypeLink($item->docblock->var["type"]),
+            'value' => $item['value'],
+            'visibility' => $item['visibility'],
+            'default' => $item['default'],
+            'static' => (string)$item['static'] === 'true',
+            'abstract' => (string)$item['abstract'] === 'true',     
+            'final' => (string)$item['final'] === 'true',            
+            'link' => "{$type}_" . strtolower($item['name'])            
+        ];
+    }
 
     public function getClassDetails($class) 
     {
@@ -81,37 +98,26 @@ class Phpdox extends Source
         
         foreach($classXml->constant as $constant)
         {
-            $constants[] = array(
-                'name' => $constant['name'],
-                'summary' => $constant->docblock->description['compact'],
-                'details' => $constant->docblock->description,
-                'type' => $this->getTypeLink($constant->docblock->var["type"]),
-                'value' => $constant['value'],
-                'link' => "constant_" . strtolower($constant['name'])
-            );
+            $constants[] = $this->getBasicDetails($constant, 'constant');
         }
         
         foreach($classXml->member as $member)
         {
-            $properties[] = array(
-                'name' => "\${$member['name']}",
-                'summary' => $member->docblock->description['compact'],
-                'details' => $member->docblock->description,
-                'type' => $this->getTypeLink($member->docblock->var->type ? $member->docblock->var->type['full'] : $member->docblock->var["type"]),
-                'visibility' => $member['visibility'],
-                'default' => $member['default'],
-                'link' => "property_" . strtolower($member['name'])
-            );
+            $properties[] = $this->getBasicDetails($member, 'property');
         }
         
         foreach($classXml->method as $method)
         {
             $parameters = [];
+            $throws = [];
+            $sees = [];
+            
             foreach($method->parameter as $parameter)
             {
                 $parameters[(string)$parameter['name']] = array(
                     'name' => $parameter['name'],
-                    'type' => $this->getTypeLink($parameter['type'] == '{unknown}' ? '' : $parameter['type'])
+                    'type' => $this->getTypeLink($parameter['type'] == '{unknown}' ? '' : $parameter['type']),
+                    'byreference' => $parameter['byreference'] === 'true'
                 );
             }
 
@@ -120,31 +126,45 @@ class Phpdox extends Source
                 foreach($method->docblock->param as $parameter)
                 {
                     $parameters[(string)$parameter['name']]['description'] = $parameter['description'];
-                    //$parameters[(string)$parameter['name']]['type'] = $parameter['type'];
                 }
             }
             
-            $methods[] = array(
-                'name' => $method['name'],
-                'summary' => $method->docblock->description['compact'],
-                'details' => \nyansapow\TextRenderer::render($method->docblock->description, 'description.md'),
-                'visibility' => $method['visibility'],
-                'parameters' => $parameters,
-                'static' => (string)$method['static'] === 'true',
-                'abstract' => (string)$method['abstract'] === 'true',
-                'return' => array(
-                    'type' => $this->getTypeLink($method->docblock->return['type']),
-                    'description' => $method->docblock->return['description']
-                ),
-                'link' => "method_" . strtolower($method['name'])
+            if($method->docblock->throws)
+            {
+                foreach($method->docblock->throws as $throw)
+                {
+                    $throws[] = array(
+                        'type' => $this->getTypeLink($throw->type['full'])
+                    );
+                }
+            }
+            
+            if($method->docblock->see)
+            {
+                foreach($method->docblock->see as $see)
+                {
+                    $sees[] = array(
+                        'type' => $this->getTypeLink($see['value'])
+                    );
+                }
+            }
+            
+            $newMethod = $this->getBasicDetails($method, 'method');
+            $newMethod['parameters'] = $parameters;
+            $newMethod['sees'] = $sees;
+            $newMethod['throws'] = $throws;
+            $newMethod['return'] = array(
+                'type' => $this->getTypeLink($method->docblock->return['type']),
+                'description' => $method->docblock->return['description']
             );
+            $methods[] = $newMethod;
         }
         
-        return array(
-            'details' => $classXml->docblock->description,
-            'constants' => $constants,
-            'properties' => $properties,
-            'methods' => $methods
-        );
+        $class = $this->getBasicDetails($classXml, 'class');
+        $class['constants'] = $constants;
+        $class['properties'] = $properties;
+        $class['methods'] = $methods;
+        
+        return $class;
     }
 }

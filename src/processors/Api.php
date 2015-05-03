@@ -39,9 +39,9 @@ class Api extends Processor
     private function generateClassDoc($class, $type = 'class')
     {      
         $source = $this->getSource();
-        $classDetails = $source->getClassDetails($class);
         $path = "{$class['path']}.html";
         $this->setOutputPath($path);    
+        $classDetails = $source->getClassDetails($class);
         
         $this->templateData['title'] = $class['name'];
         $this->templateData['path'] = $path;
@@ -98,7 +98,7 @@ class Api extends Processor
             TemplateEngine::render(
                 'namespace', 
                 array(
-                    'namespace' => $namespace['name'],
+                    'namespace' => $namespace['label'],
                     'classes' => $classes,
                     'interfaces' => $interfaces,
                     'site_path' => $this->getSitePath()

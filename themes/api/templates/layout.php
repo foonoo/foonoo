@@ -15,7 +15,7 @@
                 $items = [];
                 foreach($namespaces as $namespace){
                     $items[] = array(
-                        'label' => "{$namespace['name']}",
+                        'label' => "{$namespace['label']}",
                         'url' => "{$site_path}{$namespace['path']}index.html",
                         'id' => str_replace('\\', '_', $namespace['name'])
                     );

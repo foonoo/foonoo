@@ -21,13 +21,12 @@ trait PhpApiUtils
         {
             if(preg_match("|(\\\\[a-zA-Z0-9_]+)+|", $var))
             {
-                var_dump($var, $this->sitePath);
                 $breakDown = explode('\\', $var);
                 $type = array_pop($breakDown);
                 $link = $this->getNamespacePath(implode('\\', $breakDown)) . "$type.html";
                 $types[] = array(
                     'type' => $type,
-                    'link' => $this->sitePath.  substr($link, 1)
+                    'link' => $this->sitePath . ($link[0] == '/' ? substr($link, 1) : $link)
                 );
             }
             else 
