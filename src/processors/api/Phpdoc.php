@@ -35,6 +35,7 @@ class Phpdoc extends Source
                 case 'return':
                     $newItem['return']['type'] = $this->getTypeLink($tag['type']);
                     $newItem['return']['description'] = $tag['description'];
+                    $newItem['type'] = $newItem['return']['type'];
                     break;
                 case 'throws':
                     $newItem['throws'][] = array(

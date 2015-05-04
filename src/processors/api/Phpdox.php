@@ -73,19 +73,32 @@ class Phpdox extends Source
     
     private function getBasicDetails($item, $type)
     {
-        return [
-            'name' => $item['name'],
-            'summary' => $item->docblock->description['compact'],
+        $detail = [
+            'name' => (string)$item['name'],
+            'summary' => (string)$item->docblock->description['compact'],
             'details' => \nyansapow\TextRenderer::render((string)$item->docblock->description, 'description.md'),
             'type' => $this->getTypeLink($item->docblock->var["type"]),
-            'value' => $item['value'],
-            'visibility' => $item['visibility'],
-            'default' => $item['default'],
+            'value' => (string)$item['value'],
+            'visibility' => (string)$item['visibility'],
+            'default' => (string)$item['default'],
             'static' => (string)$item['static'] === 'true',
             'abstract' => (string)$item['abstract'] === 'true',     
             'final' => (string)$item['final'] === 'true',            
-            'link' => "{$type}_" . strtolower($item['name'])            
+            'link' => "{$type}_" . strtolower($item['name']),
+            'sees' => array()
         ];
+            
+        if($item->docblock->see)
+        {
+            foreach($item->docblock->see as $see)
+            {
+                $detail['sees'][] = array(
+                    'type' => $this->getTypeLink($see['value'])
+                );
+            }
+        }            
+        
+        return $detail;
     }
 
     public function getClassDetails($class) 
@@ -103,6 +116,7 @@ class Phpdox extends Source
         
         foreach($classXml->member as $member)
         {
+            $member['name'] = '$' . $member['name'];
             $properties[] = $this->getBasicDetails($member, 'property');
         }
         
@@ -114,18 +128,21 @@ class Phpdox extends Source
             
             foreach($method->parameter as $parameter)
             {
-                $parameters[(string)$parameter['name']] = array(
-                    'name' => $parameter['name'],
+                $parameters['$' . (string)$parameter['name']] = array(
+                    'name' => '$' . $parameter['name'],
                     'type' => $this->getTypeLink($parameter['type'] == '{unknown}' ? '' : $parameter['type']),
                     'byreference' => $parameter['byreference'] === 'true'
                 );
             }
 
-            if($method->dockblock->param)
+            if($method->docblock->param)
             {
                 foreach($method->docblock->param as $parameter)
                 {
-                    $parameters[(string)$parameter['name']]['description'] = $parameter['description'];
+                    if(isset($parameters[(string)$parameter['variable']]))
+                    {
+                        $parameters[(string)$parameter['variable']]['description'] = (string)$parameter['description'];
+                    }
                 }
             }
             
@@ -139,24 +156,14 @@ class Phpdox extends Source
                 }
             }
             
-            if($method->docblock->see)
-            {
-                foreach($method->docblock->see as $see)
-                {
-                    $sees[] = array(
-                        'type' => $this->getTypeLink($see['value'])
-                    );
-                }
-            }
-            
             $newMethod = $this->getBasicDetails($method, 'method');
             $newMethod['parameters'] = $parameters;
-            $newMethod['sees'] = $sees;
             $newMethod['throws'] = $throws;
             $newMethod['return'] = array(
                 'type' => $this->getTypeLink($method->docblock->return['type']),
                 'description' => $method->docblock->return['description']
             );
+            $newMethod['type'] = $newMethod['return']['type'];
             $methods[] = $newMethod;
         }
         
