@@ -29,7 +29,7 @@ class Phpdoc extends Source
                 case 'param': 
                     if(isset($newItem['parameters'][(string)$tag['variable']]))
                     {
-                        $newItem['parameters'][(string)$tag['variable']]['description'] = (string)$tag['description'];
+                        $newItem['parameters'][(string)$tag['variable']]['description'] = strip_tags((string)$tag['description']);
                     }
                     break;
                 case 'return':
@@ -124,12 +124,13 @@ class Phpdoc extends Source
             $methods[] = $newMethod;
         }
         
-        $class = $this->getBasicDetails($class['item'], 'class');
-        $class['constants'] = $constants;
-        $class['properties'] = $properties;
-        $class['methods'] = $methods;
+        $classDetails = $this->getBasicDetails($class['item'], 'class');
+        $classDetails['extends'] = $this->getTypeLink($class['item']->extends);
+        $classDetails['constants'] = $constants;
+        $classDetails['properties'] = $properties;
+        $classDetails['methods'] = $methods;
         
-        return $class;
+        return $classDetails;
     }
     
     public function flattenOutItems($items, $namespace)
@@ -138,7 +139,7 @@ class Phpdoc extends Source
         $flat = [];
         foreach($items as $item)
         {
-            $flat[(string)$item->name] = [
+            $flat[] = [
                 "name" => $item->name,
                 'namespace' => $namespace['name'],
                 'description' => $item->docblock->description,
@@ -146,7 +147,6 @@ class Phpdoc extends Source
                 'item' => $item
             ];
         }
-        ksort($flat);
         return $flat;        
     }
 
@@ -179,7 +179,6 @@ class Phpdoc extends Source
                 'path' => $this->getNamespacePath($namespace),
             );
         }
-        ksort($namespaces);
         return $namespaces;
     }
 }

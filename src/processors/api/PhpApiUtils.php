@@ -13,6 +13,12 @@ trait PhpApiUtils
         return $namespace == '' ? 'Global Namespace' : $namespace;
     }   
     
+    /**
+     * 
+     * @todo Add a way to resolve methods and properties of a class
+     * @param string $vars
+     * @return array
+     */
     function getTypeLink($vars)
     {
         $varList = explode('|', $vars);
@@ -29,12 +35,16 @@ trait PhpApiUtils
                     'link' => $this->sitePath . ($link[0] == '/' ? substr($link, 1) : $link)
                 );
             }
-            else 
+            else if($var != '')
             {
                 $types[] = array(
                     'type' => $var,
                     'link' => "http://php.net/$var"
                 );
+            }
+            else
+            {
+                $types[] = [];
             }
         }
         return $types;

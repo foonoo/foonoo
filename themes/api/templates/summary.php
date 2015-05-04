@@ -3,7 +3,7 @@
 <table>
 <?php foreach($items as $item): ?>
     <tr>
-        <td><?= t('type_information', $item) ?></td>
+        <td class="type-information"><?= t('type_information', $item) ?></td>
         <?php if($split): ?>
         <td><a href="#<?= $item['link'] ?>"><?= $item['name']?></a> <?php if($postfix) echo t($postfix, $item) ?></td>
         <td><?= $item['summary'] ?></td>

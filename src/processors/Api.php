@@ -28,7 +28,7 @@ class Api extends Processor
     
     public function outputSite() 
     {
-        $this->namespaces = $this->getSource()->getNamespaces();
+        $this->namespaces = $this->sort($this->getSource()->getNamespaces());
         
         foreach($this->namespaces as $namespace)
         {
@@ -36,8 +36,16 @@ class Api extends Processor
         }
     }
     
+    private function sort($items)
+    {
+        uasort($items, function($a, $b){
+            return strcmp($a['name'], $b['name']);
+        });
+        return $items;
+    }
+    
     private function generateClassDoc($class, $type = 'class')
-    {      
+    {
         $source = $this->getSource();
         $path = "{$class['path']}.html";
         $this->setOutputPath($path);    
@@ -55,9 +63,10 @@ class Api extends Processor
                     'namespace' => $class['namespace'],
                     'summary' => $class['summary'],
                     'details' => $classDetails['details'],
-                    'constants' => $classDetails['constants'],
-                    'properties' => $classDetails['properties'],
-                    'methods' => $classDetails['methods']
+                    'constants' => $this->sort($classDetails['constants']),
+                    'properties' => $this->sort($classDetails['properties']),
+                    'methods' => $this->sort($classDetails['methods']),
+                    'extends' => $classDetails['extends']
                 )
             ),
             $this->templateData
@@ -70,8 +79,8 @@ class Api extends Processor
         $namespacePath = $namespace['path'];
         Nyansapow::mkdir($this->getDestinationPath($namespacePath));
         
-        $classes = $source->getClasses($namespace);
-        $interfaces  = $source->getInterfaces($namespace);
+        $classes = $this->sort($source->getClasses($namespace));
+        $interfaces  = $this->sort($source->getInterfaces($namespace));
         $path = "{$namespacePath}index.html";
         
         $this->templateData = array(

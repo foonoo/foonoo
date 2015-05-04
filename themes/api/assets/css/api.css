@@ -114,6 +114,10 @@ a{
     border:1px solid #f0f0f0;
 }
 
+td.type-information{
+    text-align: right;
+}
+
 h2{
     margin:0px;
     font-weight:100;

@@ -34,7 +34,7 @@ class Phpdox extends Source
             );
         }
         
-        return $this->sortItems($namespaces, 'name');
+        return array_values($namespaces);
     }
     
     private function flattenOutItems($items, $namespace)
@@ -52,7 +52,7 @@ class Phpdox extends Source
             ];
         }
         
-        return $this->sortItems($flat, 'name');
+        return $flat;
     }    
 
     public function getClasses($namespace) 

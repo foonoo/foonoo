@@ -1,4 +1,7 @@
 <span class="type"><?= $abstract ? 'abstract ': '' ?><?php $final ? 'final ': '' ?><?= $type ?></span><h2><?= $class ?></h2>
+<?php if(count($extends)): ?>
+<span class="parentage">extends</span> <?= t('type_link', $extends) ?>
+<?php endif; ?>
 <p><?= $details == '' ? $summary : '' ?> <?= $details->u() ?></p>
 
 <h3>Summary</h3>
