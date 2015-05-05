@@ -2,6 +2,7 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
+use ntentan\honam\AssetsLoader;
 
 abstract class Processor
 {
@@ -47,7 +48,7 @@ abstract class Processor
         
     }
     
-    public function setTheme($theme, $overwrite = false)
+    public function setTheme($theme)
     {
         $this->theme = $theme;
         if(!file_exists("{$this->dir}/{$theme}"))
@@ -59,8 +60,9 @@ abstract class Processor
             $theme = "{$this->dir}/{$theme}";
         }
                 
-        Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");  
+        Nyansapow::copyDir("$theme/copy_assets/*", self::$nyansapow->getDestination() . "/assets");  
         TemplateEngine::prependPath("$theme/templates");
+        AssetsLoader::prependSourceDir("$theme/assets");
                 
         if($this->layout == '' && file_exists("$theme/templates/layout.mustache"))
         {
@@ -121,12 +123,12 @@ abstract class Processor
     
     protected function getSitePath()
     {
-        return $this->getAssetsLocation($this->outputPath);
+        return $this->getRelativeBaseLocation($this->outputPath);
     }
     
     protected function getHomePath()
     {
-        return $this->getAssetsLocation($this->baseDir . $this->outputPath);
+        return $this->getRelativeBaseLocation($this->baseDir . $this->outputPath);
     }
     
     protected function outputPage($content, $overrides = array())
@@ -154,7 +156,7 @@ abstract class Processor
         file_put_contents($path, $contents);
     }
     
-    protected function getAssetsLocation($dir)
+    protected function getRelativeBaseLocation($dir)
     {
         // Generate a relative location for the assets
         $assetsLocation = '';
@@ -173,7 +175,8 @@ abstract class Processor
             $path = substr($path, 1);
         }
         $this->outputPath = $path;
-        Parser::setPathToBase($this->getAssetsLocation($path));
+        Parser::setPathToBase($this->getRelativeBaseLocation($path));
+        AssetsLoader::setSiteUrl($this->getRelativeBaseLocation("{$this->baseDir}{$this->outputPath}") . "assets");
     }
     
     protected function getSourcePath($path)

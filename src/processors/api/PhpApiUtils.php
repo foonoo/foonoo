@@ -42,10 +42,6 @@ trait PhpApiUtils
                     'link' => "http://php.net/$var"
                 );
             }
-            else
-            {
-                $types[] = [];
-            }
         }
         return $types;
     }    

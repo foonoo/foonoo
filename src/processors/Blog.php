@@ -213,7 +213,7 @@ class Blog extends \nyansapow\Processor
                 'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
-                'path_to_base' => $this->getAssetsLocation($target)
+                'path_to_base' => $this->getRelativeBaseLocation($target)
             )
         );
         $this->setOutputPath($target);

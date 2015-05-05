@@ -2,8 +2,10 @@
 <html lang="en">
     <head>
         <title><?= $title ?> | <?= $site_name ?></title>
-        <link rel="stylesheet" type="text/css" href="<?= $home_path ?>assets/css/api.css" />
+        <?= $helpers->stylesheets->add(get_asset('highlight/styles/mono-blue.css'))->add(get_asset('css/api.css'))->setCombine(true)->setContext('api') ?>
+        <?= $helpers->javascripts->add(get_asset('js/api.js'))->add(get_asset('highlight/highlight.pack.js'))->setCombine(true)->setContext('api') ?>
         <script type="text/javascript" src="<?= $home_path ?>assets/js/api.js" ></script>
+        <script>hljs.initHighlightingOnLoad();</script>
     </head>
     <body>
         <div id="header">

@@ -2,6 +2,7 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
+use ntentan\honam\AssetsLoader;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -117,7 +118,12 @@ class Nyansapow
             {
                 self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
             }
+            
             TemplateEngine::reset();
+            AssetsLoader::reset();
+            AssetsLoader::appendSourceDir($this->getHome() . '/themes/assets');
+            AssetsLoader::setDestinationDir("{$this->destination}/assets");
+            
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);
             if(is_dir("{$path}np_data"))

@@ -169,6 +169,7 @@ h4{
 .subheader{
     font-weight: bold;
     font-style: italic;
+    margin-top:20px;
 }
 #body-wrapper > .prototype-description > table.subheader-table{
     margin-left:3%;
