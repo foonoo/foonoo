@@ -2,7 +2,7 @@
 <h3><?= $item_type ?></h3>
 <?php foreach($items as $item): ?>
 <div class="prototype">
-    <a name="<?= $item['link'] ?>" class="prototype-anchor"></a>
+    <a name="<?= substr($item['link'], 1) ?>" class="prototype-anchor"></a>
     <?= t('type_information', $item) ?> <span class="item-name"><?= $item['name'] ?></span> <?php if($postfix) echo t($postfix, $item) ?> <?= $item['value'] != '' || $item['default'] != '' ? "<code> = {$item['value']}{$item['default']}</code>" : '' ?>
 </div>
 <div class="prototype-description">

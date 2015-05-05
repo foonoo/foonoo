@@ -29,11 +29,13 @@ class Api extends Processor
     public function outputSite() 
     {
         $this->namespaces = $this->sort($this->getSource()->getNamespaces());
+        $namespaces = $this->namespaces;
         
         foreach($this->namespaces as $i => $namespace)
         {
-            $this->namespaces[$i]['link'] = "{$namespace['path']}index.html";
             $this->generateNamespaceDoc($namespace);
+            $namespaces[$i]['link'] = "{$namespace['path']}index.html";
+            $namespaces[$i]['name'] = $namespace['label'];
         }
                 
         $this->setOutputPath('index.html');
@@ -42,11 +44,12 @@ class Api extends Processor
                 'home',
                 array(
                     'title' => $this->settings['name'],
-                    'namespaces' => $this->namespaces
+                    'namespaces' => $namespaces
                 )
             ),
             array(
-                'namespaces' => $this->namespaces
+                'namespaces' => $this->namespaces,
+                'title' => 'Namespaces'
             )
         );
     }
