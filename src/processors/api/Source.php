@@ -31,5 +31,6 @@ abstract class Source
     abstract public function getClasses($namespace);
     abstract public function getInterfaces($namespace);
     abstract public function getClassDetails($class);
+    abstract public function getDescription();
 }
 

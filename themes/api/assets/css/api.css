@@ -192,3 +192,11 @@ h4{
     margin:0px;
     margin-top:5px;
 }
+
+#footer{
+    margin-left:21%;
+    padding:50px;
+    padding-left:10px;
+    font-size: small;
+    color:#a0a0a0;
+}

@@ -30,10 +30,25 @@ class Api extends Processor
     {
         $this->namespaces = $this->sort($this->getSource()->getNamespaces());
         
-        foreach($this->namespaces as $namespace)
+        foreach($this->namespaces as $i => $namespace)
         {
+            $this->namespaces[$i]['link'] = "{$namespace['path']}index.html";
             $this->generateNamespaceDoc($namespace);
         }
+                
+        $this->setOutputPath('index.html');
+        $this->outputPage(
+            TemplateEngine::render(
+                'home',
+                array(
+                    'title' => $this->settings['name'],
+                    'namespaces' => $this->namespaces
+                )
+            ),
+            array(
+                'namespaces' => $this->namespaces
+            )
+        );
     }
     
     private function sort($items)
@@ -53,7 +68,6 @@ class Api extends Processor
         
         $this->templateData['title'] = $class['name'];
         $this->templateData['path'] = $path;
-        $this->templateData['namespace_path'] = $namespacePath;
         $this->outputPage(
             TemplateEngine::render(
                 'class',
@@ -88,6 +102,8 @@ class Api extends Processor
             'classes' => $classes,
             'interfaces' => $interfaces,
             'namespace' => $namespace,
+            'source_parser' => $this->source->getDescription(),
+            'namespace_path' => $namespacePath
         );        
         
         foreach($classes as $class)
@@ -101,7 +117,6 @@ class Api extends Processor
         }
                 
         $this->setOutputPath($path);
-        $this->templateData['namespace_path'] = $namespacePath;
         $this->templateData['path'] = null;
         $this->outputPage(
             TemplateEngine::render(

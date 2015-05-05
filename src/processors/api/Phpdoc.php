@@ -68,7 +68,7 @@ class Phpdoc extends Source
                 'final' => (string)$item['final'] == 'true',
                 'default' => (string)$item->default,
                 'abstract' => (string)$item['abstract'] === 'true',                             
-                'link' => "{$type}_{$item->name}"
+                'link' => "#{$type}_{$item->name}"
             )
         );
         if($item->docblock->tag)
@@ -180,5 +180,10 @@ class Phpdoc extends Source
             );
         }
         return $namespaces;
+    }
+
+    public function getDescription() 
+    {
+        return 'PHPDocumentator';
     }
 }

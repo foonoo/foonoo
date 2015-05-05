@@ -84,7 +84,7 @@ class Phpdox extends Source
             'static' => (string)$item['static'] === 'true',
             'abstract' => (string)$item['abstract'] === 'true',     
             'final' => (string)$item['final'] === 'true',            
-            'link' => "{$type}_" . strtolower($item['name']),
+            'link' => "#{$type}_" . strtolower($item['name']),
             'sees' => array()
         ];
             
@@ -174,4 +174,10 @@ class Phpdox extends Source
         
         return $class;
     }
+
+    public function getDescription() 
+    {
+        return 'PHPDOX';
+    }
+
 }
