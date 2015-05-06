@@ -33,8 +33,11 @@ class Phpdoc extends Source
                     }
                     break;
                 case 'return':
-                    $newItem['return']['type'] = $this->getTypeLink($tag['type']);
-                    $newItem['return']['description'] = $tag['description'];
+                    $newItem['return'] = array(
+                        'type' => $this->getTypeLink($tag['type']),
+                        'description' => (string)$tag['description']
+                    );
+                    
                     $newItem['type'] = $newItem['return']['type'];
                     break;
                 case 'throws':
@@ -111,10 +114,7 @@ class Phpdoc extends Source
                 $method, 'method', 
                 array(
                     'parameters' => $parameters,
-                    'return' => array(
-                        'type' => array(),
-                        'details' => null
-                    ),
+                    'return' => [],
                     'throws' => []
                 )
             );

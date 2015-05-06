@@ -200,3 +200,20 @@ h4{
     font-size: small;
     color:#a0a0a0;
 }
+
+code{
+    font-size: smaller;
+    font-weight: bold;
+    background-color:#fcfcfc;
+    color: #404040;
+}
+
+pre > code{
+    font-size: smaller;
+    font-weight: normal;
+}
+
+.prototype > code{
+    background-color: transparent;
+    font-size:1em;
+}

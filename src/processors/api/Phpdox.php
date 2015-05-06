@@ -161,7 +161,7 @@ class Phpdox extends Source
             $newMethod['throws'] = $throws;
             $newMethod['return'] = array(
                 'type' => $this->getTypeLink($method->docblock->return['type']),
-                'description' => $method->docblock->return['description']
+                'description' => (string)$method->docblock->return['description']
             );
             $newMethod['type'] = $newMethod['return']['type'];
             $methods[] = $newMethod;

@@ -7,7 +7,8 @@
 </div>
 <div class="prototype-description">
 <p><?= "{$item['summary']} {$item['details']->u()}" ?></p>
-<?= t('sub_type_list', ['items' => $item['parameters'], 'item_title' => 'Parameters']) ?>        
+<?= t('sub_type_list', ['items' => $item['parameters'], 'item_title' => 'Parameters']) ?>    
+<?php if(count($item['return'])) {echo t('sub_type_list', ['items' => [$item['return']], 'item_title' => 'Returns']);} ?>        
 <?= t('sub_type_list', ['items' => $item['throws'], 'item_title' => 'Throws']) ?>        
 <?= t('sub_type_list', ['items' => $item['sees'], 'item_title' => 'See Also']) ?>        
 </div>
