@@ -1,41 +1,63 @@
 <?php
 namespace nyansapow\processors;
 
-use nyansapow\Parser;
+use nyansapow\TextRenderer;
 
+/**
+ * 
+ */
 class Wiki extends \nyansapow\Processor
 {
     private $pages = array();
+    private $toc = array();
     
-    public function getPages()
+    public function init()
+    {
+        $this->setTheme('wiki');
+    }
+    
+    private function getPages()
     {
         return $this->pages;
     }
     
+    private function addPage($path)
+    {
+        $file = basename($path);
+        if(preg_match("/(?<page>.*)(\.)(?<extension>.*)/i", $file, $matches))
+        {
+            $content = $this->readFile($file);
+            $page = array(
+                'path' => $path,
+                'page' => $matches['page'],
+                'extension' => $matches['extension'],
+                'content' => $content,
+                'markedup' => TextRenderer::render($content['body'], $file),
+                'title' => isset($content['fontmatter']['title']) ? 
+                    $content['frontmatter']['title'] : TextRenderer::getTitle()
+            );
+            $this->toc[] = array(
+                'title' => $page['title'],
+                'children' => TextRenderer::getTableOfContents()
+            );
+            $this->pages[] = $page;
+        }        
+    }
+    
     public function outputSite() 
     {
-        
-        foreach($this->getFiles() as $path)
+        $files = $this->getFiles();
+        foreach($files as $path)
         {
-            $file = basename($path);
-            if(preg_match("/(?<page>.*)(\.)(?<extension>\md|\textile)/i", $file, $matches))
+            $fullPath = $this->getSourcePath($path);
+            if(TextRenderer::isFileRenderable($fullPath))
             {
-                $this->pages[]= array(
-                    'path' => $path,
-                    'page' => $matches['page'],
-                    'extension' => $matches['extension'],
-                    'file' => $file
-                );
+                $this->addPage($fullPath);
             }
         }
         
         foreach($this->getPages() as $page)
         {
-            $file = $page['file'];
-            $dir = dirname($page['path']);
-            
-            \nyansapow\Nyansapow::mkdir(self::$nyansapow->getDestination() . '/' . $dir);
-            
             switch($page['page'])
             {
                 case 'Home':
@@ -45,30 +67,15 @@ class Wiki extends \nyansapow\Processor
                 default:
                     $output = "{$page['page']}.html";
                     break;
-            }                
+            }
             
-            $input = file_get_contents(self::$nyansapow->getSource() . '/' . $page['path']);
-            $outputFile = ($dir =='' ? '' : "/$dir") . "/$output";
-                        
-            /*$preParsed = Parser::preParse($input);
-            $parsedown = new \Parsedown();
-            $markedup = $parsedown->text($preParsed);
-            
-            @$currentDocument->loadHTML($markedup);
-            $h1s = $currentDocument->getElementsByTagName('h1');
-            
-            Parser::setProcessor($this);
-            Parser::domCreated($currentDocument);
-            
-            $body = $currentDocument->getElementsByTagName('body');
-            $content = Parser::postParse(
-                str_replace(array('<body>', '</body>'), '', $currentDocument->saveHTML($body->item(0)))
-            );*/
-            
-            $this->outputPage($outputFile, $content,
+            $this->setOutputPath($output);
+            $this->outputPage(
+                $page['markedup'],
                 array(
-                    'page_title' => $h1s->item(0)->nodeValue,
-                    'date' => date('jS F, Y H:i:s')              
+                    'title' => $page['title'],
+                    'date' => date('jS F, Y H:i:s'),
+                    'toc' => $this->toc
                 )
             );
         }

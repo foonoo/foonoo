@@ -15,7 +15,7 @@ class Nyansapow
     private $destination;
     private $pages = array();
     private $home;
-    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git");
+    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini");
     
     private function __construct($source, $destination, $options)
     {
@@ -121,7 +121,7 @@ class Nyansapow
             
             TemplateEngine::reset();
             AssetsLoader::reset();
-            AssetsLoader::appendSourceDir($this->getHome() . '/themes/assets');
+            AssetsLoader::appendSourceDir($this->getHome() . '/themes/global_assets');
             AssetsLoader::setDestinationDir("{$this->destination}/assets");
             
             $processor = Processor::get($site, $path);

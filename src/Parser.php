@@ -206,6 +206,11 @@ class Parser
         return "[[nyansapow:toc]]";
     }
     
+    public static function getTableOfContents()
+    {
+        return TocGenerator::getTableOfContents();
+    }
+    
     public static function renderNyansapowContent($matches)
     {
         switch($matches['content'])

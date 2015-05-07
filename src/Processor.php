@@ -106,7 +106,7 @@ abstract class Processor
         $dir = dir($this->dir . '/' . $base);
         while(false !== ($file = $dir->read()))
         {
-            $path = "{$this->dir}/$base/$file";
+            $path = "{$this->dir}/" . ($base == '' ? '' : "$base/") . "$file";
             if(self::$nyansapow->excluded($path)) continue;
             if(is_dir($path) && $recursive)
             {

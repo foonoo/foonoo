@@ -79,6 +79,11 @@ class TocGenerator
         return $tocTree;        
     }
     
+    public static function getTableOfContents()
+    {
+        return self::$toc;
+    }
+    
     public static function domCreated()
     {
         self::$toc = self::getTableOfContentsTree();

@@ -6,7 +6,7 @@ use ntentan\honam\TemplateEngine;
 
 class TextRenderer
 {
-    private static $titles;
+    private static $title;
     private static $info = null;
     
     private static function getInfo()
@@ -24,7 +24,7 @@ class TextRenderer
         $preParsed = Parser::preParse($content);
         $markedup = self::parse($preParsed, $filename, $data);        
         @$currentDocument->loadHTML($markedup);
-        self::$titles = $currentDocument->getElementsByTagName('h1');
+        self::$title = $currentDocument->getElementsByTagName('h1')->item(0)->textContent;
         Parser::domCreated($currentDocument);
         $body = $currentDocument->getElementsByTagName('body');
         
@@ -33,9 +33,9 @@ class TextRenderer
         );        
     }
     
-    public static function getTitles()
+    public static function getTitle()
     {
-        return $this->titles;
+        return self::$title;
     }
     
     private static function parse($content, $filename, $data)
@@ -70,5 +70,9 @@ class TextRenderer
         return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') || 
             TemplateEngine::canRender($file);
     }
-        
+    
+    public static function getTableOfContents()
+    {
+        return Parser::getTableOfContents();
+    }
 }
