@@ -7,6 +7,12 @@ class TocGenerator
     public static $hasToc = false;
     private static $toc;
     
+    /**
+     *
+     * @var DomDocument
+     */
+    private static $dom;
+    
     private static function getTableOfContentsMarkup($toc = null)
     {
         if($toc === null)
@@ -26,13 +32,17 @@ class TocGenerator
     {
         $tocTree = array();
         
-        $xpath = new \DOMXPath(Parser::$dom);;
+        $xpath = new \DOMXPath(self::$dom);;
         $nodes = $xpath->query("//h2|//h3|//h4|//h5|//h6");
         
         for($i = $index; $i < $nodes->length; $i++)
         {
             $nodeId = str_replace(array(" ", "\t"), "-", strtolower($nodes->item($i)->nodeValue));
-            $nodes->item($i)->setAttribute('id', $nodeId);
+            $anchor = self::$dom->createElement('a');
+            $anchor->setAttribute('name', $nodeId);
+            $anchor->setAttribute('class', 'title-anchor');
+            $nodes->item($i)->insertBefore($anchor);
+            //$nodes->item($i)->setAttribute('id', $nodeId);
             if($nodes->item($i)->nodeName == "h{$level}")
             {
                 if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)
@@ -84,8 +94,9 @@ class TocGenerator
         return self::$toc;
     }
     
-    public static function domCreated()
+    public static function domCreated($dom)
     {
+        self::$dom = $dom;
         self::$toc = self::getTableOfContentsTree();
     }
         

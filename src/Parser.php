@@ -4,7 +4,6 @@ namespace nyansapow;
 
 class Parser
 {
-    public static $dom;
     private static $pathToBase;
     
     private static $regexes = array(
@@ -68,8 +67,7 @@ class Parser
     
     public static function domCreated($dom)
     {
-        self::$dom = $dom;
-        TocGenerator::domCreated();
+        TocGenerator::domCreated($dom);
     }
     
     public static function preParse($content)

@@ -65,37 +65,64 @@ a{
 }
 
 #side > div {
-    border:1px solid #f0f0f0;
-    border-top:none;
+    border-right:1px solid #f0f0f0;
     overflow: auto;
 }
 
-#side > div > ul{
+#side ul{
     list-style: none;
     margin:0px;
     padding:0px;
 }
 
-#side > div > ul > li{
+#side ul > li{
     padding:0px;
+    border-right:3px white solid;
 }
 
-#side > div > ul > li > a{
+#side ul > li > a{
     display:block;
     padding:5px;
     padding-left: 10px;
     padding-right: 10px;
 }
 
-#side > div > ul > li > a:hover{
+#side ul > li > a:hover{
+    background-color:#fafeff;
+}
+
+#side ul > li.menu-fully-matched{
     background-color:#f2faff;
+    border-right:3px #176b9c solid;
 }
 
-#side > div > ul > li.menu-fully-matched{
-    background-color:#ceecfe;
-}
-
-#side > div > ul > li.menu-fully-matched > a{
+#side ul > li.menu-fully-matched > a{
     font-weight: bold;
     color:#176b9c;
 }
+
+#side > div > ul ul.menu 
+{
+    list-style: none;
+    padding-left:20px;
+    display:none;
+}
+
+#side > div > ul ul.menu a{
+    padding:2px;
+    color:#9ad3f7;
+    font-size: 0.9em;
+}
+
+#side ul > li.menu-fully-matched ul a{
+    color:#0187cd;
+}
+
+#side ul > li.menu-fully-matched ul{
+    display:block;
+}
+
+#side > div > ul ul.menu li{
+    border:none;
+}
+

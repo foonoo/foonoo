@@ -115,3 +115,7 @@ h2{
     font-style:normal;
     font-size: 2.5em;
 }
+
+div#namespaces-list{
+    border-bottom:5px solid #f0f0f0;
+}

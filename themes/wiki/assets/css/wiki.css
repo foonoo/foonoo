@@ -213,3 +213,19 @@ dt{
 #body-wrapper{
     padding:15px;
 }
+
+.title-anchor{
+    position:relative;
+    top:-110px;
+    display:block;
+}
+
+#side > div > ul > li > a
+{
+    color:#9ad3f7;
+}
+
+#side ul > li.menu-fully-matched{
+    margin-top:10px;
+    margin-bottom: 10px;
+}

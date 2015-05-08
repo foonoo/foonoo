@@ -16,7 +16,7 @@
         </div>
         <div id="body">
             <div id="side">
-                <div id="menu-wrapper"><?= $helpers->menu($toc) ?></div>
+                <div id="book-toc-wrapper"><?= $helpers->menu($toc)->setCurrentUrl($output) ?></div>
             </div>
             <div id="body-wrapper">
             <?= $body->u() ?>
