@@ -42,7 +42,6 @@ class TocGenerator
             $anchor->setAttribute('name', $nodeId);
             $anchor->setAttribute('class', 'title-anchor');
             $nodes->item($i)->insertBefore($anchor);
-            //$nodes->item($i)->setAttribute('id', $nodeId);
             if($nodes->item($i)->nodeName == "h{$level}")
             {
                 if($nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null)

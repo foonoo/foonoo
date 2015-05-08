@@ -5,6 +5,7 @@ namespace nyansapow;
 class Parser
 {
     private static $pathToBase;
+    private static $typeIndex;
     
     private static $regexes = array(
         // Match gollum style TOC so that github wikis can be rendered //
@@ -56,6 +57,12 @@ class Parser
             array(
                 'regex' => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|",
                 'method' => "\\nyansapow\\Parser::renderPageLink"
+            ),
+            
+            // Match PHP object types
+            array(
+                'regex' => "|(([a-zA-Z0-9_]+)?(\\\\[a-zA-Z0-9_]+)+)|",
+                'method' => "\\nyansapow\\Parser::renderPHPType"
             )
         )
     );
@@ -126,6 +133,20 @@ class Parser
         }
         
         return $attributes;
+    }
+    
+    public static function renderPHPType($matches)
+    {
+        //if(isset(self::$typeIndex[$matches[0]]))
+        if(isset(self::$typeIndex[$matches[0]]))
+        {
+            $path = self::$typeIndex[$matches[0]];
+        }
+        else if(isset(self::$typeIndex[substr($matches[0], 1)]))
+        {
+            $path = self::$typeIndex[substr($matches[0], 1)];
+        }
+        return "<a href='" . self::$pathToBase . "{$path}'>{$matches[0]}</a>";
     }
     
     public static function renderImageTag($matches)
@@ -221,5 +242,10 @@ class Parser
     public static function setPathToBase($pathToBase)
     {
         self::$pathToBase = $pathToBase;
+    }
+    
+    public static function setTypeIndex($typeIndex)
+    {
+        self::$typeIndex = $typeIndex;
     }
 }

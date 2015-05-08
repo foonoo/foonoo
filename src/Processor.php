@@ -9,7 +9,7 @@ abstract class Processor
     protected $settings;
     private $dir;
     private $layout;
-    private $baseDir;
+    protected $baseDir;
     private $theme;
     protected $templates;
     private $outputPath;

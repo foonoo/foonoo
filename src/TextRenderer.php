@@ -75,4 +75,9 @@ class TextRenderer
     {
         return Parser::getTableOfContents();
     }
+    
+    public static function setTypeIndex($typeIndex)
+    {
+        Parser::setTypeIndex($typeIndex);
+    }
 }

@@ -29,8 +29,8 @@
                 ?>
             </div>
             <div id="namespace-items-list">
-                <?= t('side_items', array('items' => $classes, 'type' => 'Classes', 'site_path' => $site_path, 'path' => $path)) ?>
-                <?= t('side_items', array('items' => $interfaces, 'type' => 'Interfaces', 'site_path' => $site_path, 'path' => $path)) ?>
+                <?= t('side_items', array('items' => $namespace['classes'], 'type' => 'Classes', 'site_path' => $site_path, 'path' => $path)) ?>
+                <?= t('side_items', array('items' => $namespace['interfaces'], 'type' => 'Interfaces', 'site_path' => $site_path, 'path' => $path)) ?>
             </div>
         </div><div id="body">
             <div id="body-wrapper"><?= $body->unescape() ?></div>

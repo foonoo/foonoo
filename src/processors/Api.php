@@ -9,6 +9,12 @@ class Api extends Processor
 {
     private $namespaces = array();
     private $templateData = array();
+    private $typeIndex = array();
+    
+    /**
+     *
+     * @var Source
+     */
     private $source;
     
     public function init()
@@ -16,6 +22,10 @@ class Api extends Processor
         $this->setTheme('api');
     }
     
+    /**
+     * 
+     * @return Source
+     */
     private function getSource()
     {
         if($this->source === null)
@@ -26,32 +36,61 @@ class Api extends Processor
         return $this->source;
     }
     
-    public function outputSite() 
+    private function extractNamespaceInfo()
     {
         $this->namespaces = $this->sort($this->getSource()->getNamespaces());
-        $namespaces = $this->namespaces;
         
         foreach($this->namespaces as $i => $namespace)
         {
-            $this->generateNamespaceDoc($namespace);
-            $namespaces[$i]['link'] = "{$namespace['path']}index.html";
-            $namespaces[$i]['name'] = $namespace['label'];
+            $this->namespaces[$i]['link'] = "{$namespace['path']}index.html";
+            $this->namespaces[$i]['name'] = $namespace['label'];
+            
+            $this->namespaces[$i]['classes'] = $this->extractItemDetails(
+                $this->getSource()->getClasses($namespace)
+            );
+            
+            $this->namespaces[$i]['interfaces'] = $this->extractItemDetails(
+                $this->getSource()->getInterfaces($namespace)
+            );
+        }        
+    }
+    
+    private function extractItemDetails($items)
+    {
+        $detailedItems = $this->sort($items);
+        foreach($detailedItems as $i => $item)
+        {
+            $detailedItems[$i]['details'] = $this->getSource()->getClassDetails($item);
+            $this->typeIndex[$item['namespace']. '\\' . $item['name']] = "{$this->baseDir}{$item['path']}.html";
         }
-                
+        return $detailedItems;
+    }
+    
+    public function outputSite() 
+    {
+        $this->extractNamespaceInfo();
+        
+        \nyansapow\TextRenderer::setTypeIndex($this->typeIndex);
+        
         $this->setOutputPath('index.html');
         $this->outputPage(
             TemplateEngine::render(
                 'home',
                 array(
                     'title' => $this->settings['name'],
-                    'namespaces' => $namespaces
+                    'namespaces' => $this->namespaces
                 )
             ),
             array(
                 'namespaces' => $this->namespaces,
                 'title' => 'Namespaces'
             )
-        );
+        );   
+        
+        foreach($this->namespaces as $namespace)
+        {
+            $this->generateNamespaceDoc($namespace);
+        }
     }
     
     private function sort($items)
@@ -64,10 +103,9 @@ class Api extends Processor
     
     private function generateClassDoc($class, $type = 'class')
     {
-        $source = $this->getSource();
         $path = "{$class['path']}.html";
         $this->setOutputPath($path);    
-        $classDetails = $source->getClassDetails($class);
+        $classDetails = $class['details'];
         
         $this->templateData['title'] = $class['name'];
         $this->templateData['path'] = $path;
@@ -92,29 +130,24 @@ class Api extends Processor
     
     private function generateNamespaceDoc($namespace)
     {
-        $source = $this->getSource();
         $namespacePath = $namespace['path'];
         Nyansapow::mkdir($this->getDestinationPath($namespacePath));
         
-        $classes = $this->sort($source->getClasses($namespace));
-        $interfaces  = $this->sort($source->getInterfaces($namespace));
         $path = "{$namespacePath}index.html";
         
         $this->templateData = array(
             'namespaces' => $this->namespaces,
-            'classes' => $classes,
-            'interfaces' => $interfaces,
             'namespace' => $namespace,
             'source_parser' => $this->source->getDescription(),
             'namespace_path' => $namespacePath
         );        
         
-        foreach($classes as $class)
+        foreach($namespace['classes'] as $class)
         {
             $this->generateClassDoc($class);
         }
         
-        foreach($interfaces as $interface)
+        foreach($namespace['interfaces'] as $interface)
         {
             $this->generateClassDoc($interface, 'interface');
         }
@@ -126,8 +159,8 @@ class Api extends Processor
                 'namespace', 
                 array(
                     'namespace' => $namespace['label'],
-                    'classes' => $classes,
-                    'interfaces' => $interfaces,
+                    'classes' => $namespace['classes'],
+                    'interfaces' => $namespace['interfaces'],
                     'site_path' => $this->getSitePath()
                 )
             ),

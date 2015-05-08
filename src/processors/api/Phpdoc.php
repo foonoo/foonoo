@@ -140,9 +140,9 @@ class Phpdoc extends Source
         foreach($items as $item)
         {
             $flat[] = [
-                "name" => $item->name,
+                "name" => (string)$item->name,
                 'namespace' => $namespace['name'],
-                'description' => $item->docblock->description,
+                'description' => (string)$item->docblock->description,
                 'path' => "$namespacePath{$item->name}",
                 'item' => $item
             ];
