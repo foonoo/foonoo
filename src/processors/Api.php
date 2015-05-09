@@ -66,6 +66,17 @@ class Api extends Processor
         return $detailedItems;
     }
     
+    private function outputApiPage($content, $variables)
+    {
+        $this->outputPage(
+            TemplateEngine::render(
+                'api',
+                array_merge(['body' => $content], $variables)
+            ),
+            array_merge(['context' => 'api'], $variables)
+        );
+    }
+    
     public function outputSite() 
     {
         $this->extractNamespaceInfo();
@@ -73,7 +84,7 @@ class Api extends Processor
         \nyansapow\TextRenderer::setTypeIndex($this->typeIndex);
         
         $this->setOutputPath('index.html');
-        $this->outputPage(
+        $this->outputApiPage(
             TemplateEngine::render(
                 'home',
                 array(
@@ -109,7 +120,7 @@ class Api extends Processor
         
         $this->templateData['title'] = $class['name'];
         $this->templateData['path'] = $path;
-        $this->outputPage(
+        $this->outputApiPage(
             TemplateEngine::render(
                 'class',
                 array(
@@ -154,7 +165,7 @@ class Api extends Processor
                 
         $this->setOutputPath($path);
         $this->templateData['path'] = null;
-        $this->outputPage(
+        $this->outputApiPage(
             TemplateEngine::render(
                 'namespace', 
                 array(

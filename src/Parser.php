@@ -6,7 +6,9 @@ class Parser
 {
     private static $pathToBase;
     private static $typeIndex;
-    
+    private static $pages = [];
+
+
     private static $regexes = array(
         // Match gollum style TOC so that github wikis can be rendered //
         'pre' => array(
@@ -195,13 +197,14 @@ class Parser
     public static function renderPageLink($matches)
     {
         $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-        foreach(self::$wiki->getPages() as $page)
+        foreach(self::$pages as $page)
         {
             if(strtolower($page['page']) == strtolower($link))
             {
                 return "<a href='{$page['page']}.html'>" .(isset($matches['title']) ? $matches['title'] : $matches['markup']) . "</a>";
             }
         }
+        return $matches['markup'];
     }
     
     public static function renderLink($matches)
@@ -247,5 +250,10 @@ class Parser
     public static function setTypeIndex($typeIndex)
     {
         self::$typeIndex = $typeIndex;
+    }
+    
+    public static function setPages($pages)
+    {
+        self::$pages = $pages;
     }
 }

@@ -80,4 +80,9 @@ class TextRenderer
     {
         Parser::setTypeIndex($typeIndex);
     }
+    
+    public static function setPages($pages)
+    {
+        Parser::setPages($pages);
+    }
 }

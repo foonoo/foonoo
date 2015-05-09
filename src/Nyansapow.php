@@ -15,7 +15,7 @@ class Nyansapow
     private $destination;
     private $pages = array();
     private $home;
-    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini");
+    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml");
     
     private function __construct($source, $destination, $options)
     {
@@ -75,15 +75,39 @@ class Nyansapow
         return false;
     }
     
+    private function readSiteMeta($path)
+    {
+        $meta = false;
+        if(file_exists("{$path}site.ini"))
+        {
+            $meta = parse_ini_file("{$path}site.ini");
+        }
+        else if(file_exists("{$path}site.yml"))
+        {
+            $parser = new \Symfony\Component\Yaml\Parser();
+            $meta = $parser->parse(file_get_contents("{$path}site.yml"));
+        }
+        else if(file_exists("{$path}site.yaml"))
+        {
+            $parser = new \Symfony\Component\Yaml\Parser();
+            $meta = $parser->parse(file_get_contents("{$path}site.yaml"));
+        }
+        
+        return $meta;
+    }
+    
     private function getSites($path, $source = false)
     {
         $sites = array();
         $dir = dir($path);
-        if(file_exists("{$path}site.ini"))
+        
+        $metaData = $this->readSiteMeta($path);
+        
+        if(is_array($metaData))
         {
-            $sites[$path] = parse_ini_file("{$path}site.ini");
+            $sites[$path] = $metaData;
         }
-        else if(!file_exists("{$path}site.ini") && $source === true)
+        else if($metaData === false && $source === true)
         {
             $sites[$path] = array(
                 'type' => 'site'
@@ -107,6 +131,11 @@ class Nyansapow
         Processor::setup($this);
         $sites = $this->getSites($this->source, true);
         
+        self::mkdir("{$this->destination}{$baseDir}/assets/css");
+        self::mkdir("{$this->destination}{$baseDir}/assets/js");
+        self::mkdir("{$this->destination}{$baseDir}/assets/fonts");
+        self::mkdir("{$this->destination}{$baseDir}/assets/images");
+        
         foreach($sites as $path => $site)
         {
             $baseDir = substr($path, strlen($this->source));
@@ -121,18 +150,32 @@ class Nyansapow
             
             TemplateEngine::reset();
             AssetsLoader::reset();
-            AssetsLoader::appendSourceDir($this->getHome() . '/themes/global_assets');
+            TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
+            AssetsLoader::appendSourceDir($this->getHome() . '/themes/global/assets');
             AssetsLoader::setDestinationDir("{$this->destination}/assets");
             
             $processor = Processor::get($site, $path);
             $processor->setBaseDir($baseDir);
+            
+            if(is_array($site['templates']))
+            {
+                foreach($site['templates'] as $template)
+                {
+                    TemplateEngine::prependPath($path.$template);
+                }
+            }
+            else
+            {
+                TemplateEngine::prependPath($path.$site['templates']);
+            }
+            
             if(is_dir("{$path}np_data"))
             {
                 $processor->setData(self::readData("{$path}np_data"));
             }
-            if(is_dir("{$path}np_layouts"))
+            if(is_dir("{$path}np_templates"))
             {
-                TemplateEngine::prependPath("{$path}np_layouts");
+                TemplateEngine::prependPath("{$path}np_templates");
             }
             $processor->outputSite();
         }
@@ -196,9 +239,4 @@ class Nyansapow
     {
         return $this->pages;
     }
-}
-
-class Exception extends \Exception
-{
-    
 }

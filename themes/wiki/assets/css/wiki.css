@@ -204,10 +204,18 @@ dt{
     margin:0px;
 }
 
-#body{
+#body-book{
     width:60%;
     background-color:#fff;
     box-shadow: 2px 0px 10px rgba(0,0,0,0.1);    
+}
+
+#body-wiki{
+    width:70%;
+    padding:0px;
+    background-color:#fff;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 #body-wrapper{
@@ -235,4 +243,13 @@ dt{
     padding-left:10px;
     font-size: small;
     color:#a0a0a0;
+}
+
+#header-wiki h1{
+    width:70%;
+    width:calc(70% - 20px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left:10px;
+    padding-right: 10px;
 }

@@ -60,14 +60,9 @@ abstract class Processor
             $theme = "{$this->dir}/{$theme}";
         }
                 
-        Nyansapow::copyDir("$theme/copy_assets/*", self::$nyansapow->getDestination() . "/assets");  
+        Nyansapow::copyDir("$theme/copy/*", self::$nyansapow->getDestination() . "/assets");  
         TemplateEngine::prependPath("$theme/templates");
         AssetsLoader::prependSourceDir("$theme/assets");
-                
-        if($this->layout == '' && file_exists("$theme/templates/layout.mustache"))
-        {
-            $this->layout = "layout.mustache";
-        }
     }
     
     public static function setup($nyasapow)
@@ -88,25 +83,21 @@ abstract class Processor
     
     public function setBaseDir($baseDir)
     {
-        if($baseDir == '')
-        {
-            $baseDir = './';
-        }
         $this->baseDir = $baseDir;
     }
     
-    protected function setLayout($layout, $core = false)
+    protected function setLayout($layout)
     {
-        $this->layout = ($core === true ? self::$nyansapow->getHome() . "/themes/default/templates/" : '') . $layout;
+        $this->layout = $layout;
     }
     
     protected function getFiles($base = '', $recursive = false)
     {
         $files = array();
-        $dir = dir($this->dir . '/' . $base);
-        while(false !== ($file = $dir->read()))
+        $dir = scandir("{$this->dir}/$base", SCANDIR_SORT_ASCENDING);
+        foreach($dir as $file)
         {
-            $path = "{$this->dir}/" . ($base == '' ? '' : "$base/") . "$file";
+            $path = "{$this->dir}" . ($base == '' ? '' : "$base/") . "$file";
             if(self::$nyansapow->excluded($path)) continue;
             if(is_dir($path) && $recursive)
             {
@@ -114,7 +105,7 @@ abstract class Processor
             }
             else if(!is_dir($path))
             {
-                $path = substr($path, strlen(self::$nyansapow->getSource() . $this->baseDir));
+                $path = substr($path, strlen(realpath(self::$nyansapow->getSource() . $this->baseDir)));
                 $files[] = $path;
             }
         }
@@ -181,7 +172,7 @@ abstract class Processor
     
     protected function getSourcePath($path)
     {
-        return self::$nyansapow->getSource() . $this->baseDir . $path;
+        return realpath(self::$nyansapow->getSource() . $this->baseDir) . "/" . $path;
     }
     
     protected function getDestinationPath($path)

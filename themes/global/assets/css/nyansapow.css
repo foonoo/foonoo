@@ -26,7 +26,7 @@ body{
     font-size: 15px;
 }
 
-#header{
+.header{
     width: 100%;
     position:fixed;
     left:0px;
@@ -38,14 +38,13 @@ body{
     z-index: 100;
 }
 
-#header > h1{
+.header > h1{
     margin:0px;
     padding:10px; 
 }
 
-#body{
+.body{
     margin-top:60px;
-    display:inline-block;
     width:79%;
     vertical-align: top;
     padding-left:21%;

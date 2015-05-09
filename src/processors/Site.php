@@ -7,8 +7,7 @@ class Site extends \nyansapow\Processor
 {   
     public function init()
     {
-        $this->setTheme('default');
-        $this->info = finfo_open(FILEINFO_MIME);
+        $this->setTheme('site');
     }
     
     public function outputSite()
@@ -16,7 +15,8 @@ class Site extends \nyansapow\Processor
         $files = $this->getFiles();
         foreach($files as $file)
         {
-            if(TextRenderer::isFileRenderable($file))
+            $sourceFile = $this->getSourcePath($file);
+            if(TextRenderer::isFileRenderable($sourceFile))
             {
                 $content = $this->readFile($file);
                 $this->setOutputPath($this->adjustExtension($file));
@@ -33,10 +33,7 @@ class Site extends \nyansapow\Processor
     private function adjustExtension($file)
     {
         $path = explode('.', $file);
-        if(TextRenderer::isFileRenderable($file))
-        {
-            $path[count($path) - 1] = 'html';
-        }
+        $path[count($path) - 1] = 'html';
         return implode('.', $path);
     }
 }

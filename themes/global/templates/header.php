@@ -1,0 +1,1 @@
+<div class="header" id="header-<?= $context ?>"><h1><?= $site_name ?></h1></div>

@@ -2,6 +2,7 @@
 namespace nyansapow\processors;
 
 use nyansapow\TextRenderer;
+use ntentan\honam\TemplateEngine;
 
 /**
  * 
@@ -9,16 +10,10 @@ use nyansapow\TextRenderer;
 class Wiki extends \nyansapow\Processor
 {
     private $pages = array();
-    private $toc = array();
     
     public function init()
     {
         $this->setTheme('wiki');
-    }
-    
-    private function getPages()
-    {
-        return $this->pages;
     }
     
     private function getPageOutput($page)
@@ -40,25 +35,20 @@ class Wiki extends \nyansapow\Processor
     private function addPage($path)
     {
         $file = basename($path);
-        if(preg_match("/(?<page>.*)(\.)(?<extension>.*)/i", $file, $matches))
+        if(preg_match("/^((?<chapter>[0-9]+)(--))?(?<page>.*)(\.)(?<extension>.*)/i", $file, $matches))
         {
             $content = $this->readFile($file);
             $output = $this->getPageOutput($matches['page']);
             $page = array(
+                'file' => $file,
                 'path' => $path,
                 'page' => $matches['page'],
                 'extension' => $matches['extension'],
                 'content' => $content,
                 'output' => $output,
-                'markedup' => TextRenderer::render($content['body'], $file),
-                'title' => isset($content['fontmatter']['title']) ? 
-                    $content['frontmatter']['title'] : TextRenderer::getTitle()
+                'chapter' => $matches['chapter']
             );
-            $this->toc[] = array(
-                'title' => $page['title'],
-                'url' => $output,
-                'children' => TextRenderer::getTableOfContents()
-            );
+            
             $this->pages[] = $page;
         }        
     }
@@ -66,6 +56,9 @@ class Wiki extends \nyansapow\Processor
     public function outputSite() 
     {
         $files = $this->getFiles();
+        $toc = [];
+        
+        // Filter pages from files
         foreach($files as $path)
         {
             $fullPath = $this->getSourcePath($path);
@@ -75,16 +68,56 @@ class Wiki extends \nyansapow\Processor
             }
         }
         
-        foreach($this->getPages() as $page)
+        // Put pages into TextRenderer for link rendering
+        TextRenderer::setPages($this->pages);
+        
+        // Render all pages and extract a table of contents
+        foreach($this->pages as $i => $page)
+        {
+            $content = $page['content'];
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file']);
+            $title = isset($content['fontmatter']['title']) ? 
+                $content['frontmatter']['title'] : TextRenderer::getTitle();
+            $this->pages[$i]['title'] = $title;    
+            
+            if($this->settings['mode'] === 'book')
+            {
+                $chapter = isset($content['frontmatter']['chapter']) ? $content['frontmatter']['chapter'] : $page['chapter'];                
+                $toc[] = array(
+                    'chapter' => $chapter,
+                    'title' => $title,
+                    'url' => $page['output'],
+                    'children' => TextRenderer::getTableOfContents()
+                );
+            }            
+        }
+        
+        if($this->settings['mode'] === 'book')
+        {
+            usort(
+                $toc, 
+                function($a, $b){
+                    return $a['chapter'] - $b['chapter'];
+                }
+            );
+        }
+          
+        foreach($this->pages as $page)
         {   
             $this->setOutputPath($page['output']);
             $this->outputPage(
-                $page['markedup'],
+                TemplateEngine::render(
+                    'wiki',
+                    array(
+                        'book' => $this->settings['mode'] === 'book',
+                        'output' => $page['output'],
+                        'toc' => $toc,
+                        'body' => $page['markedup']
+                    )
+                ),
                 array(
-                    'output' => $page['output'],
                     'title' => $page['title'],
-                    'date' => date('jS F, Y H:i:s'),
-                    'toc' => $this->toc
+                    'context' => 'wiki'
                 )
             );
         }
