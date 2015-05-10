@@ -245,9 +245,8 @@ dt{
     color:#a0a0a0;
 }
 
-.header-wiki h1{
+.header-wiki #header-content-wrapper{
     width:70%;
-    width:calc(70% - 20px);
     margin-left: auto;
     margin-right: auto;
     padding-left:10px;

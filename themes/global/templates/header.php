@@ -1,1 +1,1 @@
-<div id="header" class="header header-<?= $context ?>"><h1><?= $site_name ?></h1></div>
+<div id="header" class="header header-<?= $context ?>"><div id="header-content-wrapper"><h1><?= $site_name ?></h1></div></div>

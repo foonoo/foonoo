@@ -71,7 +71,7 @@ class Api extends Processor
         $this->outputPage(
             TemplateEngine::render(
                 'api',
-                array_merge(['body' => $content], $variables)
+                array_merge(['body' => $content, 'site_path' => $this->getSitePath()], $variables)
             ),
             array_merge(['context' => 'api', 'script' => 'api'], $variables)
         );

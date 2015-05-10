@@ -38,9 +38,15 @@ body{
     z-index: 100;
 }
 
-.header > h1{
+#header-content-wrapper{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+#header-content-wrapper > h1{
     margin:0px;
-    padding:10px; 
+    padding:0px;
+    line-height: 60px;
 }
 
 .body{
