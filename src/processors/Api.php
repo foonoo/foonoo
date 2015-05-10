@@ -73,7 +73,7 @@ class Api extends Processor
                 'api',
                 array_merge(['body' => $content], $variables)
             ),
-            array_merge(['context' => 'api'], $variables)
+            array_merge(['context' => 'api', 'script' => 'api'], $variables)
         );
     }
     

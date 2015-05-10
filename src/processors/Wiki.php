@@ -117,7 +117,8 @@ class Wiki extends \nyansapow\Processor
                 ),
                 array(
                     'title' => $page['title'],
-                    'context' => 'wiki'
+                    'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
+                    'script' => 'wiki'
                 )
             );
         }

@@ -125,28 +125,25 @@ class Nyansapow
         
         return $sites;
     }
-    
+
     public function write()
     {
         Processor::setup($this);
         $sites = $this->getSites($this->source, true);
         
-        self::mkdir("{$this->destination}{$baseDir}/assets/css");
-        self::mkdir("{$this->destination}{$baseDir}/assets/js");
-        self::mkdir("{$this->destination}{$baseDir}/assets/fonts");
+        self::mkdir("{$this->destination}/assets/css");
+        self::mkdir("{$this->destination}/assets/js");
+        self::mkdir("{$this->destination}/assets/fonts");
         self::mkdir("{$this->destination}{$baseDir}/assets/images");
         
         foreach($sites as $path => $site)
         {
-            $baseDir = substr($path, strlen($this->source));
-            if(is_dir("{$path}np_images"))
-            {
-                self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
-            }      
-            if(is_dir("{$path}np_assets"))
-            {
-                self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
-            }
+            $baseDir = (string)substr($path, strlen($this->source));
+            
+            self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
+            self::copyDir("{$path}np_assets/copy/*", "{$this->destination}/assets");
+            
+            
             
             TemplateEngine::reset();
             AssetsLoader::reset();

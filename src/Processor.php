@@ -14,6 +14,7 @@ abstract class Processor
     protected $templates;
     private $outputPath;
     protected $data;
+    private $extraAssets;
     
     /**
      * 
@@ -48,21 +49,55 @@ abstract class Processor
         
     }
     
+    private function loadExtraAssets()
+    {
+        $this->extraAssets = [
+            'css' => [],
+            'js' => []
+        ];
+        
+        $sources = ["np_assets"];
+        if(isset($this->settings['assets']))
+        {
+            $sources = array_merge(
+                is_array($this->settings['assets']) ? 
+                    $this->settings['assets'] : [$this->settings['assets']],
+                $sources
+            );
+        }
+        
+        foreach($sources as $source)
+        {
+            foreach(['js', 'css'] as $type)
+            {
+                $files = glob("{$this->dir}$source/$type/*.$type");
+                foreach($files as $file)
+                {
+                    $this->extraAssets[$type][] = "$type/" . basename($file);
+                }
+            }
+            
+            Nyansapow::copyDir("{$this->dir}$source/copy", self::$nyansapow->getDestination() . "/assets");
+            AssetsLoader::prependSourceDir("{$this->dir}$source");
+        }
+    }    
+    
     public function setTheme($theme)
     {
         $this->theme = $theme;
-        if(!file_exists("{$this->dir}/{$theme}"))
+        if(!file_exists("{$this->dir}/np_themes/{$theme}"))
         {
             $theme = self::$nyansapow->getHome() . "/themes/{$theme}";
         }
         else
         {
-            $theme = "{$this->dir}/{$theme}";
+            $theme = "{$this->dir}/np_themes/{$theme}";
         }
                 
         Nyansapow::copyDir("$theme/copy/*", self::$nyansapow->getDestination() . "/assets");  
         TemplateEngine::prependPath("$theme/templates");
         AssetsLoader::prependSourceDir("$theme/assets");
+        $this->loadExtraAssets();
     }
     
     public static function setup($nyasapow)
@@ -130,7 +165,9 @@ abstract class Processor
                 'home_path' => $this->getHomePath(),
                 'site_path' => $this->getSitePath(),
                 'site_name' => $this->settings['name'],
-                'date' => date('jS F Y')
+                'date' => date('jS F Y'),
+                'np_extra_js' => $this->extraAssets['js'],
+                'np_extra_css' => $this->extraAssets['css']
             ), 
             $overrides
         );

@@ -245,7 +245,7 @@ dt{
     color:#a0a0a0;
 }
 
-#header-wiki h1{
+.header-wiki h1{
     width:70%;
     width:calc(70% - 20px);
     margin-left: auto;
