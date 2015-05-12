@@ -53,6 +53,14 @@ class Wiki extends \nyansapow\Processor
         }        
     }
     
+    protected function outputIndexPage()
+    {
+        if($this->settings['generate_index'])
+        {
+            
+        }
+    }
+
     public function outputSite() 
     {
         $files = $this->getFiles();
@@ -122,5 +130,7 @@ class Wiki extends \nyansapow\Processor
                 )
             );
         }
+        
+        $this->outputIndexPage();
     }
 }

@@ -38,15 +38,12 @@ body{
     z-index: 100;
 }
 
-#header-content-wrapper{
-    padding-left:10px;
-    padding-right:10px;
-}
-
 #header-content-wrapper > h1{
     margin:0px;
     padding:0px;
     line-height: 60px;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .body{

@@ -28,9 +28,22 @@ class TextRenderer
         Parser::domCreated($currentDocument);
         $body = $currentDocument->getElementsByTagName('body');
         
-        return Parser::postParse(
-            str_replace(array('<body>', '</body>'), '', $currentDocument->saveHTML($body->item(0)))
-        );        
+        try
+        {
+            $parsed = Parser::postParse($markedup);   
+        } 
+        catch (TocRequestedException $e) 
+        {
+            $parsed = Parser::postParse(
+                str_replace(
+                    array('<body>', '</body>'), 
+                    '', $currentDocument->saveHTML($body->item(0))
+                ),
+                false
+            );        
+        }
+        
+        return $parsed;
     }
     
     public static function getTitle()

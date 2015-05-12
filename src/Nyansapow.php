@@ -134,7 +134,7 @@ class Nyansapow
         self::mkdir("{$this->destination}/assets/css");
         self::mkdir("{$this->destination}/assets/js");
         self::mkdir("{$this->destination}/assets/fonts");
-        self::mkdir("{$this->destination}{$baseDir}/assets/images");
+        self::mkdir("{$this->destination}/assets/images");
         
         foreach($sites as $path => $site)
         {
@@ -142,8 +142,6 @@ class Nyansapow
             
             self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
             self::copyDir("{$path}np_assets/copy/*", "{$this->destination}/assets");
-            
-            
             
             TemplateEngine::reset();
             AssetsLoader::reset();

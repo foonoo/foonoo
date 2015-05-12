@@ -7,6 +7,7 @@ class Parser
     private static $pathToBase;
     private static $typeIndex;
     private static $pages = [];
+    private static $tocTrigger;
 
 
     private static $regexes = array(
@@ -84,8 +85,9 @@ class Parser
         return self::parse($content, 'pre');
     }
     
-    public static function postParse($content)
+    public static function postParse($content, $tocTrigger = true)
     {
+        self::$tocTrigger = $tocTrigger;
         return self::parse($content, 'post');
     }
     
@@ -238,6 +240,10 @@ class Parser
         switch($matches['content'])
         {
             case 'toc':
+                if(self::$tocTrigger)
+                {
+                    throw new TocRequestedException();
+                }
                 return TocGenerator::renderTableOfContents();
         }
     }
