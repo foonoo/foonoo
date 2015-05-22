@@ -93,14 +93,13 @@ h4{
 }
 
 code{
-    font-size: smaller;
-    font-weight: bold;
-    background-color:#fcfcfc;
+    background-color:#fbfbfb;
     color: #404040;
+    padding:3px;
+    border-radius: 3px;
 }
 
 pre > code{
-    font-size: smaller;
     font-weight: normal;
 }
 

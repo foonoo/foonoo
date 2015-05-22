@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "36f9e60bf96c28164612c05d96cf9801",
+    "hash": "4153207d0a3cbf481bfa3f845a6a8afa",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -87,17 +87,61 @@
             "time": "2015-04-29 20:22:24"
         },
         {
-            "name": "matthiasmullie/minify",
-            "version": "1.3.25",
+            "name": "erusev/parsedown-extra",
+            "version": "0.7.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/matthiasmullie/minify.git",
-                "reference": "49a2aca2945d6792dffb152e1aae9f1579eeb798"
+                "url": "https://github.com/erusev/parsedown-extra.git",
+                "reference": "11a44e076d02ffcc4021713398a60cd73f78b6f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/49a2aca2945d6792dffb152e1aae9f1579eeb798",
-                "reference": "49a2aca2945d6792dffb152e1aae9f1579eeb798",
+                "url": "https://api.github.com/repos/erusev/parsedown-extra/zipball/11a44e076d02ffcc4021713398a60cd73f78b6f5",
+                "reference": "11a44e076d02ffcc4021713398a60cd73f78b6f5",
+                "shasum": ""
+            },
+            "require": {
+                "erusev/parsedown": "~1.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ParsedownExtra": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "An extension of Parsedown that adds support for Markdown Extra.",
+            "homepage": "https://github.com/erusev/parsedown-extra",
+            "keywords": [
+                "markdown",
+                "markdown extra",
+                "parsedown",
+                "parser"
+            ],
+            "time": "2015-01-25 14:52:34"
+        },
+        {
+            "name": "matthiasmullie/minify",
+            "version": "1.3.26",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matthiasmullie/minify.git",
+                "reference": "15e564ff494186cddefd82fa9424897a66a50051"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/15e564ff494186cddefd82fa9424897a66a50051",
+                "reference": "15e564ff494186cddefd82fa9424897a66a50051",
                 "shasum": ""
             },
             "require": {
@@ -141,20 +185,20 @@
                 "minifier",
                 "minify"
             ],
-            "time": "2015-05-05 14:43:08"
+            "time": "2015-05-13 16:03:46"
         },
         {
             "name": "matthiasmullie/path-converter",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matthiasmullie/path-converter.git",
-                "reference": "c9feee12fce2656bf437396e543ab03d192f497f"
+                "reference": "fcda5cc99c45c2e08d7f2ff59b4dd503c729275d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/c9feee12fce2656bf437396e543ab03d192f497f",
-                "reference": "c9feee12fce2656bf437396e543ab03d192f497f",
+                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/fcda5cc99c45c2e08d7f2ff59b4dd503c729275d",
+                "reference": "fcda5cc99c45c2e08d7f2ff59b4dd503c729275d",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +235,7 @@
                 "paths",
                 "relative"
             ],
-            "time": "2015-02-21 12:51:32"
+            "time": "2015-05-13 15:40:03"
         },
         {
             "name": "mustache/mustache",
@@ -343,12 +387,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "c395bd20524c9da95b667198561f540d78595573"
+                "reference": "1edceb85e69b6d1450c1e6aff090ac370a3b7b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/c395bd20524c9da95b667198561f540d78595573",
-                "reference": "c395bd20524c9da95b667198561f540d78595573",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/1edceb85e69b6d1450c1e6aff090ac370a3b7b47",
+                "reference": "1edceb85e69b6d1450c1e6aff090ac370a3b7b47",
                 "shasum": ""
             },
             "require": {
@@ -385,7 +429,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2015-05-07 22:25:35"
+            "time": "2015-05-12 08:50:01"
         },
         {
             "name": "ntentan/utils",

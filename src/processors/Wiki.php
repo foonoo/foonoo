@@ -9,7 +9,8 @@ use ntentan\honam\TemplateEngine;
  */
 class Wiki extends \nyansapow\Processor
 {
-    private $pages = array();
+    protected $pages = array();
+    private $indexSet = false;
     
     public function init()
     {
@@ -22,6 +23,7 @@ class Wiki extends \nyansapow\Processor
         {
             case 'Home':
                 $output = "index.html";
+                $this->indexSet = true;
                 break;
 
             default:
@@ -64,7 +66,6 @@ class Wiki extends \nyansapow\Processor
     public function outputSite() 
     {
         $files = $this->getFiles();
-        $toc = [];
         
         // Filter pages from files
         foreach($files as $path)
@@ -83,7 +84,7 @@ class Wiki extends \nyansapow\Processor
         foreach($this->pages as $i => $page)
         {
             $content = $page['content'];
-            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file']);
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => true]);
             $title = isset($content['fontmatter']['title']) ? 
                 $content['frontmatter']['title'] : TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;    
@@ -91,7 +92,7 @@ class Wiki extends \nyansapow\Processor
             if($this->settings['mode'] === 'book')
             {
                 $chapter = isset($content['frontmatter']['chapter']) ? $content['frontmatter']['chapter'] : $page['chapter'];                
-                $toc[] = array(
+                $this->toc[] = array(
                     'chapter' => $chapter,
                     'title' => $title,
                     'url' => $page['output'],
@@ -103,7 +104,7 @@ class Wiki extends \nyansapow\Processor
         if($this->settings['mode'] === 'book')
         {
             usort(
-                $toc, 
+                $this->toc, 
                 function($a, $b){
                     return $a['chapter'] - $b['chapter'];
                 }
@@ -113,24 +114,32 @@ class Wiki extends \nyansapow\Processor
         foreach($this->pages as $page)
         {   
             $this->setOutputPath($page['output']);
-            $this->outputPage(
-                TemplateEngine::render(
-                    'wiki',
-                    array(
-                        'book' => $this->settings['mode'] === 'book',
-                        'output' => $page['output'],
-                        'toc' => $toc,
-                        'body' => $page['markedup']
-                    )
-                ),
-                array(
-                    'title' => $page['title'],
-                    'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
-                    'script' => 'wiki'
-                )
-            );
+            $this->outputWikiPage($page);
         }
         
-        $this->outputIndexPage();
+        if(!$this->indexSet)
+        {
+            $this->outputIndexPage();
+        }
+    }
+    
+    protected function outputWikiPage($page)
+    {
+        $this->outputPage(
+            TemplateEngine::render(
+                'wiki',
+                array(
+                    'book' => $this->settings['mode'] === 'book',
+                    'output' => $page['output'],
+                    'toc' => $this->toc,
+                    'body' => $page['markedup']
+                )
+            ),
+            array(
+                'title' => $page['title'],
+                'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
+                'script' => 'wiki'
+            )
+        );        
     }
 }

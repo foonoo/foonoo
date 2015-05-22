@@ -4,7 +4,7 @@
     "require": {
         "ekowabaka/clearice": "0.4.*",
         "mustache/mustache": "2.*",
-        "erusev/parsedown" : "1.*",
+        "erusev/parsedown-extra" : "0.*",
         "netcarver/textile": "3.*",
 	"theseer/phpdox": "0.7.*",
         "ntentan/honam": "dev-master",

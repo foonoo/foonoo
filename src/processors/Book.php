@@ -8,4 +8,10 @@ class Book extends Wiki
         $this->settings['mode'] = 'book';
         parent::init();
     }
+    
+    protected function outputIndexPage() 
+    {
+        $this->setOutputPath('index.html');
+        $this->outputWikiPage(reset($this->pages));
+    }
 }
