@@ -15,6 +15,7 @@ abstract class Processor
     private $outputPath;
     protected $data;
     private $extraAssets;
+    private $frontMatterMarkers = ['---', '<<<', '<<<<', '>>>', '>>>>'];
     
     /**
      * 
@@ -215,7 +216,7 @@ abstract class Processor
     protected function getDestinationPath($path)
     {
         return self::$nyansapow->getDestination() . $this->baseDir . $path;
-    }   
+    }    
     
     protected function readFile($textFile)
     {
@@ -223,12 +224,12 @@ abstract class Processor
         $frontmatterRead = false;
         $postStarted = false;
         $body = '';
-        $frontmatter = '';
+        $frontmatter = array();
         
         while(!feof($file))
         {
             $line = fgets($file);
-            if(!$frontmatterRead && !$postStarted && (trim($line) === '<<<<' || trim($line) === '<<<'))
+            if(!$frontmatterRead && !$postStarted && array_search(trim($line),$this->frontMatterMarkers) !== false)
             {
                 $frontmatter = $this->readFrontMatter($file);
                 $frontmatterRead = true;
@@ -250,12 +251,18 @@ abstract class Processor
         do
         {
             $line = fgets($file);
-            if(trim($line) === '>>>>' || trim($line) === '>>>') break;
+            if(array_search(trim($line),$this->frontMatterMarkers) !== false) break;
             $frontmatter .= $line;
         }
         while(!feof($file));
         
-        return parse_ini_string($frontmatter, true);
+        $return = parse_ini_string($frontmatter, true);
+        if($return == false || count($return) == 0)
+        {
+            $parser = new \Symfony\Component\Yaml\Parser();
+            $return = $parser->parse($frontmatter);
+        }
+        return $return;
     }  
     
     public function setData($data)

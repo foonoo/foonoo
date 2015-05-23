@@ -84,7 +84,8 @@ class Wiki extends \nyansapow\Processor
         foreach($this->pages as $i => $page)
         {
             $content = $page['content'];
-            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => true]);
+            $toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $toc]);
             $title = isset($content['fontmatter']['title']) ? 
                 $content['frontmatter']['title'] : TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;    
