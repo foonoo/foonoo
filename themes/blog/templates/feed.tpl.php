@@ -11,9 +11,7 @@ foreach($posts as $post)
         'date' => $post['date']
     ];
 }
-?>
-
-<?= $helpers
+echo $helpers
     ->feed($items)
     ->setTitle($title)
     ->setUrl($url)

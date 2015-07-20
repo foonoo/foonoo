@@ -93,7 +93,7 @@ class Blog extends \nyansapow\Processor
             $this->posts[$i]['preview'] = \nyansapow\TextRenderer::render($post['preview'], $post['file']);
             
             $markedup = TemplateEngine::render(
-                'post.mustache',
+                'post',
                 array_merge(
                     $this->posts[$i],
                     array(
@@ -208,7 +208,7 @@ class Blog extends \nyansapow\Processor
         }
         
         $body = TemplateEngine::render(
-            'listing.mustache',
+            'listing',
             array(
                 'listing_title' => $title,
                 'previews' => true,
@@ -231,6 +231,7 @@ class Blog extends \nyansapow\Processor
             )
         );
         $this->setOutputPath("feed.xml");
+        $this->setLayout('plain');
         $this->outputPage($feed);
     }
 }
