@@ -7,7 +7,7 @@
         "erusev/parsedown-extra" : "0.*",
         "netcarver/textile": "3.*",
 	"theseer/phpdox": "0.7.*",
-        "ntentan/honam": "dev-master",
+        "ntentan/honam": "0.*",
         "symfony/yaml" : "2.*",
 	"smarty/smarty": "3.*"
     },
