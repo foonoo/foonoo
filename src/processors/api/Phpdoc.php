@@ -6,7 +6,7 @@ namespace nyansapow\processors\api;
  *
  * @author ekow
  */
-class Phpdoc extends Source
+class Phpdoc extends ApiSource
 {
     use PhpApiUtils;
         

@@ -6,7 +6,7 @@ namespace nyansapow\processors\api;
  *
  * @author ekow
  */
-class Phpdox extends Source
+class Phpdox extends ApiSource
 {
     use PhpApiUtils;
     

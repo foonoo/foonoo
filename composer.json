@@ -2,14 +2,17 @@
     "name": "ekowabaka/nyansapow",
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
     "require": {
-        "ekowabaka/clearice": "0.4.*",
-        "mustache/mustache": "2.*",
-        "erusev/parsedown-extra" : "0.*",
-        "netcarver/textile": "3.*",
-	"theseer/phpdox": "0.7.*",
-        "ntentan/honam": "0.*",
-        "symfony/yaml" : "2.*",
-	"smarty/smarty": "3.*"
+        "ekowabaka/clearice": "dev-dev",
+        "mustache/mustache": "@stable",
+        "erusev/parsedown" : "@stable",
+        "netcarver/textile": "@stable",
+	    "theseer/phpdox": "@stable",
+        "ntentan/honam": "dev-dev",
+        "symfony/yaml" : "@stable",
+	    "smarty/smarty": "@stable"
+    },
+    "require-dev" : {
+        "phing/phing" : "@stable"
     },
     "license": "MIT",
     "authors": [

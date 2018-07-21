@@ -3,49 +3,29 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 use nyansapow\Nyansapow;
-use clearice\ClearIce;
+use clearice\argparser\ArgumentParser;
 
-error_reporting(E_ALL ^ E_NOTICE);
+$parser = new ArgumentParser();
+$parser->addOption([
+    'short' => 'i',
+    'name' => 'input',
+    'type' => 'string',
+    'help' => "specifies where the input files for the site are found."
+]);
 
-ClearIce::addOptions(
-    array(
-        'short' => 'i',
-        'long' => 'input',
-        'has_value' => true,
-        'help' => "specifies where the input files for the site are found."
-    ),
-    array(
-        'short' => 'o',
-        'long' => 'output',
-        'has_value' => true,
-        "help" => "specifies where the site should be written to"
-    ),
-    array(
-        'short' => 'n',
-        'long' => 'site-name',
-        'has_value' => true,
-        'help' => 'set the name for the entire site'
-    ),
-    array(
-        'short' => 'g',
-        'long' => 'init-git-hooks',
-        'help' => 'setup the nyansapow git hooks in a bare git repository'
-    ),
-    array(
-        'short' => 'u',
-        'long' => 'update-git-hooks',
-        'help' => 'update the nyansapow git hooks in a bare git repository'
-    ),
-    array(
-        'short' => 'r',
-        'long'  => 'git-repo',
-        'has_value' => true,
-        'help'  => 'specify the location of the git repository'
-    )
-);
+$parser->addOption([
+    'short' => 'o',
+    'name' => 'output',
+    'type' => 'string',
+    "help" => "specifies where the site should be written to"
+]);
 
-ClearIce::addHelp();
-ClearIce::setStrict(true);
+$parser->addOption([
+    'short' => 'n',
+    'name' => 'site-name',
+    'type' => 'string',
+    'help' => 'set the name for the entire site'
+]);
 
 $description = <<<EOT
 nyansapow site generator
@@ -55,17 +35,17 @@ A simple static site generator engine to be used for generating static wikis,
 blogs and any kind of site you can think of.
 
 EOT;
+$parser->enableHelp($description);
+$options = $parser->parse();
 
-ClearIce::setDescription($description);
-$options = ClearIce::parse();
+if(!isset($options['input'])) {
+    echo $parser->getHelpMessage();
+    exit();
+}
 
-try
-{
+try {
     $nyansapow = Nyansapow::open($options['input'], $options['output'], $options);
     $nyansapow->write();
+} catch(\Exception $e) {
+    print $e->getMessage() . "\n";
 }
-catch(\Exception $e)
-{
-    ClearIce::error($e->getMessage() . "\n");
-}
-

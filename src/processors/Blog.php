@@ -78,7 +78,7 @@ class Blog extends \nyansapow\Processor
                     'info' => $matches,
                     'more_link' => $splitPost['more_link'],
                     'file' => $file,
-                    'author' => $post['frontmatter']['author'] == '' ? $this->settings['author'] : $post['frontmatter']['author'] 
+                    'author' => $post['frontmatter']['author'] ?? $this->settings['author']
                 );
                 $archives[$matches['year']]['posts'] = array();
                 $archives[$matches['year']][$matches['month']]['posts'] = array();

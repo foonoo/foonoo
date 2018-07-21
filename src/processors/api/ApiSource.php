@@ -1,7 +1,10 @@
 <?php
 namespace nyansapow\processors\api;
 
-abstract class Source 
+/**
+ * An abstract class representing a source of API data.
+ */
+abstract class ApiSource 
 {
     protected $sitePath;
     
