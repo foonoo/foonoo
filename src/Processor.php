@@ -47,12 +47,9 @@ abstract class Processor
 
     private function loadExtraAssets()
     {
-        $this->extraAssets = [
-            'css' => [],
-            'js' => []
-        ];
-
+        $this->extraAssets = ['css' => [], 'js' => []];
         $sources = ["np_assets"];
+
         if (isset($this->settings['assets'])) {
             $sources = array_merge(
                 is_array($this->settings['assets']) ?
@@ -82,7 +79,7 @@ abstract class Processor
             $theme = "{$this->dir}/np_themes/{$theme}";
         }
 
-        Nyansapow::copyDir("$theme/copy/*", self::$nyansapow->getDestination() . "/assets");
+        Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");
         TemplateEngine::prependPath("$theme/templates");
         $this->loadExtraAssets();
     }
