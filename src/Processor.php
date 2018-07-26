@@ -22,6 +22,11 @@ abstract class Processor
      */
     protected static $nyansapow;
 
+    /**
+     * Processor constructor.
+     * @param array $settings
+     * @param string $dir
+     */
     private function __construct($settings = array(), $dir = '')
     {
         $this->dir = $dir;
@@ -137,18 +142,20 @@ abstract class Processor
         return $this->getRelativeBaseLocation($this->baseDir . $this->outputPath);
     }
 
+    /**
+     * @param $content
+     * @param array $overrides
+     * @throws \ntentan\honam\exceptions\FileNotFoundException
+     */
     protected function outputPage($content, $overrides = array())
     {
-        $params = array_merge(
-            array(
+        $params = array_merge([
                 'body' => $content,
                 'home_path' => $this->getHomePath(),
                 'site_path' => $this->getSitePath(),
                 'site_name' => $this->settings['name'] ?? '',
-                'date' => date('jS F Y'),
-                'np_extra_js' => $this->extraAssets['js'],
-                'np_extra_css' => $this->extraAssets['css']
-            ),
+                'date' => date('jS F Y')
+            ],
             $overrides
         );
         $webPage = TemplateEngine::render($this->layout, $params);
@@ -212,10 +219,7 @@ abstract class Processor
             $body .= $line;
         }
 
-        return array(
-            'body' => $body,
-            'frontmatter' => $frontmatter
-        );
+        return ['body' => $body, 'frontmatter' => $frontmatter];
     }
 
     private function readFrontMatter($file)
