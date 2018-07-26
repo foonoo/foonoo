@@ -1,1 +1,0 @@
-<?php foreach($templateVariables as $i => $type): ?><?php if($type['type'] == '') continue; if($i > 0) echo "|"; ?><a href="<?= $type['link'] ?>"><?= $type['type'] ?></a><?php endforeach; ?>

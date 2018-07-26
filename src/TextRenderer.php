@@ -17,8 +17,17 @@ class TextRenderer
         return self::$info;
     }
 
+    /**
+     * @param $content
+     * @param $filename
+     * @param array $options
+     * @return string
+     */
     public static function render($content, $filename, $options = [])
     {
+        if($content == "") {
+            return "";
+        }
         libxml_use_internal_errors(true);
         $currentDocument = new \DOMDocument();
         $preParsed = Parser::preParse($content);

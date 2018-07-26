@@ -8,8 +8,11 @@ class Book extends Wiki
         $this->settings['mode'] = 'book';
         parent::init();
     }
-    
-    protected function outputIndexPage() 
+
+    /**
+     * @throws \ntentan\honam\exceptions\FileNotFoundException
+     */
+    protected function outputIndexPage()
     {
         $this->setOutputPath('index.html');
         $this->outputWikiPage(reset($this->pages));
