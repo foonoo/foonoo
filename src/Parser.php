@@ -2,14 +2,30 @@
 
 namespace nyansapow;
 
+/**
+ * Parse text containing special Nyansapow tags
+ *
+ * @package nyansapow
+ */
 class Parser
 {
+    /**
+     * A path to the website base.
+     * @var string
+     */
     private static $pathToBase;
+
+    /**
+     * @var
+     */
     private static $typeIndex;
     private static $pages = [];
     private static $tocTrigger;
 
-
+    /**
+     * All the regular expressions
+     * @var array
+     */
     private static $regexes = array(
         // Match gollum style TOC so that github wikis can be rendered //
         'pre' => array(

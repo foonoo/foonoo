@@ -10,14 +10,16 @@ $parser->addOption([
     'short' => 'i',
     'name' => 'input',
     'type' => 'string',
-    'help' => "specifies where the input files for the site are found."
+    'help' => "specifies where the input files for the site are found.",
+    'required' => true,
 ]);
 
 $parser->addOption([
     'short' => 'o',
     'name' => 'output',
     'type' => 'string',
-    "help" => "specifies where the site should be written to"
+    "help" => "specifies where the site should be written to",
+    'required' => true
 ]);
 
 $parser->addOption([

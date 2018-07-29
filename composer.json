@@ -8,11 +8,13 @@
         "netcarver/textile": "@stable",
 	    "theseer/phpdox": "@stable",
         "ntentan/honam": "dev-dev",
+        "ntentan/panie": "dev-dev",
         "symfony/yaml" : "@stable",
 	    "smarty/smarty": "@stable"
     },
     "require-dev" : {
-        "phing/phing" : "@stable"
+        "phing/phing" : "@stable",
+        "phpunit/phpunit": "@stable"
     },
     "license": "MIT",
     "authors": [

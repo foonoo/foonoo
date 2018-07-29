@@ -90,18 +90,17 @@ class Wiki extends Processor
             }
 
             $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $toc]);
-            $title = isset($content['fontmatter']['title']) ?
-                $content['frontmatter']['title'] : TextRenderer::getTitle();
+            $title = isset($content['fontmatter']['title']) ? $content['frontmatter']['title'] : TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;
 
             if ($this->settings['mode'] === 'book') {
                 $chapter = isset($content['frontmatter']['chapter']) ? $content['frontmatter']['chapter'] : $page['chapter'];
-                $this->toc[] = array(
+                $this->toc[] = [
                     'chapter' => $chapter,
                     'title' => $title,
                     'url' => $page['output'],
                     'children' => TextRenderer::getTableOfContents()
-                );
+                ];
             }
         }
 
@@ -133,18 +132,18 @@ class Wiki extends Processor
         $this->outputPage(
             TemplateEngine::render(
                 'wiki',
-                array(
+                [
                     'book' => $this->settings['mode'] === 'book',
                     'output' => $page['output'],
                     'toc' => $this->toc,
                     'body' => $page['markedup']
-                )
+                ]
             ),
-            array(
+            [
                 'title' => $page['title'],
                 'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
                 'script' => 'wiki'
-            )
+            ]
         );
     }
 }
