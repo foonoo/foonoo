@@ -13,7 +13,7 @@ namespace nyansapow;
  *
  * @author ekow
  */
-class Exception extends \Exception
+class NyansapowException extends \Exception
 {
     //put your code here
 }

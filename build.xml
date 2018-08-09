@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Nyansapow" default="package" basedir="." description="Static site generator">
+
+    <property name="build.dir" value="./build"/>
+    <property name="repo.target" value="./build/code"/>
+    <property name="php.path" value="/usr/bin/php" />
+    <property name="php.composer" value="/usr/bin/composer" />
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+    <target name="package">
+        <echo msg="Creating phar archive"/>
+        <mkdir dir="${build.dir}" />
+        <resolvepath propertyName = "repo.target" file="${build.dir}/code" />
+        <mkdir dir="${repo.target}" />
+        <copy todir="${repo.target}" >
+            <fileset dir="./">
+                <include name="src**" />
+                <include name="composer.json"/>
+            </fileset>
+        </copy>
+        <exec command="git describe --tags" outputProperty="build.version" />
+        <php expression="Phar::createDefaultStub('src/main.php')" returnProperty="pharstub" />
+        <echo msg="#!/usr/bin/env php ${line.separator}&lt;?php define('PHING_BUILD_VERSION', '${build.version}') ?>${line.separator}${pharstub}" file="${repo.target}/cli.php" />
+        <composer command="install" php="${php.path}" composer="${php.composer}">
+            <arg line="--working-dir ${repo.target}" />
+            <arg line="--prefer-dist" />
+            <arg line="--optimize-autoloader" />
+            <arg line="--no-dev" />
+        </composer>
+        <pharpackage stub='${repo.target}/cli.php' destfile='${build.dir}/nyansapow.phar' basedir='${repo.target}'>
+            <fileset dir='${repo.target}' expandsymboliclinks="true">
+                <include name="src**" />
+                <include name="vendor**" />
+                <include name="src/cli.php" />
+            </fileset>
+        </pharpackage>
+        <delete dir="${repo.target}" />
+    </target>
+</project>

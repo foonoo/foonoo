@@ -11,34 +11,41 @@ class TextRenderer
 
     private static function getInfo()
     {
-        if(self::$info === null)
-        {
+        if (self::$info === null) {
             self::$info = finfo_open(FILEINFO_MIME);
         }
         return self::$info;
     }
 
+    /**
+     * @param $content
+     * @param $filename
+     * @param array $options
+     * @return string
+     */
     public static function render($content, $filename, $options = [])
     {
+        if($content == "") return "";
+        libxml_use_internal_errors(true);
         $currentDocument = new \DOMDocument();
         $preParsed = Parser::preParse($content);
-        $markedup = self::parse($preParsed, $filename, is_array($options['data']) ? $options['data'] : [] );
-        @$currentDocument->loadHTML($markedup);
-        self::$title = $currentDocument->getElementsByTagName('h1')->item(0)->textContent;
+        $markedup = self::parse($preParsed, $filename, $options['data'] ?? []);
+        $currentDocument->loadHTML($markedup);
+        if($currentDocument->getElementsByTagName('h1')->item(0)) {
+            self::$title = $currentDocument->getElementsByTagName('h1')->item(0)->textContent;
+        }
         Parser::domCreated($currentDocument);
         $body = $currentDocument->getElementsByTagName('body');
 
-        try
-        {
+        try {
             // Force the parsing of a TOC
-            if($options['toc'])
-            {
+            if (isset($options['toc'])) {
                 throw new TocRequestedException();
             }
+
+            // Could throw a TocRequested exception to force generation of table of contents
             $parsed = Parser::postParse($markedup);
-        }
-        catch (TocRequestedException $e)
-        {
+        } catch (TocRequestedException $e) {
             $parsed = Parser::postParse(
                 str_replace(
                     array('<body>', '</body>'),
@@ -59,18 +66,14 @@ class TextRenderer
     private static function parse($content, $filename, $data)
     {
         $format = pathinfo($filename, PATHINFO_EXTENSION);
-        switch($format)
-        {
+        switch ($format) {
             case 'md':
                 return self::parseMarkdown($content);
 
             default:
-                if(TemplateEngine::canRender($filename))
-                {
+                if (TemplateEngine::canRender($filename)) {
                     return TemplateEngine::renderString($content, $format, $data);
-                }
-                else
-                {
+                } else {
                     return $content;
                 }
         }
@@ -78,7 +81,7 @@ class TextRenderer
 
     private static function parseMarkdown($content)
     {
-        $parsedown = new \ParsedownExtra();
+        $parsedown = new \Parsedown();
         return $parsedown->text($content);
     }
 
