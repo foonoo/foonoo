@@ -3,6 +3,7 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
+use clearice\io\Io;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -16,6 +17,11 @@ class Nyansapow
     private $pages = array();
 
     /**
+     * @var Io
+     */
+    private $io;
+
+    /**
      * Base directory where
      * @var string
      */
@@ -24,30 +30,30 @@ class Nyansapow
 
     /**
      * Nyansapow constructor.
-     * @param $source
-     * @param $destination
+     * @param Io $io
      * @param $options
      * @throws NyansapowException
      */
-    private function __construct($source, $destination, $options)
+    public function __construct(Io $io, $options)
     {
         $this->home = dirname(__DIR__);
-        if ($source == '') {
-            $source = getcwd();
+        if (!isset($options['source']) || $options['source'] === '') {
+            $options['source'] = getcwd();
         }
 
-        if (!file_exists($source) && !is_dir($source)) {
-            throw new NyansapowException("Input directory `{$source}` does not exist or is not a directory.");
+        if (!file_exists($options['source']) && !is_dir($options['source'])) {
+            throw new NyansapowException("Input directory `{$options['source']}` does not exist or is not a directory.");
         }
 
-        if ($destination == '') {
-            $destination = getcwd() . "/output_site";
+        if (!isset($options['output']) || $options['output'] === '') {
+            $options['output'] = getcwd() . "/output_site";
         }
 
-        $this->excludedPaths[] = realpath($destination);
-        $this->source = realpath($source) . '/';
+        $this->excludedPaths[] = realpath($options['output']);
+        $this->source = realpath($options['source']) . '/';
         $this->options = $options;
-        $this->destination = $destination . '/';
+        $this->destination = $options['output'] . '/';
+        $this->io = $io;
     }
 
 
@@ -64,18 +70,6 @@ class Nyansapow
     public function getHome()
     {
         return $this->home;
-    }
-
-    /**
-     * @param $source
-     * @param $destination
-     * @param array $options
-     * @return Nyansapow
-     * @throws NyansapowException
-     */
-    public static function open($source, $destination, $options = array())
-    {
-        return new Nyansapow($source, $destination, $options);
     }
 
     public function isExcluded($path)
@@ -129,6 +123,7 @@ class Nyansapow
     {
         Processor::setup($this);
         $sites = $this->getSites($this->source, true);
+        $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
 
         /**
          * @todo Switch this to ntentan filesystem utilities

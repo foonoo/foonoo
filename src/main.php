@@ -3,6 +3,7 @@ require __DIR__ . "/../vendor/autoload.php";
 
 use nyansapow\Nyansapow;
 use clearice\argparser\ArgumentParser;
+use ntentan\panie\Container;
 
 $parser = new ArgumentParser();
 $parser->addOption([
@@ -32,7 +33,6 @@ $version = defined('PHING_BUILD_VERSION') ? "\nVersion " . PHING_BUILD_VERSION :
 $description = <<<EOT
 nyansapow site generator$version
 
-
 EOT;
 
 echo $description;
@@ -44,8 +44,10 @@ if(!isset($options['input'])) {
     exit();
 }
 
+$container = new Container();
+
 try {
-    $nyansapow = Nyansapow::open($options['input'], $options['output'], $options);
+    $nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
     $nyansapow->write();
 } catch(\Exception $e) {
     print $e->getMessage() . "\n";
