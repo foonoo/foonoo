@@ -1,10 +1,16 @@
 <?php
 
-namespace nyansapow;
+namespace nyansapow\processors;
 
 use ntentan\honam\TemplateEngine;
+use nyansapow\Nyansapow;
+use nyansapow\Parser;
+use clearice\io\Io;
 
-abstract class Processor
+/**
+ * Processors convert the input files into specific final formats.
+ */
+abstract class AbstractProcessor
 {
     protected $settings;
     private $dir;
@@ -20,14 +26,17 @@ abstract class Processor
     /**
      * @var \nyansapow\Nyansapow
      */
-    protected static $nyansapow;
+    protected $nyansapow;
+    protected $io;
 
     /**
      * Processor constructor.
+     *
+     * @param Io $io
      * @param array $settings
      * @param string $dir
      */
-    private function __construct($settings = array(), $dir = '')
+    public function __construct(Nyansapow $nyansapow, Io $io, $settings = [], $dir = '')
     {
         $this->dir = $dir;
         $this->settings = $settings;
@@ -41,6 +50,9 @@ abstract class Processor
         if (isset($settings['theme'])) {
             $this->setTheme($settings['theme']);
         }
+
+        $this->io = $io;
+        $this->nyansapow = $nyansapow;
 
         $this->init();
     }
@@ -71,7 +83,7 @@ abstract class Processor
                 }
             }
 
-            Nyansapow::copyDir("{$this->dir}$source/copy", self::$nyansapow->getDestination() . "/assets");
+            Nyansapow::copyDir("{$this->dir}$source/copy", $this->nyansapow->getDestination() . "/assets");
         }
     }
 
@@ -79,25 +91,14 @@ abstract class Processor
     {
         $this->theme = $theme;
         if (!file_exists("{$this->dir}/np_themes/{$theme}")) {
-            $theme = self::$nyansapow->getHome() . "/themes/{$theme}";
+            $theme = $this->nyansapow->getHome() . "/themes/{$theme}";
         } else {
             $theme = "{$this->dir}/np_themes/{$theme}";
         }
 
-        Nyansapow::copyDir("$theme/assets/*", self::$nyansapow->getDestination() . "/assets");
+        Nyansapow::copyDir("$theme/assets/*", $this->nyansapow->getDestination() . "/assets");
         TemplateEngine::prependPath("$theme/templates");
         $this->loadExtraAssets();
-    }
-
-    public static function setup($nyasapow)
-    {
-        self::$nyansapow = $nyasapow;
-    }
-
-    public static function get($settings, $dir)
-    {
-        $class = "\\nyansapow\\processors\\" . ucfirst($settings['type']);
-        return new $class($settings, $dir);
     }
 
     public function getDir()
@@ -121,11 +122,11 @@ abstract class Processor
         $dir = scandir("{$this->dir}/$base", SCANDIR_SORT_ASCENDING);
         foreach ($dir as $file) {
             $path = "{$this->dir}" . ($base == '' ? '' : "$base/") . "$file";
-            if (self::$nyansapow->isExcluded($path)) continue;
+            if ($this->nyansapow->isExcluded($path)) continue;
             if (is_dir($path) && $recursive) {
                 $files = array_merge($files, $this->getFiles($path, true));
             } else if (!is_dir($path)) {
-                $path = substr($path, strlen(realpath(self::$nyansapow->getSource() . $this->baseDir)));
+                $path = substr($path, strlen(realpath($this->nyansapow->getSource() . $this->baseDir)));
                 $files[] = $path;
             }
         }
@@ -192,12 +193,12 @@ abstract class Processor
 
     protected function getSourcePath($path)
     {
-        return realpath(self::$nyansapow->getSource() . $this->baseDir) . "/" . $path;
+        return realpath($this->nyansapow->getSource() . $this->baseDir) . "/" . $path;
     }
 
     protected function getDestinationPath($path)
     {
-        return self::$nyansapow->getDestination() . $this->baseDir . $path;
+        return $this->nyansapow->getDestination() . $this->baseDir . $path;
     }
 
     protected function readFile($textFile)

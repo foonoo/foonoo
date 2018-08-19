@@ -1,9 +1,11 @@
 <?php
 require __DIR__ . "/../vendor/autoload.php";
 
+use clearice\io\Io;
 use nyansapow\Nyansapow;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
+use nyansapow\processors\ProcessorFactory;
 
 $parser = new ArgumentParser();
 $parser->addOption([
@@ -45,6 +47,9 @@ if(!isset($options['input'])) {
 }
 
 $container = new Container();
+$container->bind(Io::class)->to(Io::class)->asSingleton();
+$container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
+$container->bind(ProcessorFactory::class)->to(ProcessorFactory::class);
 
 try {
     $nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);

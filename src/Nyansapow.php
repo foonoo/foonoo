@@ -3,7 +3,9 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
+use nyansapow\processors\AbstractProcessor;
 use clearice\io\Io;
+use nyansapow\processors\ProcessorFactory;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -11,9 +13,24 @@ use clearice\io\Io;
  */
 class Nyansapow
 {
+    /**
+     * @var array
+     */
     private $options;
+
+    /**
+     * @var string
+     */
     private $source;
+
+    /**
+     * @var string
+     */
     private $destination;
+
+    /**
+     * @var array
+     */
     private $pages = array();
 
     /**
@@ -26,23 +43,34 @@ class Nyansapow
      * @var string
      */
     private $home;
+
+    private $yamlParser;
+
+    private $processorFactory;
+
+    /**
+     * @var array<string>
+     */
     private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml");
 
     /**
      * Nyansapow constructor.
+     * Create an instance of the context object through which Nyansapow works.
+     *
      * @param Io $io
+     * @param \Symfony\Component\Yaml\Parser $yamlParser
      * @param $options
      * @throws NyansapowException
      */
-    public function __construct(Io $io, $options)
+    public function __construct(Io $io, \Symfony\Component\Yaml\Parser $yamlParser, ProcessorFactory $processorFactory, $options)
     {
         $this->home = dirname(__DIR__);
-        if (!isset($options['source']) || $options['source'] === '') {
-            $options['source'] = getcwd();
+        if (!isset($options['input']) || $options['input'] === '') {
+            $options['input'] = getcwd();
         }
 
-        if (!file_exists($options['source']) && !is_dir($options['source'])) {
-            throw new NyansapowException("Input directory `{$options['source']}` does not exist or is not a directory.");
+        if (!file_exists($options['input']) && !is_dir($options['input'])) {
+            throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
         }
 
         if (!isset($options['output']) || $options['output'] === '') {
@@ -50,18 +78,29 @@ class Nyansapow
         }
 
         $this->excludedPaths[] = realpath($options['output']);
-        $this->source = realpath($options['source']) . '/';
+        $this->source = realpath($options['input']) . '/';
         $this->options = $options;
         $this->destination = $options['output'] . '/';
         $this->io = $io;
+        $this->yamlParser = $yamlParser;
+        $this->processorFactory = $processorFactory;
     }
 
-
+    /**
+     * Get the destination where output files are written.
+     * 
+     * @return string
+     */
     public function getDestination()
     {
         return $this->destination;
     }
 
+    /**
+     * Get the source from which content for sites can be retrieved from.
+     * 
+     * @return string
+     */
     public function getSource()
     {
         return $this->source;
@@ -89,8 +128,7 @@ class Nyansapow
         if (file_exists("{$path}site.ini")) {
             $meta = parse_ini_file("{$path}site.ini");
         } else if (file_exists("{$path}site.yml") || file_exists("{$path}site.yaml")) {
-            $parser = new \Symfony\Component\Yaml\Parser();
-            $meta = $parser->parse(file_get_contents("{$path}site.yml"));
+            $meta = $this->yamlParser->parse(file_get_contents("{$path}site.yml"));
         }
 
         return $meta;
@@ -121,7 +159,6 @@ class Nyansapow
 
     public function write()
     {
-        Processor::setup($this);
         $sites = $this->getSites($this->source, true);
         $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
 
@@ -134,6 +171,7 @@ class Nyansapow
         self::mkdir("{$this->destination}/assets/images");
 
         foreach ($sites as $path => $site) {
+            $this->io->output("Generating ${site['type']} from $path\n");
             $baseDir = (string)substr($path, strlen($this->source));
 
             /**
@@ -145,7 +183,7 @@ class Nyansapow
             TemplateEngine::reset();
             TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
 
-            $processor = Processor::get($site, $path);
+            $processor = $this->processorFactory->create($this, $site, $path);
             $processor->setBaseDir($baseDir);
 
             if (isset($site['templates']) && is_array($site['templates'])) {

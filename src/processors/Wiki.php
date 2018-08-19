@@ -2,14 +2,13 @@
 
 namespace nyansapow\processors;
 
-use nyansapow\Processor;
 use nyansapow\TextRenderer;
 use ntentan\honam\TemplateEngine;
 
 /**
  *
  */
-class Wiki extends Processor
+class Wiki extends AbstractProcessor
 {
     protected $pages = array();
     private $indexSet = false;

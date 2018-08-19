@@ -29,7 +29,7 @@
             <arg line="--optimize-autoloader" />
             <arg line="--no-dev" />
         </composer>
-        <pharpackage stub='${repo.target}/cli.php' destfile='${build.dir}/nyansapow.phar' basedir='${repo.target}'>
+        <pharpackage stub='${repo.target}/cli.php' destfile='${build.dir}/nyansapow-${build.version}.phar' basedir='${repo.target}'>
             <fileset dir='${repo.target}' expandsymboliclinks="true">
                 <include name="src**" />
                 <include name="vendor**" />

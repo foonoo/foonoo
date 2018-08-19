@@ -3,10 +3,9 @@
 namespace nyansapow\processors;
 
 use ntentan\honam\TemplateEngine;
-use nyansapow\Processor;
 use nyansapow\TextRenderer;
 
-class Blog extends Processor
+class Blog extends AbstractProcessor
 {
     private $posts = [];
 
