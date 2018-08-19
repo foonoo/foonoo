@@ -67,6 +67,8 @@ class Nyansapow
         $this->home = dirname(__DIR__);
         if (!isset($options['input']) || $options['input'] === '') {
             $options['input'] = getcwd();
+        } else {
+            $options['input'] = realpath($options['input']);
         }
 
         if (!file_exists($options['input']) && !is_dir($options['input'])) {
@@ -78,9 +80,9 @@ class Nyansapow
         }
 
         $this->excludedPaths[] = realpath($options['output']);
-        $this->source = realpath($options['input']) . '/';
+        $this->source = "${options['input']}/";
         $this->options = $options;
-        $this->destination = $options['output'] . '/';
+        $this->destination = "${options['output']}/";
         $this->io = $io;
         $this->yamlParser = $yamlParser;
         $this->processorFactory = $processorFactory;
