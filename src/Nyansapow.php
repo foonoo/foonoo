@@ -163,6 +163,7 @@ class Nyansapow
     {
         $sites = $this->getSites($this->source, true);
         $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
+        $this->io->output("Writing output site to {$this->destination}\n");
 
         /**
          * @todo Switch this to ntentan filesystem utilities

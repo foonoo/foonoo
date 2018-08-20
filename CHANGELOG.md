@@ -5,6 +5,8 @@
 - Dependency injection for loading components
 - Logging of all actions through ClearICE IO
 - Responsive layout for blog generator
+- A `generate` command for the CLI to handle generation of sites
+
 ### Changed
 - Restructured the Processor class system by introducing a `ProcessorFactory` and an `AbstractProcessor` derived from the old `Processor` class. 
 

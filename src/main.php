@@ -8,12 +8,13 @@ use ntentan\panie\Container;
 use nyansapow\processors\ProcessorFactory;
 
 $parser = new ArgumentParser();
+$parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addOption([
     'short' => 'i',
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
-    'required' => true,
+    'command' => 'generate'
 ]);
 
 $parser->addOption([
@@ -21,31 +22,32 @@ $parser->addOption([
     'name' => 'output',
     'type' => 'string',
     "help" => "specifies where the site should be written to",
-    'required' => true
+    'command' => 'generate'
 ]);
 
 $parser->addOption([
     'short' => 'n',
     'name' => 'site-name',
     'type' => 'string',
-    'help' => 'set the name for the entire site'
+    'help' => 'set the name for the entire site',
+    'command' => 'generate'
 ]);
 
-$version = defined('PHING_BUILD_VERSION') ? "\nVersion " . PHING_BUILD_VERSION : "";
+$version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
-nyansapow site generator$version
-
+nyansapow site generator
+$version
 EOT;
 
-echo $description;
 $parser->enableHelp($description);
 $options = $parser->parse();
 
-if(!isset($options['input'])) {
+if(!isset($options['__command'])) {
     echo $parser->getHelpMessage();
     exit();
 }
 
+echo "$description\n\n";
 $container = new Container();
 $container->bind(Io::class)->to(Io::class)->asSingleton();
 $container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
