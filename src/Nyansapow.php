@@ -146,7 +146,10 @@ class Nyansapow
         if (is_array($metaData)) {
             $sites[$path] = $metaData;
         } else if ($metaData === false && $source === true) {
-            $sites[$path] = array('type' => 'site');
+            $sites[$path] = [
+                'type' => $this->options['site-type'],
+                'name' => $this->options['site-name']
+            ];
         }
 
         while (false !== ($file = $dir->read())) {

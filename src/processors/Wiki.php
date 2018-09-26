@@ -12,6 +12,7 @@ class Wiki extends AbstractProcessor
 {
     protected $pages = array();
     private $indexSet = false;
+    private $toc;
 
     public function init()
     {
@@ -56,7 +57,7 @@ class Wiki extends AbstractProcessor
 
     protected function outputIndexPage()
     {
-        if ($this->settings['generate_index']) {
+        if ($this->settings['generate_index'] ?? false) {
 
         }
     }
@@ -83,16 +84,14 @@ class Wiki extends AbstractProcessor
         foreach ($this->pages as $i => $page) {
             $content = $page['content'];
             if (isset($content['frontmatter']['toc'])) {
-                $toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
-            } else {
-                $toc = false;
+                $this->toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
             }
 
-            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $toc]);
-            $title = isset($content['fontmatter']['title']) ? $content['frontmatter']['title'] : TextRenderer::getTitle();
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $this->toc]);
+            $title = $content['frontmatter']['title'] ?? TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;
 
-            if ($this->settings['mode'] === 'book') {
+            if ($this->settings['mode'] ?? 'wiki' === 'book') {
                 $chapter = isset($content['frontmatter']['chapter']) ? $content['frontmatter']['chapter'] : $page['chapter'];
                 $this->toc[] = [
                     'chapter' => $chapter,
@@ -103,7 +102,7 @@ class Wiki extends AbstractProcessor
             }
         }
 
-        if ($this->settings['mode'] === 'book') {
+        if ($this->settings['mode'] ?? 'wiki' === 'book') {
             usort(
                 $this->toc,
                 function ($a, $b) {
@@ -132,7 +131,7 @@ class Wiki extends AbstractProcessor
             TemplateEngine::render(
                 'wiki',
                 [
-                    'book' => $this->settings['mode'] === 'book',
+                    'book' => $this->settings['mode'] ?? 'wiki' === 'book',
                     'output' => $page['output'],
                     'toc' => $this->toc,
                     'body' => $page['markedup']
@@ -140,7 +139,7 @@ class Wiki extends AbstractProcessor
             ),
             [
                 'title' => $page['title'],
-                'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
+                'context' => $this->settings['mode'] ?? 'wiki',
                 'script' => 'wiki'
             ]
         );

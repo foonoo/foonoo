@@ -3,7 +3,7 @@
 namespace nyansapow;
 
 /**
- * Parse text containing special Nyansapow tags
+ * Parse text containing special Nyansapow tags.
  *
  * @package nyansapow
  */
@@ -11,6 +11,7 @@ class Parser
 {
     /**
      * A path to the website base.
+     *
      * @var string
      */
     private static $pathToBase;

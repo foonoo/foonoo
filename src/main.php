@@ -26,6 +26,15 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
+    'short' => 't',
+    'name' => 'site-type',
+    'type' => 'string',
+    'help' => 'Default site type',
+    'default' => 'site',
+    'command' => 'generate'
+]);
+
+$parser->addOption([
     'short' => 'n',
     'name' => 'site-name',
     'type' => 'string',
