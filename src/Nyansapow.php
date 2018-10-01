@@ -3,7 +3,6 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
-use nyansapow\processors\AbstractProcessor;
 use clearice\io\Io;
 use nyansapow\processors\ProcessorFactory;
 
@@ -187,7 +186,7 @@ class Nyansapow
             self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
 
             TemplateEngine::reset();
-            TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
+            //TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
 
             $processor = $this->processorFactory->create($this, $site, $path);
             $processor->setBaseDir($baseDir);

@@ -8,7 +8,9 @@ use nyansapow\Parser;
 use clearice\io\Io;
 
 /**
- * Processors convert the input files into specific final formats.
+ * Processors convert input types into specific types of sites.
+ * Some processors may require folders to be organized in specific arrangements. Others may also just expect a bunch
+ * or markdown files to be transformed.
  */
 abstract class AbstractProcessor
 {

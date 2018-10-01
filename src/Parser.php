@@ -166,36 +166,22 @@ class Parser
         $attributes = self::getImageTagAttributes($matches['options'] ?? '');
         $frameOpen = $frameClose = $style = '';
 
-        if (isset($attributes['float'])) {
-            if ($attributes['align'] == 'right') {
-                $style .= 'float:right;';
-            } else {
-                $style .= 'float:left;';
-            }
-            unset($attributes['float']);
-        }
-
-        if (isset($attributes['frame'])) {
-            if ($attributes['align'] == 'center') {
-                $frameStyle = "style='text-align:center'";
-            }
+        if (!isset($attributes['no-frame'])) {
+            $frameStyle = "";
             if ($matches['alt'] != '') {
-                $caption = "<div class='img-caption'>{$matches['alt']}</div>";
+                $caption = "<span class='img-caption'>{$matches['alt']}</span>";
             }
-            $frameOpen = "<div class='img-frame' $frameStyle >";
-            $frameClose = "$caption</div>";
+            $frameOpen = "<div class='img-wrapper'><div class='img-frame' $frameStyle >";
+            $frameClose = "\n$caption</div></div>";
         }
-        unset($attributes['align']);
-        unset($attributes['frame']);
+        unset($attributes['no-frame']);
 
         $attributeString = '';
         foreach ($attributes as $key => $value) {
             $attributeString .= "$key = '$value' ";
         }
 
-        $style = $style == "" ? '' : "style='$style'";
-        $alt = $matches['alt'] ?? '';
-        return "{$frameOpen}<img $style src='" . self::$pathToBase . "np_images/{$matches['image']}' alt='{$alt}' $attributeString />{$frameClose}";
+        return "{$frameOpen}<img $style src='" . self::$pathToBase . "np_images/{$matches['image']}' alt='{$matches['alt']}' $attributeString />{$frameClose}";
     }
 
     public static function renderPageLink($matches)
