@@ -62,9 +62,6 @@ $container->bind(Io::class)->to(Io::class)->asSingleton();
 $container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
 $container->bind(ProcessorFactory::class)->to(ProcessorFactory::class);
 
-try {
-    $nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
-    $nyansapow->write();
-} catch(\Exception $e) {
-    print $e->getMessage() . "\n";
-}
+$nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
+$nyansapow->write();
+

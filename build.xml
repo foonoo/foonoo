@@ -17,6 +17,7 @@
         <copy todir="${repo.target}" >
             <fileset dir="./">
                 <include name="src**" />
+                <include name="themes**"/>
                 <include name="composer.json"/>
             </fileset>
         </copy>
@@ -34,6 +35,7 @@
                 <include name="src**" />
                 <include name="vendor**" />
                 <include name="src/cli.php" />
+                <include name="themes**" />
             </fileset>
         </pharpackage>
         <delete dir="${repo.target}" />

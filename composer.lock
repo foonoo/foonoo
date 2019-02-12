@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4107df60aaca32e36071ede5754c8b6",
+    "content-hash": "1017b400bc451bc558c22c99afa693cf",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -355,16 +355,16 @@
         },
         {
             "name": "ntentan/honam",
-            "version": "v0.5.1",
+            "version": "dev-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "a3857ccaa96332793bf5136d9f8ec70122a12288"
+                "reference": "58cb1e1f5732d5b135a4ad41074d3014acbb58e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/a3857ccaa96332793bf5136d9f8ec70122a12288",
-                "reference": "a3857ccaa96332793bf5136d9f8ec70122a12288",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/58cb1e1f5732d5b135a4ad41074d3014acbb58e9",
+                "reference": "58cb1e1f5732d5b135a4ad41074d3014acbb58e9",
                 "shasum": ""
             },
             "require": {
@@ -401,7 +401,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2018-08-09T14:56:02+00:00"
+            "time": "2019-02-12T13:17:32+00:00"
         },
         {
             "name": "ntentan/panie",
@@ -2445,7 +2445,7 @@
         "erusev/parsedown": 0,
         "netcarver/textile": 0,
         "theseer/phpdox": 0,
-        "ntentan/honam": 0,
+        "ntentan/honam": 20,
         "ntentan/panie": 0,
         "symfony/yaml": 0,
         "smarty/smarty": 0,

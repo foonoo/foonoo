@@ -66,16 +66,12 @@ class TextRenderer
     private static function parse($content, $filename, $data)
     {
         $format = pathinfo($filename, PATHINFO_EXTENSION);
-        switch ($format) {
-            case 'md':
-                return self::parseMarkdown($content);
-
-            default:
-                if (TemplateEngine::canRender($filename)) {
-                    return TemplateEngine::renderString($content, $format, $data);
-                } else {
-                    return $content;
-                }
+        if ($format == 'md') {
+            return self::parseMarkdown($content);
+        } elseif (TemplateEngine::canRender($filename)) {
+            return TemplateEngine::renderString($content, $format, $data);
+        } else {
+            return $content;
         }
     }
 
@@ -88,8 +84,7 @@ class TextRenderer
     public static function isFileRenderable($file)
     {
         $mimeType = finfo_file(self::getInfo(), $file);
-        return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') ||
-            TemplateEngine::canRender($file);
+        return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') || TemplateEngine::canRender($file);
     }
 
     public static function getTableOfContents()

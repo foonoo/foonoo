@@ -161,7 +161,7 @@ class Nyansapow
         return $sites;
     }
 
-    public function write()
+    private function doSiteWrite()
     {
         $sites = $this->getSites($this->source, true);
         $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
@@ -186,7 +186,6 @@ class Nyansapow
             self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
 
             TemplateEngine::reset();
-            //TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
 
             $processor = $this->processorFactory->create($this, $site, $path);
             $processor->setBaseDir($baseDir);
@@ -207,6 +206,15 @@ class Nyansapow
             }
             $processor->outputSite();
         }
+    }
+
+    public function write()
+    {
+        try {
+            $this->doSiteWrite();
+        } catch(\Exception $e) {
+            $this->io->error("*** Error! Failed to generate site: {$e->getMessage()}.\n");
+        }        
     }
 
     public static function copyDir($source, $destination)
