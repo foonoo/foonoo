@@ -8,6 +8,8 @@ use nyansapow\TextRenderer;
 class Blog extends AbstractProcessor
 {
     private $posts = [];
+    private $archives = [];
+    private $tags = [];
 
     public function init()
     {
@@ -46,14 +48,8 @@ class Blog extends AbstractProcessor
         return $files;
     }
 
-    public function outputSite()
+    private function preProcessFiles($files)
     {
-        $files = $this->getFiles("posts");
-        $tags = array();
-        $categories = array();
-        $archives = array();
-
-        // Preprocess all the files
         foreach ($files as $file) {
             if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[a-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $post = $this->readFile($file);
@@ -71,12 +67,15 @@ class Blog extends AbstractProcessor
                     'file' => $file,
                     'author' => $post['frontmatter']['author'] ?? $this->settings['author']
                 );
-                $archives[$matches['year']]['posts'] = array();
-                $archives[$matches['year']][$matches['month']]['posts'] = array();
-                $archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
+                $this->archives[$matches['year']]['posts'] = array();
+                $this->archives[$matches['year']][$matches['month']]['posts'] = array();
+                $this->archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
             }
         }
+    }
 
+    private function writePosts()
+    {
         foreach ($this->posts as $i => $post) {
             $this->setOutputPath($post['path']);
             $this->posts[$i]['body'] = TextRenderer::render($post['body'], $post['file']);
@@ -95,22 +94,27 @@ class Blog extends AbstractProcessor
 
             $this->outputPage($markedup, ['page_title' => $post['frontmatter']['title']]);
 
-            $archives[$post['info']['year']]['posts'][] = $i;
-            $archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
-            $archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
 
             $articleTags = explode(",", $post['frontmatter']['tags']);
 
             foreach ($articleTags as $tag) {
-                $tags[trim($tag)][] = $i;
+                $this->tags[trim($tag)][] = $i;
             }
         }
+    }
 
-        // Write index page
+    public function outputSite()
+    {
+        $files = $this->getFiles("posts");
+        $categories = array();
+
+        $this->preProcessFiles($files);
+        $this->writePosts();
         $this->writeIndex('index.html');
-        $this->writeArchive($archives, array('months', 'days'), 'years');
-
-        // Write RSS feed
+        $this->writeArchive($this->archives, ['months', 'days'], 'years');
         $this->writeFeed();
 
         // Write categories

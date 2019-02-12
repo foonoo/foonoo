@@ -147,7 +147,7 @@ class Nyansapow
         } else if ($metaData === false && $source === true) {
             $sites[$path] = [
                 'type' => $this->options['site-type'],
-                'name' => $this->options['site-name']
+                'name' => $this->options['site-name'] ?? ''
             ];
         }
 

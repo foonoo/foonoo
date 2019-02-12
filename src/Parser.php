@@ -165,11 +165,14 @@ class Parser
     {
         $attributes = self::getImageTagAttributes($matches['options'] ?? '');
         $frameOpen = $frameClose = $style = '';
+        $caption = '';
+        $alt = '';
 
         if (!isset($attributes['no-frame'])) {
             $frameStyle = "";
-            if ($matches['alt'] != '') {
+            if (isset($matches['alt'])) {
                 $caption = "<span class='img-caption'>{$matches['alt']}</span>";
+                $alt = $matches['alt'];
             }
             $frameOpen = "<div class='img-wrapper'><div class='img-frame' $frameStyle >";
             $frameClose = "\n$caption</div></div>";
@@ -181,7 +184,7 @@ class Parser
             $attributeString .= "$key = '$value' ";
         }
 
-        return "{$frameOpen}<img $style src='" . self::$pathToBase . "np_images/{$matches['image']}' alt='{$matches['alt']}' $attributeString />{$frameClose}";
+        return "{$frameOpen}<img $style src='" . self::$pathToBase . "np_images/{$matches['image']}' alt='{$alt}' $attributeString />{$frameClose}";
     }
 
     public static function renderPageLink($matches)
