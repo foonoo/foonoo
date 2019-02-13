@@ -5,6 +5,7 @@ namespace nyansapow;
 use ntentan\honam\TemplateEngine;
 use clearice\io\Io;
 use nyansapow\processors\ProcessorFactory;
+use \Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -61,7 +62,7 @@ class Nyansapow
      * @param $options
      * @throws NyansapowException
      */
-    public function __construct(Io $io, \Symfony\Component\Yaml\Parser $yamlParser, ProcessorFactory $processorFactory, $options)
+    public function __construct(Io $io, YamlParser $yamlParser, ProcessorFactory $processorFactory, $options)
     {
         $this->home = dirname(__DIR__);
         if (!isset($options['input']) || $options['input'] === '') {
@@ -126,9 +127,7 @@ class Nyansapow
     private function readSiteMeta($path)
     {
         $meta = false;
-        if (file_exists("{$path}site.ini")) {
-            $meta = parse_ini_file("{$path}site.ini");
-        } else if (file_exists("{$path}site.yml") || file_exists("{$path}site.yaml")) {
+        if (file_exists("{$path}site.yml") || file_exists("{$path}site.yaml")) {
             $meta = $this->yamlParser->parse(file_get_contents("{$path}site.yml"));
         }
 
@@ -234,16 +233,15 @@ class Nyansapow
         }
     }
 
-    private static function readData($path)
+    private function readData($path)
     {
         $data = [];
         $dir = dir($path);
-        $parser = new \Symfony\Component\Yaml\Parser();
 
         while (false !== ($file = $dir->read())) {
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             if ($extension === 'yml' || $extension === 'yaml') {
-                $data[pathinfo($file, PATHINFO_FILENAME)] = $parser->parse(file_get_contents("$path/$file"));
+                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->yamlParser->parse(file_get_contents("$path/$file"));
             }
         }
 

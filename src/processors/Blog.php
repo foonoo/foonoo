@@ -51,16 +51,18 @@ class Blog extends AbstractProcessor
     private function preProcessFiles($files)
     {
         foreach ($files as $file) {
-            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[a-z0-9\-\_]*)\.(md)/",$file, $matches)) {
+            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $post = $this->readFile($file);
+                $post['frontmatter']['title'] = $post['frontmatter']['title'] ?? ucfirst(str_replace("-", " ", $matches['title']));
                 $splitPost = $this->splitPost($post['body']);
+                var_dump($post);
                 $this->posts[] = array(
                     'body' => $splitPost['post'],
                     'title' => $post['frontmatter']['title'],
                     'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
                     'preview' => $splitPost['preview'],
                     'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
-                    'category' => $post['frontmatter']['category'],
+                    'category' => $post['frontmatter']['category'] ?? null,
                     'frontmatter' => $post['frontmatter'],
                     'info' => $matches,
                     'more_link' => $splitPost['more_link'],
@@ -98,9 +100,7 @@ class Blog extends AbstractProcessor
             $this->archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
             $this->archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
 
-            $articleTags = explode(",", $post['frontmatter']['tags']);
-
-            foreach ($articleTags as $tag) {
+            foreach ($post['frontmater'] ['tags'] ?? [] as $tag) {
                 $this->tags[trim($tag)][] = $i;
             }
         }

@@ -6,6 +6,8 @@ use ntentan\honam\TemplateEngine;
 use nyansapow\Nyansapow;
 use nyansapow\Parser;
 use clearice\io\Io;
+use \Symfony\Component\Yaml\Parser as YamlParser;
+
 
 /**
  * Processors convert input types into specific types of sites.
@@ -23,6 +25,7 @@ abstract class AbstractProcessor
     private $outputPath;
     protected $data;
     private $extraAssets;
+    private $yamlParser;
     private $frontMatterMarkers = ['---', '<<<', '<<<<', '>>>', '>>>>'];
 
     /**
@@ -38,7 +41,7 @@ abstract class AbstractProcessor
      * @param array $settings
      * @param string $dir
      */
-    public function __construct(Nyansapow $nyansapow, Io $io, $settings = [], $dir = '')
+    public function __construct(Nyansapow $nyansapow, Io $io, YamlParser $yamlParser, $settings = [], $dir = '')
     {
         $this->dir = $dir;
         $this->settings = $settings;
@@ -55,6 +58,7 @@ abstract class AbstractProcessor
 
         $this->io = $io;
         $this->nyansapow = $nyansapow;
+        $this->yamlParser = $yamlParser;
 
         $this->init();
     }
@@ -234,12 +238,7 @@ abstract class AbstractProcessor
             $frontmatter .= $line;
         } while (!feof($file));
 
-        $return = parse_ini_string($frontmatter, true);
-        if ($return == false || count($return) == 0) {
-            $parser = new \Symfony\Component\Yaml\Parser();
-            $return = $parser->parse($frontmatter);
-        }
-        return $return;
+        return $this->yamlParser->parse($frontmatter);
     }
 
     public function setData($data)
