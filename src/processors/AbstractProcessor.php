@@ -7,6 +7,7 @@ use nyansapow\Nyansapow;
 use nyansapow\Parser;
 use clearice\io\Io;
 use \Symfony\Component\Yaml\Parser as YamlParser;
+use \Symfony\Component\Yaml\Exception\ParseException;
 
 
 /**
@@ -215,16 +216,25 @@ abstract class AbstractProcessor
         $body = '';
         $frontmatter = array();
 
-        while (!feof($file)) {
-            $line = fgets($file);
-            if (!$frontmatterRead && !$postStarted && array_search(trim($line), $this->frontMatterMarkers) !== false) {
-                $frontmatter = $this->readFrontMatter($file);
-                $frontmatterRead = true;
-                continue;
+        try {
+            while (!feof($file)) {
+                $line = fgets($file);
+                if (!$frontmatterRead && !$postStarted && array_search(trim($line), $this->frontMatterMarkers) !== false) {
+                    $frontmatter = $this->readFrontMatter($file);
+                    $frontmatterRead = true;
+                    continue;
+                }
+                $postStarted = true;
+                $body .= $line;
             }
-            $postStarted = true;
-            $body .= $line;
+        } catch (ParseException $e) {
+            throw new \Exception("Error parsing front matter for $textFile. {$e->getMessage()}");
         }
+
+        if(!is_array($frontmatter)) {
+            throw new \Exception("Error parsing front matter for $textFile.");
+        }
+
 
         return ['body' => $body, 'frontmatter' => $frontmatter];
     }
@@ -238,7 +248,7 @@ abstract class AbstractProcessor
             $frontmatter .= $line;
         } while (!feof($file));
 
-        return $this->yamlParser->parse($frontmatter);
+        return $this->yamlParser->parse($frontmatter);        
     }
 
     public function setData($data)

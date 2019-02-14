@@ -212,7 +212,7 @@ class Nyansapow
         try {
             $this->doSiteWrite();
         } catch(\Exception $e) {
-            $this->io->error("*** Error! Failed to generate site: {$e->getMessage()}.\n");
+            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
         }        
     }
 

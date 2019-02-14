@@ -55,7 +55,6 @@ class Blog extends AbstractProcessor
                 $post = $this->readFile($file);
                 $post['frontmatter']['title'] = $post['frontmatter']['title'] ?? ucfirst(str_replace("-", " ", $matches['title']));
                 $splitPost = $this->splitPost($post['body']);
-                var_dump($post);
                 $this->posts[] = array(
                     'body' => $splitPost['post'],
                     'title' => $post['frontmatter']['title'],
