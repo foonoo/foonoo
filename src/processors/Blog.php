@@ -221,9 +221,9 @@ class Blog extends AbstractProcessor
         $feed = TemplateEngine::render("feed.tpl.php",
             array(
                 'posts' => $this->posts,
-                'title' => $this->settings['name'],
-                'description' => $this->settings['description'],
-                'url' => $this->settings['url']
+                'title' => $this->settings['name'] ?? 'Untitled Blog',
+                'description' => $this->settings['description'] ?? '',
+                'url' => $this->settings['url'] ?? ''
             )
         );
         $this->setOutputPath("feed.xml");

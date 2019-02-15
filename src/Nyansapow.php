@@ -127,10 +127,13 @@ class Nyansapow
     private function readSiteMeta($path)
     {
         $meta = false;
-        if (file_exists("{$path}site.yml") || file_exists("{$path}site.yaml")) {
-            $meta = $this->yamlParser->parse(file_get_contents("{$path}site.yml"));
+        if (file_exists("{$path}site.yml")) {
+            $file = "{$path}site.yml";
+            $meta = $this->yamlParser->parse(file_get_contents($file));
+        } else if (file_exists("{$path}site.yaml")) {
+            $file = "${path}site.yaml";
+            $meta = $this->yamlParser->parse(file_get_contents($file));
         }
-
         return $meta;
     }
 
