@@ -162,7 +162,22 @@ class Nyansapow
 
         return $sites;
     }
-
+    
+    private function copySiteTemplates($site, $path)
+    {
+        if (isset($site['templates']) && is_array($site['templates'])) {
+            foreach ($site['templates'] as $template) {
+                TemplateEngine::prependPath($path . $template);
+            }
+        } else if (isset($site['templates'])) {
+            TemplateEngine::prependPath($path . $site['templates']);
+        }
+        
+        if (is_dir("{$path}np_templates")) {
+            TemplateEngine::prependPath("{$path}np_templates");
+        }
+    }
+    
     private function doSiteWrite()
     {
         $sites = $this->getSites($this->source, true);
@@ -171,34 +186,23 @@ class Nyansapow
 
         foreach ($sites as $path => $site) {
             $this->io->output("Generating ${site['type']} from $path\n");
-            $baseDir = (string)substr($path, strlen($this->source));
+            $baseDirectory = (string)substr($path, strlen($this->source));
 
             if(is_dir("{$path}np_images")) {
-                self::copyDir("{$path}np_images", "{$this->destination}$baseDir");                
+                self::copyDir("{$path}np_images", "{$this->destination}$baseDirectory");                
             }
             if(is_dir("{$path}np_assets")) {
-                self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");                
+                self::copyDir("{$path}np_assets/*", "{$this->destination}$baseDirectory/assets");                
             }
 
-            TemplateEngine::reset();
-
-            $processor = $this->processorFactory->create($this, $site, $path);
-            $processor->setBaseDir($baseDir);
-
-            if (isset($site['templates']) && is_array($site['templates'])) {
-                foreach ($site['templates'] as $template) {
-                    TemplateEngine::prependPath($path . $template);
-                }
-            } else if (isset($site['templates'])) {
-                TemplateEngine::prependPath($path . $site['templates']);
-            }
-
+            TemplateEngine::reset();                        
+            $processor = $this->processorFactory->create($this, $site, $baseDirectory);
+            $this->copySiteTemplates($site, $path);
+        
             if (is_dir("{$path}np_data")) {
                 $processor->setData(self::readData("{$path}np_data"));
             }
-            if (is_dir("{$path}np_templates")) {
-                TemplateEngine::prependPath("{$path}np_templates");
-            }
+            
             $processor->outputSite();
         }
     }

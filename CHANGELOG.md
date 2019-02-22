@@ -20,6 +20,7 @@
     - Made page narrower
     - Made image styles cleaner 
 - Cleaned up the code for the blog generator
+- Instead of a global assets directory, all assets for a given site are written into the sites' base directory during generation.
 
 ### Fixed
 - Broken wiki front matter title override.

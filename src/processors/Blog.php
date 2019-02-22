@@ -55,10 +55,9 @@ class Blog extends AbstractProcessor
                 $post['frontmatter']['title'] = $post['frontmatter']['title'] ?? ucfirst(str_replace("-", " ", $matches['title']));
                 $splitPost = $this->splitPost($post['body']);
                 $this->posts[] = array(
-                    'body' => $splitPost['post'],
+                    'body_text' => $splitPost['post'],
                     'title' => $post['frontmatter']['title'],
                     'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
-                    'preview' => $splitPost['preview'],
                     'preview_text' => $splitPost['preview'],
                     'continuation' => $splitPost['continuation'],
                     'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
@@ -80,8 +79,10 @@ class Blog extends AbstractProcessor
     {
         foreach ($this->posts as $i => $post) {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = TextRenderer::render($post['body'], $post['file']);
-            $this->posts[$i]['preview'] = TextRenderer::render($post['preview'], $post['file']);
+            $this->posts[$i]['body'] = TextRenderer::render($post['body_text'], $post['file']);
+            $this->posts[$i]['preview'] = TextRenderer::render($post['preview_text'], $post['file']);
+            $this->posts[$i]['home_path'] = $this->getRelativeHomePath();
+            $this->posts[$i]['site_path'] = $this->getRelativeSitePath();
 
             $markedup = TemplateEngine::render(
                 'post',
@@ -118,9 +119,7 @@ class Blog extends AbstractProcessor
         $this->writeFeed();
 
         // Write categories
-
         // Write tags
-
     }
 
     private function formatValue($stage, $value)
@@ -203,17 +202,17 @@ class Blog extends AbstractProcessor
         } else {
             $rebuiltPosts = $this->posts;
         }
-
+        
+        $this->setOutputPath($target);
         $body = TemplateEngine::render(
             'listing',
             array(
                 'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
-                'path_to_base' => $this->getRelativeBaseLocation($target)
+                'site_path' => $this->getRelativeSitePath()
             )
         );
-        $this->setOutputPath($target);
         $this->outputPage($body);
     }
 

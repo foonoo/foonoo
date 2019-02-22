@@ -44,7 +44,8 @@ abstract class AbstractProcessor
      */
     public function __construct(Nyansapow $nyansapow, Io $io, YamlParser $yamlParser, $settings = [], $dir = '')
     {
-        $this->dir = $dir;
+        $this->dir = $nyansapow->getSource() . $dir;
+        $this->baseDir = $dir;
         $this->settings = $settings;
         $this->io = $io;
         $this->nyansapow = $nyansapow;
@@ -56,10 +57,7 @@ abstract class AbstractProcessor
             $this->setLayout('layout');
         }
 
-        if ($settings['theme'] ?? $this->getDefaultTheme()) {
-            $this->setTheme($settings['theme']);
-        }
-
+        $this->setTheme($settings['theme'] ?? $this->getDefaultTheme());
         $this->init();
     }
 
@@ -96,7 +94,7 @@ abstract class AbstractProcessor
             // If a directory named copy exists in the source, just copy it as is
             $copyDir = "{$this->dir}$source/copy";
             if(is_dir($copyDir)) {
-                Nyansapow::copyDir("{$this->dir}$source/copy", $this->nyansapow->getDestination() . "/assets");                
+                Nyansapow::copyDir("{$this->dir}$source/copy", $this->getDestinationPath("assets"));                
             }
         }
     }
@@ -106,32 +104,22 @@ abstract class AbstractProcessor
         $this->theme = $theme;
         $builtInTheme = $this->nyansapow->getHome() . "/themes/{$theme}";
         $customTheme = "{$this->dir}/np_themes/{$theme}";
+        
         if (!file_exists($customTheme)) {
             $themePath = $builtInTheme;
         } else {
             $themePath = $customTheme;
         }
         
-        if(is_dir($themePath)) {
+        if (is_dir($themePath)) {
             if(is_dir("$themePath/assets")) {
-                Nyansapow::copyDir("$themePath/assets/*", $this->nyansapow->getDestination() . "/assets");                
+                Nyansapow::copyDir("$themePath/assets/*", $this->getDestinationPath('assets'));                
             }
             TemplateEngine::prependPath("$themePath/templates");
             $this->loadExtraAssets();            
         } else {
             throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
         }
-        
-    }
-
-    public function getDir()
-    {
-        return $this->dir;
-    }
-
-    public function setBaseDir($baseDir)
-    {
-        $this->baseDir = $baseDir;
     }
 
     protected function setLayout($layout)
@@ -156,12 +144,22 @@ abstract class AbstractProcessor
         return $files;
     }
 
-    protected function getSitePath()
+    /**
+     * Returns the relative path to the site directory.
+     * 
+     * @return type
+     */
+    protected function getRelativeSitePath()
     {
         return $this->getRelativeBaseLocation($this->outputPath);
     }
 
-    protected function getHomePath()
+    /**
+     * Returns the relative path to the base directory of all sites when using multiple sites.
+     * 
+     * @return string
+     */
+    protected function getRelativeHomePath()
     {
         return $this->getRelativeBaseLocation($this->baseDir . $this->outputPath);
     }
@@ -175,8 +173,8 @@ abstract class AbstractProcessor
     {
         $params = array_merge([
                 'body' => $content,
-                'home_path' => $this->getHomePath(),
-                'site_path' => $this->getSitePath(),
+                'home_path' => $this->getRelativeHomePath(),
+                'site_path' => $this->getRelativeSitePath(),
                 'site_name' => $this->settings['name'] ?? '',
                 'date' => date('jS F Y')
             ],
