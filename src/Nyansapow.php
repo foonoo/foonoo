@@ -169,14 +169,6 @@ class Nyansapow
         $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
         $this->io->output("Writing output site to {$this->destination}\n");
 
-        /**
-         * @todo Switch this to ntentan filesystem utilities
-         */
-        self::mkdir("{$this->destination}/assets/css");
-        self::mkdir("{$this->destination}/assets/js");
-        self::mkdir("{$this->destination}/assets/fonts");
-        self::mkdir("{$this->destination}/assets/images");
-
         foreach ($sites as $path => $site) {
             $this->io->output("Generating ${site['type']} from $path\n");
             $baseDir = (string)substr($path, strlen($this->source));
@@ -184,8 +176,12 @@ class Nyansapow
             /**
              * @todo switch this to ntentan filesystem utilities
              */
-            self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
-            self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
+            if(is_dir("{$path}np_images")) {
+                self::copyDir("{$path}np_images", "{$this->destination}$baseDir");                
+            }
+            if(is_dir("{$path}np_assets")) {
+                self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");                
+            }
 
             TemplateEngine::reset();
 
@@ -219,19 +215,27 @@ class Nyansapow
         }        
     }
 
-    public static function copyDir($source, $destination)
+    public function copyDir($source, $destination)
     {
         if (!is_dir($destination) && !file_exists($destination)) {
             self::mkdir($destination);
         }
+        
+        $directory = dirname($source);
+        $files = array_filter(
+            scandir($directory), 
+            function($file) use($source) {
+                return $file != '.' && $file != '..' ? fnmatch(basename($source), $file) : false;
+            });
 
-        foreach (glob($source) as $file) {
-            $newFile = (is_dir($destination) ? "$destination/" : '') . basename("$file");
-            if (is_dir($file)) {
+        foreach ($files as $file) {
+            $newFile = (is_dir($destination) ? "$destination/" : '') . $file;
+            $fullFilePath = "$directory/$file";
+            if (is_dir($fullFilePath)) {
                 self::mkdir($newFile);
-                self::copyDir("$file/*", $newFile);
+                self::copyDir("$fullFilePath/*", $newFile);
             } else {
-                copy($file, $newFile);
+                copy($fullFilePath, $newFile);
             }
         }
     }

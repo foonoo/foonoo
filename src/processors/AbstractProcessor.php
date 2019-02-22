@@ -69,6 +69,10 @@ abstract class AbstractProcessor
 
     }
 
+    /**
+     * Loads any extra assets that are in paths pointed to by the assets directive
+     * in the site.yml metadata.
+     */
     private function loadExtraAssets()
     {
         $this->extraAssets = ['css' => [], 'js' => []];
@@ -90,7 +94,11 @@ abstract class AbstractProcessor
                 }
             }
 
-            Nyansapow::copyDir("{$this->dir}$source/copy", $this->nyansapow->getDestination() . "/assets");
+            // If a directory named copy exists in the source, just copy it as is
+            $copyDir = "{$this->dir}$source/copy";
+            if(is_dir($copyDir)) {
+                Nyansapow::copyDir("{$this->dir}$source/copy", $this->nyansapow->getDestination() . "/assets");                
+            }
         }
     }
 
@@ -102,7 +110,7 @@ abstract class AbstractProcessor
         } else {
             $theme = "{$this->dir}/np_themes/{$theme}";
         }
-
+        
         Nyansapow::copyDir("$theme/assets/*", $this->nyansapow->getDestination() . "/assets");
         TemplateEngine::prependPath("$theme/templates");
         $this->loadExtraAssets();

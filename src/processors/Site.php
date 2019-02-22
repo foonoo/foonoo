@@ -4,6 +4,9 @@ namespace nyansapow\processors;
 
 use nyansapow\TextRenderer;
 
+/**
+ * 
+ */
 class Site extends AbstractProcessor
 {
     public function init()
