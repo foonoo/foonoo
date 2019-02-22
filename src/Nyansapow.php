@@ -173,9 +173,6 @@ class Nyansapow
             $this->io->output("Generating ${site['type']} from $path\n");
             $baseDir = (string)substr($path, strlen($this->source));
 
-            /**
-             * @todo switch this to ntentan filesystem utilities
-             */
             if(is_dir("{$path}np_images")) {
                 self::copyDir("{$path}np_images", "{$this->destination}$baseDir");                
             }

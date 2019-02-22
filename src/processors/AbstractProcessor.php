@@ -46,6 +46,9 @@ abstract class AbstractProcessor
     {
         $this->dir = $dir;
         $this->settings = $settings;
+        $this->io = $io;
+        $this->nyansapow = $nyansapow;
+        $this->yamlParser = $yamlParser;
 
         if (isset($settings['layout'])) {
             $this->setLayout($settings['layout']);
@@ -53,13 +56,9 @@ abstract class AbstractProcessor
             $this->setLayout('layout');
         }
 
-        if (isset($settings['theme'])) {
+        if ($settings['theme'] ?? $this->getDefaultTheme()) {
             $this->setTheme($settings['theme']);
         }
-
-        $this->io = $io;
-        $this->nyansapow = $nyansapow;
-        $this->yamlParser = $yamlParser;
 
         $this->init();
     }
@@ -105,15 +104,24 @@ abstract class AbstractProcessor
     public function setTheme($theme)
     {
         $this->theme = $theme;
-        if (!file_exists("{$this->dir}/np_themes/{$theme}")) {
-            $theme = $this->nyansapow->getHome() . "/themes/{$theme}";
+        $builtInTheme = $this->nyansapow->getHome() . "/themes/{$theme}";
+        $customTheme = "{$this->dir}/np_themes/{$theme}";
+        if (!file_exists($customTheme)) {
+            $themePath = $builtInTheme;
         } else {
-            $theme = "{$this->dir}/np_themes/{$theme}";
+            $themePath = $customTheme;
         }
         
-        Nyansapow::copyDir("$theme/assets/*", $this->nyansapow->getDestination() . "/assets");
-        TemplateEngine::prependPath("$theme/templates");
-        $this->loadExtraAssets();
+        if(is_dir($themePath)) {
+            if(is_dir("$themePath/assets")) {
+                Nyansapow::copyDir("$themePath/assets/*", $this->nyansapow->getDestination() . "/assets");                
+            }
+            TemplateEngine::prependPath("$themePath/templates");
+            $this->loadExtraAssets();            
+        } else {
+            throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
+        }
+        
     }
 
     public function getDir()
@@ -265,4 +273,6 @@ abstract class AbstractProcessor
     }
 
     public abstract function outputSite();
+    
+    protected abstract function getDefaultTheme();
 }

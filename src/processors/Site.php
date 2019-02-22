@@ -9,11 +9,6 @@ use nyansapow\TextRenderer;
  */
 class Site extends AbstractProcessor
 {
-    public function init()
-    {
-        $this->setTheme('site');
-    }
-
     public function outputSite()
     {
         $files = $this->getFiles();
@@ -35,5 +30,9 @@ class Site extends AbstractProcessor
         $path = explode('.', $file);
         $path[count($path) - 1] = 'html';
         return implode('.', $path);
+    }
+
+    protected function getDefaultTheme() {
+        return 'site';
     }
 }

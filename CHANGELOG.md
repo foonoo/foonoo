@@ -15,6 +15,7 @@
 
 ### Changed
 - Restructured the Processor class system by introducing a `ProcessorFactory` and an `AbstractProcessor` derived from the old `Processor` class.
+- Theme setting now completely overrides any built themes.
 - Improved default CSS stylesheets for wiki.
     - Made page narrower
     - Made image styles cleaner 

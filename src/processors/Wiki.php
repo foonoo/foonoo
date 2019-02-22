@@ -14,11 +14,6 @@ class Wiki extends AbstractProcessor
     private $indexSet = false;
     private $toc;
 
-    public function init()
-    {
-        $this->setTheme('wiki');
-    }
-
     private function getPageOutput($page)
     {
         switch ($page) {
@@ -144,4 +139,9 @@ class Wiki extends AbstractProcessor
             ]
         );
     }
+
+    protected function getDefaultTheme() {
+        return 'wiki';
+    }
+
 }

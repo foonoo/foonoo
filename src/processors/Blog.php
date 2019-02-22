@@ -11,17 +11,13 @@ class Blog extends AbstractProcessor
     private $archives = [];
     private $tags = [];
 
-    public function init()
-    {
-        $this->setTheme('blog');
-    }
-
     private function splitPost($post)
     {
         $previewRead = false;
         $lines = explode("\n", $post);
         $preview = '';
         $body = '';
+        $continuation = '';
         $moreLink = false;
 
         foreach ($lines as $line) {
@@ -30,15 +26,18 @@ class Blog extends AbstractProcessor
                 $body .= "{$matches['preview']} {$matches['line']}\n";
                 $previewRead = true;
                 $moreLink = true;
+                $continuation .= "{$matches['line']}\n";
                 continue;
             }
             if (!$previewRead) {
                 $preview .= "$line\n";
+            } else {
+                $continuation .= "$line\n";
             }
             $body .= "$line\n";
         }
 
-        return ['post' => $body, 'preview' => $preview, 'more_link' => $moreLink];
+        return ['post' => $body, 'preview' => $preview, 'more_link' => $moreLink, "continuation" => $continuation];
     }
 
     protected function getFiles($base = '', $recursive = false)
@@ -60,6 +59,8 @@ class Blog extends AbstractProcessor
                     'title' => $post['frontmatter']['title'],
                     'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
                     'preview' => $splitPost['preview'],
+                    'preview_text' => $splitPost['preview'],
+                    'continuation' => $splitPost['continuation'],
                     'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
                     'category' => $post['frontmatter']['category'] ?? null,
                     'frontmatter' => $post['frontmatter'],
@@ -218,7 +219,7 @@ class Blog extends AbstractProcessor
 
     private function writeFeed()
     {
-        $feed = TemplateEngine::render("feed.tpl.php",
+        $feed = TemplateEngine::render("feed",
             array(
                 'posts' => $this->posts,
                 'title' => $this->settings['name'] ?? 'Untitled Blog',
@@ -229,5 +230,9 @@ class Blog extends AbstractProcessor
         $this->setOutputPath("feed.xml");
         $this->setLayout('plain');
         $this->outputPage($feed);
+    }
+
+    protected function getDefaultTheme() {
+        return 'blog';
     }
 }
