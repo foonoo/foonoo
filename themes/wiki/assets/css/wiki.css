@@ -117,12 +117,6 @@ blockquote{
     font-size:smaller;
 }
 
-.img-wrapper {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
 .img-frame{
     display: inline-block;
 }

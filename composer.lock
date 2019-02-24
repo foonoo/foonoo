@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "1017b400bc451bc558c22c99afa693cf",
@@ -359,12 +359,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "58cb1e1f5732d5b135a4ad41074d3014acbb58e9"
+                "reference": "e180edf057f7bdedf7e7828eb25128dc8cb3f309"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/58cb1e1f5732d5b135a4ad41074d3014acbb58e9",
-                "reference": "58cb1e1f5732d5b135a4ad41074d3014acbb58e9",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/e180edf057f7bdedf7e7828eb25128dc8cb3f309",
+                "reference": "e180edf057f7bdedf7e7828eb25128dc8cb3f309",
                 "shasum": ""
             },
             "require": {
@@ -401,7 +401,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2019-02-12T13:17:32+00:00"
+            "time": "2019-02-12T13:38:23+00:00"
         },
         {
             "name": "ntentan/panie",

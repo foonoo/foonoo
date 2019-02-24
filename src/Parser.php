@@ -174,8 +174,8 @@ class Parser
                 $caption = "<span class='img-caption'>{$matches['alt']}</span>";
                 $alt = $matches['alt'];
             }
-            $frameOpen = "<div class='img-wrapper'><div class='img-frame' $frameStyle >";
-            $frameClose = "\n$caption</div></div>";
+            $frameOpen = "<div class='img-frame' $frameStyle >";
+            $frameClose = "\n$caption</div>";
         }
         unset($attributes['no-frame']);
 
