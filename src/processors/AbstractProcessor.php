@@ -8,6 +8,8 @@ use nyansapow\Parser;
 use clearice\io\Io;
 use \Symfony\Component\Yaml\Parser as YamlParser;
 use \Symfony\Component\Yaml\Exception\ParseException;
+use nyansapow\TextRenderer;
+
 
 
 /**
@@ -169,7 +171,7 @@ abstract class AbstractProcessor
      * @param array $overrides
      * @throws \ntentan\honam\exceptions\FileNotFoundException
      */
-    protected function outputPage($content, $overrides = array())
+    protected function writeContentToOutputPath($content, $overrides = array())
     {
         $params = array_merge([
                 'body' => $content,
@@ -181,16 +183,41 @@ abstract class AbstractProcessor
             $overrides
         );
         $webPage = TemplateEngine::render($this->layout, $params);
-        self::writeFile($this->getDestinationPath($this->outputPath), $webPage);
-    }
-
-    protected static function writeFile($path, $contents)
-    {
-        if (!is_dir(dirname($path))) {
-            Nyansapow::mkdir(dirname($path));
+        $outputPath = $this->getDestinationPath($this->outputPath);
+        if (!is_dir(dirname($outputPath))) {
+            Nyansapow::mkdir(dirname($outputPath));
         }
-        file_put_contents($path, $contents);
-    }
+        file_put_contents($outputPath, $webPage);
+    }    
+    
+    /**
+     * Processes a content file from the source directory and writes it to a relative directory.
+     * Content files could be anything from html pages, markdown files and template files. The processing operation
+     * converts the files to a format that is presentable through a browser. Markdown files are rendered and and template 
+     * files are also processed with the appropriate templating engine receiving all the data available to the 
+     * currently active site processor.
+     * 
+     * @param string $file
+     * @param string $outputPath
+     */
+//    protected function processContentFile($file, $outputPath = null)
+//    {
+//        $sourceFile = $this->getSourcePath($file);
+//        if (TextRenderer::isFileRenderable($sourceFile)) {
+//            $content = $this->readFile($file);
+//            
+//            if($outputPath) {
+//                $this->setOutputPath($outputPath);
+//            } else {
+//                $this->setOutputPath(dirname($file) . pathinfo($file, PATHINFO_FILENAME) . '.html');
+//            }
+//            
+//            $markedup = TextRenderer::render($content['body'], $file, ['data' => $this->data]);
+//            $this->writeContentToOutputPath($markedup);
+//        } else {
+//            copy($this->getSourcePath($file), $this->getDestinationPath($file));
+//        }        
+//    }
 
     protected function getRelativeBaseLocation($dir)
     {

@@ -18,18 +18,20 @@ class TextRenderer
     }
 
     /**
+     * Render text
+     * 
      * @param $content
      * @param $filename
      * @param array $options
      * @return string
      */
-    public static function render($content, $filename, $options = [])
+    public static function render($content, $format, $options = [])
     {
         if($content == "") return "";
         libxml_use_internal_errors(true);
         $currentDocument = new \DOMDocument();
         $preParsed = Parser::preParse($content);
-        $markedup = self::parse($preParsed, $filename, $options['data'] ?? []);
+        $markedup = self::parse($preParsed, $format, $options['data'] ?? []);
         $currentDocument->loadHTML($markedup);
         if($currentDocument->getElementsByTagName('h1')->item(0)) {
             self::$title = $currentDocument->getElementsByTagName('h1')->item(0)->textContent;
@@ -63,12 +65,11 @@ class TextRenderer
         return self::$title;
     }
 
-    private static function parse($content, $filename, $data)
+    private static function parse($content, $format, $data)
     {
-        $format = pathinfo($filename, PATHINFO_EXTENSION);
         if ($format == 'md') {
             return self::parseMarkdown($content);
-        } elseif (TemplateEngine::canRender($filename)) {
+        } elseif (TemplateEngine::canRender("dummy.$format")) { // check rendereability of a dummy file with format
             return TemplateEngine::renderString($content, $format, $data);
         } else {
             return $content;

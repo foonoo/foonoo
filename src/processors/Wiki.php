@@ -37,7 +37,8 @@ class Wiki extends AbstractProcessor
             $content = $this->readFile($file);
             $output = $this->getPageOutput($matches['page']);
             $page = array(
-                'file' => $file,
+                //'file' => $file,
+                'format' => pathinfo($file, PATHINFO_EXTENSION),
                 'path' => $path,
                 'page' => $matches['page'],
                 'extension' => $matches['extension'],
@@ -82,7 +83,7 @@ class Wiki extends AbstractProcessor
                 $this->toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
             }
 
-            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $this->toc]);
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['format'], ['toc' => $this->toc]);
             $title = $content['frontmatter']['title'] ?? TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;
 
@@ -122,7 +123,7 @@ class Wiki extends AbstractProcessor
      */
     protected function outputWikiPage($page)
     {
-        $this->outputPage(
+        $this->writeContentToOutputPath(
             TemplateEngine::render(
                 'wiki',
                 [

@@ -42,6 +42,8 @@ $parser->addOption([
     'command' => 'generate'
 ]);
 
+$parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
 nyansapow site generator

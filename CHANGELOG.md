@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Blogs can now generate pages
 - Dependency injection for loading components
 - Logging of all actions through ClearICE IO
 - Responsive layout for blog generator

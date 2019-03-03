@@ -66,6 +66,7 @@ class Blog extends AbstractProcessor
                     'info' => $matches,
                     'more_link' => $splitPost['more_link'],
                     'file' => $file,
+                    'format' => pathinfo($file, PATHINFO_EXTENSION),
                     'author' => $post['frontmatter']['author'] ?? $this->settings['author']
                 );
                 $this->archives[$matches['year']]['posts'] = array();
@@ -79,8 +80,8 @@ class Blog extends AbstractProcessor
     {
         foreach ($this->posts as $i => $post) {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = TextRenderer::render($post['body_text'], $post['file']);
-            $this->posts[$i]['preview'] = TextRenderer::render($post['preview_text'], $post['file']);
+            $this->posts[$i]['body'] = TextRenderer::render($post['body_text'], $post['format']);
+            $this->posts[$i]['preview'] = TextRenderer::render($post['preview_text'], $post['format']);
             $this->posts[$i]['home_path'] = $this->getRelativeHomePath();
             $this->posts[$i]['site_path'] = $this->getRelativeSitePath();
 
@@ -95,7 +96,7 @@ class Blog extends AbstractProcessor
                 )
             );
 
-            $this->outputPage($markedup, ['page_title' => $post['frontmatter']['title']]);
+            $this->writeContentToOutputPath($markedup, ['page_title' => $post['frontmatter']['title']]);
 
             $this->archives[$post['info']['year']]['posts'][] = $i;
             $this->archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
@@ -103,6 +104,27 @@ class Blog extends AbstractProcessor
 
             foreach ($post['frontmater'] ['tags'] ?? [] as $tag) {
                 $this->tags[trim($tag)][] = $i;
+            }
+        }
+    }
+    
+    private function writePages()
+    {
+        if (is_dir($this->getSourcePath('pages'))) {  
+            $files = $this->getFiles("pages");
+            foreach($files as $file) {
+                $content = $this->readFile($file);
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $body = TextRenderer::render($content['body'], pathinfo($file, PATHINFO_EXTENSION));
+                $markedup = TemplateEngine::render('page', ['body' => $body, 'posts' => $this->posts]);
+                $this->setOutputPath("$filename.html");
+                $this->writeContentToOutputPath(
+                    $markedup, 
+                    [
+                        'page_title' => $content['frontmatter']['title'] 
+                            ?? ucfirst(str_replace(['-', '_'], ' ', $filename))
+                    ]
+                );
             }
         }
     }
@@ -115,6 +137,7 @@ class Blog extends AbstractProcessor
         $this->preProcessFiles($files);
         $this->writePosts();
         $this->writeIndex('index.html');
+        $this->writePages();
         $this->writeArchive($this->archives, ['months', 'days'], 'years');
         $this->writeFeed();
 
@@ -213,7 +236,7 @@ class Blog extends AbstractProcessor
                 'site_path' => $this->getRelativeSitePath()
             )
         );
-        $this->outputPage($body);
+        $this->writeContentToOutputPath($body);
     }
 
     private function writeFeed()
@@ -228,7 +251,7 @@ class Blog extends AbstractProcessor
         );
         $this->setOutputPath("feed.xml");
         $this->setLayout('plain');
-        $this->outputPage($feed);
+        $this->writeContentToOutputPath($feed);
     }
 
     protected function getDefaultTheme() {

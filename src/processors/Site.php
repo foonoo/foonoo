@@ -17,8 +17,8 @@ class Site extends AbstractProcessor
             if (TextRenderer::isFileRenderable($sourceFile)) {
                 $content = $this->readFile($file);
                 $this->setOutputPath($this->adjustExtension($file));
-                $markedup = TextRenderer::render($content['body'], $file, ['data' => $this->data]);
-                $this->outputPage($markedup);
+                $markedup = TextRenderer::render($content['body'], pathinfo($file, PATHINFO_EXTENSION), ['data' => $this->data]);
+                $this->writeContentToOutputPath($markedup);
             } else {
                 copy($this->getSourcePath($file), $this->getDestinationPath($file));
             }
