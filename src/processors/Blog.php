@@ -136,7 +136,8 @@ class Blog extends AbstractProcessor
 
         $this->preProcessFiles($files);
         $this->writePosts();
-        $this->writeIndex('index.html');
+        $this->writeIndex('index.html', ['template' => 'index']);
+        $this->writeIndex('posts.html');
         $this->writePages();
         $this->writeArchive($this->archives, ['months', 'days'], 'years');
         $this->writeFeed();
@@ -208,15 +209,16 @@ class Blog extends AbstractProcessor
         foreach ($archive as $value => $posts) {
             $newTitle = $this->formatValue($stage, $value) . " $title";
             $newBaseUrl = "$baseUrl$value/";
-            $this->writeIndex("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
+            $this->writeIndex("{$newBaseUrl}index.html", ['posts' => $posts['posts'], 'title' => $newTitle]);
             if ($nextStage != null) {
                 $this->writeArchive($posts[$nextStage], $order, $nextStage, $newTitle, $newBaseUrl);
             }
         }
     }
 
-    private function writeIndex($target, $posts = array(), $title = null)
+    private function writeIndex($target, $options = [])
     {
+        $posts = $options['posts'] ?? [];
         if (count($posts)) {
             $rebuiltPosts = array();
             foreach ($posts as $post) {
@@ -228,9 +230,9 @@ class Blog extends AbstractProcessor
         
         $this->setOutputPath($target);
         $body = TemplateEngine::render(
-            'listing',
+            $options['template'] ?? 'listing',
             array(
-                'listing_title' => $title,
+                'listing_title' => $options['title'] ?? '',
                 'previews' => true,
                 'posts' => $rebuiltPosts,
                 'site_path' => $this->getRelativeSitePath()

@@ -2,10 +2,12 @@
 
 ## Unreleased
 ### Added
-- Blogs can now generate pages
-- Dependency injection for loading components
+- The possibility generate individual pages rendered from a special pages directory.
+- The generation of a posts.html file which contains all posts from the blog.
+- A dedicated index template to be used or rendering the blog homepage.
+- Dependency injection for loading components.
 - Logging of all actions through ClearICE IO
-- Responsive layout for blog generator
+- A Responsive default layout for blog generator.
 - A `generate` command for the CLI to handle generation of sites
 - A way to specify the default site processor and site name through the command line interface
 
