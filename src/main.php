@@ -115,7 +115,3 @@ $container->bind(ProcessorFactory::class)->to(ProcessorFactory::class);
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);
-
-//$nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
-//$nyansapow->write();
-

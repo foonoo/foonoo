@@ -6,15 +6,14 @@
         "mustache/mustache": "@stable",
         "erusev/parsedown" : "@stable",
         "netcarver/textile": "@stable",
-	    "theseer/phpdox": "@stable",
+        "theseer/phpdox": "@stable",
         "ntentan/honam": "dev-dev",
         "ntentan/panie": "@stable",
         "symfony/yaml" : "@stable",
-	    "smarty/smarty": "@stable"
+        "smarty/smarty": "@stable"
     },
     "require-dev" : {
-        "phing/phing" : "@stable",
-        "phpunit/phpunit": "@stable"
+        "phing/phing" : "@stable"
     },
     "license": "MIT",
     "authors": [
