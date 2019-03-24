@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-- The possibility generate individual pages rendered from a special pages directory.
+- The possibility generate individual non-post pages rendered from a special pages directory.
 - The generation of a posts.html file which contains all posts from the blog.
 - A dedicated index template to be used or rendering the blog homepage.
 - Dependency injection for loading components.
@@ -10,6 +10,7 @@
 - A Responsive default layout for blog generator.
 - A `generate` command for the CLI to handle generation of sites
 - A way to specify the default site processor and site name through the command line interface
+- A `serve` command to serve the website with the PHP server. This command takes all options of the generator except the option to specify the output
 
 ### Removed
 - Removed the frame parameter for image tags. Images are now framed by default and a new `no-frame` tag has been added to remove said frame.

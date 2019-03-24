@@ -44,6 +44,49 @@ $parser->addOption([
 
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
 
+$parser->addOption([
+    'short' => 'i',
+    'name' => 'input',
+    'type' => 'string',
+    'help' => "specifies where the input files for the site are found.",
+    'command' => 'serve'
+]);
+
+$parser->addOption([
+    'short' => 't',
+    'name' => 'site-type',
+    'type' => 'string',
+    'help' => 'Default site type',
+    'default' => 'site',
+    'command' => 'serve'
+]);
+
+$parser->addOption([
+    'short' => 'n',
+    'name' => 'site-name',
+    'type' => 'string',
+    'help' => 'set the name for the entire site',
+    'command' => 'serve'
+]);
+
+$parser->addOption([
+    'short' => 'h',
+    'name' => 'host',
+    'type' => 'string',
+    'help' => 'hostname of interface on which to listen for connections',
+    'default' => 'localhost',
+    'command' => 'serve'
+]);
+
+$parser->addOption([
+    'short' => 'p',
+    'name' => 'port',
+    'type' => 'string',
+    'help' => 'port on which to listen',
+    'default' => '7000',
+    'command' => 'serve'
+]);
+
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
 nyansapow site generator
@@ -54,16 +97,25 @@ $parser->enableHelp($description);
 $options = $parser->parse();
 
 if(!isset($options['__command'])) {
-    echo $parser->getHelpMessage();
-    exit();
+    
+    if(isset($options['__args'][0])) {
+        echo "Unknown command `{$options['__args'][0]}`.\nRun `{$options['__executed']} --help` for more information.\n";
+    } else {
+        echo $parser->getHelpMessage();
+        
+    }
+    exit(1);    
 }
 
-echo "$description\n\n";
+//echo "$description\n\n";
 $container = new Container();
 $container->bind(Io::class)->to(Io::class)->asSingleton();
 $container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
 $container->bind(ProcessorFactory::class)->to(ProcessorFactory::class);
 
-$nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
-$nyansapow->write();
+$commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
+$container->resolve($commandClass)->execute($options);
+
+//$nyansapow = $container->resolve(Nyansapow::class, ['options' => $options]);
+//$nyansapow->write();
 

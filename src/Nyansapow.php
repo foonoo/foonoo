@@ -29,11 +29,6 @@ class Nyansapow
     private $destination;
 
     /**
-     * @var array
-     */
-    private $pages = array();
-
-    /**
      * @var Io
      */
     private $io;
@@ -51,7 +46,7 @@ class Nyansapow
     /**
      * @var array<string>
      */
-    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml");
+    private $excludedPaths = [];
 
     /**
      * Nyansapow constructor.
@@ -65,24 +60,6 @@ class Nyansapow
     public function __construct(Io $io, YamlParser $yamlParser, ProcessorFactory $processorFactory, $options)
     {
         $this->home = dirname(__DIR__);
-        if (!isset($options['input']) || $options['input'] === '') {
-            $options['input'] = getcwd();
-        } else {
-            $options['input'] = realpath($options['input']);
-        }
-
-        if (!file_exists($options['input']) && !is_dir($options['input'])) {
-            throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
-        }
-
-        if (!isset($options['output']) || $options['output'] === '') {
-            $options['output'] = getcwd() . "/output_site";
-        }
-
-        $this->excludedPaths[] = realpath($options['output']);
-        $this->source = "${options['input']}/";
-        $this->options = $options;
-        $this->destination = "${options['output']}/";
         $this->io = $io;
         $this->yamlParser = $yamlParser;
         $this->processorFactory = $processorFactory;
@@ -206,10 +183,32 @@ class Nyansapow
             $processor->outputSite();
         }
     }
+    
+    private function setOptions($options)
+    {
+        if (!isset($options['input']) || $options['input'] === '') {
+            $options['input'] = getcwd();
+        } else {
+            $options['input'] = realpath($options['input']);
+        }
 
-    public function write()
+        if (!file_exists($options['input']) && !is_dir($options['input'])) {
+            throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
+        }
+
+        if (!isset($options['output']) || $options['output'] === '') {
+            $options['output'] = getcwd() . "/output_site";
+        }
+        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml",realpath($options['output'])];
+        $this->source = "${options['input']}/";
+        $this->options = $options;
+        $this->destination = "${options['output']}/";
+    }
+
+    public function write($options)
     {
         try {
+            $this->setOptions($options);
             $this->doSiteWrite();
         } catch(\Exception $e) {
             $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
@@ -267,10 +266,5 @@ class Nyansapow
                 mkdir($dirPath);
             }
         }
-    }
-
-    public function getPages()
-    {
-        return $this->pages;
     }
 }
