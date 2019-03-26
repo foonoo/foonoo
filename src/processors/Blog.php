@@ -229,16 +229,17 @@ class Blog extends AbstractProcessor
         }
         
         $this->setOutputPath($target);
+        $title = $options['title'] ?? '';
         $body = TemplateEngine::render(
             $options['template'] ?? 'listing',
             array(
-                'listing_title' => $options['title'] ?? '',
+                'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
                 'site_path' => $this->getRelativeSitePath()
             )
         );
-        $this->writeContentToOutputPath($body);
+        $this->writeContentToOutputPath($body, ['page_title' => $title]);
     }
 
     private function writeFeed()
