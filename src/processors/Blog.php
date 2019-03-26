@@ -137,7 +137,7 @@ class Blog extends AbstractProcessor
         $this->preProcessFiles($files);
         $this->writePosts();
         $this->writeIndex('index.html', ['template' => 'index']);
-        $this->writeIndex('posts.html');
+        $this->writeIndex('posts.html', ['title' => 'Posts']);
         $this->writePages();
         $this->writeArchive($this->archives, ['months', 'days'], 'years');
         $this->writeFeed();
@@ -232,7 +232,7 @@ class Blog extends AbstractProcessor
         $body = TemplateEngine::render(
             $options['template'] ?? 'listing',
             array(
-                'listing_title' => $options['title'] ?? 'Posts',
+                'listing_title' => $options['title'] ?? '',
                 'previews' => true,
                 'posts' => $rebuiltPosts,
                 'site_path' => $this->getRelativeSitePath()
