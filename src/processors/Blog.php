@@ -232,7 +232,7 @@ class Blog extends AbstractProcessor
         $body = TemplateEngine::render(
             $options['template'] ?? 'listing',
             array(
-                'listing_title' => $options['title'] ?? '',
+                'listing_title' => $options['title'] ?? 'Posts',
                 'previews' => true,
                 'posts' => $rebuiltPosts,
                 'site_path' => $this->getRelativeSitePath()

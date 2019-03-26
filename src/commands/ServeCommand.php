@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace nyansapow\commands;
 
 use nyansapow\CommandInterface;
@@ -27,8 +21,8 @@ class ServeCommand implements CommandInterface
     
     public function execute($options) 
     {
-        $this->io->output("Generating site ...\n");
-        $options['output'] = $this->output;
+        $options['output'] = $options['output'] ?? $this->output;
+        $this->io->output("Generating site to {$options['output']} ...\n");
         $this->generateCommand->execute($options);
         declare(ticks = 1)
         pcntl_signal(SIGINT, [$this, 'shutdown']);
@@ -36,7 +30,7 @@ class ServeCommand implements CommandInterface
         $pipes = [];
         $this->io->output("Starting the web server ...\n");
         $process = proc_open(
-            PHP_BINARY . " -d cli_server.color=1 -S {$options['host']}:{$options['port']} -t {$this->output}", 
+            PHP_BINARY . " -d cli_server.color=1 -S {$options['host']}:{$options['port']} -t {$options['output']}", 
             $spec, $pipes
         );
         while(proc_get_status($process)['running']) {

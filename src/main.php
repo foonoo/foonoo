@@ -10,7 +10,7 @@ use nyansapow\processors\ProcessorFactory;
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addOption([
-    'short' => 'i',
+    'short_name' => 'i',
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
@@ -18,7 +18,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 'o',
+    'short_name' => 'o',
     'name' => 'output',
     'type' => 'string',
     "help" => "specifies where the site should be written to",
@@ -26,7 +26,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 't',
+    'short_name' => 't',
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
@@ -35,7 +35,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 'n',
+    'short_name' => 'n',
     'name' => 'site-name',
     'type' => 'string',
     'help' => 'set the name for the entire site',
@@ -45,7 +45,7 @@ $parser->addOption([
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
 
 $parser->addOption([
-    'short' => 'i',
+    'short_name' => 'i',
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
@@ -53,7 +53,15 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 't',
+    'short_name' => 'o',
+    'name' => 'output',
+    'type' => 'string',
+    "help" => "specifies where the site should be written to",
+    'command' => 'serve'
+]);
+
+$parser->addOption([
+    'short_name' => 't',
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
@@ -62,7 +70,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 'n',
+    'short_name' => 'n',
     'name' => 'site-name',
     'type' => 'string',
     'help' => 'set the name for the entire site',
@@ -70,7 +78,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 'h',
+    'short_name' => 'h',
     'name' => 'host',
     'type' => 'string',
     'help' => 'hostname of interface on which to listen for connections',
@@ -79,7 +87,7 @@ $parser->addOption([
 ]);
 
 $parser->addOption([
-    'short' => 'p',
+    'short_name' => 'p',
     'name' => 'port',
     'type' => 'string',
     'help' => 'port on which to listen',
