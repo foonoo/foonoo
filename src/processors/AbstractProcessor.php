@@ -189,35 +189,6 @@ abstract class AbstractProcessor
         }
         file_put_contents($outputPath, $webPage);
     }    
-    
-    /**
-     * Processes a content file from the source directory and writes it to a relative directory.
-     * Content files could be anything from html pages, markdown files and template files. The processing operation
-     * converts the files to a format that is presentable through a browser. Markdown files are rendered and and template 
-     * files are also processed with the appropriate templating engine receiving all the data available to the 
-     * currently active site processor.
-     * 
-     * @param string $file
-     * @param string $outputPath
-     */
-//    protected function processContentFile($file, $outputPath = null)
-//    {
-//        $sourceFile = $this->getSourcePath($file);
-//        if (TextRenderer::isFileRenderable($sourceFile)) {
-//            $content = $this->readFile($file);
-//            
-//            if($outputPath) {
-//                $this->setOutputPath($outputPath);
-//            } else {
-//                $this->setOutputPath(dirname($file) . pathinfo($file, PATHINFO_FILENAME) . '.html');
-//            }
-//            
-//            $markedup = TextRenderer::render($content['body'], $file, ['data' => $this->data]);
-//            $this->writeContentToOutputPath($markedup);
-//        } else {
-//            copy($this->getSourcePath($file), $this->getDestinationPath($file));
-//        }        
-//    }
 
     protected function getRelativeBaseLocation($dir)
     {
