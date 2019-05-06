@@ -8,22 +8,23 @@
 - Dependency injection for loading components.
 - Logging of all actions through ClearICE IO
 - A Responsive default layout for blog generator.
-- A `generate` command for the CLI to handle generation of sites
-- A way to specify the default site processor and site name through the command line interface
-- A `serve` command to serve the website with the PHP server. This command takes all options of the generator except the option to specify the output
+- A `generate` command for the CLI to handle generation of sites.
+- A way to specify the default site processor and site name through the command line interface.
+- A `serve` command to serve the website with the PHP server. This command takes all options of the generator except the option to specify the output.
+- A `page_type` variable to blog pages on the layout level. This variable can have a value of either `post`, `page` or `index` correspondingly set when rendering posts, pages or any other type of archive listing (including the index page).
 
 ### Removed
 - Removed the frame parameter for image tags. Images are now framed by default and a new `no-frame` tag has been added to remove said frame.
 - Also, image alignments have been removed from the tag. This should be left to be implemented in CSS.
-- Removed the support for the INI format for use in site metadata and page frontmatter
+- Removed the support for the INI format for use in site metadata and page front matter.
 
 ### Changed
 - Restructured the Processor class system by introducing a `ProcessorFactory` and an `AbstractProcessor` derived from the old `Processor` class.
 - Theme setting now completely overrides any built themes.
 - Improved default CSS stylesheets for wiki.
-    - Made page narrower
-    - Made image styles cleaner 
-- Cleaned up the code for the blog generator
+    - Made page narrower.
+    - Made image styles cleaner.
+- Cleaned up the code for the blog generator.
 - Instead of a global assets directory, all assets for a given site are written into the sites' base directory during generation.
 
 ### Fixed

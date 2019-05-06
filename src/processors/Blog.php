@@ -96,7 +96,9 @@ class Blog extends AbstractProcessor
                 )
             );
 
-            $this->writeContentToOutputPath($markedup, ['page_title' => $post['frontmatter']['title']]);
+            $this->writeContentToOutputPath($markedup, 
+                ['page_title' => $post['frontmatter']['title'], 'page_type' => 'post']
+            );
 
             $this->archives[$post['info']['year']]['posts'][] = $i;
             $this->archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
@@ -122,7 +124,8 @@ class Blog extends AbstractProcessor
                     $markedup, 
                     [
                         'page_title' => $content['frontmatter']['title'] 
-                            ?? ucfirst(str_replace(['-', '_'], ' ', $filename))
+                            ?? ucfirst(str_replace(['-', '_'], ' ', $filename)),
+                        'page_type' => 'page'
                     ]
                 );
             }
@@ -239,7 +242,7 @@ class Blog extends AbstractProcessor
                 'site_path' => $this->getRelativeSitePath()
             )
         );
-        $this->writeContentToOutputPath($body, ['page_title' => $title]);
+        $this->writeContentToOutputPath($body, ['page_title' => $title, 'page_type' => 'index']);
     }
 
     private function writeFeed()
