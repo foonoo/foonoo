@@ -2,10 +2,15 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 use clearice\io\Io;
+use ntentan\honam\EngineRegistry;
+use ntentan\honam\factories\PhpEngineFactory;
+use ntentan\honam\TemplateFileResolver;
+use ntentan\honam\TemplateRenderer;
 use nyansapow\Nyansapow;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
-use nyansapow\processors\ProcessorFactory;
+use nyansapow\text\Parser;
+use nyansapow\text\TemplateEngine;
 
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
@@ -115,11 +120,19 @@ if(!isset($options['__command'])) {
     exit(1);    
 }
 
-//echo "$description\n\n";
 $container = new Container();
+
 $container->bind(Io::class)->to(Io::class)->asSingleton();
 $container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
-$container->bind(ProcessorFactory::class)->to(ProcessorFactory::class);
+$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
+$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+$container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+
+$container->bind(EngineRegistry::class)->to(function($container) {
+    $object = new EngineRegistry();
+    $object->registerEngine(["tpl.php"], new PhpEngineFactory());
+    return $object;
+});
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

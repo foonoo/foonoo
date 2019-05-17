@@ -1,11 +1,11 @@
 <?php
 
-namespace nyansapow\processors;
+namespace nyansapow\generators;
 
 use ntentan\honam\TemplateEngine;
 use nyansapow\TextRenderer;
 
-class Blog extends AbstractProcessor
+class BlogGenerator extends AbstractGenerator
 {
     private $posts = [];
     private $archives = [];
@@ -80,12 +80,12 @@ class Blog extends AbstractProcessor
     {
         foreach ($this->posts as $i => $post) {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = TextRenderer::render($post['body_text'], $post['format']);
-            $this->posts[$i]['preview'] = TextRenderer::render($post['preview_text'], $post['format']);
+            $this->posts[$i]['body'] = $this->textProcessors->renderHtml($post['body_text'], $post['format']);
+            $this->posts[$i]['preview'] = $this->textProcessors->renderHtml($post['preview_text'], $post['format']);
             $this->posts[$i]['home_path'] = $this->getRelativeHomePath();
             $this->posts[$i]['site_path'] = $this->getRelativeSitePath();
 
-            $markedup = TemplateEngine::render(
+            $markedup = $this->templateEngine->render(
                 'post',
                 array_merge(
                     $this->posts[$i],
@@ -117,8 +117,8 @@ class Blog extends AbstractProcessor
             foreach($files as $file) {
                 $content = $this->readFile($file);
                 $filename = pathinfo($file, PATHINFO_FILENAME);
-                $body = TextRenderer::render($content['body'], pathinfo($file, PATHINFO_EXTENSION));
-                $markedup = TemplateEngine::render('page', ['body' => $body, 'posts' => $this->posts]);
+                $body = $this->textProcessors->renderHtml($content['body'], pathinfo($file, PATHINFO_EXTENSION));
+                $markedup = $this->templateEngine->render('page', ['body' => $body, 'posts' => $this->posts]);
                 $this->setOutputPath("$filename.html");
                 $this->writeContentToOutputPath(
                     $markedup, 
@@ -233,7 +233,7 @@ class Blog extends AbstractProcessor
         
         $this->setOutputPath($target);
         $title = $options['title'] ?? '';
-        $body = TemplateEngine::render(
+        $body = $this->templateEngine->render(
             $options['template'] ?? 'listing',
             array(
                 'listing_title' => $title,
@@ -247,7 +247,7 @@ class Blog extends AbstractProcessor
 
     private function writeFeed()
     {
-        $feed = TemplateEngine::render("feed",
+        $feed = $this->templateEngine->render("feed",
             array(
                 'posts' => $this->posts,
                 'title' => $this->settings['name'] ?? 'Untitled Blog',

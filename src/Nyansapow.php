@@ -3,8 +3,10 @@
 namespace nyansapow;
 
 use ntentan\honam\TemplateEngine;
+use ntentan\utils\Filesystem;
+use nyansapow\text\Parser as NyansapowParser;
 use clearice\io\Io;
-use nyansapow\processors\ProcessorFactory;
+use nyansapow\generators\GeneratorFactory;
 use \Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
@@ -39,9 +41,15 @@ class Nyansapow
      */
     private $home;
 
+    /**
+     * A YAML parser.
+     * @var YamlParser
+     */
     private $yamlParser;
 
     private $processorFactory;
+    
+    private $parser;
 
     /**
      * @var array<string>
@@ -54,14 +62,15 @@ class Nyansapow
      *
      * @param Io $io
      * @param \Symfony\Component\Yaml\Parser $yamlParser
-     * @param $options
-     * @throws NyansapowException
+     * @param GeneratorFactory $processorFactory
+     * @param NyansapowParser $parser
      */
-    public function __construct(Io $io, YamlParser $yamlParser, ProcessorFactory $processorFactory, $options)
+    public function __construct(Io $io, YamlParser $yamlParser, GeneratorFactory $processorFactory, NyansapowParser $parser)
     {
         $this->home = dirname(__DIR__);
         $this->io = $io;
         $this->yamlParser = $yamlParser;
+        $this->parser = $parser;
         $this->processorFactory = $processorFactory;
     }
 
@@ -88,17 +97,6 @@ class Nyansapow
     public function getHome()
     {
         return $this->home;
-    }
-
-    public function isExcluded($path)
-    {
-        foreach ($this->excludedPaths as $excludedPath) {
-            if (fnmatch($excludedPath, $path)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function readSiteMeta($path)
@@ -131,7 +129,11 @@ class Nyansapow
         }
 
         while (false !== ($file = $dir->read())) {
-            if ($this->isExcluded("{$path}{$file}")) continue;
+            if (array_reduce(
+                $this->excludedPaths,
+                function ($carry, $item) use($path, $file) {return $carry | fnmatch($item, "{$path}{$file}"); },
+                false)
+            ) continue;
             if (is_dir("{$path}{$file}")) {
                 $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
             }
@@ -165,15 +167,22 @@ class Nyansapow
             $this->io->output("Generating ${site['type']} from $path\n");
             $baseDirectory = (string)substr($path, strlen($this->source));
 
+            $site['base_directory'] = $baseDirectory;
+            $site['source'] = $this->source;
+            $site['destination'] = $this->destination;
+            $site['path'] = $path;
+            $site['home_path'] = $this->home;
+            $site['excluded_paths'] = $this->excludedPaths;
+
             if(is_dir("{$path}np_images")) {
-                self::copyDir("{$path}np_images", "{$this->destination}$baseDirectory");                
-            }
-            if(is_dir("{$path}np_assets")) {
-                self::copyDir("{$path}np_assets/*", "{$this->destination}$baseDirectory/assets");                
+                Filesystem::get("{$path}np_images")->copyTo("{$this->destination}$baseDirectory");
             }
 
-            TemplateEngine::reset();                        
-            $processor = $this->processorFactory->create($this, $site, $baseDirectory);
+            if(is_dir("{$path}np_assets")) {
+                Filesystem::get("{$path}np_assets/*", "{$this->destination}$baseDirectory/assets");
+            }
+
+            $processor = $this->processorFactory->create($site);
             $this->copySiteTemplates($site, $path);
         
             if (is_dir("{$path}np_data")) {
@@ -199,7 +208,7 @@ class Nyansapow
         if (!isset($options['output']) || $options['output'] === '') {
             $options['output'] = getcwd() . "/output_site";
         }
-        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml",realpath($options['output'])];
+        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", realpath($options['output'])];
         $this->source = "${options['input']}/";
         $this->options = $options;
         $this->destination = "${options['output']}/";
@@ -207,64 +216,12 @@ class Nyansapow
 
     public function write($options)
     {
-        try {
+        //try {
             $this->setOptions($options);
             $this->doSiteWrite();
-        } catch(\Exception $e) {
-            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
-        }        
-    }
-
-    public function copyDir($source, $destination)
-    {
-        if (!is_dir($destination) && !file_exists($destination)) {
-            self::mkdir($destination);
-        }
-        
-        $directory = dirname($source);
-        $files = array_filter(
-            scandir($directory), 
-            function($file) use($source) {
-                return $file != '.' && $file != '..' ? fnmatch(basename($source), $file) : false;
-            });
-
-        foreach ($files as $file) {
-            $newFile = (is_dir($destination) ? "$destination/" : '') . $file;
-            $fullFilePath = "$directory/$file";
-            if (is_dir($fullFilePath)) {
-                self::mkdir($newFile);
-                self::copyDir("$fullFilePath/*", $newFile);
-            } else {
-                copy($fullFilePath, $newFile);
-            }
-        }
-    }
-
-    private function readData($path)
-    {
-        $data = [];
-        $dir = dir($path);
-
-        while (false !== ($file = $dir->read())) {
-            $extension = pathinfo($file, PATHINFO_EXTENSION);
-            if ($extension === 'yml' || $extension === 'yaml') {
-                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->yamlParser->parse(file_get_contents("$path/$file"));
-            }
-        }
-
-        return $data;
-    }
-
-    public static function mkdir($path)
-    {
-        $path = explode('/', $path);
-        $dirPath = '';
-
-        foreach ($path as $dir) {
-            $dirPath .= "$dir/";
-            if (!is_dir($dirPath)) {
-                mkdir($dirPath);
-            }
-        }
+//        } catch(\Exception $e) {
+//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+//            exit(102);
+//        }
     }
 }

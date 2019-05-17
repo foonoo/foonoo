@@ -1,6 +1,6 @@
 <?php
 
-namespace nyansapow;
+namespace nyansapow\text;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.

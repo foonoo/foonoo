@@ -10,7 +10,10 @@
         "ntentan/honam": "dev-dev",
         "ntentan/panie": "@stable",
         "symfony/yaml" : "@stable",
-        "smarty/smarty": "@stable"
+        "smarty/smarty": "@stable",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-fileinfo": "*"
     },
     "require-dev" : {
         "phing/phing" : "@stable"

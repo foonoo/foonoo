@@ -1,15 +1,11 @@
 <?php
 
-namespace nyansapow\processors;
+namespace nyansapow\generators;
 
-use ntentan\honam\TemplateEngine;
-use nyansapow\Nyansapow;
-use nyansapow\Parser;
 use clearice\io\Io;
-use \Symfony\Component\Yaml\Parser as YamlParser;
-use \Symfony\Component\Yaml\Exception\ParseException;
-use nyansapow\TextRenderer;
-
+use nyansapow\text\TemplateEngine;
+use nyansapow\text\TextProcessors;
+use ntentan\utils\Filesystem;
 
 
 /**
@@ -17,41 +13,50 @@ use nyansapow\TextRenderer;
  * Some processors may require folders to be organized in specific arrangements. Others may also just expect a bunch
  * or markdown files to be transformed.
  */
-abstract class AbstractProcessor
+abstract class AbstractGenerator
 {
+    /**
+     * The settings stored under the directory of this particular processor
+     */
     protected $settings;
-    private $dir;
+
+    /**
+     * Path to the directory of this particular processor
+     */
+    //private $dir;
     private $layout;
-    protected $baseDir;
+    //protected $baseDir;
     private $theme;
     protected $templates;
     private $outputPath;
     protected $data;
     private $extraAssets;
-    private $yamlParser;
+    protected $textProcessors;
+    protected $templateEngine;
     private $frontMatterMarkers = ['---', '<<<', '<<<<', '>>>', '>>>>'];
 
     /**
      * @var \nyansapow\Nyansapow
      */
-    protected $nyansapow;
-    protected $io;
+    //protected $nyansapow;
 
     /**
      * Processor constructor.
      *
+     * @param TextProcessors $textProcessors
      * @param Io $io
      * @param array $settings
-     * @param string $dir
+     * @throws \Exception
      */
-    public function __construct(Nyansapow $nyansapow, Io $io, YamlParser $yamlParser, $settings = [], $dir = '')
+    public function __construct(TextProcessors $textProcessors, TemplateEngine $templateEngine, $settings = [])
     {
-        $this->dir = $nyansapow->getSource() . $dir;
-        $this->baseDir = $dir;
+        //var_dump($settings);
+        //$this->settings['path'] = $settings['source'] . $settings['base_directory'];
+        //$this->settings['base_directory'] = $dir;
         $this->settings = $settings;
-        $this->io = $io;
-        $this->nyansapow = $nyansapow;
-        $this->yamlParser = $yamlParser;
+        $this->templateEngine = $templateEngine;
+        $this->textProcessors = $textProcessors;
+        //$this->nyansapow = $nyansapow;
 
         if (isset($settings['layout'])) {
             $this->setLayout($settings['layout']);
@@ -60,12 +65,22 @@ abstract class AbstractProcessor
         }
 
         $this->setTheme($settings['theme'] ?? $this->getDefaultTheme());
-        $this->init();
     }
 
-    public function init()
-    {
+//    public function init()
+//    {
+//
+//    }
 
+    private function isExcluded($path)
+    {
+        foreach ($this->settings['excluded_paths'] as $excludedPath) {
+            if (fnmatch($excludedPath, $path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -87,25 +102,25 @@ abstract class AbstractProcessor
 
         foreach ($sources as $source) {
             foreach (['js', 'css'] as $type) {
-                $files = glob("{$this->dir}$source/$type/*.$type");
+                $files = glob("{$this->settings['path']}$source/$type/*.$type");
                 foreach ($files as $file) {
                     $this->extraAssets[$type][] = "$type/" . basename($file);
                 }
             }
 
             // If a directory named copy exists in the source, just copy it as is
-            $copyDir = "{$this->dir}$source/copy";
+            $copyDir = "{$this->settings['path']}$source/copy";
             if(is_dir($copyDir)) {
-                Nyansapow::copyDir("{$this->dir}$source/copy", $this->getDestinationPath("assets"));                
+                Nyansapow::copyDir("{$this->settings['path']}$source/copy", $this->getDestinationPath("assets"));
             }
         }
     }
 
-    public function setTheme($theme)
+    protected function setTheme($theme)
     {
         $this->theme = $theme;
-        $builtInTheme = $this->nyansapow->getHome() . "/themes/{$theme}";
-        $customTheme = "{$this->dir}/np_themes/{$theme}";
+        $builtInTheme = "{$this->settings['home_path']}/themes/{$theme}";
+        $customTheme = "{$this->settings['path']}/np_themes/{$theme}";
         
         if (!file_exists($customTheme)) {
             $themePath = $builtInTheme;
@@ -115,9 +130,9 @@ abstract class AbstractProcessor
         
         if (is_dir($themePath)) {
             if(is_dir("$themePath/assets")) {
-                Nyansapow::copyDir("$themePath/assets/*", $this->getDestinationPath('assets'));                
+                Filesystem::get("$themePath/assets")->copyTo($this->getDestinationPath('assets'));
             }
-            TemplateEngine::prependPath("$themePath/templates");
+            $this->templateEngine->prependPath("$themePath/templates");
             $this->loadExtraAssets();            
         } else {
             throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
@@ -132,14 +147,19 @@ abstract class AbstractProcessor
     protected function getFiles($base = '', $recursive = false)
     {
         $files = array();
-        $dir = scandir("{$this->dir}/$base", SCANDIR_SORT_ASCENDING);
+        $dir = scandir("{$this->settings['path']}/$base", SCANDIR_SORT_ASCENDING);
         foreach ($dir as $file) {
-            $path = "{$this->dir}" . ($base == '' ? '' : "$base/") . "$file";
-            if ($this->nyansapow->isExcluded($path)) continue;
+            $path = "{$this->settings['path']}" . ($base == '' ? '' : "$base/") . "$file";
+            //if ($this->isExcluded($path)) continue;
+            if (array_reduce(
+                $this->settings['excluded_paths'],
+                function ($carry, $item) use($path) {return $carry | fnmatch($item, $path); },false)
+            ) continue;
             if (is_dir($path) && $recursive) {
                 $files = array_merge($files, $this->getFiles($path, true));
             } else if (!is_dir($path)) {
-                $path = substr($path, strlen(realpath($this->nyansapow->getSource() . $this->baseDir)));
+                //@todo replace $this->>settings ... with $this->settings['path']
+                $path = substr($path, strlen(realpath($this->settings['source'] . $this->settings['base_directory'])));
                 $files[] = $path;
             }
         }
@@ -163,7 +183,7 @@ abstract class AbstractProcessor
      */
     protected function getRelativeHomePath()
     {
-        return $this->getRelativeBaseLocation($this->baseDir . $this->outputPath);
+        return $this->getRelativeBaseLocation($this->settings['base_directory'] . $this->outputPath);
     }
 
     /**
@@ -182,10 +202,10 @@ abstract class AbstractProcessor
             ],
             $overrides
         );
-        $webPage = TemplateEngine::render($this->layout, $params);
+        $webPage = $this->templateEngine->render($this->layout, $params);
         $outputPath = $this->getDestinationPath($this->outputPath);
         if (!is_dir(dirname($outputPath))) {
-            Nyansapow::mkdir(dirname($outputPath));
+            Filesystem::get(dirname($outputPath));
         }
         file_put_contents($outputPath, $webPage);
     }    
@@ -207,17 +227,17 @@ abstract class AbstractProcessor
             $path = substr($path, 1);
         }
         $this->outputPath = $path;
-        Parser::setPathToBase($this->getRelativeBaseLocation($path));
+        $this->textProcessors->setPathToBase($this->getRelativeBaseLocation($path));
     }
 
     protected function getSourcePath($path)
     {
-        return realpath($this->nyansapow->getSource() . $this->baseDir) . "/" . $path;
+        return realpath($this->settings['source'] . $this->settings['base_directory']) . "/" . $path;
     }
 
     protected function getDestinationPath($path)
     {
-        return $this->nyansapow->getDestination() . $this->baseDir . $path;
+        return $this->settings["destination"] . $this->settings['base_directory'] . $path;
     }
 
     protected function readFile($textFile)
@@ -260,7 +280,7 @@ abstract class AbstractProcessor
             $frontmatter .= $line;
         } while (!feof($file));
 
-        return $this->yamlParser->parse($frontmatter);        
+        return $this->textProcessors->parseYaml($frontmatter);
     }
 
     public function setData($data)
