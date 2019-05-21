@@ -2,11 +2,14 @@
 
 namespace nyansapow;
 
-use ntentan\honam\TemplateEngine;
+use Exception;
+use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use nyansapow\text\Parser as NyansapowParser;
 use clearice\io\Io;
 use nyansapow\generators\GeneratorFactory;
+use nyansapow\text\TemplateEngine;
+use nyansapow\text\TextProcessors;
 use \Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
@@ -41,42 +44,43 @@ class Nyansapow
      */
     private $home;
 
-    /**
-     * A YAML parser.
-     * @var YamlParser
-     */
-    private $yamlParser;
-
     private $processorFactory;
-    
-    private $parser;
 
     /**
      * @var array<string>
      */
     private $excludedPaths = [];
+    /**
+     * @var TextProcessors
+     */
+    private $textProcessors;
+    /**
+     * @var TemplateEngine
+     */
+    private $templateEngine;
+
 
     /**
      * Nyansapow constructor.
      * Create an instance of the context object through which Nyansapow works.
      *
      * @param Io $io
-     * @param \Symfony\Component\Yaml\Parser $yamlParser
+     * @param YamlParser $yamlParser
      * @param GeneratorFactory $processorFactory
      * @param NyansapowParser $parser
      */
-    public function __construct(Io $io, YamlParser $yamlParser, GeneratorFactory $processorFactory, NyansapowParser $parser)
+    public function __construct(Io $io, GeneratorFactory $processorFactory, TextProcessors $textProcessors, TemplateEngine $templateEngine)
     {
         $this->home = dirname(__DIR__);
         $this->io = $io;
-        $this->yamlParser = $yamlParser;
-        $this->parser = $parser;
         $this->processorFactory = $processorFactory;
+        $this->textProcessors = $textProcessors;
+        $this->templateEngine = $templateEngine;
     }
 
     /**
      * Get the destination where output files are written.
-     * 
+     *
      * @return string
      */
     public function getDestination()
@@ -86,7 +90,7 @@ class Nyansapow
 
     /**
      * Get the source from which content for sites can be retrieved from.
-     * 
+     *
      * @return string
      */
     public function getSource()
@@ -104,10 +108,10 @@ class Nyansapow
         $meta = false;
         if (file_exists("{$path}site.yml")) {
             $file = "{$path}site.yml";
-            $meta = $this->yamlParser->parse(file_get_contents($file));
+            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
         } else if (file_exists("{$path}site.yaml")) {
             $file = "${path}site.yaml";
-            $meta = $this->yamlParser->parse(file_get_contents($file));
+            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
         }
         return $meta;
     }
@@ -131,7 +135,9 @@ class Nyansapow
         while (false !== ($file = $dir->read())) {
             if (array_reduce(
                 $this->excludedPaths,
-                function ($carry, $item) use($path, $file) {return $carry | fnmatch($item, "{$path}{$file}"); },
+                function ($carry, $item) use ($path, $file) {
+                    return $carry | fnmatch($item, "{$path}{$file}");
+                },
                 false)
             ) continue;
             if (is_dir("{$path}{$file}")) {
@@ -141,22 +147,22 @@ class Nyansapow
 
         return $sites;
     }
-    
+
     private function copySiteTemplates($site, $path)
     {
         if (isset($site['templates']) && is_array($site['templates'])) {
             foreach ($site['templates'] as $template) {
-                TemplateEngine::prependPath($path . $template);
+                $this->templateEngine->prependPath($path . $template);
             }
         } else if (isset($site['templates'])) {
-            TemplateEngine::prependPath($path . $site['templates']);
+            $this->templateEngine->prependPath($path . $site['templates']);
         }
-        
+
         if (is_dir("{$path}np_templates")) {
-            TemplateEngine::prependPath("{$path}np_templates");
+            $this->templateEngine->prependPath("{$path}np_templates");
         }
     }
-    
+
     private function doSiteWrite()
     {
         $sites = $this->getSites($this->source, true);
@@ -174,25 +180,37 @@ class Nyansapow
             $site['home_path'] = $this->home;
             $site['excluded_paths'] = $this->excludedPaths;
 
-            if(is_dir("{$path}np_images")) {
-                Filesystem::get("{$path}np_images")->copyTo("{$this->destination}$baseDirectory");
+            if (is_dir("{$path}np_images")) {
+                $imagesDestination = "{$this->destination}$baseDirectory/np_images";
+                try {
+                    Filesystem::get($imagesDestination)->delete();
+                } catch (FileNotFoundException $e) {
+
+                }
+                Filesystem::get("{$path}np_images")->copyTo($imagesDestination);
             }
 
-            if(is_dir("{$path}np_assets")) {
-                Filesystem::get("{$path}np_assets/*", "{$this->destination}$baseDirectory/assets");
+            if (is_dir("{$path}np_assets")) {
+                $assetsDestination = "{$this->destination}$baseDirectory/assets";
+                try {
+                    Filesystem::get($assetsDestination)->delete();
+                } catch (FileNotFoundException $e) {
+
+                }
+                //Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
             }
 
             $processor = $this->processorFactory->create($site);
             $this->copySiteTemplates($site, $path);
-        
+
             if (is_dir("{$path}np_data")) {
-                $processor->setData(self::readData("{$path}np_data"));
+                $processor->setData($this->readData("{$path}np_data"));
             }
-            
+
             $processor->outputSite();
         }
     }
-    
+
     private function setOptions($options)
     {
         if (!isset($options['input']) || $options['input'] === '') {
@@ -219,9 +237,22 @@ class Nyansapow
         //try {
             $this->setOptions($options);
             $this->doSiteWrite();
-//        } catch(\Exception $e) {
+//        } catch (Exception $e) {
 //            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
 //            exit(102);
 //        }
+    }
+
+    private function readData($path)
+    {
+        $data = [];
+        $dir = dir($path);
+        while (false !== ($file = $dir->read())) {
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+            if ($extension === 'yml' || $extension === 'yaml') {
+                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->textProcessors->parseYaml(file_get_contents("$path/$file"));
+            }
+        }
+        return $data;
     }
 }

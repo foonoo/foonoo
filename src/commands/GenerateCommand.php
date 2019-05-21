@@ -13,14 +13,14 @@ use nyansapow\Nyansapow;
 class GenerateCommand implements CommandInterface
 {
     private $nyansapow;
-    
-    public function __construct(Nyansapow $nyansapow) 
+
+    public function __construct(Nyansapow $nyansapow)
     {
         $this->nyansapow = $nyansapow;
     }
-    
-    
-    public function execute($options) 
+
+
+    public function execute($options)
     {
         $this->nyansapow->write($options);
     }

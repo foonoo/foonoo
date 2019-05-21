@@ -3,6 +3,7 @@
 namespace nyansapow\text;
 
 use DOMDocument;
+use ntentan\honam\TemplateRenderer;
 use nyansapow\TocRequestedException;
 
 class HtmlRenderer
@@ -11,10 +12,15 @@ class HtmlRenderer
     private $info = null;
     private $parser;
     private $dom;
+    /**
+     * @var TemplateRenderer
+     */
+    private $templateRenderer;
 
-    public function __construct(Parser $parser, DOMDocument $dom)
+    public function __construct(Parser $parser, TemplateRenderer $templateRenderer, DOMDocument $dom)
     {
         $this->parser = $parser;
+        $this->templateRenderer = $templateRenderer;
         $this->dom = $dom;
     }
 
@@ -73,8 +79,8 @@ class HtmlRenderer
     {
         if ($format == 'md') {
             return $this->parseMarkdown($content);
-        } elseif (TemplateEngine::canRender("dummy.$format")) { // check rendereability of a dummy file with format
-            return TemplateEngine::renderString($content, $format, $data);
+        } elseif ($this->templateRenderer->canRender("dummy.$format")) { // check rendereability of a dummy file with format
+            return $this->templateRenderer->render($content, $data, true, $format);
         } else {
             return $content;
         }
@@ -89,21 +95,21 @@ class HtmlRenderer
     public function isFileRenderable($file)
     {
         $mimeType = finfo_file($this->getInfo(), $file);
-        return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') || TemplateEngine::canRender($file);
+        return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') || $this->templateRenderer->canRender($file);
     }
 
-    public function getTableOfContents()
-    {
-        return Parser::getTableOfContents();
-    }
+//    public function getTableOfContents()
+//    {
+//        return $this->templateRenderer->getTableOfContents();
+//    }
 
-    public function setTypeIndex($typeIndex)
-    {
-        Parser::setTypeIndex($typeIndex);
-    }
-
-    public function setPages($pages)
-    {
-        Parser::setPages($pages);
-    }
+//    public function setTypeIndex($typeIndex)
+//    {
+//        Parser::setTypeIndex($typeIndex);
+//    }
+//
+//    public function setPages($pages)
+//    {
+//        Parser::setPages($pages);
+//    }
 }

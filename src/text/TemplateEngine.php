@@ -1,8 +1,5 @@
 <?php
-
-
 namespace nyansapow\text;
-
 
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;

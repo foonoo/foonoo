@@ -1,23 +1,21 @@
 <?php
 
-namespace nyansapow\processors;
-
-use nyansapow\TextRenderer;
+namespace nyansapow\generators;
 
 /**
  * 
  */
-class Site extends AbstractProcessor
+class SiteGenerator extends AbstractGenerator
 {
     public function outputSite()
     {
         $files = $this->getFiles();
         foreach ($files as $file) {
             $sourceFile = $this->getSourcePath($file);
-            if (TextRenderer::isFileRenderable($sourceFile)) {
+            if ($this->textProcessors->isFileRenderable($sourceFile)) {
                 $content = $this->readFile($file);
                 $this->setOutputPath($this->adjustExtension($file));
-                $markedup = TextRenderer::render($content['body'], pathinfo($file, PATHINFO_EXTENSION), ['data' => $this->data]);
+                $markedup = $this->textProcessors->renderHtml($content['body'], pathinfo($file, PATHINFO_EXTENSION), ['data' => $this->data]);
                 $this->writeContentToOutputPath($markedup);
             } else {
                 copy($this->getSourcePath($file), $this->getDestinationPath($file));

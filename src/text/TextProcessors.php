@@ -17,18 +17,23 @@ class TextProcessors
         $this->textRenderer = $textRenderer;
     }
 
-    public function parseYaml($yamlText)
+    public function parseYaml(string $yamlText)
     {
         return $this->yamlParser->parse($yamlText);
     }
 
-    public function setPathToBase($path)
+    public function setPathToBase(string $path)
     {
         $this->textParser->setPathToBase($path);
     }
 
-    public function renderHtml($markdown, $format, $options = [])
+    public function renderHtml(string $markdown, string $format, $options = []) : string
     {
         return $this->textRenderer->render($markdown, $format, $options);
+    }
+
+    public function isFileRenderable(string $path) : bool
+    {
+        return $this->textRenderer->isFileRenderable($path);
     }
 }

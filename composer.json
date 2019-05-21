@@ -28,5 +28,6 @@
     "autoload": {
         "psr-4": {"nyansapow\\": "src/"}
     },
-    "bin" : ["bin/nyansapow"]
+    "bin" : ["bin/nyansapow"],
+    "minimum-stability": "dev"
 }

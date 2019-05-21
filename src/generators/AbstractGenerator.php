@@ -2,7 +2,9 @@
 
 namespace nyansapow\generators;
 
-use clearice\io\Io;
+use Exception;
+use ntentan\utils\exceptions\FileAlreadyExistsException;
+use ntentan\utils\exceptions\FileNotWriteableException;
 use nyansapow\text\TemplateEngine;
 use nyansapow\text\TextProcessors;
 use ntentan\utils\Filesystem;
@@ -23,9 +25,7 @@ abstract class AbstractGenerator
     /**
      * Path to the directory of this particular processor
      */
-    //private $dir;
     private $layout;
-    //protected $baseDir;
     private $theme;
     protected $templates;
     private $outputPath;
@@ -35,28 +35,20 @@ abstract class AbstractGenerator
     protected $templateEngine;
     private $frontMatterMarkers = ['---', '<<<', '<<<<', '>>>', '>>>>'];
 
-    /**
-     * @var \nyansapow\Nyansapow
-     */
-    //protected $nyansapow;
 
     /**
      * Processor constructor.
      *
      * @param TextProcessors $textProcessors
-     * @param Io $io
+     * @param TemplateEngine $templateEngine
      * @param array $settings
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(TextProcessors $textProcessors, TemplateEngine $templateEngine, $settings = [])
     {
-        //var_dump($settings);
-        //$this->settings['path'] = $settings['source'] . $settings['base_directory'];
-        //$this->settings['base_directory'] = $dir;
         $this->settings = $settings;
         $this->templateEngine = $templateEngine;
         $this->textProcessors = $textProcessors;
-        //$this->nyansapow = $nyansapow;
 
         if (isset($settings['layout'])) {
             $this->setLayout($settings['layout']);
@@ -65,22 +57,6 @@ abstract class AbstractGenerator
         }
 
         $this->setTheme($settings['theme'] ?? $this->getDefaultTheme());
-    }
-
-//    public function init()
-//    {
-//
-//    }
-
-    private function isExcluded($path)
-    {
-        foreach ($this->settings['excluded_paths'] as $excludedPath) {
-            if (fnmatch($excludedPath, $path)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -130,12 +106,12 @@ abstract class AbstractGenerator
         
         if (is_dir($themePath)) {
             if(is_dir("$themePath/assets")) {
-                Filesystem::get("$themePath/assets")->copyTo($this->getDestinationPath('assets'));
+                Filesystem::glob("$themePath/assets/*")->copyTo($this->getDestinationPath('assets'));
             }
             $this->templateEngine->prependPath("$themePath/templates");
             $this->loadExtraAssets();            
         } else {
-            throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
+            throw new Exception("Could not find '$customTheme' directory for '$theme' theme");
         }
     }
 
@@ -189,7 +165,8 @@ abstract class AbstractGenerator
     /**
      * @param $content
      * @param array $overrides
-     * @throws \ntentan\honam\exceptions\FileNotFoundException
+     * @throws FileAlreadyExistsException
+     * @throws FileNotWriteableException
      */
     protected function writeContentToOutputPath($content, $overrides = array())
     {
@@ -205,7 +182,7 @@ abstract class AbstractGenerator
         $webPage = $this->templateEngine->render($this->layout, $params);
         $outputPath = $this->getDestinationPath($this->outputPath);
         if (!is_dir(dirname($outputPath))) {
-            Filesystem::get(dirname($outputPath));
+            Filesystem::directory(dirname($outputPath))->create(true);
         }
         file_put_contents($outputPath, $webPage);
     }    
@@ -260,11 +237,11 @@ abstract class AbstractGenerator
                 $body .= $line;
             }
         } catch (ParseException $e) {
-            throw new \Exception("Error parsing front matter for $textFile. {$e->getMessage()}");
+            throw new Exception("Error parsing front matter for $textFile. {$e->getMessage()}");
         }
 
         if(!is_array($frontmatter)) {
-            throw new \Exception("Error parsing front matter for $textFile.");
+            throw new Exception("Error parsing front matter for $textFile.");
         }
 
 

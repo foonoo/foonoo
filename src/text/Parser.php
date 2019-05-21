@@ -119,11 +119,11 @@ class Parser
     {
         $path = "";
         if (isset(self::$typeIndex[$matches[0]])) {
-            $path =$this->$typeIndex[$matches[0]];
+            $path =$this->typeIndex[$matches[0]];
         } else if (isset(self::$typeIndex[substr($matches[0], 1)])) {
-            $path =$this->$typeIndex[substr($matches[0], 1)];
+            $path =$this->typeIndex[substr($matches[0], 1)];
         }
-        return "<a href='" .$this->$pathToBase . "{$path}'>{$matches[0]}</a>";
+        return "<a href='" .$this->pathToBase . "{$path}'>{$matches[0]}</a>";
     }
 
     public function renderImageTag($matches)
