@@ -117,6 +117,13 @@ class Parser
         return $attributes;
     }
 
+    private function getImages($string)
+    {
+        preg_match_all("/((?<image>.*\.(jpeg|jpg|png|gif|webp))\s*,\s*)*(?<last_image>.*\.(jpeg|jpg|png|gif|webp))/", $string, $matches);
+        $images = array_filter(array_merge($matches['image'], $matches['last_image']), function($item){return $item !== "";});
+        return $images;
+    }
+
     private function renderImageTag($matches)
     {
         $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
@@ -128,7 +135,7 @@ class Parser
             [
                 'alt' => $matches['alt'] ?? '',
                 'path_to_base' => $this->pathToBase,
-                'image' => $matches['image'],
+                'images' => $this->getImages($matches['image']),
                 'attribute_string' => $attributeString
             ]
         );
@@ -190,11 +197,11 @@ class Parser
 
     public function setPathToBase($pathToBase)
     {
-       $this->$pathToBase = $pathToBase;
+       $this->pathToBase = $pathToBase;
     }
 
     public function setPages($pages)
     {
-       $this->$pages = $pages;
+       $this->pages = $pages;
     }
 }

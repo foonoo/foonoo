@@ -142,7 +142,7 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
-//$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+$container->bind(Parser::class)->to(Parser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 
 
