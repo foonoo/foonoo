@@ -2,15 +2,12 @@
 
 namespace nyansapow;
 
-use Exception;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
-use nyansapow\text\Parser as NyansapowParser;
 use clearice\io\Io;
 use nyansapow\generators\GeneratorFactory;
 use nyansapow\text\TemplateEngine;
 use nyansapow\text\TextProcessors;
-use \Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
