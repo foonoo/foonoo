@@ -65,9 +65,9 @@ class Nyansapow
      * Create an instance of the context object through which Nyansapow works.
      *
      * @param Io $io
-     * @param YamlParser $yamlParser
      * @param GeneratorFactory $processorFactory
-     * @param NyansapowParser $parser
+     * @param TextProcessors $textProcessors
+     * @param TemplateEngine $templateEngine
      */
     public function __construct(Io $io, GeneratorFactory $processorFactory, TextProcessors $textProcessors, TemplateEngine $templateEngine)
     {
@@ -168,6 +168,7 @@ class Nyansapow
         $sites = $this->getSites($this->source, true);
         $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
         $this->io->output("Writing output site to {$this->destination}\n");
+        $this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
 
         foreach ($sites as $path => $site) {
             $this->io->output("Generating ${site['type']} from $path\n");
@@ -197,7 +198,7 @@ class Nyansapow
                 } catch (FileNotFoundException $e) {
 
                 }
-                //Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
+                Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
             }
 
             $processor = $this->processorFactory->create($site);

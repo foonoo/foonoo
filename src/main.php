@@ -3,6 +3,7 @@ require __DIR__ . "/../vendor/autoload.php";
 
 use clearice\io\Io;
 use ntentan\honam\EngineRegistry;
+use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
 use ntentan\honam\factories\HelperFactory;
 use ntentan\honam\factories\MustacheEngineFactory;
@@ -125,24 +126,25 @@ if(!isset($options['__command'])) {
 
 $container = new Container();
 
-$container->bind(Io::class)->to(Io::class)->asSingleton();
-$container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
-$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
-$container->bind(TemplateRenderer::class)->to(TemplateRenderer::class)->asSingleton();
-$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+//$container->bind(Io::class)->to(Io::class)->asSingleton();
+//$container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
+//$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
+$container->bind(TemplateRenderer::class)->to(function ($container){
+    /** @var EngineRegistry $engineRegistry */
+    $engineRegistry = $container->get(EngineRegistry::class);
+    $templateFileResolver = $container->get(TemplateFileResolver::class);
+    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
+    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
+    $engineRegistry->registerEngine(['tpl.php'],
+        new PhpEngineFactory($templateRenderer,
+            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
+            $container->get(Janitor::class)
+        ));
+    return $templateRenderer;
+})->asSingleton();
+//$container->bind(Parser::class)->to(Parser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
-$container->bind(HelperFactory::class)->to(
-    function($container) {
-        $helperFactory = new HelperFactory();
-        $helperFactory->setTemplateRenderer($container->get(TemplateRenderer::class));
-    });
 
-$container->bind(EngineRegistry::class)->to(function($container) {
-    $engineRegistry = new EngineRegistry();
-    $engineRegistry->registerEngine(["tpl.php"], $container->get(PhpEngineFactory::class));
-    $engineRegistry->registerEngine(["mustache"], $container->get(MustacheEngineFactory::class));
-    return $engineRegistry;
-});
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

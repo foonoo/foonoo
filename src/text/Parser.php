@@ -2,6 +2,8 @@
 
 namespace nyansapow\text;
 
+use nyansapow\TocRequestedException;
+
 /**
  * Parse text containing special Nyansapow tags.
  *
@@ -22,6 +24,8 @@ class Parser
     private $typeIndex;
     private $pages = [];
     private $tocTrigger;
+    private $teplateEngine;
+    private $tocGenerator;
 
     /**
      * All the regular expressions
@@ -55,20 +59,18 @@ class Parser
 
             // Match page links [[Title|Page Link]]
             ['regex' => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|", 'method' => "renderPageLink"],
-
-            // Match PHP object types
-            ['regex' => "|(([a-zA-Z0-9_]+)?(\\\\[a-zA-Z0-9_]+)+)|", 'method' => "renderPHPType"]
         ]
     ];
 
-    public function setProcessor($wiki)
+    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
     {
-       $this->$wiki = $wiki;
+        $this->teplateEngine = $templateEngine;
+        $this->tocGenerator = $tocGenerator;
     }
 
     public function domCreated($dom)
     {
-        TocGenerator::domCreated($dom);
+        $this->tocGenerator->domCreated($dom);
     }
 
     public function preParse($content)
@@ -86,7 +88,7 @@ class Parser
     {
         $parsed = '';
         foreach (explode("\n", $content) as $line) {
-            $parsed .= Parser::parseLine($line, $mode) . "\n";
+            $parsed .= $this->parseLine($line, $mode) . "\n";
         }
         return $parsed;
     }
@@ -100,7 +102,7 @@ class Parser
         return $line;
     }
 
-    public function getImageTagAttributes($string)
+    private function getImageTagAttributes($string)
     {
         preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
         $attributes = array();
@@ -115,85 +117,80 @@ class Parser
         return $attributes;
     }
 
-    public function renderPHPType($matches)
-    {
-        $path = "";
-        if (isset(self::$typeIndex[$matches[0]])) {
-            $path =$this->typeIndex[$matches[0]];
-        } else if (isset(self::$typeIndex[substr($matches[0], 1)])) {
-            $path =$this->typeIndex[substr($matches[0], 1)];
-        }
-        return "<a href='" .$this->pathToBase . "{$path}'>{$matches[0]}</a>";
-    }
-
-    public function renderImageTag($matches)
+    private function renderImageTag($matches)
     {
         $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
         $attributeString = '';
-        $alt = $matches['alt'] ?? '';
         foreach ($attributes as $key => $value) {
             $attributeString .= "$key = '$value' ";
         }
-
-        return "<img src='" .$this->pathToBase . "np_images/{$matches['image']}' alt='{$alt}' $attributeString />";
+        return $this->teplateEngine->render('image_tag',
+            [
+                'alt' => $matches['alt'] ?? '',
+                'path_to_base' => $this->pathToBase,
+                'image' => $matches['image'],
+                'attribute_string' => $attributeString
+            ]
+        );
     }
 
-    public function renderPageLink($matches)
+    private function renderPageLink($matches)
     {
         $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-        foreach (self::$pages as $page) {
+        foreach ($this->pages as $page) {
             if (strtolower($page['page']) == strtolower($link)) {
-                return "<a href='{$page['page']}.html'>" . (isset($matches['title']) ? $matches['title'] : $matches['markup']) . "</a>";
+                return $this->teplateEngine->render('anchor_tag', [
+                    'href' => "{$page['page']}.html",
+                    'link_text' => isset($matches['title']) ? $matches['title'] : $matches['markup']
+                ]);
             }
         }
         return $matches['markup'];
     }
 
-    public function renderLink($matches)
+    private function renderLink($matches)
     {
-        return "<a href='http://{$matches['link']}'>http://{$matches['link']}</a>";
+        return $this->teplateEngine->render('anchor_tag', [
+            'href' => "http://{$matches['link']}",
+            'link_text' => "http://{$matches['link']}"
+        ]);
     }
 
-    public function renderBlockOpenTag($matches)
+    private function renderBlockOpenTag($matches)
     {
-        return "<div class='block {$matches['block_class']}'>";
+        return $this->teplateEngine->render('block_open_tag', ['block' => $matches['block_class']]);
     }
 
-    public function renderBlockCloseTag($matches)
+    private function renderBlockCloseTag($matches)
     {
-        return "</div>";
+        return $this->teplateEngine->render('block_close_tag', []);
     }
 
-    public function renderTableOfContents($matches)
+    private function renderTableOfContents($matches)
     {
-        TocGenerator::$hasToc = true;
+        $this->tocGenerator->hasToc = true;
         return "[[nyansapow:toc]]";
     }
 
-    public function getTableOfContents()
+    private function getTableOfContents()
     {
-        return TocGenerator::getTableOfContents();
+        return $this->tocGenerator->getTableOfContents();
     }
 
-    public function renderNyansapowContent($matches)
+    private function renderNyansapowContent($matches)
     {
         switch ($matches['content']) {
             case 'toc':
-                if (self::$tocTrigger) {
+                if ($this->tocTrigger) {
                     throw new TocRequestedException();
                 }
-                return TocGenerator::renderTableOfContents();
+                return $this->tocGenerator->renderTableOfContents();
         }
     }
 
     public function setPathToBase($pathToBase)
     {
        $this->$pathToBase = $pathToBase;
-    }
-
-    public function setTypeIndex($typeIndex)
-    {
-       $this->$typeIndex = $typeIndex;
     }
 
     public function setPages($pages)
