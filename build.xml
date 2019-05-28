@@ -5,6 +5,7 @@
     <property name="repo.target" value="./build/code"/>
     <property name="php.path" value="/usr/bin/php" />
     <property name="php.composer" value="/usr/bin/composer" />
+    <property name="build.composer" value="execute" />
 
     <target name="clean">
         <delete dir="${build.dir}" />
@@ -22,15 +23,31 @@
             </fileset>
         </copy>
         <exec command="git describe --tags" outputProperty="build.version" />
+        <property name="build.output" value="${build.dir}/nyansapow-${build.version}.phar" />
         <php expression="Phar::createDefaultStub('src/main.php')" returnProperty="pharstub" />
         <echo msg="#!/usr/bin/env php ${line.separator}&lt;?php define('PHING_BUILD_VERSION', '${build.version}') ?>${line.separator}${pharstub}" file="${repo.target}/cli.php" />
-        <composer command="install" php="${php.path}" composer="${php.composer}">
-            <arg line="--working-dir ${repo.target}" />
-            <arg line="--prefer-dist" />
-            <arg line="--optimize-autoloader" />
-            <arg line="--no-dev" />
-        </composer>
-        <pharpackage stub='${repo.target}/cli.php' destfile='${build.dir}/nyansapow-${build.version}.phar' basedir='${repo.target}'>
+        <if>
+            <equals arg1="${build.composer}" arg2="execute" />
+            <then>
+                <composer command="install" php="${php.path}" composer="${php.composer}">
+                    <arg line="--working-dir ${repo.target}" />
+                    <arg line="--prefer-dist" />
+                    <arg line="--optimize-autoloader" />
+                    <arg line="--no-dev" />
+                </composer>
+            </then>
+            <elseif>
+                <equals arg1="${build.composer}" arg2="copy" />
+                <then>
+                    <copy todir="${repo.target}" >
+                        <fileset dir="./">
+                            <include name="vendor**"/>
+                        </fileset>
+                    </copy>
+                </then>
+            </elseif>
+        </if>
+        <pharpackage stub='${repo.target}/cli.php' destfile='${build.output}' basedir='${repo.target}'>
             <fileset dir='${repo.target}' expandsymboliclinks="true">
                 <include name="src**" />
                 <include name="vendor**" />

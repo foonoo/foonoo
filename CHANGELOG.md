@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v0.2.0 - 2019-05-27
 ### Added
 - The possibility generate individual non-post pages rendered from a special pages directory.
 - The generation of a posts.html file which contains all posts from the blog.

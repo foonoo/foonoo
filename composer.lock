@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "012e8c0183c34ff5ec77cee6094cc3d2",
+    "content-hash": "fd58460dc0a71718c4a25d43a259abf6",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -304,16 +304,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "dev-master",
+            "version": "v4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "a167aa206198570fc8957f7b3f2c6778b0a0e2ad"
+                "reference": "1bd73cc04c3843ad8d6b0bfc0956026a151fc420"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a167aa206198570fc8957f7b3f2c6778b0a0e2ad",
-                "reference": "a167aa206198570fc8957f7b3f2c6778b0a0e2ad",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/1bd73cc04c3843ad8d6b0bfc0956026a151fc420",
+                "reference": "1bd73cc04c3843ad8d6b0bfc0956026a151fc420",
                 "shasum": ""
             },
             "require": {
@@ -351,27 +351,27 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-05-12T13:26:26+00:00"
+            "time": "2019-05-25T20:07:01+00:00"
         },
         {
             "name": "ntentan/honam",
-            "version": "dev-dev",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "7113e4dff9564a867834a6c8ce58dca31c3f0ceb"
+                "reference": "96925c0e88928a57c62f8df9a1abee4d8d05c814"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/7113e4dff9564a867834a6c8ce58dca31c3f0ceb",
-                "reference": "7113e4dff9564a867834a6c8ce58dca31c3f0ceb",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/96925c0e88928a57c62f8df9a1abee4d8d05c814",
+                "reference": "96925c0e88928a57c62f8df9a1abee4d8d05c814",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-simplexml": "*",
                 "matthiasmullie/minify": "1.*",
-                "ntentan/utils": "dev-dev"
+                "ntentan/utils": "*"
             },
             "require-dev": {
                 "mikey179/vfsstream": "@stable",
@@ -403,7 +403,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2019-05-24T11:33:35+00:00"
+            "time": "2019-05-27T16:38:31+00:00"
         },
         {
             "name": "ntentan/panie",
@@ -448,16 +448,16 @@
         },
         {
             "name": "ntentan/utils",
-            "version": "dev-dev",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "e427432302669910ffc48200f6c325595644884b"
+                "reference": "e36260f2c38e54f681c786eadcf22b836d51b995"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/e427432302669910ffc48200f6c325595644884b",
-                "reference": "e427432302669910ffc48200f6c325595644884b",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/e36260f2c38e54f681c786eadcf22b836d51b995",
+                "reference": "e36260f2c38e54f681c786eadcf22b836d51b995",
                 "shasum": ""
             },
             "require-dev": {
@@ -483,20 +483,20 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2019-05-21T05:33:24+00:00"
+            "time": "2019-05-27T15:39:29+00:00"
         },
         {
             "name": "phpunit/php-timer",
-            "version": "dev-master",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "e826e3ab11b1ca789b10a00b1a2188feb381beb5"
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/e826e3ab11b1ca789b10a00b1a2188feb381beb5",
-                "reference": "e826e3ab11b1ca789b10a00b1a2188feb381beb5",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b389aebe1b8b0578430bda0c7c95a829608e059",
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059",
                 "shasum": ""
             },
             "require": {
@@ -532,20 +532,20 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2019-05-24T06:37:41+00:00"
+            "time": "2019-02-20T10:12:59+00:00"
         },
         {
             "name": "psr/container",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "014d250daebff39eba15ba990eeb2a140798e77c"
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/014d250daebff39eba15ba990eeb2a140798e77c",
-                "reference": "014d250daebff39eba15ba990eeb2a140798e77c",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
                 "shasum": ""
             },
             "require": {
@@ -581,7 +581,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2018-12-29T15:36:03+00:00"
+            "time": "2017-02-14T16:28:37+00:00"
         },
         {
             "name": "smarty/smarty",
@@ -638,7 +638,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "dev-master",
+            "version": "v1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -1028,14 +1028,14 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {
         "ekowabaka/clearice": 0,
         "mustache/mustache": 0,
         "erusev/parsedown": 0,
         "netcarver/textile": 0,
         "theseer/phpdox": 0,
-        "ntentan/honam": 20,
+        "ntentan/honam": 0,
         "ntentan/panie": 0,
         "symfony/yaml": 0,
         "smarty/smarty": 0,

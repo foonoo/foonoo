@@ -46,7 +46,7 @@ class Parser
 
             // Match images [[something.imgext|Alt Text|options]]
             [
-                'regex' => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
+                'regex' => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
                 'method' => "renderImageTag"
             ],
 
