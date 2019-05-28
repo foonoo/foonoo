@@ -1,14 +1,10 @@
 nyansapɔw static sites
 ======================
-A static site generator for generating websites. Nyasapow can 
-generate blogs, wikis, documentations and with a little creativity, websites.
-Like most static site generators out there, nyansapow processes directories 
-which contain markdown files and writes out static HTML files.
-
+A static site generator. Like most static site generators out there, nyansapow processes directories which contain markdown files and writes out static HTML files.
 
 License
 -------
-Copyright (c) 2013 James Ekow Abaka Ainooson
+Copyright (c) 2013-2019 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

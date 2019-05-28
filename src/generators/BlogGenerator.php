@@ -1,19 +1,15 @@
 <?php
 
-namespace nyansapow\processors;
+namespace nyansapow\generators;
 
 use ntentan\honam\TemplateEngine;
-use nyansapow\Processor;
 use nyansapow\TextRenderer;
 
-class Blog extends Processor
+class BlogGenerator extends AbstractGenerator
 {
     private $posts = [];
-
-    public function init()
-    {
-        $this->setTheme('blog');
-    }
+    private $archives = [];
+    private $tags = [];
 
     private function splitPost($post)
     {
@@ -21,6 +17,7 @@ class Blog extends Processor
         $lines = explode("\n", $post);
         $preview = '';
         $body = '';
+        $continuation = '';
         $moreLink = false;
 
         foreach ($lines as $line) {
@@ -29,15 +26,18 @@ class Blog extends Processor
                 $body .= "{$matches['preview']} {$matches['line']}\n";
                 $previewRead = true;
                 $moreLink = true;
+                $continuation .= "{$matches['line']}\n";
                 continue;
             }
             if (!$previewRead) {
                 $preview .= "$line\n";
+            } else {
+                $continuation .= "$line\n";
             }
             $body .= "$line\n";
         }
 
-        return ['post' => $body, 'preview' => $preview, 'more_link' => $moreLink];
+        return ['post' => $body, 'preview' => $preview, 'more_link' => $moreLink, "continuation" => $continuation];
     }
 
     protected function getFiles($base = '', $recursive = false)
@@ -47,43 +47,45 @@ class Blog extends Processor
         return $files;
     }
 
-    public function outputSite()
+    private function preProcessFiles($files)
     {
-        $files = $this->getFiles("posts");
-        $tags = array();
-        $categories = array();
-        $archives = array();
-
-        // Preprocess all the files
         foreach ($files as $file) {
-            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[a-z0-9\-\_]*)\.(md)/",$file, $matches)) {
+            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $post = $this->readFile($file);
+                $post['frontmatter']['title'] = $post['frontmatter']['title'] ?? ucfirst(str_replace("-", " ", $matches['title']));
                 $splitPost = $this->splitPost($post['body']);
                 $this->posts[] = array(
-                    'body' => $splitPost['post'],
+                    'body_text' => $splitPost['post'],
                     'title' => $post['frontmatter']['title'],
                     'date' => date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}")),
-                    'preview' => $splitPost['preview'],
+                    'preview_text' => $splitPost['preview'],
+                    'continuation' => $splitPost['continuation'],
                     'path' => "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html",
-                    'category' => $post['frontmatter']['category'],
+                    'category' => $post['frontmatter']['category'] ?? null,
                     'frontmatter' => $post['frontmatter'],
                     'info' => $matches,
                     'more_link' => $splitPost['more_link'],
                     'file' => $file,
+                    'format' => pathinfo($file, PATHINFO_EXTENSION),
                     'author' => $post['frontmatter']['author'] ?? $this->settings['author']
                 );
-                $archives[$matches['year']]['posts'] = array();
-                $archives[$matches['year']][$matches['month']]['posts'] = array();
-                $archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
+                $this->archives[$matches['year']]['posts'] = array();
+                $this->archives[$matches['year']][$matches['month']]['posts'] = array();
+                $this->archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
             }
         }
+    }
 
+    private function writePosts()
+    {
         foreach ($this->posts as $i => $post) {
             $this->setOutputPath($post['path']);
-            $this->posts[$i]['body'] = TextRenderer::render($post['body'], $post['file']);
-            $this->posts[$i]['preview'] = TextRenderer::render($post['preview'], $post['file']);
+            $this->posts[$i]['body'] = $this->textProcessors->renderHtml($post['body_text'], $post['format']);
+            $this->posts[$i]['preview'] = $this->textProcessors->renderHtml($post['preview_text'], $post['format']);
+            $this->posts[$i]['home_path'] = $this->getRelativeHomePath();
+            $this->posts[$i]['site_path'] = $this->getRelativeSitePath();
 
-            $markedup = TemplateEngine::render(
+            $markedup = $this->templateEngine->render(
                 'post',
                 array_merge(
                     $this->posts[$i],
@@ -94,30 +96,57 @@ class Blog extends Processor
                 )
             );
 
-            $this->outputPage($markedup, ['page_title' => $post['frontmatter']['title']]);
+            $this->writeContentToOutputPath($markedup, 
+                ['page_title' => $post['frontmatter']['title'], 'page_type' => 'post']
+            );
 
-            $archives[$post['info']['year']]['posts'][] = $i;
-            $archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
-            $archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['months'][$post['info']['month']]['posts'][] = $i;
+            $this->archives[$post['info']['year']]['months'][$post['info']['month']]['days'][$post['info']['day']]['posts'][] = $i;
 
-            $articleTags = explode(",", $post['frontmatter']['tags']);
-
-            foreach ($articleTags as $tag) {
-                $tags[trim($tag)][] = $i;
+            foreach ($post['frontmater'] ['tags'] ?? [] as $tag) {
+                $this->tags[trim($tag)][] = $i;
             }
         }
+    }
+    
+    private function writePages()
+    {
+        if (is_dir($this->getSourcePath('pages'))) {  
+            $files = $this->getFiles("pages");
+            foreach($files as $file) {
+                $content = $this->readFile($file);
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $body = $this->textProcessors->renderHtml($content['body'], pathinfo($file, PATHINFO_EXTENSION));
+                $markedup = $this->templateEngine->render('page', ['body' => $body, 'posts' => $this->posts]);
+                $this->setOutputPath("$filename.html");
+                $this->writeContentToOutputPath(
+                    $markedup, 
+                    [
+                        'page_title' => $content['frontmatter']['title'] 
+                            ?? ucfirst(str_replace(['-', '_'], ' ', $filename)),
+                        'page_type' => 'page'
+                    ]
+                );
+            }
+        }
+    }
 
-        // Write index page
-        $this->writeIndex('index.html');
-        $this->writeArchive($archives, array('months', 'days'), 'years');
+    public function outputSite()
+    {
+        $files = $this->getFiles("posts");
+        $categories = array();
 
-        // Write RSS feed
+        $this->preProcessFiles($files);
+        $this->writePosts();
+        $this->writeIndex('index.html', ['template' => 'index']);
+        $this->writeIndex('posts.html', ['title' => 'Posts']);
+        $this->writePages();
+        $this->writeArchive($this->archives, ['months', 'days'], 'years');
         $this->writeFeed();
 
         // Write categories
-
         // Write tags
-
     }
 
     private function formatValue($stage, $value)
@@ -183,15 +212,16 @@ class Blog extends Processor
         foreach ($archive as $value => $posts) {
             $newTitle = $this->formatValue($stage, $value) . " $title";
             $newBaseUrl = "$baseUrl$value/";
-            $this->writeIndex("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
+            $this->writeIndex("{$newBaseUrl}index.html", ['posts' => $posts['posts'], 'title' => $newTitle]);
             if ($nextStage != null) {
                 $this->writeArchive($posts[$nextStage], $order, $nextStage, $newTitle, $newBaseUrl);
             }
         }
     }
 
-    private function writeIndex($target, $posts = array(), $title = null)
+    private function writeIndex($target, $options = [])
     {
+        $posts = $options['posts'] ?? [];
         if (count($posts)) {
             $rebuiltPosts = array();
             foreach ($posts as $post) {
@@ -200,32 +230,37 @@ class Blog extends Processor
         } else {
             $rebuiltPosts = $this->posts;
         }
-
-        $body = TemplateEngine::render(
-            'listing',
+        
+        $this->setOutputPath($target);
+        $title = $options['title'] ?? '';
+        $body = $this->templateEngine->render(
+            $options['template'] ?? 'listing',
             array(
                 'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
-                'path_to_base' => $this->getRelativeBaseLocation($target)
+                'site_path' => $this->getRelativeSitePath()
             )
         );
-        $this->setOutputPath($target);
-        $this->outputPage($body);
+        $this->writeContentToOutputPath($body, ['page_title' => $title, 'page_type' => 'index']);
     }
 
     private function writeFeed()
     {
-        $feed = TemplateEngine::render("feed.tpl.php",
+        $feed = $this->templateEngine->render("feed",
             array(
                 'posts' => $this->posts,
-                'title' => $this->settings['name'],
-                'description' => $this->settings['description'],
-                'url' => $this->settings['url']
+                'title' => $this->settings['name'] ?? 'Untitled Blog',
+                'description' => $this->settings['description'] ?? '',
+                'url' => $this->settings['url'] ?? ''
             )
         );
         $this->setOutputPath("feed.xml");
         $this->setLayout('plain');
-        $this->outputPage($feed);
+        $this->writeContentToOutputPath($feed);
+    }
+
+    protected function getDefaultTheme() {
+        return 'blog';
     }
 }

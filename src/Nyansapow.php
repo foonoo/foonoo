@@ -2,7 +2,12 @@
 
 namespace nyansapow;
 
-use ntentan\honam\TemplateEngine;
+use ntentan\utils\exceptions\FileNotFoundException;
+use ntentan\utils\Filesystem;
+use clearice\io\Io;
+use nyansapow\generators\GeneratorFactory;
+use nyansapow\text\TemplateEngine;
+use nyansapow\text\TextProcessors;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -10,52 +15,81 @@ use ntentan\honam\TemplateEngine;
  */
 class Nyansapow
 {
+    /**
+     * @var array
+     */
     private $options;
+
+    /**
+     * @var string
+     */
     private $source;
+
+    /**
+     * @var string
+     */
     private $destination;
-    private $pages = array();
+
+    /**
+     * @var Io
+     */
+    private $io;
 
     /**
      * Base directory where
      * @var string
      */
     private $home;
-    private $excludedPaths = array('*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml");
+
+    private $processorFactory;
+
+    /**
+     * @var array<string>
+     */
+    private $excludedPaths = [];
+    /**
+     * @var TextProcessors
+     */
+    private $textProcessors;
+    /**
+     * @var TemplateEngine
+     */
+    private $templateEngine;
+
 
     /**
      * Nyansapow constructor.
-     * @param $source
-     * @param $destination
-     * @param $options
-     * @throws NyansapowException
+     * Create an instance of the context object through which Nyansapow works.
+     *
+     * @param Io $io
+     * @param GeneratorFactory $processorFactory
+     * @param TextProcessors $textProcessors
+     * @param TemplateEngine $templateEngine
      */
-    private function __construct($source, $destination, $options)
+    public function __construct(Io $io, GeneratorFactory $processorFactory, TextProcessors $textProcessors, TemplateEngine $templateEngine)
     {
         $this->home = dirname(__DIR__);
-        if ($source == '') {
-            $source = getcwd();
-        }
-
-        if (!file_exists($source) && !is_dir($source)) {
-            throw new NyansapowException("Input directory `{$source}` does not exist or is not a directory.");
-        }
-
-        if ($destination == '') {
-            $destination = getcwd() . "/output_site";
-        }
-
-        $this->excludedPaths[] = realpath($destination);
-        $this->source = realpath($source) . '/';
-        $this->options = $options;
-        $this->destination = $destination . '/';
+        $this->io = $io;
+        $this->processorFactory = $processorFactory;
+        $this->textProcessors = $textProcessors;
+        $this->templateEngine = $templateEngine;
     }
 
-
+    /**
+     * Get the destination where output files are written.
+     *
+     * @return string
+     */
     public function getDestination()
     {
         return $this->destination;
     }
 
+    /**
+     * Get the source from which content for sites can be retrieved from.
+     *
+     * @return string
+     */
     public function getSource()
     {
         return $this->source;
@@ -66,39 +100,16 @@ class Nyansapow
         return $this->home;
     }
 
-    /**
-     * @param $source
-     * @param $destination
-     * @param array $options
-     * @return Nyansapow
-     * @throws NyansapowException
-     */
-    public static function open($source, $destination, $options = array())
-    {
-        return new Nyansapow($source, $destination, $options);
-    }
-
-    public function isExcluded($path)
-    {
-        foreach ($this->excludedPaths as $excludedPath) {
-            if (fnmatch($excludedPath, $path)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private function readSiteMeta($path)
     {
         $meta = false;
-        if (file_exists("{$path}site.ini")) {
-            $meta = parse_ini_file("{$path}site.ini");
-        } else if (file_exists("{$path}site.yml") || file_exists("{$path}site.yaml")) {
-            $parser = new \Symfony\Component\Yaml\Parser();
-            $meta = $parser->parse(file_get_contents("{$path}site.yml"));
+        if (file_exists("{$path}site.yml")) {
+            $file = "{$path}site.yml";
+            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
+        } else if (file_exists("{$path}site.yaml")) {
+            $file = "${path}site.yaml";
+            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
         }
-
         return $meta;
     }
 
@@ -112,11 +123,20 @@ class Nyansapow
         if (is_array($metaData)) {
             $sites[$path] = $metaData;
         } else if ($metaData === false && $source === true) {
-            $sites[$path] = array('type' => 'site');
+            $sites[$path] = [
+                'type' => $this->options['site-type'],
+                'name' => $this->options['site-name'] ?? ''
+            ];
         }
 
         while (false !== ($file = $dir->read())) {
-            if ($this->isExcluded("{$path}{$file}")) continue;
+            if (array_reduce(
+                $this->excludedPaths,
+                function ($carry, $item) use ($path, $file) {
+                    return $carry | fnmatch($item, "{$path}{$file}");
+                },
+                false)
+            ) continue;
             if (is_dir("{$path}{$file}")) {
                 $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
             }
@@ -125,100 +145,112 @@ class Nyansapow
         return $sites;
     }
 
-    public function write()
+    private function copySiteTemplates($site, $path)
     {
-        Processor::setup($this);
-        $sites = $this->getSites($this->source, true);
+        if (isset($site['templates']) && is_array($site['templates'])) {
+            foreach ($site['templates'] as $template) {
+                $this->templateEngine->prependPath($path . $template);
+            }
+        } else if (isset($site['templates'])) {
+            $this->templateEngine->prependPath($path . $site['templates']);
+        }
 
-        /**
-         * @todo Switch this to ntentan filesystem utilities
-         */
-        self::mkdir("{$this->destination}/assets/css");
-        self::mkdir("{$this->destination}/assets/js");
-        self::mkdir("{$this->destination}/assets/fonts");
-        self::mkdir("{$this->destination}/assets/images");
+        if (is_dir("{$path}np_templates")) {
+            $this->templateEngine->prependPath("{$path}np_templates");
+        }
+    }
+
+    private function doSiteWrite()
+    {
+        $sites = $this->getSites($this->source, true);
+        $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
+        $this->io->output("Writing output site to {$this->destination}\n");
+        $this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
 
         foreach ($sites as $path => $site) {
-            $baseDir = (string)substr($path, strlen($this->source));
+            $this->io->output("Generating ${site['type']} from $path\n");
+            $baseDirectory = (string)substr($path, strlen($this->source));
 
-            /**
-             * @todo switch this to ntentan filesystem utilities
-             */
-            self::copyDir("{$path}np_images", "{$this->destination}$baseDir");
-            self::copyDir("{$path}np_assets/*", "{$this->destination}/assets");
+            $site['base_directory'] = $baseDirectory;
+            $site['source'] = $this->source;
+            $site['destination'] = $this->destination;
+            $site['path'] = $path;
+            $site['home_path'] = $this->home;
+            $site['excluded_paths'] = $this->excludedPaths;
 
-            TemplateEngine::reset();
-            TemplateEngine::appendPath($this->getHome() . '/themes/global/templates');
+            if (is_dir("{$path}np_images")) {
+                $imagesDestination = "{$this->destination}$baseDirectory/np_images";
+                try {
+                    Filesystem::get($imagesDestination)->delete();
+                } catch (FileNotFoundException $e) {
 
-            $processor = Processor::get($site, $path);
-            $processor->setBaseDir($baseDir);
-
-            if (isset($site['templates']) && is_array($site['templates'])) {
-                foreach ($site['templates'] as $template) {
-                    TemplateEngine::prependPath($path . $template);
                 }
-            } else if (isset($site['templates'])) {
-                TemplateEngine::prependPath($path . $site['templates']);
+                Filesystem::get("{$path}np_images")->copyTo($imagesDestination);
             }
+
+            if (is_dir("{$path}np_assets")) {
+                $assetsDestination = "{$this->destination}$baseDirectory/assets";
+                try {
+                    Filesystem::get($assetsDestination)->delete();
+                } catch (FileNotFoundException $e) {
+
+                }
+                Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
+            }
+
+            $processor = $this->processorFactory->create($site);
+            $this->copySiteTemplates($site, $path);
 
             if (is_dir("{$path}np_data")) {
-                $processor->setData(self::readData("{$path}np_data"));
+                $processor->setData($this->readData("{$path}np_data"));
             }
-            if (is_dir("{$path}np_templates")) {
-                TemplateEngine::prependPath("{$path}np_templates");
-            }
+
             $processor->outputSite();
         }
     }
 
-    public static function copyDir($source, $destination)
+    private function setOptions($options)
     {
-        if (!is_dir($destination) && !file_exists($destination)) {
-            self::mkdir($destination);
+        if (!isset($options['input']) || $options['input'] === '') {
+            $options['input'] = getcwd();
+        } else {
+            $options['input'] = realpath($options['input']);
         }
 
-        foreach (glob($source) as $file) {
-            $newFile = (is_dir($destination) ? "$destination/" : '') . basename("$file");
-            if (is_dir($file)) {
-                self::mkdir($newFile);
-                self::copyDir("$file/*", $newFile);
-            } else {
-                copy($file, $newFile);
-            }
+        if (!file_exists($options['input']) && !is_dir($options['input'])) {
+            throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
         }
+
+        if (!isset($options['output']) || $options['output'] === '') {
+            $options['output'] = getcwd() . "/output_site";
+        }
+        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", realpath($options['output'])];
+        $this->source = "${options['input']}/";
+        $this->options = $options;
+        $this->destination = "${options['output']}/";
     }
 
-    private static function readData($path)
+    public function write($options)
+    {
+        //try {
+            $this->setOptions($options);
+            $this->doSiteWrite();
+//        } catch (Exception $e) {
+//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+//            exit(102);
+//        }
+    }
+
+    private function readData($path)
     {
         $data = [];
         $dir = dir($path);
-        $parser = new \Symfony\Component\Yaml\Parser();
-
         while (false !== ($file = $dir->read())) {
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             if ($extension === 'yml' || $extension === 'yaml') {
-                $data[pathinfo($file, PATHINFO_FILENAME)] = $parser->parse(file_get_contents("$path/$file"));
+                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->textProcessors->parseYaml(file_get_contents("$path/$file"));
             }
         }
-
         return $data;
-    }
-
-    public static function mkdir($path)
-    {
-        $path = explode('/', $path);
-        $dirPath = '';
-
-        foreach ($path as $dir) {
-            $dirPath .= "$dir/";
-            if (!is_dir($dirPath)) {
-                mkdir($dirPath);
-            }
-        }
-    }
-
-    public function getPages()
-    {
-        return $this->pages;
     }
 }

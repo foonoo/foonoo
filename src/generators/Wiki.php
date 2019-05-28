@@ -2,22 +2,17 @@
 
 namespace nyansapow\processors;
 
-use nyansapow\Processor;
 use nyansapow\TextRenderer;
 use ntentan\honam\TemplateEngine;
 
 /**
  *
  */
-class Wiki extends Processor
+class Wiki extends AbstractProcessor
 {
     protected $pages = array();
     private $indexSet = false;
-
-    public function init()
-    {
-        $this->setTheme('wiki');
-    }
+    private $toc;
 
     private function getPageOutput($page)
     {
@@ -42,7 +37,8 @@ class Wiki extends Processor
             $content = $this->readFile($file);
             $output = $this->getPageOutput($matches['page']);
             $page = array(
-                'file' => $file,
+                //'file' => $file,
+                'format' => pathinfo($file, PATHINFO_EXTENSION),
                 'path' => $path,
                 'page' => $matches['page'],
                 'extension' => $matches['extension'],
@@ -57,7 +53,7 @@ class Wiki extends Processor
 
     protected function outputIndexPage()
     {
-        if ($this->settings['generate_index']) {
+        if ($this->settings['generate_index'] ?? false) {
 
         }
     }
@@ -84,16 +80,14 @@ class Wiki extends Processor
         foreach ($this->pages as $i => $page) {
             $content = $page['content'];
             if (isset($content['frontmatter']['toc'])) {
-                $toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
-            } else {
-                $toc = false;
+                $this->toc = $content['frontmatter']['toc'] === false | strtolower($content['frontmatter']['toc']) == 'off' ? false : true;
             }
 
-            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['file'], ['toc' => $toc]);
-            $title = isset($content['fontmatter']['title']) ? $content['frontmatter']['title'] : TextRenderer::getTitle();
+            $this->pages[$i]['markedup'] = TextRenderer::render($content['body'], $page['format'], ['toc' => $this->toc]);
+            $title = $content['frontmatter']['title'] ?? TextRenderer::getTitle();
             $this->pages[$i]['title'] = $title;
 
-            if ($this->settings['mode'] === 'book') {
+            if ($this->settings['mode'] ?? 'wiki' === 'book') {
                 $chapter = isset($content['frontmatter']['chapter']) ? $content['frontmatter']['chapter'] : $page['chapter'];
                 $this->toc[] = [
                     'chapter' => $chapter,
@@ -104,7 +98,7 @@ class Wiki extends Processor
             }
         }
 
-        if ($this->settings['mode'] === 'book') {
+        if ($this->settings['mode'] ?? 'wiki' === 'book') {
             usort(
                 $this->toc,
                 function ($a, $b) {
@@ -129,11 +123,11 @@ class Wiki extends Processor
      */
     protected function outputWikiPage($page)
     {
-        $this->outputPage(
+        $this->writeContentToOutputPath(
             TemplateEngine::render(
                 'wiki',
                 [
-                    'book' => $this->settings['mode'] === 'book',
+                    'book' => $this->settings['mode'] ?? 'wiki' === 'book',
                     'output' => $page['output'],
                     'toc' => $this->toc,
                     'body' => $page['markedup']
@@ -141,9 +135,14 @@ class Wiki extends Processor
             ),
             [
                 'title' => $page['title'],
-                'context' => $this->settings['mode'] === 'book' ? 'book' : 'wiki',
+                'context' => $this->settings['mode'] ?? 'wiki',
                 'script' => 'wiki'
             ]
         );
     }
+
+    protected function getDefaultTheme() {
+        return 'wiki';
+    }
+
 }
