@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.2.1 - 2019-06-03
+### Added
+- Executable permissions to the PHAR archive generated when building nyansapow from source.
+- Limits to version numbers of all unbounded dependencies.
+
+### Removed
+- All unused dependencies to reduce the size of the final PHAR archive.
+
+### Fixed
+- Can now write to relative directories when running nyansapow through a PHAR archive.
+
 ## v0.2.0 - 2019-05-27
 ### Added
 - The possibility generate individual non-post pages rendered from a special pages directory.

@@ -56,5 +56,6 @@
             </fileset>
         </pharpackage>
         <delete dir="${repo.target}" />
+        <chmod file="${build.output}" mode="775" />
     </target>
 </project>
