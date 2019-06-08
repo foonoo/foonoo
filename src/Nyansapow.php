@@ -200,7 +200,7 @@ class Nyansapow
 
         if(preg_match('/^(\\\\|\/)?\.|\.\.\\\\\//', $options['output']) == 1 || (preg_match('/^[a-zA-Z]:/', $options['output']) ==0 && PHP_OS == "Windows")) {
             $options['output'] = getcwd() . DIRECTORY_SEPARATOR . $options['output'];
-        } else if($options['output'] !== '\\' || $options['output'] !== '/') {
+        } else if($options['output'][0] !== '\\' && $options['output'][0] !== '/') {
             $options['output'] = getcwd() . DIRECTORY_SEPARATOR . $options['output'];
         }
 

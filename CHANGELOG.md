@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+### Fixed
+- The automatic concatenation of absolute directories with the current directory.
+
 ## v0.2.1 - 2019-06-03
 ### Added
 - Executable permissions to the PHAR archive generated when building nyansapow from source.

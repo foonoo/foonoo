@@ -11,7 +11,8 @@
         "smarty/smarty": "~3.0",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "ext-pcntl": "*"
     },
     "require-dev" : {
         "phing/phing" : "@stable"
