@@ -21,7 +21,7 @@ class ServeCommand implements CommandInterface
     
     public function execute($options) 
     {
-        $this->output = $options['output'] = $options['output'] ?? $this->output;
+        $this->output = Filesystem::getAbsolutePath($options['output'] = $options['output'] ?? $this->output);
         $this->io->output("Generating site to {$options['output']} ...\n");
         $this->generateCommand->execute($options);
         declare(ticks = 1)

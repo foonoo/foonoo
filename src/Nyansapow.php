@@ -198,14 +198,9 @@ class Nyansapow
             $options['output'] = 'output_site';
         }
 
-        if(preg_match('/^(\\\\|\/)?\.|\.\.\\\\\//', $options['output']) == 1 || (preg_match('/^[a-zA-Z]:/', $options['output']) ==0 && PHP_OS == "Windows")) {
-            $options['output'] = getcwd() . DIRECTORY_SEPARATOR . $options['output'];
-        } else if($options['output'][0] !== '\\' && $options['output'][0] !== '/') {
-            $options['output'] = getcwd() . DIRECTORY_SEPARATOR . $options['output'];
-        }
-
-        $options['output'] .= ($options['output'][-1] == '/' || $options['output'][-1] == '\\')
-            ? '' : DIRECTORY_SEPARATOR;
+        $options['output'] .= Filesystem::getAbsolutePath(
+            $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR
+        );
 
         $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", $options['output']];
         $this->options = $options;

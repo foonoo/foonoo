@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a813a0b9da7e82be8aac825f383ea3ad",
+    "content-hash": "54a0ddf3488d2830b77f92d176d8ea85",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -543,7 +543,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
@@ -706,7 +706,8 @@
     "platform": {
         "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "ext-pcntl": "*"
     },
     "platform-dev": []
 }
