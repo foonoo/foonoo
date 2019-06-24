@@ -6,6 +6,7 @@ use Exception;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
+use ntentan\utils\filesystem\FileInterface;
 use nyansapow\generators\GeneratorFactory;
 use nyansapow\text\TemplateEngine;
 use nyansapow\text\TextProcessors;
@@ -198,9 +199,11 @@ class Nyansapow
             $options['output'] = 'output_site';
         }
 
-        $options['output'] .= Filesystem::getAbsolutePath(
-            $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR
-        );
+        $options['output'] = Filesystem::getAbsolutePath($options['output']);
+
+        //$options['output'] .= Filesystem::getAbsolutePath(
+        $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
+        //);
 
         $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", $options['output']];
         $this->options = $options;
@@ -209,13 +212,13 @@ class Nyansapow
 
     public function write($options)
     {
-        try {
+        //try {
             $this->setOptions($options);
             $this->doSiteWrite();
-        } catch (Exception $e) {
-            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
-            exit(102);
-        }
+//        } catch (Exception $e) {
+//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+//            exit(102);
+//        }
     }
 
     private function readData($path)

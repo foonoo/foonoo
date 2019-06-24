@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- The automatic concatenation of absolute directories with the current directory.
+- Issues with PHAR archives by automatic concatenation of relative directories with the current directory.
 
 ## v0.2.1 - 2019-06-03
 ### Added
