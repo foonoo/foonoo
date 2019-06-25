@@ -239,7 +239,8 @@ class BlogGenerator extends AbstractGenerator
                 'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
-                'site_path' => $this->getRelativeSitePath()
+                'site_path' => $this->getRelativeSitePath(),
+                'home_path' => $this->getRelativeSitePath()
             )
         );
         $this->writeContentToOutputPath($body, ['page_title' => $title, 'page_type' => 'index']);

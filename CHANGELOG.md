@@ -2,7 +2,8 @@
 
 ## Unreleased
 ### Fixed
-- Issues with PHAR archives by automatic concatenation of relative directories with the current directory.
+- Relative directory issues when working with PHAR archives so relative directories resolve to the current directory instead of resolving into the PHAR archive.
+- Loading of inbuilt archives from PHAR archives.
 - Added support for hyphens in the alt tags for images.
 
 ## v0.2.1 - 2019-06-03

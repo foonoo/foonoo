@@ -166,7 +166,7 @@ class Nyansapow
                 } catch (FileNotFoundException $e) {
 
                 }
-                Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
+                Filesystem::directory("{$path}np_assets")->getFiles()->copyTo($assetsDestination);
             }
 
             $processor = $this->processorFactory->create($site);
