@@ -3,6 +3,7 @@
 ## Unreleased
 ### Fixed
 - Issues with PHAR archives by automatic concatenation of relative directories with the current directory.
+- Added support for hyphens in the alt tags for images.
 
 ## v0.2.1 - 2019-06-03
 ### Added
