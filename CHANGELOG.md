@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## Unreleased
+###  Added
+- Post front matter is sent to layout renderer for blog posts and pages.
+
 ### Fixed
 - Relative directory issues when working with PHAR archives so relative directories resolve to the current directory instead of resolving into the PHAR archive.
 - Loading of inbuilt archives from PHAR archives.
