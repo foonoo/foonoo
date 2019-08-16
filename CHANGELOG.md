@@ -2,7 +2,8 @@
 
 ## Unreleased
 ###  Added
-- Post front matter is sent to layout renderer for blog posts and pages.
+- Post front matter is sent to layout renderer so its available blog posts and pages.
+- Default image template for parser now uses figure tags with an associated figure caption.
 
 ### Fixed
 - Relative directory issues when working with PHAR archives so relative directories resolve to the current directory instead of resolving into the PHAR archive.
