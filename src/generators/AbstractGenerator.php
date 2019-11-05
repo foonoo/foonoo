@@ -211,7 +211,7 @@ abstract class AbstractGenerator
 
     protected function getSourcePath($path)
     {
-        return realpath($this->settings['source'] . $this->settings['base_directory']) . $path;
+        return realpath($this->settings['source'] . $this->settings['base_directory']) . "/" . $path;
     }
 
     protected function getDestinationPath($path)
