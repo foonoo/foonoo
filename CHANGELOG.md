@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.2.2 - 2019-11-05
+###  Added
+- Front matter for posts are now sent to the layout renderer, so they are available when rendering layouts for blog posts and pages.
+- Default image tag template for parser now uses `figure` tags with an associated `figurecaption`.
+
+### Fixed
+- Most relative directory issues when working with PHAR archives should be resolved. Now, relative directories resolve to the current directory instead of resolving into the PHAR archive.
+- It should be easier to read inbuilt resources from the generated PHAR archive.
+- Broken support for parsing hyphens in the alt attributes for images.
+
 ## v0.2.1 - 2019-06-03
 ### Added
 - Executable permissions to the PHAR archive generated when building nyansapow from source.

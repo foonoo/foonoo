@@ -97,7 +97,7 @@ class BlogGenerator extends AbstractGenerator
             );
 
             $this->writeContentToOutputPath($markedup, 
-                ['page_title' => $post['frontmatter']['title'], 'page_type' => 'post']
+                ['page_title' => $post['frontmatter']['title'], 'page_type' => 'post', 'frontmatter' => $post['frontmatter']]
             );
 
             $this->archives[$post['info']['year']]['posts'][] = $i;
@@ -125,7 +125,8 @@ class BlogGenerator extends AbstractGenerator
                     [
                         'page_title' => $content['frontmatter']['title'] 
                             ?? ucfirst(str_replace(['-', '_'], ' ', $filename)),
-                        'page_type' => 'page'
+                        'page_type' => 'page',
+                        'frontmatter' => $content['frontmatter']
                     ]
                 );
             }
@@ -239,7 +240,8 @@ class BlogGenerator extends AbstractGenerator
                 'listing_title' => $title,
                 'previews' => true,
                 'posts' => $rebuiltPosts,
-                'site_path' => $this->getRelativeSitePath()
+                'site_path' => $this->getRelativeSitePath(),
+                'home_path' => $this->getRelativeSitePath()
             )
         );
         $this->writeContentToOutputPath($body, ['page_title' => $title, 'page_type' => 'index']);

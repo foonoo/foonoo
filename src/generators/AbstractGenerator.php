@@ -85,17 +85,17 @@ abstract class AbstractGenerator
             }
 
             // If a directory named copy exists in the source, just copy it as is
-            $copyDir = "{$this->settings['path']}$source/copy";
-            if(is_dir($copyDir)) {
-                Nyansapow::copyDir("{$this->settings['path']}$source/copy", $this->getDestinationPath("assets"));
-            }
+//            $copyDir = "{$this->settings['path']}$source/copy";
+//            if(is_dir($copyDir)) {
+//                Nyansapow::copyDir("{$this->settings['path']}$source/copy", $this->getDestinationPath("assets"));
+//            }
         }
     }
 
     protected function setTheme($theme)
     {
         $this->theme = $theme;
-        $builtInTheme = "{$this->settings['home_path']}/themes/{$theme}";
+        $builtInTheme = __DIR__ . "/../../themes/{$theme}";
         $customTheme = "{$this->settings['path']}/np_themes/{$theme}";
         
         if (!file_exists($customTheme)) {
@@ -103,10 +103,12 @@ abstract class AbstractGenerator
         } else {
             $themePath = $customTheme;
         }
-        
+
         if (is_dir($themePath)) {
             if(is_dir("$themePath/assets")) {
-                Filesystem::glob("$themePath/assets/*")->copyTo($this->getDestinationPath('assets'));
+                Filesystem::directory("$themePath/assets")
+                    ->getFiles()
+                    ->copyTo($this->getDestinationPath('assets'));
             }
             $this->templateEngine->prependPath("$themePath/templates");
             $this->loadExtraAssets();            
@@ -134,7 +136,7 @@ abstract class AbstractGenerator
             if (is_dir($path) && $recursive) {
                 $files = array_merge($files, $this->getFiles($path, true));
             } else if (!is_dir($path)) {
-                //@todo replace $this->>settings ... with $this->settings['path']
+                //@todo replace $this->settings ... with $this->settings['path']
                 $path = substr($path, strlen(realpath($this->settings['source'] . $this->settings['base_directory'])));
                 $files[] = $path;
             }

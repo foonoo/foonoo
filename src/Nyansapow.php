@@ -2,6 +2,7 @@
 
 namespace nyansapow;
 
+use Exception;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
@@ -19,16 +20,6 @@ class Nyansapow
      * @var array
      */
     private $options;
-
-    /**
-     * @var string
-     */
-    private $source;
-
-    /**
-     * @var string
-     */
-    private $destination;
 
     /**
      * @var Io
@@ -73,26 +64,6 @@ class Nyansapow
         $this->processorFactory = $processorFactory;
         $this->textProcessors = $textProcessors;
         $this->templateEngine = $templateEngine;
-    }
-
-    /**
-     * Get the destination where output files are written.
-     *
-     * @return string
-     */
-    public function getDestination()
-    {
-        return $this->destination;
-    }
-
-    /**
-     * Get the source from which content for sites can be retrieved from.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return $this->source;
     }
 
     public function getHome()
@@ -162,24 +133,24 @@ class Nyansapow
 
     private function doSiteWrite()
     {
-        $sites = $this->getSites($this->source, true);
-        $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->source));
-        $this->io->output("Writing output site to {$this->destination}\n");
+        $sites = $this->getSites($this->options['input'], true);
+        $this->io->output(sprintf("Found %d site%s in %s\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
+        $this->io->output("Writing output site to {$this->options['output']}\n");
         $this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
 
         foreach ($sites as $path => $site) {
             $this->io->output("Generating ${site['type']} from $path\n");
-            $baseDirectory = (string)substr($path, strlen($this->source));
+            $baseDirectory = (string)substr($path, strlen($this->options['input']));
 
             $site['base_directory'] = $baseDirectory;
-            $site['source'] = $this->source;
-            $site['destination'] = $this->destination;
+            $site['source'] = $this->options['input'];
+            $site['destination'] = $this->options['output'];
             $site['path'] = $path;
             $site['home_path'] = $this->home;
             $site['excluded_paths'] = $this->excludedPaths;
 
             if (is_dir("{$path}np_images")) {
-                $imagesDestination = "{$this->destination}$baseDirectory/np_images";
+                $imagesDestination = "{$this->options['output']}{$baseDirectory}np_images";
                 try {
                     Filesystem::get($imagesDestination)->delete();
                 } catch (FileNotFoundException $e) {
@@ -189,13 +160,13 @@ class Nyansapow
             }
 
             if (is_dir("{$path}np_assets")) {
-                $assetsDestination = "{$this->destination}$baseDirectory/assets";
+                $assetsDestination = "{$this->options['output']}$baseDirectory/assets";
                 try {
                     Filesystem::get($assetsDestination)->delete();
                 } catch (FileNotFoundException $e) {
 
                 }
-                Filesystem::glob("{$path}np_assets/*")->copyTo($assetsDestination);
+                Filesystem::directory("{$path}np_assets")->getFiles()->copyTo($assetsDestination);
             }
 
             $processor = $this->processorFactory->create($site);
@@ -216,29 +187,33 @@ class Nyansapow
         } else {
             $options['input'] = realpath($options['input']);
         }
+        $options['input'] .= ($options['input'][-1] == '/' || $options['input'][-1] == '\\')
+            ? '' : DIRECTORY_SEPARATOR;
 
         if (!file_exists($options['input']) && !is_dir($options['input'])) {
             throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
         }
 
         if (!isset($options['output']) || $options['output'] === '') {
-            $options['output'] = getcwd() . "/output_site";
+            $options['output'] = 'output_site';
         }
-        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", realpath($options['output'])];
-        $this->source = "${options['input']}/";
+
+        $options['output'] = Filesystem::getAbsolutePath($options['output']);
+        $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
+        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.ini", "*/site.yml", "*/site.yaml", $options['output']];
         $this->options = $options;
-        $this->destination = "${options['output']}/";
+
     }
 
     public function write($options)
     {
-        //try {
+        try {
             $this->setOptions($options);
             $this->doSiteWrite();
-//        } catch (Exception $e) {
-//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
-//            exit(102);
-//        }
+        } catch (Exception $e) {
+            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+            exit(102);
+        }
     }
 
     private function readData($path)

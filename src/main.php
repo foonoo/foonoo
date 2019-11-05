@@ -124,11 +124,9 @@ if(!isset($options['__command'])) {
     exit(1);    
 }
 
+/** @var Container $container */
 $container = new Container();
 
-//$container->bind(Io::class)->to(Io::class)->asSingleton();
-//$container->bind(Nyansapow::class)->to(Nyansapow::class)->asSingleton();
-//$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
 $container->bind(TemplateRenderer::class)->to(function ($container){
     /** @var EngineRegistry $engineRegistry */
     $engineRegistry = $container->get(EngineRegistry::class);
