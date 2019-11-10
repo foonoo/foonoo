@@ -49,12 +49,7 @@ abstract class AbstractGenerator
         $this->settings = $settings;
         $this->templateEngine = $templateEngine;
         $this->textProcessors = $textProcessors;
-
-        if (isset($settings['layout'])) {
-            $this->setLayout($settings['layout']);
-        } else {
-            $this->setLayout('layout');
-        }
+        $this->layout = $settings['layout'] ?? 'layout';
 
         $this->setTheme($settings['theme'] ?? $this->getDefaultTheme());
     }
@@ -83,12 +78,6 @@ abstract class AbstractGenerator
                     $this->extraAssets[$type][] = "$type/" . basename($file);
                 }
             }
-
-            // If a directory named copy exists in the source, just copy it as is
-//            $copyDir = "{$this->settings['path']}$source/copy";
-//            if(is_dir($copyDir)) {
-//                Nyansapow::copyDir("{$this->settings['path']}$source/copy", $this->getDestinationPath("assets"));
-//            }
         }
     }
 
@@ -115,33 +104,6 @@ abstract class AbstractGenerator
         } else {
             throw new Exception("Could not find '$customTheme' directory for '$theme' theme");
         }
-    }
-
-    protected function setLayout($layout)
-    {
-        $this->layout = $layout;
-    }
-
-    protected function getFiles($base = '', $recursive = false)
-    {
-        $files = array();
-        $dir = scandir("{$this->settings['path']}/$base", SCANDIR_SORT_ASCENDING);
-        foreach ($dir as $file) {
-            $path = "{$this->settings['path']}" . ($base == '' ? '' : "$base/") . "$file";
-            //if ($this->isExcluded($path)) continue;
-            if (array_reduce(
-                $this->settings['excluded_paths'],
-                function ($carry, $item) use($path) {return $carry | fnmatch($item, $path); },false)
-            ) continue;
-            if (is_dir($path) && $recursive) {
-                $files = array_merge($files, $this->getFiles($path, true));
-            } else if (!is_dir($path)) {
-                //@todo replace $this->settings ... with $this->settings['path']
-                $path = substr($path, strlen(realpath($this->settings['source'] . $this->settings['base_directory'])));
-                $files[] = $path;
-            }
-        }
-        return $files;
     }
 
     /**
@@ -206,7 +168,7 @@ abstract class AbstractGenerator
             $path = substr($path, 1);
         }
         $this->outputPath = $path;
-        $this->textProcessors->setPathToBase($this->getRelativeBaseLocation($path));
+        //$this->textProcessors->setPathToBase($this->getRelativeBaseLocation($path));
     }
 
     protected function getSourcePath($path)
@@ -219,52 +181,14 @@ abstract class AbstractGenerator
         return $this->settings["destination"] . $this->settings['base_directory'] . $path;
     }
 
-    protected function readFile($textFile)
-    {
-        $file = fopen($this->getSourcePath($textFile), 'r');
-        $frontmatterRead = false;
-        $postStarted = false;
-        $body = '';
-        $frontmatter = array();
-
-        try {
-            while (!feof($file)) {
-                $line = fgets($file);
-                if (!$frontmatterRead && !$postStarted && array_search(trim($line), $this->frontMatterMarkers) !== false) {
-                    $frontmatter = $this->readFrontMatter($file);
-                    $frontmatterRead = true;
-                    continue;
-                }
-                $postStarted = true;
-                $body .= $line;
-            }
-        } catch (ParseException $e) {
-            throw new Exception("Error parsing front matter for $textFile. {$e->getMessage()}");
-        }
-
-        if(!is_array($frontmatter)) {
-            throw new Exception("Error parsing front matter for $textFile.");
-        }
-
-
-        return ['body' => $body, 'frontmatter' => $frontmatter];
-    }
-
-    private function readFrontMatter($file)
-    {
-        $frontmatter = '';
-        do {
-            $line = fgets($file);
-            if (array_search(trim($line), $this->frontMatterMarkers) !== false) break;
-            $frontmatter .= $line;
-        } while (!feof($file));
-
-        return $this->textProcessors->parseYaml($frontmatter);
-    }
-
     public function setData($data)
     {
         $this->data = $data;
+    }
+
+    public function setLayout($layout)
+    {
+        $this->layout = $layout;
     }
 
     public abstract function outputSite();

@@ -2,11 +2,20 @@
 
 namespace nyansapow\generators;
 
+use ntentan\utils\exceptions\FileAlreadyExistsException;
+use ntentan\utils\exceptions\FileNotWriteableException;
+use nyansapow\NyansapowException;
+
 /**
  * 
  */
 class SiteGenerator extends AbstractGenerator
 {
+    /**
+     * @throws FileAlreadyExistsException
+     * @throws FileNotWriteableException
+     * @throws NyansapowException
+     */
     public function outputSite()
     {
         $files = $this->getFiles();

@@ -2,6 +2,7 @@
 
 namespace nyansapow\text;
 
+use nyansapow\text\TemplateEngine;
 use nyansapow\TocRequestedException;
 
 /**
@@ -9,7 +10,7 @@ use nyansapow\TocRequestedException;
  *
  * @package nyansapow
  */
-class Parser
+class TagParser
 {
     /**
      * A path to the website base.
@@ -58,25 +59,25 @@ class Parser
         ]
     ];
 
-    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
+    private $site;
+
+    public function __construct(TemplateEngine $templateEngine)
     {
         $this->teplateEngine = $templateEngine;
-        $this->tocGenerator = $tocGenerator;
     }
 
-    public function domCreated($dom)
-    {
-        $this->tocGenerator->domCreated($dom);
-    }
+//    public function domCreated($dom)
+//    {
+//        $this->tocGenerator->domCreated($dom);
+//    }
 
     public function preParse($content)
     {
         return $this->parse($content, 'pre');
     }
 
-    public function postParse($content, $tocTrigger = true)
+    public function postParse($content)
     {
-       $this->$tocTrigger = $tocTrigger;
         return$this->parse($content, 'post');
     }
 

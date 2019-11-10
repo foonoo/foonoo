@@ -10,7 +10,7 @@ class TextProcessors
     private $yamlParser;
     private $textRenderer;
 
-    public function __construct(YamlParser $yamlParser, Parser $textParser, HtmlRenderer $textRenderer)
+    public function __construct(YamlParser $yamlParser, TagParser $textParser, HtmlRenderer $textRenderer)
     {
         $this->textParser = $textParser;
         $this->yamlParser = $yamlParser;
@@ -22,10 +22,10 @@ class TextProcessors
         return $this->yamlParser->parse($yamlText);
     }
 
-    public function setPathToBase(string $path)
-    {
-        $this->textParser->setPathToBase($path);
-    }
+//    public function setPathToBase(string $path)
+//    {
+//        $this->textParser->setPathToBase($path);
+//    }
 
     public function renderHtml(string $markdown, string $format, $options = []) : string
     {

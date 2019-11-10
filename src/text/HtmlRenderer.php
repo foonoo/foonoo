@@ -17,7 +17,7 @@ class HtmlRenderer
      */
     private $templateRenderer;
 
-    public function __construct(Parser $parser, TemplateRenderer $templateRenderer, DOMDocument $dom)
+    public function __construct(TagParser $parser, TemplateRenderer $templateRenderer, DOMDocument $dom)
     {
         $this->parser = $parser;
         $this->templateRenderer = $templateRenderer;
@@ -50,7 +50,7 @@ class HtmlRenderer
         if($this->dom->getElementsByTagName('h1')->item(0)) {
             $this->title = $this->dom->getElementsByTagName('h1')->item(0)->textContent;
         }
-        $this->parser->domCreated($this->dom);
+        //$this->parser->domCreated($this->dom);
         $body = $this->dom->getElementsByTagName('body');
 
         try {
@@ -97,19 +97,4 @@ class HtmlRenderer
         $mimeType = finfo_file($this->getInfo(), $file);
         return (substr($mimeType, 0, 4) === 'text' && substr($file, -2) == 'md') || $this->templateRenderer->canRender($file);
     }
-
-//    public function getTableOfContents()
-//    {
-//        return $this->templateRenderer->getTableOfContents();
-//    }
-
-//    public function setTypeIndex($typeIndex)
-//    {
-//        Parser::setTypeIndex($typeIndex);
-//    }
-//
-//    public function setPages($pages)
-//    {
-//        Parser::setPages($pages);
-//    }
 }

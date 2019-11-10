@@ -1,20 +1,16 @@
 <?php
 require __DIR__ . "/../vendor/autoload.php";
 
-use clearice\io\Io;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
-use ntentan\honam\factories\HelperFactory;
 use ntentan\honam\factories\MustacheEngineFactory;
 use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
-use nyansapow\Nyansapow;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
-use nyansapow\text\Parser;
-use nyansapow\text\TemplateEngine;
+use nyansapow\text\TagParser;
 
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
@@ -39,7 +35,7 @@ $parser->addOption([
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
-    'default' => 'site',
+    'default' => 'plain',
     'command' => 'generate'
 ]);
 
@@ -140,7 +136,7 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
-$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+$container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 
 
