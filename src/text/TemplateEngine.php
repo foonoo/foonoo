@@ -8,7 +8,6 @@ class TemplateEngine
 {
     private $templateRenderer;
     private $templateFileResolver;
-    private $layout;
 
     public function __construct(TemplateFileResolver $templateFileResolver, TemplateRenderer $templateRenderer)
     {

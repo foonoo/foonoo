@@ -52,6 +52,11 @@ abstract class AbstractSite
         $this->destinationPath = $destinationPath;
     }
 
+    public function getDestinationPath() : string
+    {
+        return $this->destinationPath;
+    }
+
     public function setDestinationRoot(string $destinationRoot) : void
     {
         $this->destinationRoot = $destinationRoot;
@@ -103,7 +108,7 @@ abstract class AbstractSite
     }
 
     public abstract function getPages(): array;
-
     public abstract function getType(): string;
+    public abstract function getDefaultTheme(): string;
 
 }

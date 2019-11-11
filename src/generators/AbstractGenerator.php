@@ -193,5 +193,5 @@ abstract class AbstractGenerator
 
     public abstract function outputSite();
     
-    protected abstract function getDefaultTheme();
+    public abstract function getDefaultTheme();
 }

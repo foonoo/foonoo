@@ -262,7 +262,7 @@ class BlogGenerator extends AbstractGenerator
         $this->writeContentToOutputPath($feed);
     }
 
-    protected function getDefaultTheme() {
+    public function getDefaultTheme() {
         return 'blog';
     }
 }

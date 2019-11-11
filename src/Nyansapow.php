@@ -213,13 +213,13 @@ class Nyansapow
 
     public function write($options)
     {
-        try {
+        //try {
             $this->setOptions($options);
             $this->doSiteWrite();
-        } catch (Exception $e) {
-            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
-            exit(102);
-        }
+//        } catch (Exception $e) {
+//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+//            exit(102);
+//        }
     }
 
     private function readData($path)

@@ -25,7 +25,8 @@ class PlainSite extends AbstractSite
         return $pages;
     }
 
-    protected function getDefaultTheme() {
+    public function getDefaultTheme() : string
+    {
         return 'plain';
     }
 

@@ -7,15 +7,16 @@ namespace nyansapow\sites;
 use ntentan\utils\Filesystem;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
+use nyansapow\themes\ThemeManager;
 
 class Builder
 {
-    private $templateEngine;
+    private $themeManager;
     private $htmlRenderer;
 
-    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer)
+    public function __construct(ThemeManager $themeManager, HtmlRenderer $htmlRenderer)
     {
-        $this->templateEngine = $templateEngine;
+        $this->themeManager = $themeManager;
         $this->htmlRenderer = $htmlRenderer;
     }
 
@@ -32,9 +33,7 @@ class Builder
     public function build(AbstractSite $site, array $data)
     {
         foreach($site->getPages() as $page) {
-            $sourcePath = $page->getSource();
-            $destinationPath = $page->getDestination();
-            $this->writeContentToOutputPath($site, $this->convert($page, $sourcePath, $destinationPath), $destinationPath, $data);
+            $this->writeContentToOutputPath($site, $page, $data);
         }
     }
 
@@ -46,19 +45,21 @@ class Builder
      * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
      * @throws \ntentan\utils\exceptions\FileNotWriteableException
      */
-    protected function writeContentToOutputPath(AbstractSite $site, string $content, string $path, array $overrides = array())
+    protected function writeContentToOutputPath(AbstractSite $site, Page $page, array $overrides = array())
     {
+        $sourcePath = $page->getSource();
+        $destinationPath = $page->getDestination();
         $params = array_merge([
-            'body' => $content,
-            'home_path' => $this->makeRelativeLocation($site->getSourcePathRelativeToRoot() . $path),
-            'site_path' => $this->makeRelativeLocation($path),
-            'site_name' => $this->settings['name'] ?? '',
-            'date' => date('jS F Y')
-        ],
+                'body' => $this->convert($page, $sourcePath, $destinationPath),
+                'home_path' => $this->makeRelativeLocation($site->getSourcePathRelativeToRoot() . $destinationPath),
+                'site_path' => $this->makeRelativeLocation($destinationPath),
+                'site_name' => $this->settings['name'] ?? '',
+                'date' => date('jS F Y')
+            ],
             $overrides
         );
-        $webPage = $this->templateEngine->render($this->layout, $params);
-        $outputPath = $site->getSourcePath() . $path;
+        $outputPath = $site->getSourcePath() . $destinationPath;
+        $webPage = $this->themeManager->getTheme($site->getDefaultTheme(), $site->getSourcePath(), $site->getDestinationPath())->renderPage($params);
         if (!is_dir(dirname($outputPath))) {
             Filesystem::directory(dirname($outputPath))->create(true);
         }
