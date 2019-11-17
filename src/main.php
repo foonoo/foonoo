@@ -123,28 +123,19 @@ if(!isset($options['__command'])) {
 /** @var Container $container */
 $container = new Container();
 
-//$container->bind(TemplateRenderer::class)->to(function ($container){
-//    /** @var EngineRegistry $engineRegistry */
-//    $engineRegistry = $container->get(EngineRegistry::class);
-//    $templateFileResolver = $container->get(TemplateFileResolver::class);
-//    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
-//    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
-//    $engineRegistry->registerEngine(['tpl.php'],
-//        new PhpEngineFactory($templateRenderer,
-//            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
-//            $container->get(Janitor::class)
-//        ));
-//    return $templateRenderer;
-//})->asSingleton();
-//$container->bind(EngineRegistry::class)->to(function($container) {
-//    $engineRegistry = new EngineRegistry();
-//    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
-//    $engineRegistry->registerEngine(['tpl.php'],
-//        new PhpEngineFactory($templateRenderer,
-//            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
-//            $container->get(Janitor::class)
-//        ));
-//});
+$container->bind(TemplateRenderer::class)->to(function ($container){
+    /** @var EngineRegistry $engineRegistry */
+    $engineRegistry = $container->get(EngineRegistry::class);
+    $templateFileResolver = $container->get(TemplateFileResolver::class);
+    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
+    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
+    $engineRegistry->registerEngine(['tpl.php'],
+        new PhpEngineFactory($templateRenderer,
+            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
+            $container->get(Janitor::class)
+        ));
+    return $templateRenderer;
+})->asSingleton();
 $container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 

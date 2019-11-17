@@ -50,6 +50,5 @@ class TemplateEngineFactory
             $templateEngine->prependPath("{$path}np_templates");
         }
         $templateEngine->prependPath(__DIR__ . "/../../themes/parser");
-
     }
 }

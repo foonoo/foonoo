@@ -115,12 +115,11 @@ class Nyansapow
         $sites = $this->getSites($this->options['input'], true);
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
-        //$this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
 
         foreach ($sites as $site) {
             $siteType = $site->getType();
-            $sitePath = $site->getSourcePath();
-            $this->io->output("Generating $siteType site from \"$sitePath\"\n");
+            $sitePath = $site->getSourceRoot();
+            $this->io->output("Generating $siteType site from \"{$sitePath}\"\n");
 
 //            var_dump($baseDirectory, $this->options, $sitePath);
 //            $site['base_directory'] = $baseDirectory;
@@ -130,6 +129,7 @@ class Nyansapow
 //            $site['home_path'] = $this->home;
 //            $site['excluded_paths'] = $this->excludedPaths;
 
+            $baseDirectory = $site->getPath();
             if (is_dir("{$sitePath}np_images")) {
                 $imagesDestination = "{$this->options['output']}{$baseDirectory}np_images";
                 try {
@@ -138,10 +138,10 @@ class Nyansapow
 
                 }
                 Filesystem::get("{$sitePath}np_images")->copyTo($imagesDestination);
+                $this->io->output("- Copying images from {$sitePath}np_images to $imagesDestination\n");
             }
 
             if (is_dir("{$sitePath}np_assets")) {
-                $baseDirectory = $site->getSourcePathRelativeToRoot();
                 $assetsDestination = "{$this->options['output']}$baseDirectory/assets";
                 try {
                     Filesystem::get($assetsDestination)->delete();
@@ -149,6 +149,7 @@ class Nyansapow
 
                 }
                 Filesystem::directory("{$sitePath}np_assets")->getFiles()->copyTo($assetsDestination);
+                $this->io->output("- Copying assets from {$sitePath}np_assets to $assetsDestination\n");
             }
 
             $data = $this->readData("{$sitePath}np_data");

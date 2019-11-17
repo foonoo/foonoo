@@ -51,24 +51,25 @@ class Builder
         $destinationPath = $page->getDestination();
         $params = array_merge([
                 'body' => $this->convert($page, $sourcePath, $destinationPath),
-                'home_path' => $this->makeRelativeLocation($site->getSourcePathRelativeToRoot() . $destinationPath),
-                'site_path' => $this->makeRelativeLocation($destinationPath),
+                'home_path' => $this->makeRelativeLocation($site, $destinationPath . $site->getPath()),
+                'site_path' => $this->makeRelativeLocation($site, $destinationPath),
                 'site_name' => $this->settings['name'] ?? '',
                 'date' => date('jS F Y')
             ],
             $overrides
         );
-        $outputPath = $site->getSourcePath() . $destinationPath;
+        //$outputPath = $site->getSourcePath() . $destinationPath;
         $webPage = $this->themeManager->getTheme($site)->renderPage($params);
-        if (!is_dir(dirname($outputPath))) {
-            Filesystem::directory(dirname($outputPath))->create(true);
+        if (!is_dir(dirname($destinationPath))) {
+            Filesystem::directory(dirname($destinationPath))->create(true);
         }
-        file_put_contents($outputPath, $webPage);
+        file_put_contents($destinationPath, $webPage);
     }
 
-    private function makeRelativeLocation($dir)
+    private function makeRelativeLocation($site, $path)
     {
         // Generate a relative location for the assets
+        $dir = substr(preg_replace('#/+#','/', $path), strlen($site->getDestinationRoot()));
         $relativeLocation = '';
         if ($dir != '' && $dir != '.') {
             $dir .= substr($dir, -1) == '/' ? '' : '/';

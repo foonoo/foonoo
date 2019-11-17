@@ -5,7 +5,7 @@
         "ekowabaka/clearice": "~3.0",
         "mustache/mustache": "~2.0",
         "erusev/parsedown" : "~1.0",
-        "ntentan/honam": "~0.6.0",
+        "ntentan/honam": "dev-dev",
         "ntentan/panie": "~0.7.0",
         "symfony/yaml" : "~4.0",
         "smarty/smarty": "~3.0",

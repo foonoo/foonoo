@@ -11,11 +11,13 @@ class Theme
 {
     private $themePath;
     private $templateEngine;
+    private $templateHierachy;
 
-    public function __construct($themePath, TemplateEngine $templateEngine)
+    public function __construct($themePath, TemplateEngine $templateEngine, array $templateHierachy)
     {
         $this->themePath = $themePath;
         $this->templateEngine = $templateEngine;
+        $this->templateHierachy = $templateHierachy;
     }
 
     /**
@@ -35,6 +37,6 @@ class Theme
 
     public function renderPage($data, $layout = null)
     {
-        return $this->templateEngine->render($layout ?? "layout", $data);
+        return $this->templateEngine->render($layout ?? "layout", $data, $this->templateHierachy);
     }
 }

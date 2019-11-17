@@ -24,8 +24,9 @@ class SiteFactory
         /** @var AbstractSite $instance */
         $site = new $class();
 
-        $site->setSourcePath($path);
-        $site->setDestinationPath($path);
+//        $site->setSourcePath($path);
+//        $site->setDestinationPath($path);
+        $site->setPath(substr($path, strlen($options['input'])));
         $site->setSourceRoot($options['input']);
         $site->setDestinationRoot($options['output']);
         $site->setSettings($metaData);

@@ -6,16 +6,15 @@ namespace nyansapow\themes;
 
 use nyansapow\sites\AbstractSite;
 use nyansapow\text\TemplateEngine;
-use nyansapow\text\TemplateEngineFactory;
 
 class ThemeManager
 {
     private $themes;
-    private $templateEngineFactory;
+    private $templateEngine;
 
-    public function __construct(TemplateEngineFactory $templateEngineFactory)
+    public function __construct(TemplateEngine $templateEngine)
     {
-        $this->templateEngineFactory = $templateEngineFactory;
+        $this->templateEngine = $templateEngine;
     }
 
     /**
@@ -26,7 +25,7 @@ class ThemeManager
     private function loadTheme($site)
     {
         $theme = $site->getDefaultTheme();
-        $sourcePath = $site->getSourcePath();
+        $sourcePath = $site->getSourceRoot() . $site->getPath();
         $builtInTheme = __DIR__ . "/../../themes/{$theme}";
         $customTheme = "{$sourcePath}/np_themes/{$theme}";
 
@@ -39,7 +38,7 @@ class ThemeManager
 
         if(!isset($this->themes[$key])) {
             if (is_dir($themePath)) {
-                $theme = new Theme($themePath, $this->templateEngineFactory->create($site));
+                $theme = new Theme($themePath, $this->templateEngine, $this->getLocalTemplatePaths($site));
                 $this->themes[$key] = $theme;
             } else {
                 throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
@@ -51,11 +50,33 @@ class ThemeManager
 
     public function getTheme($site)
     {
-//        $theme = $site->getDefaultTheme();
-//        $sourcePath = $site->getSourcePath();
-//        $targetPath = $site->getDestinationPath();
         $theme = $this->loadTheme($site);
-        $theme->copyAssets($site->getDestinationPath());
+        $theme->copyAssets($site->getDestinationRoot() . $site->getPath());
         return $theme;
+    }
+
+    /**
+     * @param AbstractSite $site
+     * @return array
+     */
+    private function getLocalTemplatePaths($site)
+    {
+        $hierarchy = [__DIR__ . "/../../themes/parser"];
+        $path = $site->getSourceRoot() . $site->getPath();
+
+        if (is_dir("{$path}np_templates")) {
+            $hierarchy[] = "{$path}np_templates";
+        }
+
+        $siteTemplates = $site->getSetting('templates');
+        if (is_array($siteTemplates)) {
+            foreach ($siteTemplates as $template) {
+                $hierarchy []= $path . $template;
+            }
+        } else if ($siteTemplates) {
+            $hierarchy []= $path . $siteTemplates;
+        }
+
+        return $hierarchy;
     }
 }

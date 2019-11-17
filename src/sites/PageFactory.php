@@ -59,7 +59,7 @@ class PageFactory
             $lineNumber++;
         }
 
-        return ['frontmatter' => $frontmatter, 'first_line_of_body' => $lineNumber];
+        return ['frontmatter' => $frontmatter, 'first_line_of_body' => $isFrontmatterRead ? $lineNumber : 0];
     }
 
     private function readFrontMatter($file)

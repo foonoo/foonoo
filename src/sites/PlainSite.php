@@ -17,8 +17,8 @@ class PlainSite extends AbstractSite
 
         $files = $this->getFiles();
         foreach ($files as $file) {
-            $sourceFile = $this->getPathInSource($file);
-            $destinationFile = $this->getPathInDestination($file);
+            $sourceFile = $this->getSourceRoot() . $file;
+            $destinationFile = $this->getDestinationRoot() . $file;
             $pages []= $this->pageFactory->create($sourceFile, $destinationFile);
         }
 
