@@ -35,6 +35,6 @@ class Theme
 
     public function renderPage($data, $layout = null)
     {
-        return $this->templateEngine->render($layout ?? "$this->themePath/templates/layout", $data);
+        return $this->templateEngine->render($layout ?? "layout", $data);
     }
 }

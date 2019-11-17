@@ -2,13 +2,11 @@
 
 namespace nyansapow;
 
-use Exception;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
 use nyansapow\sites\Builder;
 use nyansapow\sites\SiteFactory;
-use nyansapow\text\TemplateEngine;
 use nyansapow\text\TextProcessors;
 
 /**
@@ -33,12 +31,11 @@ class Nyansapow
      */
     private $home;
 
+    /**
+     * @var SiteFactory
+     */
     private $siteFactory;
 
-    /**
-     * @var array<string>
-     */
-    private $excludedPaths = [];
     /**
      * @var TextProcessors
      */
@@ -46,7 +43,7 @@ class Nyansapow
     /**
      * @var \nyansapow\text\TemplateEngine
      */
-    private $templateEngine;
+    //private $templateEngine;
 
     private $builder;
 
@@ -60,13 +57,12 @@ class Nyansapow
      * @param TextProcessors $textProcessors
      * @param \nyansapow\text\TemplateEngine $templateEngine
      */
-    public function __construct(Io $io, SiteFactory $siteFactory, TextProcessors $textProcessors, TemplateEngine $templateEngine, Builder $builder)
+    public function __construct(Io $io, SiteFactory $siteFactory, TextProcessors $textProcessors, Builder $builder)
     {
         $this->home = dirname(__DIR__);
         $this->io = $io;
         $this->siteFactory = $siteFactory;
         $this->textProcessors = $textProcessors;
-        $this->templateEngine = $templateEngine;
         $this->builder = $builder;
     }
 
@@ -92,49 +88,26 @@ class Nyansapow
     {
         $sites = array();
         $dir = dir($path);
+        $metaData = $this->readSiteMeta($path);
 
-        $metaData = $this->readSiteMeta($path)
-            ?? ($root ? ['type' => $this->options['site-type'], 'name' => $this->options['site-name']] : []);
-        $metaData['excluded_paths'] = array_merge($metaData['excluded_paths'] ?? [], $this->excludedPaths);
-
-        $site = $this->siteFactory->create($metaData['type'] ?? 'plain');
-        $site->setSourcePath($path);
-        $site->setDestinationPath($path);
-        $site->setSourceRoot($this->options['input']);
-        $site->setDestinationRoot($this->options['output']);
-        $site->setSettings($metaData);
-        $sites[]=$site;
-
-        while (false !== ($file = $dir->read())) {
-            if (array_reduce(
-                $this->excludedPaths,
-                function ($carry, $item) use ($path, $file) {
-                    return $carry | fnmatch($item, "{$path}{$file}");
-                },
-                false)
-            ) continue;
-            if (is_dir("{$path}{$file}")) {
-                $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
+        if(is_array($metaData) || $root) {
+            $site = $this->siteFactory->create($metaData, $path, $this->options);
+            $sites []= $site;
+            while (false !== ($file = $dir->read())) {
+                if (array_reduce(
+                    $site->getSetting('excluded_paths'),
+                    function ($carry, $item) use ($path, $file) {
+                        return $carry | fnmatch($item, "{$path}{$file}");
+                    },
+                    false)
+                ) continue;
+                if (is_dir("{$path}{$file}")) {
+                    $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
+                }
             }
         }
 
         return $sites;
-    }
-
-    private function setupLocalTemplatePaths($site, $path)
-    {
-        $siteTemplates = $site->getSetting('templates');
-        if (is_array($siteTemplates)) {
-            foreach ($siteTemplates as $template) {
-                $this->templateEngine->prependPath($path . $template);
-            }
-        } else if ($siteTemplates) {
-            $this->templateEngine->prependPath($path . $siteTemplates);
-        }
-
-        if (is_dir("{$path}np_templates")) {
-            $this->templateEngine->prependPath("{$path}np_templates");
-        }
     }
 
     private function doSiteWrite()
@@ -142,7 +115,7 @@ class Nyansapow
         $sites = $this->getSites($this->options['input'], true);
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
-        $this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
+        //$this->templateEngine->prependPath(__DIR__ . "/../themes/parser");
 
         foreach ($sites as $site) {
             $siteType = $site->getType();
@@ -178,8 +151,6 @@ class Nyansapow
                 Filesystem::directory("{$sitePath}np_assets")->getFiles()->copyTo($assetsDestination);
             }
 
-            $this->setupLocalTemplatePaths($site, $sitePath);
-
             $data = $this->readData("{$sitePath}np_data");
 
             $this->builder->build($site, $data);
@@ -206,7 +177,6 @@ class Nyansapow
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
-        $this->excludedPaths = ['*.', '*..', "*.gitignore", "*.git", "*/site.yml", "*/site.yaml", $options['output']];
         $this->options = $options;
 
     }
@@ -225,6 +195,9 @@ class Nyansapow
     private function readData($path)
     {
         $data = [];
+        if(!is_dir($path)) {
+            return $data;
+        }
         $dir = dir($path);
         while (false !== ($file = $dir->read())) {
             $extension = pathinfo($file, PATHINFO_EXTENSION);

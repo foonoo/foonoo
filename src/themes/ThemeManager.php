@@ -4,20 +4,29 @@
 namespace nyansapow\themes;
 
 
+use nyansapow\sites\AbstractSite;
 use nyansapow\text\TemplateEngine;
+use nyansapow\text\TemplateEngineFactory;
 
 class ThemeManager
 {
     private $themes;
-    private $templateEngine;
+    private $templateEngineFactory;
 
-    public function __construct(TemplateEngine $templateEngine)
+    public function __construct(TemplateEngineFactory $templateEngineFactory)
     {
-        $this->templateEngine = $templateEngine;
+        $this->templateEngineFactory = $templateEngineFactory;
     }
 
-    private function loadTheme($theme, $sourcePath)
+    /**
+     * @param AbstractSite $site
+     * @return mixed
+     * @throws \Exception
+     */
+    private function loadTheme($site)
     {
+        $theme = $site->getDefaultTheme();
+        $sourcePath = $site->getSourcePath();
         $builtInTheme = __DIR__ . "/../../themes/{$theme}";
         $customTheme = "{$sourcePath}/np_themes/{$theme}";
 
@@ -30,20 +39,23 @@ class ThemeManager
 
         if(!isset($this->themes[$key])) {
             if (is_dir($themePath)) {
-                $theme = new Theme($themePath, $this->templateEngine);
+                $theme = new Theme($themePath, $this->templateEngineFactory->create($site));
                 $this->themes[$key] = $theme;
             } else {
                 throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
             }
         }
 
-        return $this->themes["$themePath$sourcePath"];
+        return $this->themes[$key];
     }
 
-    public function getTheme($theme, $sourcePath, $targetPath)
+    public function getTheme($site)
     {
-        $theme = $this->loadTheme($theme, $sourcePath);
-        $theme->copyAssets($targetPath);
+//        $theme = $site->getDefaultTheme();
+//        $sourcePath = $site->getSourcePath();
+//        $targetPath = $site->getDestinationPath();
+        $theme = $this->loadTheme($site);
+        $theme->copyAssets($site->getDestinationPath());
         return $theme;
     }
 }

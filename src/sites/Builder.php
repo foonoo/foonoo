@@ -59,7 +59,7 @@ class Builder
             $overrides
         );
         $outputPath = $site->getSourcePath() . $destinationPath;
-        $webPage = $this->themeManager->getTheme($site->getDefaultTheme(), $site->getSourcePath(), $site->getDestinationPath())->renderPage($params);
+        $webPage = $this->themeManager->getTheme($site)->renderPage($params);
         if (!is_dir(dirname($outputPath))) {
             Filesystem::directory(dirname($outputPath))->create(true);
         }
