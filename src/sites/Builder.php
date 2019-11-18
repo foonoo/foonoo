@@ -20,10 +20,17 @@ class Builder
         $this->htmlRenderer = $htmlRenderer;
     }
 
-    private function convert($page, $sourceExtension, $destinationExtension)
+    /**
+     * @param Page $page
+     * @param string $sourceExtension
+     * @param string $destinationExtension
+     * @param array $data
+     * @return string
+     */
+    private function convert($page, $sourceExtension, $destinationExtension, $data)
     {
         if($sourceExtension != $destinationExtension) {
-            $output = $this->htmlRenderer->render($page->getBody(), $sourceExtension);
+            $output = $this->htmlRenderer->render($page->getBody(), $sourceExtension, $data);
         } else {
             $output = $page->getBody();
         }
@@ -50,7 +57,6 @@ class Builder
         $sourcePath = $page->getSource();
         $destinationPath = $page->getDestination();
         $params = array_merge([
-                'body' => $this->convert($page, $sourcePath, $destinationPath),
                 'home_path' => $this->makeRelativeLocation($site, $destinationPath . $site->getPath()),
                 'site_path' => $this->makeRelativeLocation($site, $destinationPath),
                 'site_name' => $this->settings['name'] ?? '',
@@ -58,7 +64,7 @@ class Builder
             ],
             $overrides
         );
-        //$outputPath = $site->getSourcePath() . $destinationPath;
+        $params['body'] = $this->convert($page, $sourcePath, $destinationPath, $params);
         $webPage = $this->themeManager->getTheme($site)->renderPage($params);
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);

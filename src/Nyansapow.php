@@ -118,7 +118,8 @@ class Nyansapow
 
         foreach ($sites as $site) {
             $siteType = $site->getType();
-            $sitePath = $site->getSourceRoot();
+            $baseDirectory = $site->getPath();
+            $sitePath = $site->getSourceRoot() . $baseDirectory;
             $this->io->output("Generating $siteType site from \"{$sitePath}\"\n");
 
 //            var_dump($baseDirectory, $this->options, $sitePath);
@@ -129,7 +130,6 @@ class Nyansapow
 //            $site['home_path'] = $this->home;
 //            $site['excluded_paths'] = $this->excludedPaths;
 
-            $baseDirectory = $site->getPath();
             if (is_dir("{$sitePath}np_images")) {
                 $imagesDestination = "{$this->options['output']}{$baseDirectory}np_images";
                 try {

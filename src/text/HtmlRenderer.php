@@ -40,34 +40,22 @@ class HtmlRenderer
      * @param array $options
      * @return string
      */
-    public function render($content, $format, $options = [])
+    public function render($content, $format, $data)
     {
-        if($content == "") return "";
+        if($content == "") {
+            return "";
+        }
+
         libxml_use_internal_errors(true);
         $preParsed = $this->parser->preParse($content);
-        $markedup = $this->parse($preParsed, $format, $options['data'] ?? []);
+        $markedup = $this->parse($preParsed, $format, $data);
         $this->dom->loadHTML($markedup);
+
         if($this->dom->getElementsByTagName('h1')->item(0)) {
             $this->title = $this->dom->getElementsByTagName('h1')->item(0)->textContent;
         }
-        //$this->parser->domCreated($this->dom);
-        $body = $this->dom->getElementsByTagName('body');
 
-        try {
-            // Force the parsing of a TOC
-            if (isset($options['toc'])) {
-                throw new TocRequestedException();
-            }
-
-            // Could throw a TocRequested exception to force generation of table of contents
-            $parsed = $this->parser->postParse($markedup);
-        } catch (TocRequestedException $e) {
-            $parsed = $this->parser->postParse(
-                str_replace(['<body>', '</body>'],'', $this->dom->saveHTML($body->item(0))), false
-            );
-        }
-
-        return $parsed;
+        return $this->parser->postParse($markedup);
     }
 
     public function getTitle()
