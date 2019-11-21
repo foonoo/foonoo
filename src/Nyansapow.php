@@ -122,14 +122,6 @@ class Nyansapow
             $sitePath = $site->getSourceRoot() . $baseDirectory;
             $this->io->output("Generating $siteType site from \"{$sitePath}\"\n");
 
-//            var_dump($baseDirectory, $this->options, $sitePath);
-//            $site['base_directory'] = $baseDirectory;
-//            $site['source'] = $this->options['input'];
-//            $site['destination'] = $this->options['output'];
-//            $site['path'] = $sitePath;
-//            $site['home_path'] = $this->home;
-//            $site['excluded_paths'] = $this->excludedPaths;
-
             if (is_dir("{$sitePath}np_images")) {
                 $imagesDestination = "{$this->options['output']}{$baseDirectory}np_images";
                 try {

@@ -5,6 +5,9 @@ namespace nyansapow\generators;
 use ntentan\honam\TemplateEngine;
 use nyansapow\TextRenderer;
 
+/**
+ * 
+ */
 class BlogGenerator extends AbstractGenerator
 {
     private $posts = [];
