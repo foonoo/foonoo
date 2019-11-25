@@ -5,8 +5,10 @@ namespace nyansapow;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
+use nyansapow\sites\AbstractSite;
 use nyansapow\sites\Builder;
 use nyansapow\sites\SiteFactory;
+use Symfony\Component\Yaml\Parser as YamlParser;
 use nyansapow\text\TextProcessors;
 
 /**
@@ -39,7 +41,7 @@ class Nyansapow
     /**
      * @var TextProcessors
      */
-    private $textProcessors;
+    private $yamlParser;
     /**
      * @var \nyansapow\text\TemplateEngine
      */
@@ -57,34 +59,39 @@ class Nyansapow
      * @param TextProcessors $textProcessors
      * @param \nyansapow\text\TemplateEngine $templateEngine
      */
-    public function __construct(Io $io, SiteFactory $siteFactory, TextProcessors $textProcessors, Builder $builder)
+    public function __construct(Io $io, SiteFactory $siteFactory, YamlParser $yamlParser, Builder $builder)
     {
-        $this->home = dirname(__DIR__);
+        //$this->home = dirname(__DIR__);
         $this->io = $io;
         $this->siteFactory = $siteFactory;
-        $this->textProcessors = $textProcessors;
+        $this->yamlParser = $yamlParser;
         $this->builder = $builder;
     }
 
-    public function getHome()
-    {
-        return $this->home;
-    }
+//    public function getHome()
+//    {
+//        return $this->home;
+//    }
 
     private function readSiteMeta($path)
     {
         $meta = false;
         if (file_exists("{$path}site.yml")) {
             $file = "{$path}site.yml";
-            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
+            $meta = $this->yamlParser->parse(file_get_contents($file));
         } else if (file_exists("{$path}site.yaml")) {
             $file = "${path}site.yaml";
-            $meta = $this->textProcessors->parseYaml(file_get_contents($file));
+            $meta = $this->yamlParser->parse(file_get_contents($file));
         }
         return $meta;
     }
 
-    private function getSites($path, $root = false)
+    /**
+     * @param string $path
+     * @param bool $root
+     * @return array<AbstractSite>
+     */
+    private function getSites(string $path, bool $root = false)
     {
         $sites = array();
         $dir = dir($path);
@@ -116,37 +123,32 @@ class Nyansapow
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
 
+        /** @var AbstractSite $site */
         foreach ($sites as $site) {
-            $siteType = $site->getType();
-            $baseDirectory = $site->getPath();
-            $sitePath = $site->getSourceRoot() . $baseDirectory;
-            $this->io->output("Generating $siteType site from \"{$sitePath}\"\n");
+            $this->io->output("Generating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
 
-            if (is_dir("{$sitePath}np_images")) {
-                $imagesDestination = "{$this->options['output']}{$baseDirectory}np_images";
+            if (is_dir($site->getSourcePath("np_images"))) {
+                $imageSource = $site->getSourcePath("np_images");
+                $imagesDestination = $site->getDestinationPath("np_images");
                 try {
                     Filesystem::get($imagesDestination)->delete();
-                } catch (FileNotFoundException $e) {
-
-                }
-                Filesystem::get("{$sitePath}np_images")->copyTo($imagesDestination);
-                $this->io->output("- Copying images from {$sitePath}np_images to $imagesDestination\n");
+                } catch (FileNotFoundException $e) {}
+                $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
+                Filesystem::get($imageSource)->copyTo($imagesDestination);
             }
 
-            if (is_dir("{$sitePath}np_assets")) {
-                $assetsDestination = "{$this->options['output']}$baseDirectory/assets";
+            if (is_dir($site->getSourcePath("np_assets"))) {
+                $assetsDestination = $site->getDestinationPath("assets");
+                $assetsSource = $site->getSourcePath("np_assets");
                 try {
                     Filesystem::get($assetsDestination)->delete();
-                } catch (FileNotFoundException $e) {
-
-                }
-                Filesystem::directory("{$sitePath}np_assets")->getFiles()->copyTo($assetsDestination);
-                $this->io->output("- Copying assets from {$sitePath}np_assets to $assetsDestination\n");
+                } catch (FileNotFoundException $e) {}
+                $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
+                Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination);
             }
 
-            $data = $this->readData("{$sitePath}np_data");
-
-            $this->builder->build($site, $data);
+            $site->setData($this->readData($site->getSourcePath("np_data")));
+            $this->builder->build($site);
         }
     }
 
@@ -170,6 +172,7 @@ class Nyansapow
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
+        $this->builder->setOptions($options);
         $this->options = $options;
 
     }
@@ -195,7 +198,7 @@ class Nyansapow
         while (false !== ($file = $dir->read())) {
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             if ($extension === 'yml' || $extension === 'yaml') {
-                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->textProcessors->parseYaml(file_get_contents("$path/$file"));
+                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->yamlParser->parse(file_get_contents("$path/$file"));
             }
         }
         return $data;

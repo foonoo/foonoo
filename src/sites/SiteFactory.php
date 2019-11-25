@@ -6,11 +6,11 @@ namespace nyansapow\sites;
 
 class SiteFactory
 {
-    private $pageFactory;
+    private $contentFactory;
 
-    public function __construct(PageFactory $pageFactory)
+    public function __construct(ContentFactory $pageFactory)
     {
-        $this->pageFactory = $pageFactory;
+        $this->contentFactory = $pageFactory;
     }
 
     public function create(&$metaData, $path, $options): AbstractSite
@@ -21,16 +21,13 @@ class SiteFactory
         $class = "\\nyansapow\\sites\\" . ucfirst($metaData['type'] ?? 'plain') . "Site";
         $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $options['output'], "*/np_*"] + ($metaData['excluded_paths'] ?? []);
 
-        /** @var AbstractSite $instance */
+        /** @var AbstractSite $site */
         $site = new $class();
-
-//        $site->setSourcePath($path);
-//        $site->setDestinationPath($path);
         $site->setPath(substr($path, strlen($options['input'])));
         $site->setSourceRoot($options['input']);
         $site->setDestinationRoot($options['output']);
         $site->setSettings($metaData);
-        $site->setPageFactory($this->pageFactory);
+        $site->setContentFactory($this->contentFactory);
 
         return $site;
     }

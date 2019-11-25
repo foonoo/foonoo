@@ -18,6 +18,7 @@ class Theme
         $this->themePath = $themePath;
         $this->templateEngine = $templateEngine;
         $this->templateHierachy = $templateHierachy;
+        $this->templateHierachy[]="$themePath/templates";
     }
 
     /**
@@ -28,7 +29,7 @@ class Theme
      */
     public function copyAssets($destination)
     {
-        if(is_dir("$this->themePath/assets") && !is_dir("$destination/assets")) {
+        if(is_dir("$this->themePath/assets")) {
             Filesystem::directory("$this->themePath/assets")
                 ->getFiles()
                 ->copyTo("$destination/assets");

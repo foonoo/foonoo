@@ -25,7 +25,7 @@ class ThemeManager
     private function loadTheme($site)
     {
         $theme = $site->getDefaultTheme();
-        $sourcePath = $site->getSourceRoot() . $site->getPath();
+        $sourcePath = $site->getSourcePath();
         $builtInTheme = __DIR__ . "/../../themes/{$theme}";
         $customTheme = "{$sourcePath}/np_themes/{$theme}";
 
@@ -51,7 +51,7 @@ class ThemeManager
     public function getTheme($site)
     {
         $theme = $this->loadTheme($site);
-        $theme->copyAssets($site->getDestinationRoot() . $site->getPath());
+        $theme->copyAssets($site->getDestinationPath());
         return $theme;
     }
 
@@ -62,7 +62,7 @@ class ThemeManager
     private function getLocalTemplatePaths($site)
     {
         $hierarchy = [__DIR__ . "/../../themes/parser"];
-        $path = $site->getSourceRoot() . $site->getPath();
+        $path = $site->getSourcePath();
 
         if (is_dir("{$path}np_templates")) {
             $hierarchy[] = "{$path}np_templates";

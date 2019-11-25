@@ -10,11 +10,12 @@ abstract class AbstractSite
     private $path;
     private $sourceRoot;
     private $destinationRoot;
+    private $data;
 
     /**
-     * @var PageFactory
+     * @var ContentFactory
      */
-    protected $pageFactory;
+    protected $contentFactory;
 
     public function setPath(string $path) : void
     {
@@ -24,11 +25,6 @@ abstract class AbstractSite
     public function getPath() : string
     {
         return $this->path;
-    }
-
-    public function getSourceRoot() : string
-    {
-        return $this->sourceRoot;
     }
 
     public function setSourceRoot(string $sourceRoot) : void
@@ -41,11 +37,6 @@ abstract class AbstractSite
         $this->destinationRoot = $destinationRoot;
     }
 
-    public function getDestinationRoot() : string
-    {
-        return $this->destinationRoot;
-    }
-
     public function setSettings($settings)
     {
         $this->settings = $settings;
@@ -56,12 +47,22 @@ abstract class AbstractSite
         return $this->settings[$setting] ?? null;
     }
 
-    public function setPageFactory(PageFactory $pageFactory)
+    public function setContentFactory(ContentFactory $contentFactory)
     {
-        $this->pageFactory = $pageFactory;
+        $this->contentFactory = $contentFactory;
     }
 
-    protected function getFiles($base = '', $recursive = false)
+    public function setData(array $data): void
+    {
+        $this->data = $data;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    protected function getFiles(string $base = '', bool $recursive = false) : array
     {
         $files = array();
         $dir = scandir("{$this->sourceRoot}/{$this->path}/$base", SCANDIR_SORT_ASCENDING);
@@ -81,8 +82,17 @@ abstract class AbstractSite
         return $files;
     }
 
+    public function getSourcePath(string $path = "") : string
+    {
+        return preg_replace("|/+|", "/", "{$this->sourceRoot}/{$this->path}/{$path}");
+    }
+
+    public function getDestinationPath(string $path = "") : string
+    {
+        return preg_replace("|/+|", "/", "{$this->destinationRoot}/{$this->path}/{$path}");
+    }
+
     public abstract function getPages(): array;
     public abstract function getType(): string;
     public abstract function getDefaultTheme(): string;
-
 }

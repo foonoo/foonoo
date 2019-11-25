@@ -22,11 +22,6 @@ class TextProcessors
         return $this->yamlParser->parse($yamlText);
     }
 
-//    public function setPathToBase(string $path)
-//    {
-//        $this->textParser->setPathToBase($path);
-//    }
-
     public function renderHtml(string $markdown, string $format, $options = []) : string
     {
         return $this->textRenderer->render($markdown, $format, $options);

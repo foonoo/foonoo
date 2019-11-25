@@ -2,10 +2,6 @@
 
 namespace nyansapow\sites;
 
-use ntentan\utils\exceptions\FileAlreadyExistsException;
-use ntentan\utils\exceptions\FileNotWriteableException;
-use nyansapow\NyansapowException;
-
 /**
  * 
  */
@@ -17,9 +13,9 @@ class PlainSite extends AbstractSite
 
         $files = $this->getFiles();
         foreach ($files as $file) {
-            $sourceFile = $this->getSourceRoot() . $file;
-            $destinationFile = $this->getDestinationRoot() . $file;
-            $pages []= $this->pageFactory->create($sourceFile, $destinationFile);
+            $sourceFile = $this->getSourcePath($file);
+            $destinationFile = $file;
+            $pages []= $this->contentFactory->create($sourceFile, $destinationFile, $this->getData());
         }
 
         return $pages;

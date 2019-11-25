@@ -22,7 +22,9 @@ class TemplateEngine
 
     public function render(string $template, array $data, array $hierarchy = [])
     {
-        $this->templateFileResolver->setPathHierarchy($hierarchy);
+        if(!empty($hierarchy)) {
+            $this->templateFileResolver->setPathHierarchy($hierarchy);
+        }
         return $this->templateRenderer->render($template, $data);
     }
 }

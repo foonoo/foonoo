@@ -4,15 +4,17 @@
 namespace nyansapow\sites;
 
 
+use ntentan\utils\exceptions\FileAlreadyExistsException;
+use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
 use nyansapow\text\HtmlRenderer;
-use nyansapow\text\TemplateEngine;
 use nyansapow\themes\ThemeManager;
 
 class Builder
 {
     private $themeManager;
     private $htmlRenderer;
+    private $options;
 
     public function __construct(ThemeManager $themeManager, HtmlRenderer $htmlRenderer)
     {
@@ -21,50 +23,52 @@ class Builder
     }
 
     /**
-     * @param Page $page
+     * @param MarkupContent $page
      * @param string $sourceExtension
      * @param string $destinationExtension
      * @param array $data
      * @return string
      */
-    private function convert($page, $sourceExtension, $destinationExtension, $data)
-    {
-        if($sourceExtension != $destinationExtension) {
-            $output = $this->htmlRenderer->render($page->getBody(), $sourceExtension, $data);
-        } else {
-            $output = $page->getBody();
-        }
-        return $output;
-    }
+//    private function convert($page, $sourceExtension, $destinationExtension, $data)
+//    {
+//        if($sourceExtension != $destinationExtension) {
+//            $output = $this->htmlRenderer->render($page->getBody(), $sourceExtension, $data);
+//        } else {
+//            $output = $page->getBody();
+//        }
+//        return $output;
+//    }
 
-    public function build(AbstractSite $site, array $data)
+    public function build(AbstractSite $site)
     {
         foreach($site->getPages() as $page) {
-            $this->writeContentToOutputPath($site, $page, $data);
+            $this->writeContentToOutputPath($site, $page);
         }
+    }
+
+    public function setOptions($options)
+    {
+        $this->options = $options;
     }
 
     /**
-     * @param $site
-     * @param $content
-     * @param $path
-     * @param array $overrides
-     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
-     * @throws \ntentan\utils\exceptions\FileNotWriteableException
+     * @param AbstractSite $site
+     * @param ContentInterface $page
+     * @throws FileAlreadyExistsException
+     * @throws FileNotWriteableException
      */
-    protected function writeContentToOutputPath(AbstractSite $site, Page $page, array $overrides = array())
+    protected function writeContentToOutputPath(AbstractSite $site, ContentInterface $page)
     {
-        $sourcePath = $page->getSource();
-        $destinationPath = $page->getDestination();
+        $destinationPath = $site->getDestinationPath($page->getDestination());
         $params = array_merge([
-                'home_path' => $this->makeRelativeLocation($site, $destinationPath . $site->getPath()),
-                'site_path' => $this->makeRelativeLocation($site, $destinationPath),
+                'home_path' => $this->makeRelativeLocation($destinationPath, $this->options['output']),
+                'site_path' => $this->makeRelativeLocation($destinationPath, $site->getDestinationPath()),
                 'site_name' => $this->settings['name'] ?? '',
                 'date' => date('jS F Y')
             ],
-            $overrides
+            $site->getData()
         );
-        $params['body'] = $this->convert($page, $sourcePath, $destinationPath, $params);
+        $params['body'] = $page->render($params);
         $webPage = $this->themeManager->getTheme($site)->renderPage($params);
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);
@@ -72,10 +76,10 @@ class Builder
         file_put_contents($destinationPath, $webPage);
     }
 
-    private function makeRelativeLocation($site, $path)
+    private function makeRelativeLocation($path, $relativeTo)
     {
         // Generate a relative location for the assets
-        $dir = substr(preg_replace('#/+#','/', $path), strlen($site->getDestinationRoot()));
+        $dir = substr(preg_replace('#/+#','/', $path), strlen($relativeTo));
         $relativeLocation = '';
         if ($dir != '' && $dir != '.') {
             $dir .= substr($dir, -1) == '/' ? '' : '/';
@@ -83,29 +87,4 @@ class Builder
         }
         return $relativeLocation;
     }
-
-//    /**
-//     * Returns the relative path to the site directory.
-//     *
-//     * @param string $path
-//     * @param AbstractSite $site
-//     * @return string
-//     */
-//    protected function getRelativeSitePath(string $path)
-//    {
-//        return $this->getRelativeBaseLocation($path);
-//    }
-//
-//    /**
-//     * Returns the relative path to the base directory of all sites when using multiple sites.
-//     *
-//     * @param string $path
-//     * @param AbstractSite $site
-//     * @return string
-//     */
-//    protected function getRelativeHomePath(string $path)
-//    {
-//        return $this->getRelativeBaseLocation($site->getSourcePathRelativeToRoot() . $path);
-//    }
-
 }
