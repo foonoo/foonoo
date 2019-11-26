@@ -15,19 +15,20 @@ class MarkupContent implements ContentInterface
     private $firstLineOfBody = 0;
     private $htmlRenderer;
     private $yamlParser;
+    private $frontMatterReader;
 
-    public function __construct(HtmlRenderer $htmlRenderer, $document, $destination)
+    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
         $this->document = $document;
         $this->htmlRenderer = $htmlRenderer;
         $this->destination = $destination;
-        $this->yamlParser = new YamlParser();
+        $this->frontMatterReader = $frontMatterReader;
     }
 
     protected function getFrontMatter()
     {
         if(!$this->frontMatter) {
-            $this->readFrontMatter();
+            $this->frontMatter = $this->frontMatterReader->read($this->document, $this->firstLineOfBody);
         }
         return $this->frontMatter;
     }
@@ -52,39 +53,8 @@ class MarkupContent implements ContentInterface
 
     public function render() : string
     {
-        $this->readFrontMatter();
+        $this->getFrontMatter();
         return $this->htmlRenderer->render($this->getBody(), []);
-    }
-
-    private function readFrontMatter() : void
-    {
-        $file = fopen($this->document, 'r');
-
-        while (!feof($file)) {
-            $line = fgets($file);
-            if (trim($line) == "---") {
-                $this->frontMatter = $this->extractAndDecodeFrontMatter($file);
-                break;
-            } else if (trim($line) != "") {
-                $this->firstLineOfBody = 0;
-                break;
-            } else {
-                $this->firstLineOfBody += 1;
-            }
-        }
-    }
-
-    private function extractAndDecodeFrontMatter($file) : array
-    {
-        $frontmatter = '';
-        do {
-            $line = fgets($file);
-            $this->firstLineOfBody += 1;
-            if (trim($line) == "---") break;
-            $frontmatter .= $line;
-        } while (!feof($file));
-
-        return $this->yamlParser->parse($frontmatter);
     }
 
     public function getMetaData(): array

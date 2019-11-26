@@ -6,7 +6,6 @@ use DOMDocument;
 
 class HtmlRenderer
 {
-    private $title;
     private $info = null;
     private $parser;
     private $dom;
@@ -33,14 +32,14 @@ class HtmlRenderer
      * @param array $options
      * @return string
      */
-    public function render($content, $data)
+    public function render($content, $data = [])
     {
         if($content == "") {
             return "";
         }
 
         $preParsed = $this->parser->preParse($content);
-        $markedup = $this->parseMarkdown($preParsed, $data);
+        $markedup = $this->parseMarkdown($preParsed);
         $this->dom->loadHTML($markedup);
 
         return $this->parser->postParse($markedup);

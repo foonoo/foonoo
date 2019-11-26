@@ -8,7 +8,7 @@ class SiteFactory
 {
     private $contentFactory;
 
-    public function __construct(ContentFactory $pageFactory)
+    public function __construct(ContentRegistry $pageFactory)
     {
         $this->contentFactory = $pageFactory;
     }

@@ -17,7 +17,7 @@ class TemplateContent implements ContentInterface
         $this->templates = $templates;
         $this->source = $source;
         $extension = pathinfo($this->source, PATHINFO_EXTENSION);
-        $this->destination = substr($destination, 0, -strlen($extension)) . "html";
+        $this->destination = $extension ? substr($destination, 0, -strlen($extension)) . "html" : $destination;
         $this->data = $data;
     }
 

@@ -13,7 +13,7 @@ abstract class AbstractSite
     private $templateData;
 
     /**
-     * @var ContentFactory
+     * @var ContentRegistry
      */
     protected $contentFactory;
 
@@ -47,7 +47,7 @@ abstract class AbstractSite
         return $this->metaData[$setting] ?? null;
     }
 
-    public function setContentFactory(ContentFactory $contentFactory)
+    public function setContentFactory(ContentRegistry $contentFactory)
     {
         $this->contentFactory = $contentFactory;
     }

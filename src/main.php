@@ -10,6 +10,10 @@ use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
+use nyansapow\sites\BlogContentFactory;
+use nyansapow\sites\CopiedContentFactory;
+use nyansapow\sites\MarkupContentFactory;
+use nyansapow\sites\TemplateContentFactory;
 use nyansapow\text\TagParser;
 
 $parser = new ArgumentParser();
@@ -138,6 +142,32 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
 })->asSingleton();
 $container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+$container->bind(\nyansapow\sites\ContentRegistry::class)->to(function (Container $container) {
+    $registry = new \nyansapow\sites\ContentRegistry();
+    $registry->register(
+        function ($params) { return isset($params['data']['blog']); },
+        $container->get(BlogContentFactory::class)
+    );
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php']);
+        },
+        $container->get(CopiedContentFactory::class)
+    );
+    $registry->register(
+        function ($params) { return isset($params['data']) && !empty($params['data']); },
+        $container->get(TemplateContentFactory::class)
+    );
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return $extension == 'md';
+        },
+        $container->get(MarkupContentFactory::class)
+    );
+    return $registry;
+})->asSingleton();
 
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));

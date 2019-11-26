@@ -12,18 +12,20 @@ class BlogContent extends MarkupContent
     private $metaData;
     private $next;
     private $previous;
+    private $htmlRenderer;
 
-    public function __construct(HtmlRenderer $htmlRenderer, $document, $destination, $params)
+    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $params)
     {
-        parent::__construct($htmlRenderer, $document, $destination);
+        parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
+        $this->htmlRenderer = $htmlRenderer;
         $this->params = $params;
     }
 
-    public function getPostData()
+    public function getMetaData() : array
     {
         if(!$this->metaData) {
-            $splitPost = $this->splitPost();
             $frontMatter = $this->getFrontMatter();
+            $splitPost = $this->splitPost();
             $this->metaData = [
                 'body_text' => $splitPost['post'],
                 'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->params['title'])),
@@ -32,13 +34,11 @@ class BlogContent extends MarkupContent
                 'continuation' => $splitPost['continuation'],
                 'front_matter' => $frontMatter,
                 'more_link' => $splitPost['more_link'],
+                'path' => "{$this->params['year']}/{$this->params['month']}/{$this->params['day']}/{$this->params['title']}.html",
+                'preview' => $this->htmlRenderer->render($splitPost['preview'])
             ];
         }
-    }
-
-    public function render(): string
-    {
-        return parent::render();
+        return $this->metaData;
     }
 
     private function splitPost()

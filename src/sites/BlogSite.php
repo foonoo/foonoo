@@ -11,7 +11,7 @@ class BlogSite extends AbstractSite
     public function getPages() : array
     {
         $pages = $this->posts = $this->preProcessFiles($this->getFiles("posts"));
-        $pages[] = $this->getIndexPage('index.html', $this->posts, 'index');
+        $pages[] = $this->getIndexPage('index.html', $this->posts, '');
 //        $this->writeIndex('posts.html', ['title' => 'Posts']);
 //        $this->writePages();
 //        $this->writeArchive($this->archives, ['months', 'days'], 'years');
@@ -22,7 +22,11 @@ class BlogSite extends AbstractSite
     private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing')
     {
         return $this->contentFactory->create($template ?? 'listing', $target,
-            ['listing_title' => $title, 'previews' => true, 'posts' => $posts]
+            [
+                'listing_title' => $title,
+                'previews' => true,
+                'posts' => array_map(function($x){ return $x->getMetaData(); }, $posts)
+            ]
         );
     }
 
@@ -34,6 +38,7 @@ class BlogSite extends AbstractSite
         foreach ($files as $file) {
             if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
+                // Force content factory to generate blog content
                 $matches['blog'] = true;
                 /** @var BlogContent $page */
                 $page = $this->contentFactory->create($this->getSourcePath($file), $destinationPath, $matches);
