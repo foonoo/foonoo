@@ -52,7 +52,7 @@ class BlogSite extends AbstractSite
             case 'years':
                 return $value;
             case 'months':
-                return $value;
+                return date("M", $value);
             case 'days':
                 return $value;
         }
@@ -75,23 +75,27 @@ class BlogSite extends AbstractSite
                     $page->setPrevious($lastPost);
                     $lastPost->setNext($page);
                 }
-
-                if(!isset($this->archives[$matches['year']])) {
-                    $this->archives[$matches['year']] = ['posts' => []];
-                }
-                if(!isset($this->archives[$matches['year']][$matches['month']])) {
-                    $this->archives[$matches['year']][$matches['month']] = ['posts' => []];
-                }
-                if(!isset($this->archives[$matches['year']][$matches['month']][$matches['day']])) {
-                    $this->archives[$matches['year']][$matches['month']][$matches['day']] = ['posts' => []];
-                }
-                $this->archives[$matches['year']]['posts'][] = $page;
-                $this->archives[$matches['year']]['months'][$matches['month']]['posts'][] = $page;
-                $this->archives[$matches['year']]['months'][$matches['month']]['days'][$matches['day']]['posts'][] = $page;
+                $this->addPostToArchive($page, $matches);
             }
         }
 
         return $pages;
+    }
+
+    private function addPostToArchive($page, $matches)
+    {
+        if(!isset($this->archives[$matches['year']])) {
+            $this->archives[$matches['year']] = ['posts' => []];
+        }
+        if(!isset($this->archives[$matches['year']][$matches['month']])) {
+            $this->archives[$matches['year']][$matches['month']] = ['posts' => []];
+        }
+        if(!isset($this->archives[$matches['year']][$matches['month']][$matches['day']])) {
+            $this->archives[$matches['year']][$matches['month']][$matches['day']] = ['posts' => []];
+        }
+        $this->archives[$matches['year']]['posts'][] = $page;
+        $this->archives[$matches['year']]['months'][$matches['month']]['posts'][] = $page;
+        $this->archives[$matches['year']]['months'][$matches['month']]['days'][$matches['day']]['posts'][] = $page;
     }
 
     public function getType() : string
