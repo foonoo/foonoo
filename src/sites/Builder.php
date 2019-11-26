@@ -9,6 +9,7 @@ use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
+use nyansapow\themes\Theme;
 use nyansapow\themes\ThemeManager;
 
 class Builder
@@ -27,8 +28,9 @@ class Builder
 
     public function build(AbstractSite $site)
     {
+        $theme = $this->themeManager->getTheme($site);
         foreach($site->getPages() as $page) {
-            $this->writeContentToOutputPath($site, $page);
+            $this->writeContentToOutputPath($site, $theme, $page);
         }
     }
 
@@ -43,10 +45,9 @@ class Builder
      * @throws FileAlreadyExistsException
      * @throws FileNotWriteableException
      */
-    protected function writeContentToOutputPath(AbstractSite $site, ContentInterface $content)
+    protected function writeContentToOutputPath(AbstractSite $site, Theme $theme, ContentInterface $content)
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
-        $theme = $this->themeManager->getTheme($site);
         $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();
         $theme->activate();
 

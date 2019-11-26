@@ -7,14 +7,14 @@ namespace nyansapow\sites;
 class BlogSite extends AbstractSite
 {
     private $posts = [];
+    private $archives = [];
 
     public function getPages() : array
     {
         $pages = $this->posts = $this->preProcessFiles($this->getFiles("posts"));
         $pages[] = $this->getIndexPage('index.html', $this->posts, '');
-//        $this->writeIndex('posts.html', ['title' => 'Posts']);
-//        $this->writePages();
-//        $this->writeArchive($this->archives, ['months', 'days'], 'years');
+        $pages[] = $this->getIndexPage('posts.html', $this->posts);
+        $pages = array_merge($pages, $this->getArchive($this->archives, ['months', 'days'], 'years'));
 //        $this->writeFeed();
         return $pages;
     }
@@ -28,6 +28,34 @@ class BlogSite extends AbstractSite
                 'posts' => array_map(function($x){ return $x->getMetaData(); }, $posts)
             ]
         );
+    }
+
+    private function getArchive($archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = '')
+    {
+        $pages = [];
+        $nextStage = array_shift($order);
+        foreach ($archive as $value => $posts) {
+            $newTitle = $this->formatValue($stage, $value) . " $title";
+            $newBaseUrl = "$baseUrl$value/";
+            $pages[]= $this->getIndexPage("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
+            if ($nextStage != null) {
+                $pages = array_merge($pages, $this->getArchive($posts[$nextStage], $order, $nextStage, $newTitle, $newBaseUrl));
+            }
+        }
+
+        return $pages;
+    }
+
+    private function formatValue($stage, $value)
+    {
+        switch ($stage) {
+            case 'years':
+                return $value;
+            case 'months':
+                return $value;
+            case 'days':
+                return $value;
+        }
     }
 
     private function preProcessFiles($files)
@@ -47,9 +75,19 @@ class BlogSite extends AbstractSite
                     $page->setPrevious($lastPost);
                     $lastPost->setNext($page);
                 }
-                $this->archives[$matches['year']]['posts'] = array();
-                $this->archives[$matches['year']][$matches['month']]['posts'] = array();
-                $this->archives[$matches['year']][$matches['month']][$matches['day']]['posts'] = array();
+
+                if(!isset($this->archives[$matches['year']])) {
+                    $this->archives[$matches['year']] = ['posts' => []];
+                }
+                if(!isset($this->archives[$matches['year']][$matches['month']])) {
+                    $this->archives[$matches['year']][$matches['month']] = ['posts' => []];
+                }
+                if(!isset($this->archives[$matches['year']][$matches['month']][$matches['day']])) {
+                    $this->archives[$matches['year']][$matches['month']][$matches['day']] = ['posts' => []];
+                }
+                $this->archives[$matches['year']]['posts'][] = $page;
+                $this->archives[$matches['year']]['months'][$matches['month']]['posts'][] = $page;
+                $this->archives[$matches['year']]['months'][$matches['month']]['days'][$matches['day']]['posts'][] = $page;
             }
         }
 

@@ -4,7 +4,9 @@
 namespace nyansapow\sites;
 
 
+use ntentan\honam\TemplateRenderer;
 use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TemplateEngine;
 
 class BlogContent extends MarkupContent
 {
@@ -13,12 +15,14 @@ class BlogContent extends MarkupContent
     private $next;
     private $previous;
     private $htmlRenderer;
+    private $templateEngine;
 
-    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $params)
+    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $params)
     {
         parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
         $this->htmlRenderer = $htmlRenderer;
         $this->params = $params;
+        $this->templateEngine = $templateEngine;
     }
 
     public function getMetaData() : array
@@ -39,6 +43,11 @@ class BlogContent extends MarkupContent
             ];
         }
         return $this->metaData;
+    }
+
+    public function render(): string
+    {
+        return $this->templateEngine->render('post', array_merge(['body' => parent::render()],  $this->getMetaData()));
     }
 
     private function splitPost()
