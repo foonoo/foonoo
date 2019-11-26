@@ -36,8 +36,13 @@ class Theme
         }
     }
 
-    public function renderPage($data, $layout = null)
+    public function activate()
     {
-        return $this->templateEngine->render($layout ?? "layout", $data, $this->templateHierachy);
+        $this->templateEngine->setPathHierarchy($this->templateHierachy);
+    }
+
+    public function getDefaultLayoutTemplate()
+    {
+        return 'layout';
     }
 }

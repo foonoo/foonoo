@@ -19,7 +19,7 @@ class BlogContent extends MarkupContent
         $this->params = $params;
     }
 
-    public function getMetaData()
+    public function getPostData()
     {
         if(!$this->metaData) {
             $splitPost = $this->splitPost();

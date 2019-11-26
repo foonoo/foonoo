@@ -30,4 +30,9 @@ class TemplateContent implements ContentInterface
     {
         return $this->destination;
     }
+
+    public function getMetaData(): array
+    {
+        return [];
+    }
 }

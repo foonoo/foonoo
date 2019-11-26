@@ -86,4 +86,9 @@ class MarkupContent implements ContentInterface
 
         return $this->yamlParser->parse($frontmatter);
     }
+
+    public function getMetaData(): array
+    {
+        return $this->getFrontMatter();
+    }
 }

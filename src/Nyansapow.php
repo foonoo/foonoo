@@ -147,7 +147,7 @@ class Nyansapow
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination);
             }
 
-            $site->setData($this->readData($site->getSourcePath("np_data")));
+            $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
             $this->builder->build($site);
         }
     }

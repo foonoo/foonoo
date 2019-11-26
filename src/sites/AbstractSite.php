@@ -6,11 +6,11 @@ namespace nyansapow\sites;
 
 abstract class AbstractSite
 {
-    protected $settings;
+    protected $metaData;
     private $path;
     private $sourceRoot;
     private $destinationRoot;
-    private $data;
+    private $templateData;
 
     /**
      * @var ContentFactory
@@ -37,14 +37,14 @@ abstract class AbstractSite
         $this->destinationRoot = $destinationRoot;
     }
 
-    public function setSettings($settings)
+    public function setMetaData($metaData)
     {
-        $this->settings = $settings;
+        $this->metaData = $metaData;
     }
 
     public function getSetting($setting)
     {
-        return $this->settings[$setting] ?? null;
+        return $this->metaData[$setting] ?? null;
     }
 
     public function setContentFactory(ContentFactory $contentFactory)
@@ -52,14 +52,36 @@ abstract class AbstractSite
         $this->contentFactory = $contentFactory;
     }
 
-    public function setData(array $data): void
+    public function setTemplateData(array $templateData): void
     {
-        $this->data = $data;
+        $this->templateData = $templateData;
     }
 
-    public function getData(): array
+    public function getTemplateData(string $pageDestination = null): array
     {
-        return $this->data;
+        if($pageDestination) {
+                return array_merge([
+                    'home_path' => $this->makeRelativeLocation($pageDestination, $this->destinationRoot),
+                    'site_path' => $this->makeRelativeLocation($pageDestination, $this->getDestinationPath()),
+                    'site_name' => $this->settings['name'] ?? '',
+                    'date' => date('jS F Y')
+                ],
+                $this->templateData
+            );
+        }
+        return $this->templateData;
+    }
+
+    private function makeRelativeLocation($path, $relativeTo)
+    {
+        // Generate a relative location for the assets
+        $dir = substr(preg_replace('#/+#','/', $path), strlen($relativeTo));
+        $relativeLocation = '';
+        if ($dir != '' && $dir != '.') {
+            $dir .= substr($dir, -1) == '/' ? '' : '/';
+            $relativeLocation = str_repeat('../', substr_count($dir, '/') - 1);
+        }
+        return $relativeLocation;
     }
 
     protected function getFiles(string $base = '', bool $recursive = false) : array
@@ -69,7 +91,7 @@ abstract class AbstractSite
         foreach ($dir as $file) {
             $path = "{$this->sourceRoot}" . ($base == '' ? '' : "$base/") . "$file";
             if (array_reduce(
-                $this->settings['excluded_paths'],
+                $this->metaData['excluded_paths'],
                 function ($carry, $item) use($path) {return $carry | fnmatch($item, $path); },false)
             ) continue;
             if (is_dir($path) && $recursive) {

@@ -24,4 +24,9 @@ class CopiedContent implements ContentInterface
     {
         return $this->destination;
     }
+
+    public function getMetaData(): array
+    {
+        return ['layout' => false];
+    }
 }

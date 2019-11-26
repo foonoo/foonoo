@@ -26,7 +26,7 @@ class SiteFactory
         $site->setPath(substr($path, strlen($options['input'])));
         $site->setSourceRoot($options['input']);
         $site->setDestinationRoot($options['output']);
-        $site->setSettings($metaData);
+        $site->setMetaData($metaData);
         $site->setContentFactory($this->contentFactory);
 
         return $site;
