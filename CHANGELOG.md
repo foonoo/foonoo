@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+This release presents a shift in the underlying architecture of the code of this project. The original architecture, which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these directories, the generators write each of their sites based on 
+
+
 ## v0.2.2 - 2019-11-05
 ###  Added
 - Front matter for posts are now sent to the layout renderer, so they are available when rendering layouts for blog posts and pages.
