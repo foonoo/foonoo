@@ -24,7 +24,7 @@ class ThemeManager
      */
     private function loadTheme($site)
     {
-        $theme = $site->getDefaultTheme();
+        $theme = $site->getMetaData()['theme'] ?? $site->getDefaultTheme();
         $sourcePath = $site->getSourcePath();
         $builtInTheme = __DIR__ . "/../../themes/{$theme}";
         $customTheme = "{$sourcePath}/np_themes/{$theme}";

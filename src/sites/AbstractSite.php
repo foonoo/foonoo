@@ -42,6 +42,11 @@ abstract class AbstractSite
         $this->metaData = $metaData;
     }
 
+    public function getMetaData()
+    {
+        return $this->metaData;
+    }
+
     public function getSetting($setting)
     {
         return $this->metaData[$setting] ?? null;
