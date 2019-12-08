@@ -10,9 +10,12 @@ use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
-use nyansapow\sites\BlogContentFactory;
+use nyansapow\sites\AutomaticContentFactory;
+use nyansapow\sites\BlogSiteFactory;
 use nyansapow\sites\CopiedContentFactory;
+use nyansapow\sites\DefaultSiteFactory;
 use nyansapow\sites\MarkupContentFactory;
+use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\sites\TemplateContentFactory;
 use nyansapow\text\TagParser;
 
@@ -119,7 +122,6 @@ if(!isset($options['__command'])) {
         echo "Unknown command `{$options['__args'][0]}`.\nRun `{$options['__executed']} --help` for more information.\n";
     } else {
         echo $parser->getHelpMessage();
-        
     }
     exit(1);    
 }
@@ -142,12 +144,8 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
 })->asSingleton();
 $container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
-$container->bind(\nyansapow\sites\ContentRegistry::class)->to(function (Container $container) {
-    $registry = new \nyansapow\sites\ContentRegistry();
-    $registry->register(
-        function ($params) { return isset($params['data']['blog']); },
-        $container->get(BlogContentFactory::class)
-    );
+$container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
+    $registry = new AutomaticContentFactory();
     $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
@@ -169,6 +167,13 @@ $container->bind(\nyansapow\sites\ContentRegistry::class)->to(function (Containe
     return $registry;
 })->asSingleton();
 
+$container->bind(SiteTypeRegistry::class)->to(function(Container $container) {
+    $registry = new SiteTypeRegistry();
+    $defaultRegistry = $container->get(DefaultSiteFactory::class);
+    $registry->register($defaultRegistry, 'plain');
+    $registry->register($container->get(BlogSiteFactory::class), 'blog');
+    return $registry;
+});
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

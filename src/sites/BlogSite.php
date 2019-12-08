@@ -8,6 +8,12 @@ class BlogSite extends AbstractSite
 {
     private $posts = [];
     private $archives = [];
+    private $blogContentFactory;
+
+    public function __construct(BlogContentFactory $blogContentFactory)
+    {
+        $this->blogContentFactory = $blogContentFactory;
+    }
 
     public function getPages() : array
     {
@@ -15,19 +21,12 @@ class BlogSite extends AbstractSite
         $pages[] = $this->getIndexPage('index.html', $this->posts, '');
         $pages[] = $this->getIndexPage('posts.html', $this->posts);
         $pages = array_merge($pages, $this->getArchive($this->archives, ['months', 'days'], 'years'));
-//        $this->writeFeed();
         return $pages;
     }
 
     private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing')
     {
-        return $this->contentFactory->create($template ?? 'listing', $target,
-            [
-                'listing_title' => $title,
-                'previews' => true,
-                'posts' => array_map(function($x){ return $x->getMetaData(); }, $posts)
-            ]
-        );
+        return $this->blogContentFactory->createListing($posts, $target, ['listing_title' => $title, 'previews' => true]);
     }
 
     private function getArchive($archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = '')
@@ -61,15 +60,14 @@ class BlogSite extends AbstractSite
     private function preProcessFiles($files)
     {
         $pages = [];
+        /** @var BlogPostContent $lastPost */
         $lastPost = null;
 
         foreach ($files as $file) {
             if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
-                $matches['blog'] = true;
-                /** @var BlogContent $page */
-                $page = $this->contentFactory->create($this->getSourcePath($file), $destinationPath, $matches);
+                $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath, $matches);
                 $pages[] = $page;
                 if($lastPost) {
                     $page->setPrevious($lastPost);

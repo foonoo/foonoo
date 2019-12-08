@@ -2,7 +2,31 @@
 
 ## Unreleased
 
-This release presents a shift in the underlying architecture of the code of this project. The original architecture, which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these directories, the generators write each of their sites based on 
+This release presents a shift in the underlying architecture of the code for this project. The original architecture, 
+which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these 
+directories, the generators wrote each of their sites based on what it read from the site directory and its internal 
+logic. Essentially, once a generator was loaded, all control was yielded to it, and there was no way third party code
+could be executed. This obviously made that architecture virtually inextensible. In fact, in order to implement a third
+party table of contents generator, a confusing exception based solution had to be implemented.
+
+As far as external invocation, and functionality of the application is concerned, nothing has changed. Internally, 
+however, the code has changed a lot. First, the entire generator system has been scrapped. In place of that, there is a 
+Builder class which is responsible for building all the sites, and a Site class which is responsible for telling the 
+builder what to write. The site classes read the site directories, and then create Content objects which represent the
+actual files to be written. The Content objects that are generated are then passed to the Builder object which actually
+write out the site. 
+
+For third party code to integrate with this process, there is an event system which passes messages at different stages
+of the build process. Given that Site and Content objects are abstract, they also present another integration point for
+third party plugins to implement their own. Two other integration points that currently exist are custom tags for the
+Nyansapow markdown parser, and content converters that convert files from one format to another (such as Markdown to
+HTML).
+
+Another significant change in this release is the theme engine. This time around, due to the need to improve integration,
+assets for themes are not fixed. Plugins have the ability to inject custom stylesheets and scripts into the build process
+so themes could properly represent their functionality.
+
+I do not know what else to say except that this is &mdash; in every complete essence &mdash; a total rewrite.     
 
 
 ## v0.2.2 - 2019-11-05

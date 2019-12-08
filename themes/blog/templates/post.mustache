@@ -1,14 +1,14 @@
 <div class="post">
-    <div class="time">{{date}} under {{category}}</div>
+    <div class="time">{{date}} under {{front_matter.category}}</div>
     <div>
         <h2 class='post-title'>{{title}}</h2>
-        {{#previews}}
+        {{#previews_only}}
             {{{preview}}}
-            {{#more_link}}<a href="{{site_path}}{{path}}">Continue reading</a>{{/more_link}}
-        {{/previews}}
-        {{^previews}}
+            <a href="{{site_path}}{{path}}">Continue reading</a>
+        {{/previews_only}}
+        {{^previews_only}}
             {{{body}}}
-        {{/previews}}
+        {{/previews_only}}
     </div>
     <div id="bottomnav">
         {{#prev}}

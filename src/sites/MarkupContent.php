@@ -14,7 +14,6 @@ class MarkupContent implements ContentInterface
     private $frontMatter;
     private $firstLineOfBody = 0;
     private $htmlRenderer;
-    private $yamlParser;
     private $frontMatterReader;
 
     public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)

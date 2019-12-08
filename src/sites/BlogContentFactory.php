@@ -7,7 +7,7 @@ namespace nyansapow\sites;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
 
-class BlogContentFactory implements ContentFactoryInterface
+class BlogContentFactory
 {
     private $htmlRenderer;
     private $frontMatterReader;
@@ -20,8 +20,13 @@ class BlogContentFactory implements ContentFactoryInterface
         $this->templateEngine = $templateEngine;
     }
 
-    public function create($source, $destination, $data): ContentInterface
+    public function createPost($source, $destination, $data): BlogPostContent
     {
-        return new BlogContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination, $data);
+        return new BlogPostContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination, $data);
+    }
+
+    public function createListing($posts, $destination, $data) : BlogListingContent
+    {
+        return new BlogListingContent($this->templateEngine, $posts, $destination);
     }
 }

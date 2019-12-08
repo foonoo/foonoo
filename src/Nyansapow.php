@@ -8,6 +8,7 @@ use clearice\io\Io;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\Builder;
 use nyansapow\sites\SiteFactory;
+use nyansapow\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 use nyansapow\text\TextProcessors;
 
@@ -34,9 +35,9 @@ class Nyansapow
     private $home;
 
     /**
-     * @var SiteFactory
+     * @var SiteTypeRegistry
      */
-    private $siteFactory;
+    private $siteTypeRegistry;
 
     /**
      * @var TextProcessors
@@ -55,23 +56,17 @@ class Nyansapow
      * Create an instance of the context object through which Nyansapow works.
      *
      * @param Io $io
-     * @param SiteFactory $siteFactory
+     * @param SiteFactory $siteTypeRegistry
      * @param TextProcessors $textProcessors
      * @param \nyansapow\text\TemplateEngine $templateEngine
      */
-    public function __construct(Io $io, SiteFactory $siteFactory, YamlParser $yamlParser, Builder $builder)
+    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, Builder $builder)
     {
-        //$this->home = dirname(__DIR__);
         $this->io = $io;
-        $this->siteFactory = $siteFactory;
+        $this->siteTypeRegistry = $siteTypeRegistry;
         $this->yamlParser = $yamlParser;
         $this->builder = $builder;
     }
-
-//    public function getHome()
-//    {
-//        return $this->home;
-//    }
 
     private function readSiteMeta($path)
     {
@@ -98,7 +93,7 @@ class Nyansapow
         $metaData = $this->readSiteMeta($path);
 
         if(is_array($metaData) || $root) {
-            $site = $this->siteFactory->create($metaData, $path, $this->options);
+            $site = $this->createSite($metaData, $path);
             $sites []= $site;
             while (false !== ($file = $dir->read())) {
                 if (array_reduce(
@@ -115,6 +110,24 @@ class Nyansapow
         }
 
         return $sites;
+    }
+
+    private function createSite($metaData, $path)
+    {
+        if (!is_array($metaData)) {
+            $metaData = ['name' => $this->options['site-name'] ?? '', 'type' => $this->options['site-type'] ?? 'plain'];
+        }
+        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/np_*"]
+            + ($metaData['excluded_paths'] ?? []);
+
+        $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
+
+        $site->setPath(substr($path, strlen($this->options['input'])));
+        $site->setSourceRoot($this->options['input']);
+        $site->setDestinationRoot($this->options['output']);
+        $site->setMetaData($metaData);
+
+        return $site;
     }
 
     private function doSiteWrite()

@@ -13,9 +13,9 @@ abstract class AbstractSite
     private $templateData;
 
     /**
-     * @var ContentRegistry
+     * @var AutomaticContentFactory
      */
-    protected $contentFactory;
+    protected $automaticContentFactory;
 
     public function setPath(string $path) : void
     {
@@ -47,9 +47,9 @@ abstract class AbstractSite
         return $this->metaData[$setting] ?? null;
     }
 
-    public function setContentFactory(ContentRegistry $contentFactory)
+    public function setAutomaticContentFactory(AutomaticContentFactory $automaticContentFactory)
     {
-        $this->contentFactory = $contentFactory;
+        $this->automaticContentFactory = $automaticContentFactory;
     }
 
     public function setTemplateData(array $templateData): void

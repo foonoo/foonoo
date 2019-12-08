@@ -8,7 +8,7 @@ class SiteFactory
 {
     private $contentFactory;
 
-    public function __construct(ContentRegistry $pageFactory)
+    public function __construct(AutomaticContentFactory $pageFactory)
     {
         $this->contentFactory = $pageFactory;
     }
@@ -27,7 +27,7 @@ class SiteFactory
         $site->setSourceRoot($options['input']);
         $site->setDestinationRoot($options['output']);
         $site->setMetaData($metaData);
-        $site->setContentFactory($this->contentFactory);
+        $site->setAutomaticContentFactory($this->contentFactory);
 
         return $site;
     }

@@ -4,11 +4,10 @@
 namespace nyansapow\sites;
 
 
-use ntentan\honam\TemplateRenderer;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
 
-class BlogContent extends MarkupContent
+class BlogPostContent extends MarkupContent
 {
     private $params;
     private $metaData;
@@ -29,17 +28,17 @@ class BlogContent extends MarkupContent
     {
         if(!$this->metaData) {
             $frontMatter = $this->getFrontMatter();
-            $splitPost = $this->splitPost();
+//            $splitPost = $this->splitPost();
             $this->metaData = [
-                'body_text' => $splitPost['post'],
+//                'body_text' => $splitPost['post'],
                 'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->params['title'])),
                 'date' => date("jS F Y", strtotime("{$this->params['year']}-{$this->params['month']}-{$this->params['day']}")),
-                'preview_text' => $splitPost['preview'],
-                'continuation' => $splitPost['continuation'],
+//                'preview_text' => $splitPost['preview'],
+//                'continuation' => $splitPost['continuation'],
                 'front_matter' => $frontMatter,
-                'more_link' => $splitPost['more_link'],
+//                'more_link' => $splitPost['more_link'],
                 'path' => "{$this->params['year']}/{$this->params['month']}/{$this->params['day']}/{$this->params['title']}.html",
-                'preview' => $this->htmlRenderer->render($splitPost['preview'])
+//                'preview' => $this->htmlRenderer->render($splitPost['preview'])
             ];
         }
         return $this->metaData;
@@ -48,6 +47,12 @@ class BlogContent extends MarkupContent
     public function render(): string
     {
         return $this->templateEngine->render('post', array_merge(['body' => parent::render()],  $this->getMetaData()));
+    }
+
+    public function getPreview() : string
+    {
+        $splitPost = $this->splitPost();
+        return $this->htmlRenderer->render($splitPost['preview']);
     }
 
     private function splitPost()
@@ -80,12 +85,12 @@ class BlogContent extends MarkupContent
         return ['post' => $body, 'preview' => $preview, 'more_link' => $moreLink, "continuation" => $continuation];
     }
 
-    public function setNext(BlogContent $next)
+    public function setNext(BlogPostContent $next)
     {
         $this->next = $next;
     }
 
-    public function setPrevious(BlogContent $previous)
+    public function setPrevious(BlogPostContent $previous)
     {
         $this->previous = $previous;
     }
