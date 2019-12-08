@@ -196,9 +196,4 @@ class TagParser
     {
        $this->pathToBase = $pathToBase;
     }
-
-    public function setPages($pages)
-    {
-       $this->pages = $pages;
-    }
 }

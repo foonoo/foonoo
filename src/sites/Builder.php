@@ -7,7 +7,7 @@ namespace nyansapow\sites;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
-use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
 use nyansapow\themes\ThemeManager;
@@ -15,14 +15,13 @@ use nyansapow\themes\ThemeManager;
 class Builder
 {
     private $themeManager;
-    private $htmlRenderer;
     private $templateEngine;
     private $options;
 
-    public function __construct(ThemeManager $themeManager, HtmlRenderer $htmlRenderer, TemplateEngine $templateEngine)
+    public function __construct(ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine)
     {
         $this->themeManager = $themeManager;
-        $this->htmlRenderer = $htmlRenderer;
+        $this->tagParser = $tagParser;
         $this->templateEngine = $templateEngine;
     }
 
@@ -53,6 +52,7 @@ class Builder
 
         if($layout) {
             $templateData = $site->getTemplateData($destinationPath);
+            $this->tagParser->setPathToBase($templateData['site_path']);
             $templateData['body'] = $content->render();
             $templateData['page_title'] = $content->getMetaData()['title'];
             if(is_a($content, ThemableInterface::class)) {
