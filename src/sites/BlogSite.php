@@ -26,7 +26,10 @@ class BlogSite extends AbstractSite
 
     private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing')
     {
-        return $this->blogContentFactory->createListing($posts, $target, ['listing_title' => $title, 'previews' => true]);
+        $data = $this->getTemplateData($target);
+        $data['listing_title'] = $title;
+        $data['previews'] = true;
+        return $this->blogContentFactory->createListing($posts, $target, $data, $title);
     }
 
     private function getArchive($archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = '')
@@ -67,7 +70,8 @@ class BlogSite extends AbstractSite
             if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
-                $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath, $matches);
+                $templateData = array_merge($matches, $this->getTemplateData($destinationPath));
+                $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath, $templateData);
                 $pages[] = $page;
                 if($lastPost) {
                     $page->setPrevious($lastPost);

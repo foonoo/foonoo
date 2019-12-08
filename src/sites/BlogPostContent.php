@@ -7,20 +7,28 @@ namespace nyansapow\sites;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
 
-class BlogPostContent extends MarkupContent
+class BlogPostContent extends MarkupContent implements ThemableInterface
 {
-    private $params;
+    private $templateData;
     private $metaData;
+
+    /**
+     * @var BlogPostContent
+     */
     private $next;
+
+    /**
+     * @var BlogPostContent
+     */
     private $previous;
     private $htmlRenderer;
     private $templateEngine;
 
-    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $params)
+    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $templateData)
     {
         parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
         $this->htmlRenderer = $htmlRenderer;
-        $this->params = $params;
+        $this->templateData = $templateData;
         $this->templateEngine = $templateEngine;
     }
 
@@ -28,17 +36,11 @@ class BlogPostContent extends MarkupContent
     {
         if(!$this->metaData) {
             $frontMatter = $this->getFrontMatter();
-//            $splitPost = $this->splitPost();
             $this->metaData = [
-//                'body_text' => $splitPost['post'],
-                'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->params['title'])),
-                'date' => date("jS F Y", strtotime("{$this->params['year']}-{$this->params['month']}-{$this->params['day']}")),
-//                'preview_text' => $splitPost['preview'],
-//                'continuation' => $splitPost['continuation'],
-                'front_matter' => $frontMatter,
-//                'more_link' => $splitPost['more_link'],
-                'path' => "{$this->params['year']}/{$this->params['month']}/{$this->params['day']}/{$this->params['title']}.html",
-//                'preview' => $this->htmlRenderer->render($splitPost['preview'])
+                'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->templateData['title'])),
+                'date' => date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")),
+                'frontmatter' => $frontMatter,
+                'path' => "{$this->templateData['year']}/{$this->templateData['month']}/{$this->templateData['day']}/{$this->templateData['title']}.html",
             ];
         }
         return $this->metaData;
@@ -46,7 +48,14 @@ class BlogPostContent extends MarkupContent
 
     public function render(): string
     {
-        return $this->templateEngine->render('post', array_merge(['body' => parent::render()],  $this->getMetaData()));
+        $nextPost = $this->next ? $this->next->getMetaData() : [];
+        $prevPost = $this->previous ? $this->previous->getMetaData() : [];
+        return $this->templateEngine->render('post',
+            array_merge(
+                ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
+                $this->getMetaData(), $this->templateData
+            )
+        );
     }
 
     public function getPreview() : string
@@ -93,5 +102,10 @@ class BlogPostContent extends MarkupContent
     public function setPrevious(BlogPostContent $previous)
     {
         $this->previous = $previous;
+    }
+
+    public function getLayoutData()
+    {
+        return ['page_type' => 'post'];
     }
 }

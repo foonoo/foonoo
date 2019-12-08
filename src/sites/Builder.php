@@ -54,6 +54,10 @@ class Builder
         if($layout) {
             $templateData = $site->getTemplateData($destinationPath);
             $templateData['body'] = $content->render();
+            $templateData['page_title'] = $content->getMetaData()['title'];
+            if(is_a($content, ThemableInterface::class)) {
+                $templateData = array_merge($templateData, $content->getLayoutData());
+            }
             $output = $this->templateEngine->render($layout, $templateData);
         } else {
             $output = $content->render();
