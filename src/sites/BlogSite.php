@@ -77,6 +77,7 @@ class BlogSite extends AbstractSite
                     $page->setPrevious($lastPost);
                     $lastPost->setNext($page);
                 }
+                $lastPost = $page;
                 $this->addPostToArchive($page, $matches);
             }
         }

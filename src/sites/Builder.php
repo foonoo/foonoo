@@ -54,7 +54,7 @@ class Builder
             $templateData = $site->getTemplateData($destinationPath);
             $this->tagParser->setPathToBase($templateData['site_path']);
             $templateData['body'] = $content->render();
-            $templateData['page_title'] = $content->getMetaData()['title'];
+            $templateData['page_title'] = $content->getMetaData()['title'] ?? "";
             if(is_a($content, ThemableInterface::class)) {
                 $templateData = array_merge($templateData, $content->getLayoutData());
             }

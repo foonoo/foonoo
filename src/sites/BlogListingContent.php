@@ -40,6 +40,7 @@ class BlogListingContent implements ContentInterface, ThemableInterface
         $posts = array_map(function (BlogPostContent $post) {
             $templateVars = $post->getMetaData();
             $templateVars['preview'] = $post->getPreview();
+            $templateVars['previews_only'] = true;
             return $templateVars;
         }, $this->posts);
 
