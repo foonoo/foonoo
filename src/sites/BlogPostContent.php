@@ -11,6 +11,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
 {
     private $templateData;
     private $metaData;
+    protected $template = "post";
 
     /**
      * @var BlogPostContent
@@ -38,9 +39,9 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
             $frontMatter = $this->getFrontMatter();
             $this->metaData = [
                 'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->templateData['title'])),
-                'date' => date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")),
+                'date' => isset($this->templateData['year']) ? date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")) : "",
                 'frontmatter' => $frontMatter,
-                'path' => "{$this->templateData['year']}/{$this->templateData['month']}/{$this->templateData['day']}/{$this->templateData['title']}.html",
+                'path' => $this->getDestination(), //"{$this->templateData['year']}/{$this->templateData['month']}/{$this->templateData['day']}/{$this->templateData['title']}.html",
                 'home_path' => $this->templateData['home_path'],
                 'site_path' => $this->templateData['site_path']
             ];
@@ -52,7 +53,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
     {
         $nextPost = $this->next ? $this->next->getMetaData() : [];
         $prevPost = $this->previous ? $this->previous->getMetaData() : [];
-        return $this->templateEngine->render('post',
+        return $this->templateEngine->render($this->template,
             array_merge(
                 ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
                 $this->getMetaData()

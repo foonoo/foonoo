@@ -40,7 +40,7 @@ class HtmlRenderer
 
         $preParsed = $this->parser->preParse($content);
         $markedup = $this->parseMarkdown($preParsed);
-        $this->dom->loadHTML($markedup);
+        @$this->dom->loadHTML($markedup);
 
         return $this->parser->postParse($markedup);
     }

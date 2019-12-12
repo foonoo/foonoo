@@ -17,10 +17,10 @@ class BlogSite extends AbstractSite
 
     public function getPages() : array
     {
-        $pages = $this->posts = $this->preProcessFiles($this->getFiles("posts"));
+        $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
         $pages[] = $this->getIndexPage('index.html', $this->posts, '');
         $pages[] = $this->getIndexPage('posts.html', $this->posts);
-        $pages = array_merge($pages, $this->getArchive($this->archives, ['months', 'days'], 'years'));
+        $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
         return $pages;
     }
 
@@ -51,16 +51,15 @@ class BlogSite extends AbstractSite
     private function formatValue($stage, $value)
     {
         switch ($stage) {
+            case 'days':
             case 'years':
                 return $value;
             case 'months':
                 return date("M", $value);
-            case 'days':
-                return $value;
         }
     }
 
-    private function preProcessFiles($files)
+    private function getBlogPosts($files)
     {
         $pages = [];
         /** @var BlogPostContent $lastPost */
@@ -82,6 +81,24 @@ class BlogSite extends AbstractSite
             }
         }
 
+        return $pages;
+    }
+
+    private function getBlogPages()
+    {
+        $pages = [];
+        if(!file_exists($this->getSourcePath('pages'))){
+            return $pages;
+        }
+        $files = $this->getFiles('pages');
+        foreach($files as $file) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            $destinationPath = "$filename.html";
+            $templateData = $this->getTemplateData($this->getDestinationPath($destinationPath));
+            $templateData['title'] = $filename;
+            $page = $this->blogContentFactory->createPage($this->getSourcePath($file), $destinationPath, $templateData);
+            $pages[] = $page;
+        }
         return $pages;
     }
 
