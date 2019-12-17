@@ -6,9 +6,12 @@ namespace nyansapow\text;
 
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ContentInterface;
+use nyansapow\utils\Nomenclature;
 
-class DefaultTags implements TagInterface
+class DefaultTags
 {
+    use Nomenclature;
+
     private $templateEngine;
 
     public function __construct(TemplateEngine $templateEngine)
@@ -24,13 +27,13 @@ class DefaultTags implements TagInterface
                 "callable" => $this->getCallback([$this, "renderBlockOpenTag"])
             ],
             ["regex" => "/\[\[\/block\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
-            ["regex" => "/\[\[(http:\/\/)(?<link>.*)\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
-            ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 ]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-            ["regex" => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ["regex" => "/\[\[(http:\/\/)(?<link>.*)\]\]/", "callable" => $this->getCallback([$this, "renderLink"])],
             [
                 "regex" => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
                 "callable" => $this->getCallback([$this, "renderImageTag"])
-            ]
+            ],
+            ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ["regex" => "|\[\[(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
         ];
     }
 
@@ -90,18 +93,20 @@ class DefaultTags implements TagInterface
         );
     }
 
-    private function renderPageLink(array $matches, AbstractSite $site)
+    private function renderPageLink(array $matches, AbstractSite $site, ContentInterface $page)
     {
-        $link = str_replace(array(' ', '/'), '-', $matches['markup']);
-        foreach ($site->getPages() as $page) {
-            if (strtolower($page['page']) == strtolower($link)) {
+        $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
+        $link = strtolower($matches['markup']);
+        foreach ($site->getPages() as $targetPage) {
+            $title = $targetPage->getMetaData()['title'] ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
+            if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
-                    'href' => "{$page['page']}.html",
-                    'link_text' => isset($matches['title']) ? $matches['title'] : $matches['markup']
+                    'href' => "{$templateVariables['site_path']}{$targetPage->getDestination()}",
+                    'link_text' => $title
                 ]);
             }
         }
-        return $matches['markup'];
+        return "[[{$matches['markup']}]]";
     }
 
     private function renderLink($matches)

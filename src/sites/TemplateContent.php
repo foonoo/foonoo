@@ -7,6 +7,8 @@ use ntentan\honam\TemplateRenderer;
 
 class TemplateContent implements ContentInterface
 {
+    use ExtensionAdjuster;
+
     private $source;
     private $destination;
     private $templates;
@@ -16,8 +18,7 @@ class TemplateContent implements ContentInterface
     {
         $this->templates = $templates;
         $this->source = $source;
-        $extension = pathinfo($this->source, PATHINFO_EXTENSION);
-        $this->destination = $extension ? substr($destination, 0, -strlen($extension)) . "html" : $destination;
+        $this->destination = $this->adjustFileExtension($destination, 'html');
         $this->data = $site->getTemplateData($site->getDestinationPath($destination));
     }
 

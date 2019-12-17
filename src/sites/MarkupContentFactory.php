@@ -19,5 +19,6 @@ class MarkupContentFactory implements ContentFactoryInterface
     {
         $content = new MarkupContent($this->htmlRenderer, $this->frontMatterReader, $source, $destination);
         $content->setSite($site);
+        return $content;
     }
 }

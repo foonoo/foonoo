@@ -4,8 +4,12 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\utils\Nomenclature;
+
 class BlogSite extends AbstractSite
 {
+    use Nomenclature;
+
     private $posts = [];
     private $archives = [];
     private $blogContentFactory;
@@ -113,17 +117,6 @@ class BlogSite extends AbstractSite
         }
 
         return $pages;
-    }
-
-    private function makeId(string $text, array $ids=[])
-    {
-        $baseId = preg_replace("/([^a-zA-Z0-9\.\-_]+)/", "-", strtolower($text));
-        return $baseId;
-    }
-
-    private function makeLabel(string $text)
-    {
-        return ucfirst(preg_replace("/-+/", " ", $text));
     }
 
     private function getBlogPages()

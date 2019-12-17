@@ -5,8 +5,15 @@ namespace nyansapow\sites;
 
 use nyansapow\text\HtmlRenderer;
 
+/**
+ * Class MarkupContent
+ *
+ * @package nyansapow\sites
+ */
 class MarkupContent implements ContentInterface
 {
+    use ExtensionAdjuster;
+
     private $body;
     private $document;
     private $destination;
@@ -24,16 +31,16 @@ class MarkupContent implements ContentInterface
     {
         $this->document = $document;
         $this->htmlRenderer = $htmlRenderer;
-        $this->destination = $destination;
+        $this->destination = $this->adjustFileExtension($destination, 'html');
         $this->frontMatterReader = $frontMatterReader;
     }
 
-    public function setSite(AbstractSite $site)
+    public function setSite(AbstractSite $site) : void
     {
         $this->site = $site;
     }
 
-    protected function getFrontMatter()
+    protected function getFrontMatter() : array
     {
         if(!$this->frontMatter) {
             $this->frontMatter = $this->frontMatterReader->read($this->document, $this->firstLineOfBody);
@@ -41,7 +48,7 @@ class MarkupContent implements ContentInterface
         return $this->frontMatter;
     }
 
-    protected function getBody()
+    protected function getBody() : string
     {
         if(!$this->body) {
             $file = new \SplFileObject($this->document);

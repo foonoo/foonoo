@@ -4,8 +4,6 @@ namespace nyansapow\text;
 
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ContentInterface;
-use nyansapow\text\TemplateEngine;
-use nyansapow\TocRequestedException;
 
 /**
  * Parse text containing special Nyansapow tags.

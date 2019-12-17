@@ -161,7 +161,7 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
     $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php']);
+            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php', 'md']);
         },
         $container->get(CopiedContentFactory::class)
     );

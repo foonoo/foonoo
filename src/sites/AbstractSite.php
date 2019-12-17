@@ -92,9 +92,10 @@ abstract class AbstractSite
     protected function getFiles(string $base = '', bool $recursive = false) : array
     {
         $files = array();
-        $dir = scandir("{$this->sourceRoot}/{$this->path}/$base", SCANDIR_SORT_ASCENDING);
+        $base = $base == '' ? '' : "$base/";
+        $dir = scandir("{$this->sourceRoot}{$this->path}/$base", SCANDIR_SORT_ASCENDING);
         foreach ($dir as $file) {
-            $path = "{$this->sourceRoot}" . ($base == '' ? '' : "$base/") . "$file";
+            $path = "{$this->sourceRoot}$base$file";
             if (array_reduce(
                 $this->metaData['excluded_paths'],
                 function ($carry, $item) use($path) {return $carry | fnmatch($item, $path); },false)
@@ -102,8 +103,7 @@ abstract class AbstractSite
             if (is_dir($path) && $recursive) {
                 $files = array_merge($files, $this->getFiles($path, true));
             } else if (!is_dir($path)) {
-                $path = substr($path, strlen(realpath($this->sourceRoot)));
-                $files[] = $path;
+                $files[] = "$base$file";
             }
         }
         return $files;
