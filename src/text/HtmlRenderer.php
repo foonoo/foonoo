@@ -32,17 +32,15 @@ class HtmlRenderer
      * @param array $options
      * @return string
      */
-    public function render($content, $data = [])
+    public function render($content, $site=null, $page=null, $data = [])
     {
         if($content == "") {
             return "";
         }
-
-        $preParsed = $this->parser->preParse($content);
-        $markedup = $this->parseMarkdown($preParsed);
-        @$this->dom->loadHTML($markedup);
-
-        return $this->parser->postParse($markedup);
+        $parsed = $this->parser->parse($content, $site, $page);
+        return $this->parseMarkdown($parsed);
+        //@$this->dom->loadHTML($markedup);
+        //return $this->parser->postParse($markedup);
     }
 
     private function parseMarkdown($content)

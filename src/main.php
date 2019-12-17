@@ -17,6 +17,7 @@ use nyansapow\sites\DefaultSiteFactory;
 use nyansapow\sites\MarkupContentFactory;
 use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\sites\TemplateContentFactory;
+use nyansapow\text\DefaultTags;
 use nyansapow\text\TagParser;
 
 $parser = new ArgumentParser();
@@ -142,8 +143,19 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
-$container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
+
+$container->bind(TagParser::class)->to(function($container) {
+    $defaultTags = $container->get(DefaultTags::class);
+    $tagParser = new TagParser();
+    $regexMap = $defaultTags->getRegexMap();
+    foreach($regexMap as $priority => $regex) {
+        $tagParser->registerTag($regex['regex'], $priority, $regex['callable']);
+    }
+    return $tagParser;
+})->asSingleton();
+
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
     $registry = new AutomaticContentFactory();
     $registry->register(
@@ -154,15 +166,19 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
         $container->get(CopiedContentFactory::class)
     );
     $registry->register(
-        function ($params) { return isset($params['data']) && !empty($params['data']); },
-        $container->get(TemplateContentFactory::class)
-    );
-    $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
             return $extension == 'md';
         },
         $container->get(MarkupContentFactory::class)
+    );
+
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return file_exists($params['source']) && in_array($extension, ['mustache', 'php']);
+        },
+        $container->get(TemplateContentFactory::class)
     );
     return $registry;
 })->asSingleton();

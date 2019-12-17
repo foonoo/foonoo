@@ -4,10 +4,127 @@
 namespace nyansapow\text;
 
 
+use nyansapow\sites\AbstractSite;
+use nyansapow\sites\ContentInterface;
+
 class DefaultTags implements TagInterface
 {
+    private $templateEngine;
+
+    public function __construct(TemplateEngine $templateEngine)
+    {
+        $this->templateEngine = $templateEngine;
+    }
+
     public function getRegexMap()
     {
+        return [
+            [
+                "regex" => "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/",
+                "callable" => $this->getCallback([$this, "renderBlockOpenTag"])
+            ],
+            ["regex" => "/\[\[\/block\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
+            ["regex" => "/\[\[(http:\/\/)(?<link>.*)\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
+            ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 ]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ["regex" => "|\[\[(?<title>[a-zA-Z0-9 ]*)\|(?<markup>[a-zA-Z0-9 ]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            [
+                "regex" => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
+                "callable" => $this->getCallback([$this, "renderImageTag"])
+            ]
+        ];
+    }
 
+    private function getCallback($method)
+    {
+        return function ($site, $page) use ($method) {
+            return function ($matches) use ($method, $site, $page) {
+                return $method($matches, $site, $page);
+            };
+        };
+    }
+
+    private function getImageTagAttributes($string)
+    {
+        preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
+        $attributes = array();
+        foreach ($matches['attribute'] as $key => $attribute) {
+            if ($matches['value'][$key] == '') {
+                $attributes[$attribute] = true;
+            } else {
+                $attributes[$attribute] = $matches['value'][$key];
+            }
+        }
+
+        return $attributes;
+    }
+
+    private function getImages($string)
+    {
+        preg_match_all("/((?<image>.*\.(jpeg|jpg|png|gif|webp))\s*,\s*)*(?<last_image>.*\.(jpeg|jpg|png|gif|webp))/", $string, $matches);
+        $images = array_filter(array_merge($matches['image'], $matches['last_image']), function($item){return $item !== "";});
+        return $images;
+    }
+
+    /**
+     * @param $matches
+     * @param AbstractSite $site
+     * @param $page
+     * @return string
+     */
+    private function renderImageTag(array $matches, AbstractSite $site, ContentInterface $page)
+    {
+        $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
+        $attributeString = '';
+        foreach ($attributes as $key => $value) {
+            $attributeString .= "$key = '$value' ";
+        }
+        $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
+        return $this->templateEngine->render('image_tag',
+            [
+                'alt' => $matches['alt'] ?? '',
+                'site_path' => $templateVariables['site_path'],
+                'home_path' => $templateVariables['home_path'],
+                'images' => $this->getImages($matches['image']),
+                'attribute_string' => $attributeString
+            ]
+        );
+    }
+
+    private function renderPageLink(array $matches, AbstractSite $site)
+    {
+        $link = str_replace(array(' ', '/'), '-', $matches['markup']);
+        foreach ($site->getPages() as $page) {
+            if (strtolower($page['page']) == strtolower($link)) {
+                return $this->templateEngine->render('anchor_tag', [
+                    'href' => "{$page['page']}.html",
+                    'link_text' => isset($matches['title']) ? $matches['title'] : $matches['markup']
+                ]);
+            }
+        }
+        return $matches['markup'];
+    }
+
+    private function renderLink($matches)
+    {
+        return $this->templateEngine->render('anchor_tag', [
+            'href' => "http://{$matches['link']}",
+            'link_text' => "http://{$matches['link']}"
+        ]);
+    }
+
+    private function renderBlockOpenTag($matches)
+    {
+        return $this->templateEngine->render('block_open_tag', ['block' => $matches['block_class']]);
+    }
+
+    private function renderBlockCloseTag($matches)
+    {
+        return $this->templateEngine->render('block_close_tag', []);
+    }
+
+    private function renderTableOfContents($matches)
+    {
+        $this->tocGenerator->hasToc = true;
+        return "[[nyansapow:toc]]";
     }
 }

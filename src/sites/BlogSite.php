@@ -15,6 +15,10 @@ class BlogSite extends AbstractSite
         $this->blogContentFactory = $blogContentFactory;
     }
 
+    /**
+     * Get all the blog pages
+     * @return array
+     */
     public function getPages() : array
     {
         $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
@@ -97,7 +101,7 @@ class BlogSite extends AbstractSite
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
                 $templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
-                $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath, $templateData);
+                $page = $this->blogContentFactory->createPost($this, $this->getSourcePath($file), $destinationPath, $matches);
                 $pages[] = $page;
                 if($lastPost) {
                     $page->setPrevious($lastPost);

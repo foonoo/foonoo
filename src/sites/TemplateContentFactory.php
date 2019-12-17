@@ -15,8 +15,8 @@ class TemplateContentFactory implements ContentFactoryInterface
         $this->templateRenderer = $templateRenderer;
     }
 
-    public function create($source, $destination, $data): ContentInterface
+    public function create(AbstractSite $site, string $source, string $destination): ContentInterface
     {
-        return new TemplateContent($this->templateRenderer, $source, $destination, $data);
+        return new TemplateContent($this->templateRenderer, $site, $source, $destination);
     }
 }

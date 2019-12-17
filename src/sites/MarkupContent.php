@@ -4,7 +4,6 @@
 namespace nyansapow\sites;
 
 use nyansapow\text\HtmlRenderer;
-use Symfony\Component\Yaml\Parser as YamlParser;
 
 class MarkupContent implements ContentInterface
 {
@@ -16,12 +15,22 @@ class MarkupContent implements ContentInterface
     private $htmlRenderer;
     private $frontMatterReader;
 
+    /**
+     * @var AbstractSite
+     */
+    protected $site;
+
     public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
         $this->document = $document;
         $this->htmlRenderer = $htmlRenderer;
         $this->destination = $destination;
         $this->frontMatterReader = $frontMatterReader;
+    }
+
+    public function setSite(AbstractSite $site)
+    {
+        $this->site = $site;
     }
 
     protected function getFrontMatter()
@@ -53,7 +62,7 @@ class MarkupContent implements ContentInterface
     public function render() : string
     {
         $this->getFrontMatter();
-        return $this->htmlRenderer->render($this->getBody(), []);
+        return $this->htmlRenderer->render($this->getBody(), $this->site, $this);
     }
 
     public function getMetaData(): array

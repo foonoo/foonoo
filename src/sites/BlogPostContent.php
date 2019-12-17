@@ -14,34 +14,45 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
     protected $template = "post";
 
     /**
+     * The next post
      * @var BlogPostContent
      */
     private $next;
 
     /**
+     * The previous post
      * @var BlogPostContent
      */
     private $previous;
+
+    /**
+     * An instance of the HTML renderer
+     * @var HtmlRenderer
+     */
     private $htmlRenderer;
     private $templateEngine;
 
-    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination, $templateData)
+    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
         parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
         $this->htmlRenderer = $htmlRenderer;
-        $this->templateData = $templateData;
         $this->templateEngine = $templateEngine;
     }
 
     public function getMetaData() : array
     {
         if(!$this->metaData) {
+            $templateData = $this->site->getTemplateData($this->site->getDestinationPath($this->getDestination()));
+            preg_match(
+            "/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",
+                $this->getDestination(), $matches);
             $frontMatter = $this->getFrontMatter();
             $this->metaData = [
                 'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->templateData['title'])),
-                'date' => isset($this->templateData['year']) ? date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")) : "",
+                'date' => isset($this->templateData['year'])
+                    ? date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")) : "",
                 'frontmatter' => $frontMatter,
-                'path' => $this->getDestination(), //"{$this->templateData['year']}/{$this->templateData['month']}/{$this->templateData['day']}/{$this->templateData['title']}.html",
+                'path' => $this->getDestination(),
                 'home_path' => $this->templateData['home_path'],
                 'site_path' => $this->templateData['site_path']
             ];
@@ -64,7 +75,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
     public function getPreview() : string
     {
         $splitPost = $this->splitPost();
-        return $this->htmlRenderer->render($splitPost['preview']);
+        return $this->htmlRenderer->render($splitPost['preview'], $this->site , $this);
     }
 
     private function splitPost()

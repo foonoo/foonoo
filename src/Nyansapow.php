@@ -40,7 +40,7 @@ class Nyansapow
     private $siteTypeRegistry;
 
     /**
-     * @var TextProcessors
+     * @var YamlParser
      */
     private $yamlParser;
     /**

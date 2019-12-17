@@ -17,17 +17,17 @@ class AutomaticContentFactory
     /**
      * Create a new Content object
      *
-     * @param $source
-     * @param $destination
-     * @param array $data
+     * @param AbstractSite $site
+     * @param string $source
+     * @param string $destination
      * @return ContentInterface
      */
-    public function create($source, $destination, $data=[]) : ContentInterface
+    public function create(AbstractSite $site, string $source, string $destination) : ContentInterface
     {
         foreach ($this->contentFactories as $factory)
         {
-            if($factory['test'](['source' => $source, 'destination' => $destination, 'data' =>$data])) {
-                return $factory['instance']->create($source, $destination, $data);
+            if($factory['test'](['source' => $source, 'destination' => $destination])) {
+                return $factory['instance']->create($site, $source, $destination);
             }
         }
     }
