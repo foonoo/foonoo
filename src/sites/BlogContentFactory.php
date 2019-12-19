@@ -29,7 +29,9 @@ class BlogContentFactory
 
     public function createPage(AbstractSite $site, $source, $destination) : BlogPageContent
     {
-        return new BlogPageContent($site, $this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination);
+        $page = new BlogPageContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination);
+        $page->setSite($site);
+        return $page;
     }
 
     public function createListing($posts, $destination, $data, $title) : BlogListingContent

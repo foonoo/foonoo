@@ -44,17 +44,18 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
         if(!$this->metaData) {
             $templateData = $this->site->getTemplateData($this->site->getDestinationPath($this->getDestination()));
             preg_match(
-            "/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",
+            "|((?<year>[0-9]{4})/(?<month>[0-9]{2})/(?<day>[0-9]{2})/)?(?<title>[A-Za-z0-9\-\_]*)\.(html)|",
                 $this->getDestination(), $matches);
             $frontMatter = $this->getFrontMatter();
             $this->metaData = [
-                'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $this->templateData['title'])),
-                'date' => isset($this->templateData['year'])
-                    ? date("jS F Y", strtotime("{$this->templateData['year']}-{$this->templateData['month']}-{$this->templateData['day']}")) : "",
+                'title' => $frontMatter['title'] ?? ucfirst(str_replace("-", " ", $matches['title'])),
+                'date' => isset($matches['year'])
+                    ? date("jS F Y", strtotime("{$matches['year']}-{$matches['month']}-{$matches['day']}"))
+                    : "",
                 'frontmatter' => $frontMatter,
                 'path' => $this->getDestination(),
-                'home_path' => $this->templateData['home_path'],
-                'site_path' => $this->templateData['site_path']
+                'home_path' => $templateData['home_path'],
+                'site_path' => $templateData['site_path']
             ];
         }
         return $this->metaData;
@@ -64,6 +65,10 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
     {
         $nextPost = $this->next ? $this->next->getMetaData() : [];
         $prevPost = $this->previous ? $this->previous->getMetaData() : [];
+        $templateData = array_merge(
+            ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
+            $this->getMetaData()
+        );
         return $this->templateEngine->render($this->template,
             array_merge(
                 ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],

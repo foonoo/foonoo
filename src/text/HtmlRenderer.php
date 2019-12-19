@@ -2,45 +2,37 @@
 
 namespace nyansapow\text;
 
-use DOMDocument;
+use nyansapow\sites\AbstractSite;
+use nyansapow\sites\ContentInterface;
 
 class HtmlRenderer
 {
-    private $info = null;
     private $parser;
-    private $dom;
 
-    public function __construct(TagParser $parser, DOMDocument $dom)
+    /**
+     * HtmlRenderer constructor.
+     * @param TagParser $parser
+     */
+    public function __construct(TagParser $parser)
     {
         $this->parser = $parser;
-        $this->dom = $dom;
-    }
-
-    private function getInfo()
-    {
-        if ($this->info === null) {
-            $this->info = finfo_open(FILEINFO_MIME);
-        }
-        return $this->info;
     }
 
     /**
      * Render text
      *
-     * @param $content
-     * @param $format
-     * @param array $options
+     * @param string $content
+     * @param AbstractSite $site
+     * @param ContentInterface $page
      * @return string
      */
-    public function render($content, $site=null, $page=null, $data = [])
+    public function render(string $content, AbstractSite $site=null, ContentInterface $page=null)
     {
         if($content == "") {
             return "";
         }
         $parsed = $this->parser->parse($content, $site, $page);
         return $this->parseMarkdown($parsed);
-        //@$this->dom->loadHTML($markedup);
-        //return $this->parser->postParse($markedup);
     }
 
     private function parseMarkdown($content)

@@ -1,22 +1,29 @@
 <?php
 
-
 namespace nyansapow\text;
 
 
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ContentInterface;
 use nyansapow\utils\Nomenclature;
+use nyansapow\utils\TocGenerator;
 
+/**
+ * Renders the preprocessing tags.
+ *
+ * @package nyansapow\text
+ */
 class DefaultTags
 {
     use Nomenclature;
 
     private $templateEngine;
+    private $tocGenerator;
 
-    public function __construct(TemplateEngine $templateEngine)
+    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
     {
         $this->templateEngine = $templateEngine;
+        $this->tocGenerator = $tocGenerator;
     }
 
     public function getRegexMap()
@@ -34,6 +41,7 @@ class DefaultTags
             ],
             ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
             ["regex" => "|\[\[(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ['regex' => "/\[\[_TOC_\]\]/", 'callable' => $this->getCallback([$this, 'renderTableOfContents'])],
         ];
     }
 
@@ -69,6 +77,8 @@ class DefaultTags
     }
 
     /**
+     * Renders an image tag.
+     *
      * @param $matches
      * @param AbstractSite $site
      * @param $page
@@ -98,7 +108,8 @@ class DefaultTags
         $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         $link = strtolower($matches['markup']);
         foreach ($site->getPages() as $targetPage) {
-            $title = $targetPage->getMetaData()['title'] ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
+            $title = $targetPage->getMetaData()['title']
+                   ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
                     'href' => "{$templateVariables['site_path']}{$targetPage->getDestination()}",
@@ -109,7 +120,7 @@ class DefaultTags
         return "[[{$matches['markup']}]]";
     }
 
-    private function renderLink($matches)
+    private function renderLink(array $matches)
     {
         return $this->templateEngine->render('anchor_tag', [
             'href' => "http://{$matches['link']}",
@@ -117,19 +128,21 @@ class DefaultTags
         ]);
     }
 
-    private function renderBlockOpenTag($matches)
+    private function renderBlockOpenTag(array $matches)
     {
         return $this->templateEngine->render('block_open_tag', ['block' => $matches['block_class']]);
     }
 
-    private function renderBlockCloseTag($matches)
+    private function renderBlockCloseTag()
     {
         return $this->templateEngine->render('block_close_tag', []);
     }
 
-    private function renderTableOfContents($matches)
+    private function renderTableOfContents(array $matches, AbstractSite $site, ContentInterface $page)
     {
-        $this->tocGenerator->hasToc = true;
-        return "[[nyansapow:toc]]";
+        $tocTree = $this->tocGenerator->get($page);
+        if($tocTree) {
+            return $this->templateEngine->render('table_of_contents_tag', ['tree' => $tocTree]);
+        }
     }
 }
