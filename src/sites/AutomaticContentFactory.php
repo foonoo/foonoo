@@ -2,8 +2,6 @@
 
 namespace nyansapow\sites;
 
-use ntentan\honam\TemplateRenderer;
-use nyansapow\text\HtmlRenderer;
 
 class AutomaticContentFactory
 {

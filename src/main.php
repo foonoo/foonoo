@@ -144,6 +144,9 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
     return $templateRenderer;
 })->asSingleton();
 
+$container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
+$container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+
 $container->bind(TagParser::class)->to(function($container) {
     $defaultTags = $container->get(DefaultTags::class);
     $tagParser = new TagParser();
@@ -154,7 +157,6 @@ $container->bind(TagParser::class)->to(function($container) {
     return $tagParser;
 })->asSingleton();
 
-$container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
     $registry = new AutomaticContentFactory();

@@ -65,10 +65,6 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
     {
         $nextPost = $this->next ? $this->next->getMetaData() : [];
         $prevPost = $this->previous ? $this->previous->getMetaData() : [];
-        $templateData = array_merge(
-            ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
-            $this->getMetaData()
-        );
         return $this->templateEngine->render($this->template,
             array_merge(
                 ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],

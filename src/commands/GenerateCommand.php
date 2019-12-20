@@ -3,6 +3,7 @@
 namespace nyansapow\commands;
 
 use nyansapow\CommandInterface;
+use nyansapow\events\PluginsInitialized;
 use nyansapow\Nyansapow;
 
 /**
@@ -13,16 +14,18 @@ use nyansapow\Nyansapow;
 class GenerateCommand implements CommandInterface
 {
     private $nyansapow;
+    private $pluginsInitializedEvent;
 
-    public function __construct(Nyansapow $nyansapow)
+    public function __construct(Nyansapow $nyansapow, PluginsInitialized $pluginsInitializedEvent)
     {
         $this->nyansapow = $nyansapow;
+        $this->pluginsInitializedEvent = $pluginsInitializedEvent;
     }
 
 
     public function execute($options)
     {
-        $this->nyansapow->write($options);
+        $this->nyansapow->write($options, $this->pluginsInitializedEvent);
     }
 
 }

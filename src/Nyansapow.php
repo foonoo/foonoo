@@ -5,12 +5,13 @@ namespace nyansapow;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
+use ntentan\utils\Text;
+use nyansapow\events\EventDispatcher;
+use nyansapow\events\PluginsInitialized;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\Builder;
-use nyansapow\sites\SiteFactory;
 use nyansapow\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
-use nyansapow\text\TextProcessors;
 
 /**
  * The Nyansapow class which represents a nyansapow site. This class performs
@@ -49,6 +50,7 @@ class Nyansapow
     //private $templateEngine;
 
     private $builder;
+    private $eventDispatcher;
 
 
     /**
@@ -60,12 +62,13 @@ class Nyansapow
      * @param TextProcessors $textProcessors
      * @param \nyansapow\text\TemplateEngine $templateEngine
      */
-    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, Builder $builder)
+    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, Builder $builder, EventDispatcher $eventDispatcher)
     {
         $this->io = $io;
         $this->siteTypeRegistry = $siteTypeRegistry;
         $this->yamlParser = $yamlParser;
         $this->builder = $builder;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     private function readSiteMeta($path)
@@ -190,10 +193,31 @@ class Nyansapow
 
     }
 
-    public function write($options)
+    private function initializePlugins(PluginsInitialized $pluginsInitializedEvent)
+    {
+        $rootSite = $this->readSiteMeta($this->options['input']);
+        if(is_array($rootSite) && isset($rootSite['plugins'])) {
+            foreach ($rootSite['plugins'] as $plugin) {
+                $namespace = dirname($plugin);
+                $pluginName = basename($plugin);
+                $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
+                $pluginClass = "\\nyansapow\\plugins\\$namespace\\$pluginName\\$pluginClassName";
+                $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
+                require_once $pluginFile;
+                $pluginInstance = new $pluginClass([]);
+                foreach($pluginInstance->getEvents() as $event => $callable) {
+                    $this->eventDispatcher->addListener($event, $callable);
+                }
+            }
+        }
+        $this->eventDispatcher->dispatch($pluginsInitializedEvent);
+    }
+
+    public function write($options, PluginsInitialized $pluginsInitializedEvent)
     {
         //try {
             $this->setOptions($options);
+            $this->initializePlugins($pluginsInitializedEvent);
             $this->doSiteWrite();
 //        } catch (Exception $e) {
 //            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
