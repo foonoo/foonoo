@@ -7,6 +7,8 @@ namespace nyansapow\sites;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
+use nyansapow\events\EventDispatcher;
+use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
@@ -17,17 +19,21 @@ class Builder
     private $themeManager;
     private $templateEngine;
     private $options;
+    private $eventDispatcher;
 
-    public function __construct(ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine)
+    public function __construct(ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine, EventDispatcher $eventDispatcher)
     {
         $this->themeManager = $themeManager;
         $this->tagParser = $tagParser;
         $this->templateEngine = $templateEngine;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function build(AbstractSite $site)
     {
         $theme = $this->themeManager->getTheme($site);
+        $this->eventDispatcher->dispatch(new ThemeLoaded($theme, $this->templateEngine));
+
         foreach($site->getPages() as $page) {
             $this->writeContentToOutputPath($site, $theme, $page);
         }
@@ -48,11 +54,9 @@ class Builder
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
         $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();
-        $theme->activate();
 
         if($layout) {
             $templateData = $site->getTemplateData($destinationPath);
-            //$this->tagParser->setPathToBase($templateData['site_path']);
             $templateData['body'] = $content->render();
             $templateData['page_title'] = $content->getMetaData()['title'] ?? "";
             if(is_a($content, ThemableInterface::class)) {

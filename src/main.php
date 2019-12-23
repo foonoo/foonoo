@@ -10,6 +10,7 @@ use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
+use nyansapow\events\EventDispatcher;
 use nyansapow\sites\AutomaticContentFactory;
 use nyansapow\sites\BlogSiteFactory;
 use nyansapow\sites\CopiedContentFactory;
@@ -19,6 +20,7 @@ use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\sites\TemplateContentFactory;
 use nyansapow\text\DefaultTags;
 use nyansapow\text\TagParser;
+use nyansapow\text\TemplateEngine;
 
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
@@ -146,6 +148,8 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
 
 $container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+$container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
+$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
 
 $container->bind(TagParser::class)->to(function($container) {
     $defaultTags = $container->get(DefaultTags::class);

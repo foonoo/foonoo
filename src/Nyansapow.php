@@ -198,13 +198,19 @@ class Nyansapow
         $rootSite = $this->readSiteMeta($this->options['input']);
         if(is_array($rootSite) && isset($rootSite['plugins'])) {
             foreach ($rootSite['plugins'] as $plugin) {
+                if(is_array($plugin)) {
+                    $options = reset($plugin);
+                    $plugin = array_keys($plugin)[0];
+                } else {
+                    $options = [];
+                }
                 $namespace = dirname($plugin);
                 $pluginName = basename($plugin);
                 $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
                 $pluginClass = "\\nyansapow\\plugins\\$namespace\\$pluginName\\$pluginClassName";
                 $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
                 require_once $pluginFile;
-                $pluginInstance = new $pluginClass([]);
+                $pluginInstance = new $pluginClass($plugin, $this->io, $options);
                 foreach($pluginInstance->getEvents() as $event => $callable) {
                     $this->eventDispatcher->addListener($event, $callable);
                 }

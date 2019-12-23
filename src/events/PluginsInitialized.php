@@ -7,18 +7,21 @@ namespace nyansapow\events;
 use nyansapow\sites\AutomaticContentFactory;
 use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\text\TagParser;
+use nyansapow\text\TemplateEngine;
 
 class PluginsInitialized
 {
     private $tagParser;
     private $automaticContentFactory;
     private $siteTypeRegistry;
+    private $templateEngine;
 
-    public function __construct(TagParser $tagParser, AutomaticContentFactory $automaticContentFactory, SiteTypeRegistry $siteTypeRegistry)
+    public function __construct(TagParser $tagParser, AutomaticContentFactory $automaticContentFactory, SiteTypeRegistry $siteTypeRegistry, TemplateEngine $templateEngine)
     {
         $this->tagParser = $tagParser;
         $this->automaticContentFactory = $automaticContentFactory;
         $this->siteTypeRegistry = $siteTypeRegistry;
+        $this->templateEngine = $templateEngine;
     }
 
     public function getTagParser() : TagParser
@@ -34,5 +37,10 @@ class PluginsInitialized
     public function getSiteTypeRegistry() : SiteTypeRegistry
     {
         return $this->siteTypeRegistry;
+    }
+
+    public function getTemplateEngine() : TemplateEngine
+    {
+        return $this->templateEngine;
     }
 }

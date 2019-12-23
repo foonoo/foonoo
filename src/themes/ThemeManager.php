@@ -52,6 +52,7 @@ class ThemeManager
     {
         $theme = $this->loadTheme($site);
         $theme->copyAssets($site->getDestinationPath());
+        $theme->activate();
         return $theme;
     }
 

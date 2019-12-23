@@ -28,35 +28,20 @@ class DefaultTags
 
     public function getRegexMap()
     {
-//        return [
-//            [
-//                "regex" => "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/",
-//                "callable" => $this->getCallback([$this, "renderBlockOpenTag"])
-//            ],
-//            ["regex" => "/\[\[\/block\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
-//            ["regex" => "/\[\[(http:\/\/)(?<link>.*)\]\]/", "callable" => $this->getCallback([$this, "renderLink"])],
-//            [
-//                "regex" => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
-//                "callable" => $this->getCallback([$this, "renderImageTag"])
-//            ],
-//            ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-//            ["regex" => "|\[\[(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-//            ['regex' => "/\[\[_TOC_\]\]/", 'callable' => $this->getCallback([$this, 'renderTableOfContents'])],
-//        ];
         return [
             [
-                "regex" => "/\[\[block\:(?<block_class>[a-zA-Z0-9\-\_]*)\]\]/",
+                "regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/",
                 "callable" => $this->getCallback([$this, "renderBlockOpenTag"])
             ],
-            ["regex" => "/\[\[\/block\]\]/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
-            ["regex" => "/\[\[(http:\/\/)(?<link>.*)\]\]/", "callable" => $this->getCallback([$this, "renderLink"])],
+            ["regex" => "/\/block/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
+            ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => $this->getCallback([$this, "renderLink"])],
             [
-                "regex" => "/\[\[(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?\]\]/",
+                "regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?/",
                 "callable" => $this->getCallback([$this, "renderImageTag"])
             ],
-            ["regex" => "|\[\[(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-            ["regex" => "|\[\[(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)\]\]|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-            ['regex' => "/\[\[_TOC_\]\]/", 'callable' => $this->getCallback([$this, 'renderTableOfContents'])],
+            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ["regex" => "|(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => $this->getCallback([$this, "renderPageLink"])],
+            ['regex' => "/_TOC_/", 'callable' => $this->getCallback([$this, 'renderTableOfContents'])],
         ];
     }
 

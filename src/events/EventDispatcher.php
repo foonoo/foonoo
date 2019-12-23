@@ -18,7 +18,7 @@ class EventDispatcher
 
     public function dispatch(object $event)
     {
-        foreach($this->listeners[get_class($event)] as $listener)
+        foreach($this->listeners[get_class($event)] ?? [] as $listener)
         {
             $listener($event);
         }

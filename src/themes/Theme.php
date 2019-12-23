@@ -4,6 +4,9 @@
 namespace nyansapow\themes;
 
 
+use ntentan\utils\exceptions\FileNotFoundException;
+use ntentan\utils\exceptions\FileNotReadableException;
+use ntentan\utils\exceptions\FilesystemException;
 use ntentan\utils\Filesystem;
 use nyansapow\text\TemplateEngine;
 
@@ -23,9 +26,9 @@ class Theme
 
     /**
      * @param $destination
-     * @throws \ntentan\utils\exceptions\FileNotFoundException
-     * @throws \ntentan\utils\exceptions\FileNotReadableException
-     * @throws \ntentan\utils\exceptions\FilesystemException
+     * @throws FileNotFoundException
+     * @throws FileNotReadableException
+     * @throws FilesystemException
      */
     public function copyAssets($destination)
     {

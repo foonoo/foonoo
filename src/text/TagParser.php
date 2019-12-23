@@ -16,6 +16,11 @@ class TagParser
 
     public function registerTag(string $regex, int $priority, callable $callable, string $name = null) : void
     {
+        $regex = substr_replace($regex, '\[\[', 1, 0);
+        for($i = strlen($regex) - 1; $i>0; $i--) {
+            if($regex[$i] == $regex[0]) break;
+        }
+        $regex = substr_replace($regex, '\]\]', $i, 0);
         $this->tags[] = ['regex' => $regex, 'priority' => $priority, 'callable' => $callable, 'name' => $name];
         usort($this->tags, function($a, $b) {return $a['priority'] - $b['priority'];});
     }
