@@ -1,7 +1,11 @@
 <?php
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+
+use nyansapow\sites\AbstractSite;
+use nyansapow\content\ContentFactoryInterface;
+use nyansapow\content\ContentInterface;
 
 class AutomaticContentFactory
 {

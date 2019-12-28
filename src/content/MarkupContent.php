@@ -1,8 +1,12 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+use nyansapow\content\ContentInterface;
+use nyansapow\sites\AbstractSite;
+use nyansapow\sites\ExtensionAdjuster;
+use nyansapow\sites\FrontMatterReader;
 use nyansapow\text\HtmlRenderer;
 
 /**

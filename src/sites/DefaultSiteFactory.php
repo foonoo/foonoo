@@ -4,6 +4,8 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\content\AutomaticContentFactory;
+
 class DefaultSiteFactory implements SiteFactoryInterface
 {
     private $automaticContentFactory;

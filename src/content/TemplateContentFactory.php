@@ -1,10 +1,14 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
 
 use ntentan\honam\TemplateRenderer;
+use nyansapow\content\ContentFactoryInterface;
+use nyansapow\content\ContentInterface;
+use nyansapow\content\TemplateContent;
+use nyansapow\sites\AbstractSite;
 
 class TemplateContentFactory implements ContentFactoryInterface
 {

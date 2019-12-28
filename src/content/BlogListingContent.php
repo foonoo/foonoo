@@ -1,9 +1,12 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
 
+use nyansapow\content\BlogPostContent;
+use nyansapow\content\ContentInterface;
+use nyansapow\content\ThemableInterface;
 use nyansapow\text\TemplateEngine;
 
 class BlogListingContent implements ContentInterface, ThemableInterface

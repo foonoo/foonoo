@@ -4,6 +4,8 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\content\AutomaticContentFactory;
+
 abstract class AbstractSite
 {
     protected $metaData;

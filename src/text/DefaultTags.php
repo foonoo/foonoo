@@ -4,7 +4,7 @@ namespace nyansapow\text;
 
 
 use nyansapow\sites\AbstractSite;
-use nyansapow\sites\ContentInterface;
+use nyansapow\content\ContentInterface;
 use nyansapow\utils\Nomenclature;
 use nyansapow\utils\TocGenerator;
 

@@ -3,7 +3,7 @@
 namespace nyansapow\text;
 
 use nyansapow\sites\AbstractSite;
-use nyansapow\sites\ContentInterface;
+use nyansapow\content\ContentInterface;
 
 /**
  * Parse text containing special Nyansapow tags.

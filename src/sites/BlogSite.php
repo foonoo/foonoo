@@ -4,6 +4,9 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\content\BlogContentFactory;
+use nyansapow\content\BlogListingContent;
+use nyansapow\content\BlogPostContent;
 use nyansapow\utils\Nomenclature;
 
 class BlogSite extends AbstractSite

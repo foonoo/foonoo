@@ -4,7 +4,7 @@
 namespace nyansapow\events;
 
 
-use nyansapow\sites\AutomaticContentFactory;
+use nyansapow\content\AutomaticContentFactory;
 use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;

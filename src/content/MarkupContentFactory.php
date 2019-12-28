@@ -1,7 +1,12 @@
 <?php
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+use nyansapow\content\ContentFactoryInterface;
+use nyansapow\content\ContentInterface;
+use nyansapow\content\MarkupContent;
+use nyansapow\sites\AbstractSite;
+use nyansapow\sites\FrontMatterReader;
 use nyansapow\text\HtmlRenderer;
 
 class MarkupContentFactory implements ContentFactoryInterface

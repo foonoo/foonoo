@@ -1,8 +1,11 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+
+use nyansapow\sites\AbstractSite;
+use nyansapow\content\ContentInterface;
 
 interface ContentFactoryInterface
 {

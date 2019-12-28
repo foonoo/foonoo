@@ -4,6 +4,8 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\content\BlogContentFactory;
+
 class BlogSiteFactory implements SiteFactoryInterface
 {
     private $blogContentFactory;

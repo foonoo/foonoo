@@ -1,9 +1,12 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
 
+use nyansapow\sites\FrontMatterReader;
+use nyansapow\content\MarkupContent;
+use nyansapow\content\ThemableInterface;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
 

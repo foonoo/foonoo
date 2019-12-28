@@ -1,8 +1,10 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+
+use nyansapow\content\BlogPostContent;
 
 class BlogPageContent extends BlogPostContent
 {

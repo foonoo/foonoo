@@ -3,7 +3,7 @@
 namespace nyansapow\utils;
 
 use DOMDocument;
-use nyansapow\sites\ContentInterface;
+use nyansapow\content\ContentInterface;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.

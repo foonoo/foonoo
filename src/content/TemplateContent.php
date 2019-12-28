@@ -1,9 +1,12 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
 use ntentan\honam\TemplateRenderer;
+use nyansapow\content\ContentInterface;
+use nyansapow\sites\AbstractSite;
+use nyansapow\sites\ExtensionAdjuster;
 
 class TemplateContent implements ContentInterface
 {

@@ -1,8 +1,10 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace nyansapow\content;
 
+
+use nyansapow\content\ContentInterface;
 
 class CopiedContent implements ContentInterface
 {

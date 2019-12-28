@@ -7,6 +7,8 @@ namespace nyansapow\sites;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
+use nyansapow\content\ContentInterface;
+use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TagParser;
