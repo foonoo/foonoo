@@ -9,7 +9,7 @@ use ntentan\utils\Text;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PluginsInitialized;
 use nyansapow\sites\AbstractSite;
-use nyansapow\sites\Builder;
+use nyansapow\sites\SiteWriter;
 use nyansapow\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
@@ -17,7 +17,7 @@ use Symfony\Component\Yaml\Parser as YamlParser;
  * The Nyansapow class which represents a nyansapow site. This class performs
  * the task of converting the input files into the output site.
  */
-class Nyansapow
+class Builder
 {
     /**
      * @var array
@@ -49,7 +49,7 @@ class Nyansapow
      */
     //private $templateEngine;
 
-    private $builder;
+    private $siteWriter;
     private $eventDispatcher;
 
 
@@ -58,16 +58,17 @@ class Nyansapow
      * Create an instance of the context object through which Nyansapow works.
      *
      * @param Io $io
-     * @param SiteFactory $siteTypeRegistry
-     * @param TextProcessors $textProcessors
-     * @param \nyansapow\text\TemplateEngine $templateEngine
+     * @param SiteTypeRegistry $siteTypeRegistry
+     * @param YamlParser $yamlParser
+     * @param SiteWriter $builder
+     * @param EventDispatcher $eventDispatcher
      */
-    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, Builder $builder, EventDispatcher $eventDispatcher)
+    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, SiteWriter $builder, EventDispatcher $eventDispatcher)
     {
         $this->io = $io;
         $this->siteTypeRegistry = $siteTypeRegistry;
         $this->yamlParser = $yamlParser;
-        $this->builder = $builder;
+        $this->siteWriter = $builder;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -141,7 +142,7 @@ class Nyansapow
 
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
-            $this->io->output("Generating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
+            $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
 
             if (is_dir($site->getSourcePath("np_images"))) {
                 $imageSource = $site->getSourcePath("np_images");
@@ -164,7 +165,7 @@ class Nyansapow
             }
 
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
-            $this->builder->build($site);
+            $this->siteWriter->write($site);
         }
     }
 
@@ -188,7 +189,7 @@ class Nyansapow
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
-        $this->builder->setOptions($options);
+        $this->siteWriter->setOptions($options);
         $this->options = $options;
 
     }

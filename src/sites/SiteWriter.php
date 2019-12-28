@@ -13,28 +13,32 @@ use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
 use nyansapow\themes\ThemeManager;
+use clearice\io\Io;
 
-class Builder
+class SiteWriter
 {
     private $themeManager;
     private $templateEngine;
     private $options;
     private $eventDispatcher;
+    private $io;
 
-    public function __construct(ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine, EventDispatcher $eventDispatcher)
+    public function __construct(Io $io, ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine, EventDispatcher $eventDispatcher)
     {
         $this->themeManager = $themeManager;
         $this->tagParser = $tagParser;
         $this->templateEngine = $templateEngine;
         $this->eventDispatcher = $eventDispatcher;
+        $this->io = $io;
     }
 
-    public function build(AbstractSite $site)
+    public function write(AbstractSite $site)
     {
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(new ThemeLoaded($theme, $this->templateEngine));
 
         foreach($site->getPages() as $page) {
+            $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $page);
         }
     }

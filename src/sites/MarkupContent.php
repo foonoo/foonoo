@@ -21,6 +21,7 @@ class MarkupContent implements ContentInterface
     private $firstLineOfBody = 0;
     private $htmlRenderer;
     private $frontMatterReader;
+    private $rendered;
 
     /**
      * @var AbstractSite
@@ -68,8 +69,11 @@ class MarkupContent implements ContentInterface
 
     public function render() : string
     {
-        $this->getFrontMatter();
-        return $this->htmlRenderer->render($this->getBody(), $this->site, $this);
+        if(!$this->rendered) {
+            $this->getFrontMatter();
+            $this->rendered = $this->htmlRenderer->render($this->getBody(), $this->site, $this);
+        }
+        return $this->rendered;
     }
 
     public function getMetaData(): array

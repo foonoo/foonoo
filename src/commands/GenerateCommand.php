@@ -4,7 +4,7 @@ namespace nyansapow\commands;
 
 use nyansapow\CommandInterface;
 use nyansapow\events\PluginsInitialized;
-use nyansapow\Nyansapow;
+use nyansapow\Builder;
 
 /**
  * Description of GenerateCommand
@@ -16,7 +16,7 @@ class GenerateCommand implements CommandInterface
     private $nyansapow;
     private $pluginsInitializedEvent;
 
-    public function __construct(Nyansapow $nyansapow, PluginsInitialized $pluginsInitializedEvent)
+    public function __construct(Builder $nyansapow, PluginsInitialized $pluginsInitializedEvent)
     {
         $this->nyansapow = $nyansapow;
         $this->pluginsInitializedEvent = $pluginsInitializedEvent;

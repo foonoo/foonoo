@@ -24,14 +24,14 @@ abstract class Plugin
         return $this->options[$option] ?? $default;
     }
 
-    public function stdOut($message, $verbosity = Io::OUTPUT_LEVEL_1)
+    public function stdOut($message, $verbosity = Io::OUTPUT_LEVEL_2)
     {
-        $this->io->output($message, $verbosity);
+        $this->io->output("  - [{$this->name}] $message", $verbosity);
     }
 
-    public function errOut($message, $verbosity = Io::OUTPUT_LEVEL_1)
+    public function errOut($message, $verbosity = Io::OUTPUT_LEVEL_2)
     {
-        $this->io->error("{$this->name}: $message\n", $verbosity);
+        $this->io->error("  - [{$this->name}] $message", $verbosity);
     }
 
     public abstract function getEvents();

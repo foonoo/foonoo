@@ -31,6 +31,8 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
      */
     private $htmlRenderer;
     private $templateEngine;
+    private $rendered;
+    private $preview;
 
     public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
@@ -63,20 +65,26 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
 
     public function render(): string
     {
-        $nextPost = $this->next ? $this->next->getMetaData() : [];
-        $prevPost = $this->previous ? $this->previous->getMetaData() : [];
-        return $this->templateEngine->render($this->template,
-            array_merge(
-                ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
-                $this->getMetaData()
-            )
-        );
+        if(!$this->rendered) {
+            $nextPost = $this->next ? $this->next->getMetaData() : [];
+            $prevPost = $this->previous ? $this->previous->getMetaData() : [];
+            $this->rendered = $this->templateEngine->render($this->template,
+                array_merge(
+                    ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
+                    $this->getMetaData()
+                )
+            );
+        }
+        return $this->rendered;
     }
 
     public function getPreview() : string
     {
-        $splitPost = $this->splitPost();
-        return $this->htmlRenderer->render($splitPost['preview'], $this->site , $this);
+        if(!$this->preview) {
+            $splitPost = $this->splitPost();
+            $this->preview = $this->htmlRenderer->render($splitPost['preview'], $this->site , $this);
+        }
+        return $this->preview;
     }
 
     private function splitPost()
