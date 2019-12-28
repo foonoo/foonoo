@@ -25,7 +25,7 @@ class GenerateCommand implements CommandInterface
 
     public function execute($options)
     {
-        $this->nyansapow->write($options, $this->pluginsInitializedEvent);
+        $this->nyansapow->build($options, $this->pluginsInitializedEvent);
     }
 
 }

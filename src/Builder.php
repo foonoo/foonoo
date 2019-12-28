@@ -134,7 +134,7 @@ class Builder
         return $site;
     }
 
-    private function doSiteWrite()
+    private function buildSites()
     {
         $sites = $this->getSites($this->options['input'], true);
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
@@ -143,6 +143,8 @@ class Builder
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
+            $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
+            $this->siteWriter->write($site);
 
             if (is_dir($site->getSourcePath("np_images"))) {
                 $imageSource = $site->getSourcePath("np_images");
@@ -163,9 +165,6 @@ class Builder
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination);
             }
-
-            $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
-            $this->siteWriter->write($site);
         }
     }
 
@@ -220,12 +219,12 @@ class Builder
         $this->eventDispatcher->dispatch($pluginsInitializedEvent);
     }
 
-    public function write($options, PluginsInitialized $pluginsInitializedEvent)
+    public function build($options, PluginsInitialized $pluginsInitializedEvent)
     {
         //try {
             $this->setOptions($options);
             $this->initializePlugins($pluginsInitializedEvent);
-            $this->doSiteWrite();
+            $this->buildSites();
 //        } catch (Exception $e) {
 //            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
 //            exit(102);
