@@ -8,7 +8,7 @@ trait Nomenclature
 {
     private function makeId(string $text, array $ids=[])
     {
-        $baseId = preg_replace("/([^a-zA-Z0-9\._ ]+)/", "-", strtolower($text));
+        $baseId = preg_replace("/([^a-zA-Z0-9\._]+)/", "-", strtolower($text));
         $id = $baseId;
         $counter = 0;
         while(in_array($id, $ids)) {

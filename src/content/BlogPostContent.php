@@ -9,9 +9,12 @@ use nyansapow\content\MarkupContent;
 use nyansapow\content\ThemableInterface;
 use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
+use nyansapow\utils\Nomenclature;
 
 class BlogPostContent extends MarkupContent implements ThemableInterface
 {
+    use Nomenclature;
+
     private $templateData;
     private $metaData;
     protected $template = "post";
@@ -66,6 +69,26 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
         return $this->metaData;
     }
 
+    private function getTaxonomyLinks()
+    {
+        $links = [];
+        $taxonomies = $this->site->getTaxonomies();
+
+        foreach($taxonomies as $taxonomy => $taxonomyLabel) {
+            if(!isset($this->metaData['frontmatter'][$taxonomy])) {
+                continue;
+            }
+            $taxonomyValues = $this->metaData['frontmatter'][$taxonomy];
+            $taxonomyValues = is_array($taxonomyValues) ? $taxonomyValues : [$taxonomyValues];
+            $links[$taxonomy] = [];
+            foreach($taxonomyValues as $taxonomyValue) {
+                $links[$taxonomy][] = ['value' => $taxonomyValue, 'link' => "$taxonomy/{$this->makeId($taxonomyValue)}.html"];
+            }
+        }
+
+        return $links;
+    }
+
     public function render(): string
     {
         if(!$this->rendered) {
@@ -74,7 +97,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface
             $this->rendered = $this->templateEngine->render($this->template,
                 array_merge(
                     ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
-                    $this->getMetaData()
+                    $this->getMetaData(), ['taxonomy' => $this->getTaxonomyLinks()]
                 )
             );
         }

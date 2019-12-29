@@ -16,10 +16,26 @@ class BlogSite extends AbstractSite
     private $posts = [];
     private $archives = [];
     private $blogContentFactory;
+    private $taxonomies;
 
     public function __construct(BlogContentFactory $blogContentFactory)
     {
         $this->blogContentFactory = $blogContentFactory;
+    }
+
+    public function getTaxonomies()
+    {
+        if(!$this->taxonomies) {
+            $this->taxonomies = [];
+            foreach($this->metaData['taxonomies'] ?? [] as $taxonomy => $taxonomyLabel) {
+                if(is_numeric($taxonomy) && !is_numeric($taxonomyLabel)) {
+                    $taxonomy = $taxonomyLabel;
+                    $taxonomyLabel = $this->makeLabel($taxonomy);
+                }
+                $this->taxonomies[$taxonomy] = $taxonomyLabel;
+            }
+        }
+        return $this->taxonomies;
     }
 
     /**
@@ -32,11 +48,7 @@ class BlogSite extends AbstractSite
         $pages[] = $this->getIndexPage('index.html', $this->posts, '');
         $pages[] = $this->getIndexPage('posts.html', $this->posts);
         $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
-        foreach($this->metaData['taxonomies'] ?? [] as $taxonomy => $taxonomyLabel) {
-            if(is_numeric($taxonomy) && !is_numeric($taxonomyLabel)) {
-                $taxonomy = $taxonomyLabel;
-                $taxonomyLabel = $this->makeLabel($taxonomy);
-            }
+        foreach($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
             $pages = array_merge($pages, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
         }
         return $pages;
