@@ -3,7 +3,6 @@
 namespace nyansapow;
 
 use clearice\io\Io;
-use nyansapow\text\TemplateEngine;
 
 
 abstract class Plugin

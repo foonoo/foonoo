@@ -10,6 +10,7 @@ use ntentan\utils\Filesystem;
 use nyansapow\content\ContentInterface;
 use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
+use nyansapow\events\PageOutputGenerated;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
@@ -72,6 +73,9 @@ class SiteWriter
         } else {
             $output = $content->render();
         }
+        $event = new PageOutputGenerated($output, $content, $site);
+        $this->eventDispatcher->dispatch($event);
+        $output = $event->getOutput();
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);
         }

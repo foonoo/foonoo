@@ -12,7 +12,8 @@
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-fileinfo": "*",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+      "ext-imagick": "*"
     },
     "require-dev" : {
         "phing/phing" : "@stable"
