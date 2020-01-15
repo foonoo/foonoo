@@ -16,6 +16,7 @@ class BlogListingContent implements ContentInterface, ThemableInterface
     private $destination;
     private $data;
     private $title;
+    private $template = 'listing';
 
     public function __construct(TemplateEngine $templateRenderer, array $posts, string $destination, array $data)
     {
@@ -28,6 +29,11 @@ class BlogListingContent implements ContentInterface, ThemableInterface
     public function setTitle(string $title) :void
     {
         $this->title = $title;
+    }
+
+    public function setTemplate($template) : void
+    {
+        $this->template = $template;
     }
 
     public function getMetaData(): array
@@ -48,7 +54,7 @@ class BlogListingContent implements ContentInterface, ThemableInterface
         }, $this->posts);
 
         $templateVars = array_merge($this->data, ['posts' => $posts]);
-        return $this->templateEngine->render('listing', $templateVars);
+        return $this->templateEngine->render($this->template, $templateVars);
     }
 
     public function getDestination(): string

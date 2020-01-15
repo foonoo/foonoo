@@ -45,7 +45,7 @@ class BlogSite extends AbstractSite
     public function getPages() : array
     {
         $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
-        $pages[] = $this->getIndexPage('index.html', $this->posts, '');
+        $pages[] = $this->getIndexPage('index.html', $this->posts, 'Index', 'index');
         $pages[] = $this->getIndexPage('posts.html', $this->posts);
         $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
         foreach($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
@@ -68,7 +68,9 @@ class BlogSite extends AbstractSite
         $data = $this->getTemplateData($this->getDestinationPath($target));
         $data['listing_title'] = $title;
         $data['previews'] = true;
-        return $this->blogContentFactory->createListing($posts, $target, $data, $title);
+        $listingContent = $this->blogContentFactory->createListing($posts, $target, $data, $title);
+        $listingContent->setTemplate($template);
+        return $listingContent;
     }
 
     /**
