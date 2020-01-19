@@ -9,6 +9,8 @@ use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
+use ntentan\kaikai\backends\FileCache;
+use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
 use nyansapow\events\EventDispatcher;
 use nyansapow\content\AutomaticContentFactory;
@@ -145,7 +147,6 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
-
 $container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 $container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();

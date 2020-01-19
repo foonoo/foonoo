@@ -4,6 +4,7 @@
 namespace nyansapow\sites;
 
 
+use nyansapow\utils\Cache;
 use nyansapow\content\AutomaticContentFactory;
 
 abstract class AbstractSite
@@ -13,6 +14,7 @@ abstract class AbstractSite
     private $sourceRoot;
     private $destinationRoot;
     private $templateData;
+    private $cache;
 
     /**
      * @var AutomaticContentFactory
@@ -119,6 +121,16 @@ abstract class AbstractSite
     public function getDestinationPath(string $path = "") : string
     {
         return preg_replace("|/+|", "/", "{$this->destinationRoot}/{$this->path}/{$path}");
+    }
+
+    public function setCache(Cache $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    public function getCache() : Cache
+    {
+        return $this->cache;
     }
 
     public abstract function getPages(): array;

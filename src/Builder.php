@@ -30,12 +30,6 @@ class Builder
     private $io;
 
     /**
-     * Base directory where
-     * @var string
-     */
-    private $home;
-
-    /**
      * @var SiteTypeRegistry
      */
     private $siteTypeRegistry;
@@ -44,13 +38,18 @@ class Builder
      * @var YamlParser
      */
     private $yamlParser;
-    /**
-     * @var \nyansapow\text\TemplateEngine
-     */
-    //private $templateEngine;
 
+    /**
+     * @var SiteWriter
+     */
     private $siteWriter;
+
+    /**
+     * @var EventDispatcher
+     */
     private $eventDispatcher;
+
+    private $cacheFactory;
 
 
     /**
@@ -125,11 +124,15 @@ class Builder
             + ($metaData['excluded_paths'] ?? []);
 
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
+        $shortPath = substr($path, strlen($this->options['input']));
 
-        $site->setPath(substr($path, strlen($this->options['input'])));
+        $site->setPath($shortPath);
         $site->setSourceRoot($this->options['input']);
         $site->setDestinationRoot($this->options['output']);
         $site->setMetaData($metaData);
+        $cacheDir = "{$this->options['output']}{$shortPath}np_cache";
+        Filesystem::directory($cacheDir)->createIfNotExists();
+        $site->setCache($this->cacheFactory->create($cacheDir));
 
         return $site;
     }
@@ -219,9 +222,10 @@ class Builder
         $this->eventDispatcher->dispatch($pluginsInitializedEvent);
     }
 
-    public function build($options, PluginsInitialized $pluginsInitializedEvent)
+    public function build($options, PluginsInitialized $pluginsInitializedEvent, CacheFactory $cacheFactory)
     {
         //try {
+            $this->cacheFactory = $cacheFactory;
             $this->setOptions($options);
             $this->initializePlugins($pluginsInitializedEvent);
             $this->buildSites();

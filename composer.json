@@ -7,6 +7,7 @@
         "erusev/parsedown" : "~1.0",
         "ntentan/honam": "dev-dev",
         "ntentan/panie": "~0.7.0",
+        "ntentan/kaikai": "@stable",
         "symfony/yaml" : "~4.0",
         "smarty/smarty": "~3.0",
         "ext-dom": "*",
