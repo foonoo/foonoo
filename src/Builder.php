@@ -130,7 +130,7 @@ class Builder
         $site->setSourceRoot($this->options['input']);
         $site->setDestinationRoot($this->options['output']);
         $site->setMetaData($metaData);
-        $cacheDir = "{$this->options['output']}{$shortPath}np_cache";
+        $cacheDir = "{$this->options['input']}{$shortPath}np_cache";
         Filesystem::directory($cacheDir)->createIfNotExists();
         $site->setCache($this->cacheFactory->create($cacheDir));
 

@@ -9,6 +9,10 @@ use nyansapow\content\BlogListingContent;
 use nyansapow\content\BlogPostContent;
 use nyansapow\utils\Nomenclature;
 
+/**
+ * Generates blogs
+ * @package nyansapow\sites
+ */
 class BlogSite extends AbstractSite
 {
     use Nomenclature;
@@ -76,7 +80,7 @@ class BlogSite extends AbstractSite
     /**
      * Return a hierarchical list of posts that were made within a particular period.
      *
-     * @param $archive The posts to be archived
+     * @param array $archive posts to be archived
      * @param array $order The order, in terms of period, in which posts should be categorized.
      * @param null $stage The current stage of the order.
      * @param string $title The title of the archive.
