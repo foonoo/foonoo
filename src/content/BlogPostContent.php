@@ -9,7 +9,7 @@ use nyansapow\text\HtmlRenderer;
 use nyansapow\text\TemplateEngine;
 use nyansapow\utils\Nomenclature;
 
-class BlogPostContent extends MarkupContent implements ThemableInterface
+class BlogPostContent extends MarkupContent implements ThemableInterface, SerialContentInterface
 {
     use Nomenclature;
 

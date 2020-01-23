@@ -126,7 +126,7 @@ class BlogSite extends AbstractSite
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
                 $templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
-                $page = $this->blogContentFactory->createPost($this, $this->getSourcePath($file), $destinationPath, $templateData);
+                $page = $this->blogContentFactory->createPost($this, $this->getSourcePath($file), $destinationPath);
                 $pages[] = $page;
                 if($lastPost) {
                     $page->setPrevious($lastPost);

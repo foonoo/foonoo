@@ -26,8 +26,7 @@ class AutomaticContentFactory
      */
     public function create(AbstractSite $site, string $source, string $destination) : ContentInterface
     {
-        foreach ($this->contentFactories as $factory)
-        {
+        foreach ($this->contentFactories as $factory) {
             if($factory['test'](['source' => $source, 'destination' => $destination])) {
                 return $factory['instance']->create($site, $source, $destination);
             }

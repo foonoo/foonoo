@@ -9,11 +9,12 @@ use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
-use ntentan\kaikai\backends\FileCache;
-use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
 use nyansapow\events\EventDispatcher;
 use nyansapow\content\AutomaticContentFactory;
+use nyansapow\events\PageOutputGenerated;
+use nyansapow\events\PluginsInitialized;
+use nyansapow\events\ThemeLoaded;
 use nyansapow\sites\BlogSiteFactory;
 use nyansapow\content\CopiedContentFactory;
 use nyansapow\sites\DefaultSiteFactory;
@@ -196,6 +197,31 @@ $container->bind(SiteTypeRegistry::class)->to(function(Container $container) {
     $registry->register($defaultRegistry, 'plain');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;
+});
+
+$container->bind(EventDispatcher::class)->to(function (Container $container) {
+    $eventDispatcher = new EventDispatcher();
+
+    $eventDispatcher->registerEventType(PluginsInitialized::class,
+        function() use ($container) {
+            return $container->get(PluginsInitialized::class);
+        }
+    );
+
+    $eventDispatcher->registerEventType(ThemeLoaded::class,
+        function ($args) use ($container) {
+            $templateEngine = $container->get(TemplateEngine::class);
+            return new ThemeLoaded($args['theme'], $templateEngine);
+        }
+    );
+
+    $eventDispatcher->registerEventType(PageOutputGenerated::class,
+        function ($args) {
+            return new PageOutputGenerated($args['output'], $args['page'], $args['site']);
+        }
+    );
+
+    return $eventDispatcher;
 });
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));

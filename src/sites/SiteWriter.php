@@ -11,8 +11,8 @@ use nyansapow\content\ContentInterface;
 use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PageOutputGenerated;
+use nyansapow\events\PagesListed;
 use nyansapow\events\ThemeLoaded;
-use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
 use nyansapow\themes\ThemeManager;
@@ -21,26 +21,27 @@ use clearice\io\Io;
 class SiteWriter
 {
     private $themeManager;
-    private $templateEngine;
     private $options;
     private $eventDispatcher;
     private $io;
+    private $templateEngine;
 
-    public function __construct(Io $io, ThemeManager $themeManager, TagParser $tagParser, TemplateEngine $templateEngine, EventDispatcher $eventDispatcher)
+    public function __construct(Io $io, ThemeManager $themeManager, EventDispatcher $eventDispatcher, TemplateEngine $templateEngine)
     {
         $this->themeManager = $themeManager;
-        $this->tagParser = $tagParser;
-        $this->templateEngine = $templateEngine;
         $this->eventDispatcher = $eventDispatcher;
         $this->io = $io;
+        $this->templateEngine = $templateEngine;
     }
 
     public function write(AbstractSite $site)
     {
         $theme = $this->themeManager->getTheme($site);
-        $this->eventDispatcher->dispatch(new ThemeLoaded($theme, $this->templateEngine));
+        $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
+        $pages = $site->getPages();
+        $this->eventDispatcher->dispatch(PagesListed::class, ['pages' => $pages]);
 
-        foreach($site->getPages() as $page) {
+        foreach($pages as $page) {
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $page);
         }
@@ -73,9 +74,8 @@ class SiteWriter
         } else {
             $output = $content->render();
         }
-        $event = new PageOutputGenerated($output, $content, $site);
-        $this->eventDispatcher->dispatch($event);
-        $output = $event->getOutput();
+        $event = $this->eventDispatcher->dispatch(PageOutputGenerated::class, ['output' => $output, 'page' => $content, 'site' => $site]);
+        $output = $event ? $event->getOutput() : $output;
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);
         }

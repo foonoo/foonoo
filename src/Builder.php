@@ -196,7 +196,7 @@ class Builder
 
     }
 
-    private function initializePlugins(PluginsInitialized $pluginsInitializedEvent)
+    private function initializePlugins()
     {
         $rootSite = $this->readSiteMeta($this->options['input']);
         if(is_array($rootSite) && isset($rootSite['plugins'])) {
@@ -219,15 +219,15 @@ class Builder
                 }
             }
         }
-        $this->eventDispatcher->dispatch($pluginsInitializedEvent);
+        $this->eventDispatcher->dispatch(PluginsInitialized::class, []);
     }
 
-    public function build($options, PluginsInitialized $pluginsInitializedEvent, CacheFactory $cacheFactory)
+    public function build($options, CacheFactory $cacheFactory)
     {
         //try {
             $this->cacheFactory = $cacheFactory;
             $this->setOptions($options);
-            $this->initializePlugins($pluginsInitializedEvent);
+            $this->initializePlugins();
             $this->buildSites();
 //        } catch (Exception $e) {
 //            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
