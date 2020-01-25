@@ -11,7 +11,7 @@ use nyansapow\content\ContentInterface;
 use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PageOutputGenerated;
-use nyansapow\events\PagesListed;
+use nyansapow\events\PagesReady;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
@@ -39,7 +39,7 @@ class SiteWriter
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
         $pages = $site->getPages();
-        $this->eventDispatcher->dispatch(PagesListed::class, ['pages' => $pages]);
+        $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
 
         foreach($pages as $page) {
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");

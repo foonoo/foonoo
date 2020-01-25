@@ -12,7 +12,7 @@ use nyansapow\sites\AbstractSite;
 class CopiedContentFactory implements ContentFactoryInterface
 {
 
-    public function create(AbstractSite $site, string $source, string $destination): ContentInterface
+    public function create(string $source, string $destination): ContentInterface
     {
         return new CopiedContent($source, $destination);
     }

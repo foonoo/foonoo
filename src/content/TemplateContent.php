@@ -3,37 +3,48 @@
 
 namespace nyansapow\content;
 
+use ntentan\honam\exceptions\FactoryException;
+use ntentan\honam\exceptions\TemplateEngineNotFoundException;
+use ntentan\honam\exceptions\TemplateResolutionException;
 use ntentan\honam\TemplateRenderer;
-use nyansapow\content\ContentInterface;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 
-class TemplateContent implements ContentInterface
+class TemplateContent implements ContentInterface, DataRendererInterface
 {
     use ExtensionAdjuster;
 
     private $source;
     private $destination;
     private $templates;
-    private $data;
+    private $data = [];
+    //private $site;
 
-    public function __construct(TemplateRenderer $templates, AbstractSite $site, $source, $destination)
+    public function __construct(TemplateRenderer $templates, $source, $destination)
     {
         $this->templates = $templates;
         $this->source = $source;
         $this->destination = $this->adjustFileExtension($destination, 'html');
-        $this->data = $site->getTemplateData($site->getDestinationPath($destination));
+        //$this->site = $site;
     }
 
     /**
      * @return string
-     * @throws \ntentan\honam\exceptions\FactoryException
-     * @throws \ntentan\honam\exceptions\TemplateEngineNotFoundException
-     * @throws \ntentan\honam\exceptions\TemplateResolutionException
+     * @throws FactoryException
+     * @throws TemplateEngineNotFoundException
+     * @throws TemplateResolutionException
      */
     public function render(): string
     {
-        return $this->templates->render($this->source, $this->data);
+        return $this->templates->render(
+            $this->source,
+            $this->data //?? $this->site->getTemplateData($this->site->getDestinationPath($this->destination))
+        );
+    }
+
+    public function setData($data) : void
+    {
+        $this->data = $data;
     }
 
     public function getDestination(): string

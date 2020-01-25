@@ -10,8 +10,9 @@ class EventDispatcher
 {
     private $listeners;
     private $eventTypes;
+    private $activeSite;
 
-    public function addListener(string $eventType, callable $listener)
+    public function addListener(string $eventType, callable $listener) : void
     {
         if (!isset($this->listeners[$eventType])) {
             $this->listeners[$eventType] = [];
@@ -25,13 +26,14 @@ class EventDispatcher
             return null;
         }
         $event = $this->createEvent($eventType, $args);
+        $event->setSite($this->activeSite);
         foreach ($this->listeners[$eventType] ?? [] as $listener) {
             $listener($event);
         }
         return $event;
     }
 
-    private function createEvent(string $event, array $args)
+    private function createEvent(string $event, array $args) : Event
     {
         if(!isset($this->eventTypes[$event])) {
             throw new NyansapowException("Event type [{$event}] does not exist");
@@ -39,8 +41,13 @@ class EventDispatcher
         return $this->eventTypes[$event]($args);
     }
 
-    public function registerEventType(string $eventType, callable $factory)
+    public function registerEventType(string $eventType, callable $factory) : void
     {
         $this->eventTypes[$eventType] = $factory;
+    }
+
+    public function setActiveSite($site) : void
+    {
+        $this->activeSite = $site;
     }
 }

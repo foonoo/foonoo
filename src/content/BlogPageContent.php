@@ -3,17 +3,12 @@
 
 namespace nyansapow\content;
 
-
-use nyansapow\content\BlogPostContent;
-
-class BlogPageContent extends BlogPostContent
+class BlogPageContent extends MarkupContent implements ThemableInterface
 {
     protected $template = "page";
 
     public function getLayoutData()
     {
-        $data = parent::getLayoutData();
-        $data['page_type'] = 'page';
-        return $data;
+        return ['page_type' => 'post'];
     }
 }

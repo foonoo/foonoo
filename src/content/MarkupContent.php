@@ -27,10 +27,10 @@ class MarkupContent implements ContentInterface
     private $frontMatterReader;
     private $rendered;
 
-    /**
-     * @var AbstractSite
-     */
-    protected $site;
+//    /**
+//     * @var AbstractSite
+//     */
+    //protected $site;
 
     public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
@@ -40,10 +40,10 @@ class MarkupContent implements ContentInterface
         $this->frontMatterReader = $frontMatterReader;
     }
 
-    public function setSite(AbstractSite $site) : void
-    {
-        $this->site = $site;
-    }
+//    public function setSite(AbstractSite $site) : void
+//    {
+//        $this->site = $site;
+//    }
 
     protected function getFrontMatter() : array
     {
@@ -75,7 +75,7 @@ class MarkupContent implements ContentInterface
     {
         if(!$this->rendered) {
             $this->getFrontMatter();
-            $this->rendered = $this->htmlRenderer->render($this->getBody(), $this->site, $this);
+            $this->rendered = $this->htmlRenderer->render($this->getBody(), $this);
         }
         return $this->rendered;
     }

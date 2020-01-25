@@ -7,7 +7,7 @@ namespace nyansapow\events;
 use nyansapow\content\ContentInterface;
 use nyansapow\sites\AbstractSite;
 
-class PageOutputGenerated
+class PageOutputGenerated extends Event
 {
     private $output;
     private $page;

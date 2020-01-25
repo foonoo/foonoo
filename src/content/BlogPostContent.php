@@ -13,7 +13,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 {
     use Nomenclature;
 
-    private $templateData;
+    private $templateData = [];
     private $metaData;
     protected $template = "post";
 
@@ -37,6 +37,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     private $templateEngine;
     private $rendered;
     private $preview;
+    private $siteTaxonomies = [];
 
     public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
@@ -48,7 +49,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     public function getMetaData() : array
     {
         if(!$this->metaData) {
-            $templateData = $this->site->getTemplateData($this->site->getDestinationPath($this->getDestination()));
+            //$templateData = $this->site->getTemplateData($this->site->getDestinationPath($this->getDestination()));
             preg_match(
             "|((?<year>[0-9]{4})/(?<month>[0-9]{2})/(?<day>[0-9]{2})/)?(?<title>[A-Za-z0-9\-\_]*)\.(html)|",
                 $this->getDestination(), $matches);
@@ -60,8 +61,8 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
                     : "",
                 'frontmatter' => $frontMatter,
                 'path' => $this->getDestination(),
-                'home_path' => $templateData['home_path'],
-                'site_path' => $templateData['site_path']
+                'home_path' => $this->templateData['home_path'],
+                'site_path' => $this->templateData['site_path']
             ];
         }
         return $this->metaData;
@@ -70,7 +71,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     private function getTaxonomyLinks()
     {
         $links = [];
-        $taxonomies = $this->site->getTaxonomies();
+        $taxonomies = $this->siteTaxonomies;
 
         foreach($taxonomies as $taxonomy => $taxonomyLabel) {
             if(!isset($this->metaData['frontmatter'][$taxonomy])) {
@@ -85,6 +86,16 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
         }
 
         return $links;
+    }
+
+    public function setTemplateData($templateData)
+    {
+        $this->templateData = $templateData;
+    }
+
+    public function setSiteTaxonomies($siteTaxonomies)
+    {
+        $this->siteTaxonomies = $siteTaxonomies;
     }
 
     public function render(): string

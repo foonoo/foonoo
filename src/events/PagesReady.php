@@ -7,7 +7,7 @@ namespace nyansapow\events;
 use nyansapow\content\AutomaticContentFactory;
 use nyansapow\content\ContentInterface;
 
-class PagesListed
+class PagesReady extends Event
 {
     private $pages;
     private $contentFactory;

@@ -10,23 +10,51 @@ use nyansapow\content\BlogPostContent;
 use nyansapow\utils\Nomenclature;
 
 /**
- * Generates blogs
+ * Represents a blog site that has posts and pages.
+ *
  * @package nyansapow\sites
  */
 class BlogSite extends AbstractSite
 {
     use Nomenclature;
 
+    /**
+     * @var array An array of all the posts in the blog site
+     */
     private $posts = [];
+
+    /**
+     * @var array An array of posts organized by dates. This is used for creating the historical archives.
+     */
     private $archives = [];
+
+    /**
+     * @var BlogContentFactory Content factory for creating blog posts and pages.
+     */
     private $blogContentFactory;
+
+    /**
+     * @var array|null When set, this property contains an array of frontmatter properties from which taxonomies should be built.
+     */
     private $taxonomies;
 
+    /**
+     * BlogSite constructor.
+     *
+     * @param BlogContentFactory $blogContentFactory
+     */
     public function __construct(BlogContentFactory $blogContentFactory)
     {
         $this->blogContentFactory = $blogContentFactory;
     }
 
+    /**
+     * Return all taxonomies created for the site.
+     * Taxonomies are returned as an associative array where the keys represent machine names for the taxonomies, and
+     * values represent the corresponding human readable labels.
+     *
+     * @return array
+     */
     public function getTaxonomies()
     {
         if(!$this->taxonomies) {
@@ -59,7 +87,7 @@ class BlogSite extends AbstractSite
     }
 
     /**
-     * A listing page is generated for all the posts that are passed to this function.
+     * Returns a listing page for all the posts that are passed to this function.
      *
      * @param $target
      * @param $posts
@@ -126,7 +154,9 @@ class BlogSite extends AbstractSite
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
                 $templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
-                $page = $this->blogContentFactory->createPost($this, $this->getSourcePath($file), $destinationPath);
+                $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath);
+                $page->setTemplateData($this->getTemplateData($this->getDestinationPath($page->getDestination())));
+                $page->setSiteTaxonomies($this->getTaxonomies());
                 $pages[] = $page;
                 if($lastPost) {
                     $page->setPrevious($lastPost);

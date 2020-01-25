@@ -9,7 +9,7 @@ use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
 
-class PluginsInitialized
+class PluginsInitialized extends Event
 {
     private $tagParser;
     private $automaticContentFactory;

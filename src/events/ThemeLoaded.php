@@ -7,7 +7,7 @@ namespace nyansapow\events;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
 
-class ThemeLoaded
+class ThemeLoaded extends Event
 {
     private $theme;
     private $templateEngine;

@@ -9,7 +9,7 @@ use nyansapow\content\ContentInterface;
 use nyansapow\content\ThemableInterface;
 use nyansapow\text\TemplateEngine;
 
-class BlogListingContent implements ContentInterface, ThemableInterface
+class BlogListingContent implements ContentInterface, ThemableInterface, ContentGroupInterface
 {
     private $posts;
     private $templateEngine;
@@ -65,5 +65,10 @@ class BlogListingContent implements ContentInterface, ThemableInterface
     public function getLayoutData()
     {
         return ['page_type' => 'listing'];
+    }
+
+    public function getContents()
+    {
+        return $this->posts;
     }
 }

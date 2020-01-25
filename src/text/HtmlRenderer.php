@@ -26,12 +26,12 @@ class HtmlRenderer
      * @param ContentInterface $page
      * @return string
      */
-    public function render(string $content, AbstractSite $site=null, ContentInterface $page=null)
+    public function render(string $content, ContentInterface $page=null)
     {
         if($content == "") {
             return "";
         }
-        $parsed = $this->parser->parse($content, $site, $page);
+        $parsed = $this->parser->parse($content, $page);
         return $this->parseMarkdown($parsed);
     }
 

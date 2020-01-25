@@ -13,6 +13,7 @@ use ntentan\panie\Container;
 use nyansapow\events\EventDispatcher;
 use nyansapow\content\AutomaticContentFactory;
 use nyansapow\events\PageOutputGenerated;
+use nyansapow\events\PagesReady;
 use nyansapow\events\PluginsInitialized;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\sites\BlogSiteFactory;
@@ -165,14 +166,14 @@ $container->bind(TagParser::class)->to(function($container) {
 
 
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
-    $registry = new AutomaticContentFactory();
-    $registry->register(
-        function ($params) {
-            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php', 'md']);
-        },
-        $container->get(CopiedContentFactory::class)
-    );
+    $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
+//    $registry->register(
+//        function ($params) {
+//            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+//            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php', 'md']);
+//        },
+//        $container->get(CopiedContentFactory::class)
+//    );
     $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
@@ -218,6 +219,13 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     $eventDispatcher->registerEventType(PageOutputGenerated::class,
         function ($args) {
             return new PageOutputGenerated($args['output'], $args['page'], $args['site']);
+        }
+    );
+
+    $eventDispatcher->registerEventType(PagesReady::class,
+        function ($args) use ($container) {
+            $automaticContentFactory = $container->get(AutomaticContentFactory::class);
+            return new PagesReady($args['pages'], $automaticContentFactory);
         }
     );
 

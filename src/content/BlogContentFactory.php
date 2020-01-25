@@ -25,18 +25,17 @@ class BlogContentFactory
         $this->templateEngine = $templateEngine;
     }
 
-    public function createPost(AbstractSite $site, string $source, string $destination): BlogPostContent
+    public function createPost(string $source, string $destination): BlogPostContent
     {
         $content = new BlogPostContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination);
-        $content->setSite($site);
+        //$content->setSite($site);
         return $content;
     }
 
-    public function createPage(AbstractSite $site, $source, $destination) : BlogPageContent
+    public function createPage($source, $destination) : BlogPageContent
     {
-        $page = new BlogPageContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination);
-        $page->setSite($site);
-        return $page;
+        //$page = new BlogPageContent($this->templateEngine, $this->htmlRenderer, $this->frontMatterReader, $source, $destination);
+        return new BlogPageContent($this->htmlRenderer, $this->frontMatterReader, $source, $destination);
     }
 
     public function createListing($posts, $destination, $data, $title) : BlogListingContent
