@@ -3,7 +3,7 @@
 namespace nyansapow\content;
 
 use nyansapow\content\ContentFactoryInterface;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\content\MarkupContent;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\FrontMatterReader;
@@ -20,7 +20,7 @@ class MarkupContentFactory implements ContentFactoryInterface
         $this->frontMatterReader = $frontMatterReader;
     }
 
-    public function create(string $source, string $destination): ContentInterface
+    public function create(string $source, string $destination): Content
     {
         $content = new MarkupContent($this->htmlRenderer, $this->frontMatterReader, $source, $destination);
         return $content;

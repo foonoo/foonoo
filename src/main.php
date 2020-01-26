@@ -15,6 +15,9 @@ use nyansapow\content\AutomaticContentFactory;
 use nyansapow\events\PageOutputGenerated;
 use nyansapow\events\PagesReady;
 use nyansapow\events\PluginsInitialized;
+use nyansapow\events\SiteCreated;
+use nyansapow\events\SiteWriteStarted;
+use nyansapow\events\SiteWritten;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\sites\BlogSiteFactory;
 use nyansapow\content\CopiedContentFactory;
@@ -226,6 +229,24 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
         function ($args) use ($container) {
             $automaticContentFactory = $container->get(AutomaticContentFactory::class);
             return new PagesReady($args['pages'], $automaticContentFactory);
+        }
+    );
+
+    $eventDispatcher->registerEventType(SiteCreated::class,
+        function ($args) {
+            return new SiteCreated($args['site']);
+        }
+    );
+
+    $eventDispatcher->registerEventType(SiteWriteStarted::class,
+        function ($args) {
+            return new SiteWriteStarted($args['site']);
+        }
+    );
+
+    $eventDispatcher->registerEventType(SiteWritten::class,
+        function ($args) {
+            return new SiteWritten($args['site']);
         }
     );
 

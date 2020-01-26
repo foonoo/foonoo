@@ -25,9 +25,9 @@ class AutomaticContentFactory
      *
      * @param string $source
      * @param string $destination
-     * @return ContentInterface
+     * @return Content
      */
-    public function create(string $source, string $destination) : ContentInterface
+    public function create(string $source, string $destination) : Content
     {
         foreach ($this->contentFactories as $factory) {
             if($factory['test'](['source' => $source, 'destination' => $destination])) {

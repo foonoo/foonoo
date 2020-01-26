@@ -26,14 +26,13 @@ class EventDispatcher
             return null;
         }
         $event = $this->createEvent($eventType, $args);
-        $event->setSite($this->activeSite);
         foreach ($this->listeners[$eventType] ?? [] as $listener) {
             $listener($event);
         }
         return $event;
     }
 
-    private function createEvent(string $event, array $args) : Event
+    private function createEvent(string $event, array $args)
     {
         if(!isset($this->eventTypes[$event])) {
             throw new NyansapowException("Event type [{$event}] does not exist");

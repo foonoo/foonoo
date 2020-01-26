@@ -3,7 +3,7 @@
 
 namespace nyansapow\content;
 
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 use nyansapow\sites\FrontMatterReader;
@@ -14,13 +14,12 @@ use nyansapow\text\HtmlRenderer;
  *
  * @package nyansapow\sites
  */
-class MarkupContent implements ContentInterface
+class MarkupContent extends Content
 {
     use ExtensionAdjuster;
 
     private $body;
     private $document;
-    private $destination;
     private $frontMatter;
     private $firstLineOfBody = 0;
     private $htmlRenderer;
@@ -64,11 +63,6 @@ class MarkupContent implements ContentInterface
             }
         }
         return $this->body;
-    }
-
-    public function getDestination() : string
-    {
-        return $this->destination;
     }
 
     public function render() : string

@@ -4,16 +4,16 @@
 namespace nyansapow\events;
 
 
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\sites\AbstractSite;
 
-class PageOutputGenerated extends Event
+class PageOutputGenerated //extends Event
 {
     private $output;
     private $page;
     private $site;
 
-    public function __construct(string $output, ContentInterface $page, AbstractSite $site)
+    public function __construct(string $output, Content $page, AbstractSite $site)
     {
         $this->output = $output;
         $this->page = $page;
@@ -35,7 +35,7 @@ class PageOutputGenerated extends Event
         return $this->site;
     }
 
-    public function getPage(): ContentInterface
+    public function getPage(): Content
     {
         return $this->page;
     }

@@ -8,6 +8,7 @@ use clearice\io\Io;
 use ntentan\utils\Text;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PluginsInitialized;
+use nyansapow\events\SiteCreated;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\SiteWriter;
 use nyansapow\sites\SiteTypeRegistry;
@@ -133,6 +134,7 @@ class Builder
         $cacheDir = "{$this->options['input']}{$shortPath}np_cache";
         Filesystem::directory($cacheDir)->createIfNotExists();
         $site->setCache($this->cacheFactory->create($cacheDir));
+        $this->eventDispatcher->dispatch(SiteCreated::class, ['site' => $site]);
 
         return $site;
     }

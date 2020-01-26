@@ -4,12 +4,11 @@
 namespace nyansapow\content;
 
 
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 
-class CopiedContent implements ContentInterface
+class CopiedContent extends Content
 {
     private $source;
-    private $destination;
 
     public function __construct(string $source, string $destination)
     {
@@ -20,11 +19,6 @@ class CopiedContent implements ContentInterface
     public function render(): string
     {
         return file_get_contents($this->source);
-    }
-
-    public function getDestination(): string
-    {
-        return $this->destination;
     }
 
     public function getMetaData(): array

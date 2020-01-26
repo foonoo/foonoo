@@ -7,11 +7,12 @@ namespace nyansapow\sites;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PageOutputGenerated;
 use nyansapow\events\PagesReady;
+use nyansapow\events\SiteWriteStarted;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TemplateEngine;
 use nyansapow\themes\Theme;
@@ -36,9 +37,10 @@ class SiteWriter
 
     public function write(AbstractSite $site)
     {
+        $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
-        $pages = $site->getPages();
+        $pages = array_map(function ($x) use ($site) {return $x->setSitePath($site->getDestinationPath());}, $site->getPages());
         $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
 
         foreach($pages as $page) {
@@ -54,11 +56,12 @@ class SiteWriter
 
     /**
      * @param AbstractSite $site
-     * @param ContentInterface $content
+     * @param Theme $theme
+     * @param Content $content
      * @throws FileAlreadyExistsException
      * @throws FileNotWriteableException
      */
-    protected function writeContentToOutputPath(AbstractSite $site, Theme $theme, ContentInterface $content)
+    protected function writeContentToOutputPath(AbstractSite $site, Theme $theme, Content $content)
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
         $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();

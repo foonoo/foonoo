@@ -5,15 +5,14 @@ namespace nyansapow\content;
 
 
 use nyansapow\content\BlogPostContent;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\content\ThemableInterface;
 use nyansapow\text\TemplateEngine;
 
-class BlogListingContent implements ContentInterface, ThemableInterface, ContentGroupInterface
+class BlogListingContent extends Content implements ThemableInterface, ContentGroupInterface
 {
     private $posts;
     private $templateEngine;
-    private $destination;
     private $data;
     private $title;
     private $template = 'listing';
@@ -55,11 +54,6 @@ class BlogListingContent implements ContentInterface, ThemableInterface, Content
 
         $templateVars = array_merge($this->data, ['posts' => $posts]);
         return $this->templateEngine->render($this->template, $templateVars);
-    }
-
-    public function getDestination(): string
-    {
-        return $this->destination;
     }
 
     public function getLayoutData()

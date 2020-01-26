@@ -3,7 +3,7 @@
 namespace nyansapow\utils;
 
 use DOMDocument;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.
@@ -14,7 +14,7 @@ class TocGenerator
 {
     private $locked = false;
 
-    public function get(ContentInterface $content)
+    public function get(Content $content)
     {
         if($this->locked) {
             return;

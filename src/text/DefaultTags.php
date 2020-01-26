@@ -4,7 +4,7 @@ namespace nyansapow\text;
 
 
 use nyansapow\sites\AbstractSite;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 use nyansapow\utils\Nomenclature;
 use nyansapow\utils\TocGenerator;
 
@@ -47,9 +47,9 @@ class DefaultTags
 
     private function getCallback($method)
     {
-        return function ($site, $page) use ($method) {
-            return function ($matches) use ($method, $site, $page) {
-                return $method($matches, $site, $page);
+        return function ($page) use ($method) {
+            return function ($matches) use ($method, $page) {
+                return $method($matches, $page);
             };
         };
     }
@@ -84,7 +84,7 @@ class DefaultTags
      * @param $page
      * @return string
      */
-    private function renderImageTag(array $matches, AbstractSite $site, ContentInterface $page)
+    private function renderImageTag(array $matches, AbstractSite $site, Content $page)
     {
         $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
         $attributeString = '';
@@ -103,7 +103,7 @@ class DefaultTags
         );
     }
 
-    private function renderPageLink(array $matches, AbstractSite $site, ContentInterface $page)
+    private function renderPageLink(array $matches, AbstractSite $site, Content $page)
     {
         $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         $link = strtolower($matches['markup']);
@@ -138,7 +138,7 @@ class DefaultTags
         return $this->templateEngine->render('block_close_tag', []);
     }
 
-    private function renderTableOfContents(array $matches, AbstractSite $site, ContentInterface $page)
+    private function renderTableOfContents(array $matches, AbstractSite $site, Content $page)
     {
         $tocTree = $this->tocGenerator->get($page);
         if($tocTree) {

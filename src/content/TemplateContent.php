@@ -10,22 +10,19 @@ use ntentan\honam\TemplateRenderer;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 
-class TemplateContent implements ContentInterface, DataRendererInterface
+class TemplateContent extends Content implements DataRendererInterface
 {
     use ExtensionAdjuster;
 
     private $source;
-    private $destination;
     private $templates;
     private $data = [];
-    //private $site;
 
     public function __construct(TemplateRenderer $templates, $source, $destination)
     {
         $this->templates = $templates;
         $this->source = $source;
         $this->destination = $this->adjustFileExtension($destination, 'html');
-        //$this->site = $site;
     }
 
     /**
@@ -45,11 +42,6 @@ class TemplateContent implements ContentInterface, DataRendererInterface
     public function setData($data) : void
     {
         $this->data = $data;
-    }
-
-    public function getDestination(): string
-    {
-        return $this->destination;
     }
 
     public function getMetaData(): array

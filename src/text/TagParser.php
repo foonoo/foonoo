@@ -3,7 +3,7 @@
 namespace nyansapow\text;
 
 use nyansapow\sites\AbstractSite;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 
 /**
  * Parse text containing special Nyansapow tags.
@@ -26,12 +26,11 @@ class TagParser
     }
 
     /**
-     * @param $content
-     * @param $site
-     * @param null $page
+     * @param string $content
+     * @param Content $page
      * @return string
      */
-    public function parse(string $content, ContentInterface $page = null) : string
+    public function parse(string $content, Content $page = null) : string
     {
         $parsed = '';
         foreach (explode("\n", $content) as $line) {
@@ -47,4 +46,5 @@ class TagParser
         }
         return $line;
     }
+
 }

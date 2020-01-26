@@ -3,7 +3,7 @@
 namespace nyansapow\text;
 
 use nyansapow\sites\AbstractSite;
-use nyansapow\content\ContentInterface;
+use nyansapow\content\Content;
 
 class HtmlRenderer
 {
@@ -22,11 +22,10 @@ class HtmlRenderer
      * Render text
      *
      * @param string $content
-     * @param AbstractSite $site
-     * @param ContentInterface $page
+     * @param Content $page
      * @return string
      */
-    public function render(string $content, ContentInterface $page=null)
+    public function render(string $content, Content $page=null)
     {
         if($content == "") {
             return "";
