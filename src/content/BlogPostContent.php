@@ -117,7 +117,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     {
         if(!$this->preview) {
             $splitPost = $this->splitPost();
-            $this->preview = $this->htmlRenderer->render($splitPost['preview'], $this->site , $this);
+            $this->preview = $this->htmlRenderer->render($splitPost['preview'], $this);
         }
         return $this->preview;
     }

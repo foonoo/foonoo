@@ -31,7 +31,7 @@ class MarkupContent extends Content
 //     */
     //protected $site;
 
-    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
+    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, string $document, string $destination)
     {
         $this->document = $document;
         $this->htmlRenderer = $htmlRenderer;

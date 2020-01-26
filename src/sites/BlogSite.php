@@ -182,7 +182,7 @@ class BlogSite extends AbstractSite
             $destinationPath = "$filename.html";
             $templateData = $this->getTemplateData($this->getDestinationPath($destinationPath));
             $templateData['title'] = $filename;
-            $page = $this->blogContentFactory->createPage($this, $this->getSourcePath($file), $destinationPath);
+            $page = $this->blogContentFactory->createPage($this->getSourcePath($file), $destinationPath);
             $pages[] = $page;
         }
         return $pages;
