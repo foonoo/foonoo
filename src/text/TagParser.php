@@ -27,22 +27,21 @@ class TagParser
 
     /**
      * @param string $content
-     * @param Content $page
      * @return string
      */
-    public function parse(string $content, Content $page = null) : string
+    public function parse(string $content) : string
     {
         $parsed = '';
         foreach (explode("\n", $content) as $line) {
-            $parsed .= $this->parseLine($line, $page) . "\n";
+            $parsed .= $this->parseLine($line) . "\n";
         }
         return $parsed;
     }
 
-    private function parseLine($line, $page)
+    private function parseLine($line)
     {
         foreach ($this->tags as $tag) {
-            $line = preg_replace_callback($tag['regex'], $tag['callable']($page), $line);
+            $line = preg_replace_callback($tag['regex'], $tag['callable'], $line);
         }
         return $line;
     }

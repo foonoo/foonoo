@@ -12,6 +12,8 @@ use nyansapow\content\ThemableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PageOutputGenerated;
 use nyansapow\events\PagesReady;
+use nyansapow\events\PageWriteStarted;
+use nyansapow\events\PageWritten;
 use nyansapow\events\SiteWriteStarted;
 use nyansapow\events\ThemeLoaded;
 use nyansapow\text\TemplateEngine;
@@ -44,6 +46,7 @@ class SiteWriter
         $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
 
         foreach($pages as $page) {
+            $this->eventDispatcher->dispatch(PageWriteStarted::class, ['page' => $page]);
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $page);
         }
@@ -83,5 +86,6 @@ class SiteWriter
             Filesystem::directory(dirname($destinationPath))->create(true);
         }
         file_put_contents($destinationPath, $output);
+        $this->eventDispatcher->dispatch(PageWritten::class, ['page' => $content, 'destination_path' => $destinationPath]);
     }
 }

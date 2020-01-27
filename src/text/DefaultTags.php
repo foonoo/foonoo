@@ -3,6 +3,10 @@
 namespace nyansapow\text;
 
 
+use nyansapow\content\PreprocessableInterface;
+use nyansapow\events\EventDispatcher;
+use nyansapow\events\PageWriteStarted;
+use nyansapow\events\SiteWriteStarted;
 use nyansapow\sites\AbstractSite;
 use nyansapow\content\Content;
 use nyansapow\utils\Nomenclature;
@@ -19,11 +23,30 @@ class DefaultTags
 
     private $templateEngine;
     private $tocGenerator;
+    private $data;
+    private $site;
+    private $templateData;
 
-    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
+    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
         $this->templateEngine = $templateEngine;
         $this->tocGenerator = $tocGenerator;
+        $eventDispatcher->addListener(SiteWriteStarted::class,
+            function (SiteWriteStarted $event) {
+                $this->site = $event->getSite();
+            }
+        );
+        $eventDispatcher->addListener(PageWriteStarted::class,
+            function (PageWriteStarted $event) {
+                if(!is_a($event->getPage(), PreprocessableInterface::class)) {
+                    return;
+                }
+                //$this->page = $event->getPage();
+                $this->templateData = $this->site->getTemplateData($event->getPage()->getFullDestination());
+                xdebug_break();
+
+            }
+        );
     }
 
     public function getRegexMap()
@@ -47,11 +70,10 @@ class DefaultTags
 
     private function getCallback($method)
     {
-        return function ($page) use ($method) {
-            return function ($matches) use ($method, $page) {
-                return $method($matches, $page);
-            };
-        };
+        return $method;
+//        return function ($matches) use ($method) {
+//            return $method($matches);
+//        };
     }
 
     private function getImageTagAttributes($string)
@@ -69,6 +91,11 @@ class DefaultTags
         return $attributes;
     }
 
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+
     private function getImages($string)
     {
         preg_match_all("/((?<image>.*\.(jpeg|jpg|png|gif|webp))\s*,\s*)*(?<last_image>.*\.(jpeg|jpg|png|gif|webp))/", $string, $matches);
@@ -79,35 +106,33 @@ class DefaultTags
     /**
      * Renders an image tag.
      *
-     * @param $matches
-     * @param AbstractSite $site
-     * @param $page
+     * @param array $matches
      * @return string
      */
-    private function renderImageTag(array $matches, AbstractSite $site, Content $page)
+    public function renderImageTag(array $matches) //, AbstractSite $site, Content $page)
     {
         $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
         $attributeString = '';
         foreach ($attributes as $key => $value) {
             $attributeString .= "$key = '$value' ";
         }
-        $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
+        //$templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         return $this->templateEngine->render('image_tag',
             [
                 'alt' => $matches['alt'] ?? '',
-                'site_path' => $templateVariables['site_path'],
-                'home_path' => $templateVariables['home_path'],
+                'site_path' => $this->data['site_path'], // $templateVariables['site_path'],
+                'home_path' => $this->data['home_path'], // $templateVariables['home_path'],
                 'images' => $this->getImages($matches['image']),
                 'attribute_string' => $attributeString
             ]
         );
     }
 
-    private function renderPageLink(array $matches, AbstractSite $site, Content $page)
+    public function renderPageLink(array $matches) //, AbstractSite $site, Content $page)
     {
-        $templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
+        //$templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         $link = strtolower($matches['markup']);
-        foreach ($site->getPages() as $targetPage) {
+        foreach ($this->site->getPages() as $targetPage) {
             $title = $targetPage->getMetaData()['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
@@ -120,7 +145,7 @@ class DefaultTags
         return "[[{$matches['markup']}]]";
     }
 
-    private function renderLink(array $matches)
+    public function renderLink(array $matches)
     {
         return $this->templateEngine->render('anchor_tag', [
             'href' => "http://{$matches['link']}",
@@ -128,17 +153,17 @@ class DefaultTags
         ]);
     }
 
-    private function renderBlockOpenTag(array $matches)
+    public function renderBlockOpenTag(array $matches)
     {
         return $this->templateEngine->render('block_open_tag', ['block' => $matches['block_class']]);
     }
 
-    private function renderBlockCloseTag()
+    public function renderBlockCloseTag()
     {
         return $this->templateEngine->render('block_close_tag', []);
     }
 
-    private function renderTableOfContents(array $matches, AbstractSite $site, Content $page)
+    public function renderTableOfContents(array $matches, AbstractSite $site, Content $page)
     {
         $tocTree = $this->tocGenerator->get($page);
         if($tocTree) {

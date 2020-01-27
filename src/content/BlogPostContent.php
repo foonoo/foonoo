@@ -5,7 +5,7 @@ namespace nyansapow\content;
 
 
 use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TextConverter;
 use nyansapow\text\TemplateEngine;
 use nyansapow\utils\Nomenclature;
 
@@ -31,7 +31,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 
     /**
      * An instance of the HTML renderer
-     * @var HtmlRenderer
+     * @var TextConverter
      */
     private $htmlRenderer;
     private $templateEngine;
@@ -39,7 +39,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     private $preview;
     private $siteTaxonomies = [];
 
-    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
+    public function __construct(TemplateEngine $templateEngine, TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
         parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
         $this->htmlRenderer = $htmlRenderer;
@@ -117,7 +117,8 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     {
         if(!$this->preview) {
             $splitPost = $this->splitPost();
-            $this->preview = $this->htmlRenderer->render($splitPost['preview'], $this);
+            $format = pathinfo($this->document, PATHINFO_EXTENSION);
+            $this->preview = $this->htmlRenderer->convert($splitPost['preview'], $format, 'html');
         }
         return $this->preview;
     }

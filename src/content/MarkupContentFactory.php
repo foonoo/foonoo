@@ -7,14 +7,14 @@ use nyansapow\content\Content;
 use nyansapow\content\MarkupContent;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TextConverter;
 
 class MarkupContentFactory implements ContentFactoryInterface
 {
     private $htmlRenderer;
     private $frontMatterReader;
 
-    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader)
+    public function __construct(TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader)
     {
         $this->htmlRenderer = $htmlRenderer;
         $this->frontMatterReader = $frontMatterReader;

@@ -5,7 +5,7 @@ namespace nyansapow\content;
 
 
 use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TextConverter;
 use nyansapow\text\TemplateEngine;
 
 class BlogContentFactory
@@ -14,7 +14,7 @@ class BlogContentFactory
     private $frontMatterReader;
     private $templateEngine;
 
-    public function __construct(TemplateEngine $templateEngine, HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader)
+    public function __construct(TemplateEngine $templateEngine, TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader)
     {
         $this->htmlRenderer = $htmlRenderer;
         $this->frontMatterReader = $frontMatterReader;

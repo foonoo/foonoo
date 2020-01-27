@@ -14,6 +14,7 @@ use nyansapow\events\EventDispatcher;
 use nyansapow\content\AutomaticContentFactory;
 use nyansapow\events\PageOutputGenerated;
 use nyansapow\events\PagesReady;
+use nyansapow\events\PageWriteStarted;
 use nyansapow\events\PluginsInitialized;
 use nyansapow\events\SiteCreated;
 use nyansapow\events\SiteWriteStarted;
@@ -26,8 +27,10 @@ use nyansapow\content\MarkupContentFactory;
 use nyansapow\sites\SiteTypeRegistry;
 use nyansapow\content\TemplateContentFactory;
 use nyansapow\text\DefaultTags;
+use nyansapow\text\MarkdownConverter;
 use nyansapow\text\TagParser;
 use nyansapow\text\TemplateEngine;
+use nyansapow\text\TextConverter;
 
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
@@ -158,6 +161,7 @@ $container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleto
 $container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
 
 $container->bind(TagParser::class)->to(function($container) {
+    /** @var DefaultTags $defaultTags */
     $defaultTags = $container->get(DefaultTags::class);
     $tagParser = new TagParser();
     $regexMap = $defaultTags->getRegexMap();
@@ -170,13 +174,6 @@ $container->bind(TagParser::class)->to(function($container) {
 
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
     $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
-//    $registry->register(
-//        function ($params) {
-//            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-//            return file_exists($params['source']) && !in_array($extension, ['mustache', 'php', 'md']);
-//        },
-//        $container->get(CopiedContentFactory::class)
-//    );
     $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
@@ -184,7 +181,6 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
         },
         $container->get(MarkupContentFactory::class)
     );
-
     $registry->register(
         function ($params) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
@@ -205,53 +201,59 @@ $container->bind(SiteTypeRegistry::class)->to(function(Container $container) {
 
 $container->bind(EventDispatcher::class)->to(function (Container $container) {
     $eventDispatcher = new EventDispatcher();
-
     $eventDispatcher->registerEventType(PluginsInitialized::class,
         function() use ($container) {
             return $container->get(PluginsInitialized::class);
         }
     );
-
     $eventDispatcher->registerEventType(ThemeLoaded::class,
         function ($args) use ($container) {
             $templateEngine = $container->get(TemplateEngine::class);
             return new ThemeLoaded($args['theme'], $templateEngine);
         }
     );
-
     $eventDispatcher->registerEventType(PageOutputGenerated::class,
         function ($args) {
             return new PageOutputGenerated($args['output'], $args['page'], $args['site']);
         }
     );
-
     $eventDispatcher->registerEventType(PagesReady::class,
         function ($args) use ($container) {
             $automaticContentFactory = $container->get(AutomaticContentFactory::class);
             return new PagesReady($args['pages'], $automaticContentFactory);
         }
     );
-
     $eventDispatcher->registerEventType(SiteCreated::class,
         function ($args) {
             return new SiteCreated($args['site']);
         }
     );
-
     $eventDispatcher->registerEventType(SiteWriteStarted::class,
         function ($args) {
             return new SiteWriteStarted($args['site']);
         }
     );
-
     $eventDispatcher->registerEventType(SiteWritten::class,
         function ($args) {
             return new SiteWritten($args['site']);
         }
     );
-
+    $eventDispatcher->registerEventType(PageWriteStarted::class,
+        function($args) {
+            return new PageWriteStarted($args['page']);
+        }
+    );
     return $eventDispatcher;
 });
+
+$container->bind(TextConverter::class)->to(
+    function($container) {
+        $converter = new TextConverter($container->get(TagParser::class));
+        $converter->registerConverter('md', 'html', $container->get(MarkdownConverter::class));
+
+        return $converter;
+    }
+);
 
 $commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

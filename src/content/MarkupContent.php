@@ -7,31 +7,27 @@ use nyansapow\content\Content;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\HtmlRenderer;
+use nyansapow\text\TextConverter;
 
 /**
  * Class MarkupContent
  *
  * @package nyansapow\sites
  */
-class MarkupContent extends Content
+class MarkupContent extends Content implements PreprocessableInterface
 {
     use ExtensionAdjuster;
 
     private $body;
-    private $document;
     private $frontMatter;
     private $firstLineOfBody = 0;
     private $htmlRenderer;
     private $frontMatterReader;
     private $rendered;
 
-//    /**
-//     * @var AbstractSite
-//     */
-    //protected $site;
+    protected $document;
 
-    public function __construct(HtmlRenderer $htmlRenderer, FrontMatterReader $frontMatterReader, string $document, string $destination)
+    public function __construct(TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader, string $document, string $destination)
     {
         $this->document = $document;
         $this->htmlRenderer = $htmlRenderer;
@@ -52,7 +48,7 @@ class MarkupContent extends Content
         return $this->frontMatter;
     }
 
-    protected function getBody() : string
+    public function getBody() : string
     {
         if(!$this->body) {
             $file = new \SplFileObject($this->document);
@@ -69,7 +65,9 @@ class MarkupContent extends Content
     {
         if(!$this->rendered) {
             $this->getFrontMatter();
-            $this->rendered = $this->htmlRenderer->render($this->getBody(), $this);
+            $fromFormat = pathinfo($this->document, PATHINFO_EXTENSION);
+            $toFormat = pathinfo($this->destination, PATHINFO_EXTENSION);
+            $this->rendered = $this->htmlRenderer->convert($this->getBody(), $fromFormat, $toFormat);
         }
         return $this->rendered;
     }
