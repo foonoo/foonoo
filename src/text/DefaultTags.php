@@ -38,13 +38,7 @@ class DefaultTags
         );
         $eventDispatcher->addListener(PageWriteStarted::class,
             function (PageWriteStarted $event) {
-                if(!is_a($event->getPage(), PreprocessableInterface::class)) {
-                    return;
-                }
-                //$this->page = $event->getPage();
-                $this->templateData = $this->site->getTemplateData($event->getPage()->getFullDestination());
-                xdebug_break();
-
+                $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
             }
         );
     }

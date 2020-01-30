@@ -4,7 +4,7 @@
 namespace nyansapow\content;
 
 
-interface ContentFactoryInterface
+interface ContentFactory
 {
     public function create(string $source, string $destination): Content;
 }

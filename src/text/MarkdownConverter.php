@@ -13,7 +13,7 @@ class MarkdownConverter implements ConverterInterface
         $this->parsedown = $parsedown;
     }
 
-    public function convert(string $input): string
+    public function convert($input): string
     {
         return $this->parsedown->text($input);
     }

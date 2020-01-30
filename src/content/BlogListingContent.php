@@ -9,7 +9,7 @@ use nyansapow\content\Content;
 use nyansapow\content\ThemableInterface;
 use nyansapow\text\TemplateEngine;
 
-class BlogListingContent extends Content implements ThemableInterface, ContentGroupInterface
+class BlogListingContent extends Content implements ThemableInterface, ContentGroup
 {
     private $posts;
     private $templateEngine;
@@ -49,6 +49,8 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
             $templateVars = $post->getMetaData();
             $templateVars['preview'] = $post->getPreview();
             $templateVars['previews_only'] = true;
+            $templateVars['site_path'] = $this->data['site_path'];
+            $templateVars['home_path'] = $this->data['home_path'];
             return $templateVars;
         }, $this->posts);
 

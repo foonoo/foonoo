@@ -150,14 +150,10 @@ class Builder
             $this->eventDispatcher->setActiveSite($site);
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
-            $this->siteWriter->write($site);
 
             if (is_dir($site->getSourcePath("np_images"))) {
                 $imageSource = $site->getSourcePath("np_images");
                 $imagesDestination = $site->getDestinationPath("np_images");
-                try {
-                    Filesystem::get($imagesDestination)->delete();
-                } catch (FileNotFoundException $e) {}
                 $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
                 Filesystem::get($imageSource)->copyTo($imagesDestination);
             }
@@ -165,12 +161,12 @@ class Builder
             if (is_dir($site->getSourcePath("np_assets"))) {
                 $assetsDestination = $site->getDestinationPath("assets");
                 $assetsSource = $site->getSourcePath("np_assets");
-                try {
-                    Filesystem::get($assetsDestination)->delete();
-                } catch (FileNotFoundException $e) {}
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination);
             }
+
+            $this->siteWriter->write($site);
+
         }
         $this->eventDispatcher->setActiveSite(null);
     }

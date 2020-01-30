@@ -5,12 +5,12 @@ namespace nyansapow\content;
 
 
 use ntentan\honam\TemplateRenderer;
-use nyansapow\content\ContentFactoryInterface;
+use nyansapow\content\ContentFactory;
 use nyansapow\content\Content;
 use nyansapow\content\TemplateContent;
 use nyansapow\sites\AbstractSite;
 
-class TemplateContentFactory implements ContentFactoryInterface
+class TemplateContentFactory implements ContentFactory
 {
     private $templateRenderer;
 

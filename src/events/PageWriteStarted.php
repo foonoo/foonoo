@@ -8,15 +8,15 @@ use nyansapow\content\Content;
 
 class PageWriteStarted
 {
-    private $page;
+    private $content;
 
-    public function __construct($page)
+    public function __construct(Content $page)
     {
-        $this->page = $page;
+        $this->content = $page;
     }
 
-    public function getPage() : Content
+    public function getContent() : Content
     {
-        return $this->page;
+        return $this->content;
     }
 }

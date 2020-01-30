@@ -43,7 +43,8 @@ class SiteWriter
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
         $pages = array_map(function ($x) use ($site) {return $x->setSitePath($site->getDestinationPath());}, $site->getPages());
-        $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
+        $event = $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
+        $pages = $event ? $event->getPages() : $pages;
 
         foreach($pages as $page) {
             $this->eventDispatcher->dispatch(PageWriteStarted::class, ['page' => $page]);

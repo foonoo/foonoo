@@ -15,7 +15,7 @@ class AutomaticContentFactory
         $this->copiedContentFactory = $copiedContentFactory;
     }
 
-    public function register(callable $test, ContentFactoryInterface $contentFactory)
+    public function register(callable $test, ContentFactory $contentFactory)
     {
         $this->contentFactories[] = ['test' => $test, 'instance' => $contentFactory];
     }

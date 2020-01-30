@@ -4,7 +4,7 @@
 namespace nyansapow\content;
 
 
-interface ContentGroupInterface
+interface ContentGroup
 {
     public function getContents();
 }

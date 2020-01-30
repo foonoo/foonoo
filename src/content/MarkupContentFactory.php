@@ -2,14 +2,14 @@
 
 namespace nyansapow\content;
 
-use nyansapow\content\ContentFactoryInterface;
+use nyansapow\content\ContentFactory;
 use nyansapow\content\Content;
 use nyansapow\content\MarkupContent;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\FrontMatterReader;
 use nyansapow\text\TextConverter;
 
-class MarkupContentFactory implements ContentFactoryInterface
+class MarkupContentFactory implements ContentFactory
 {
     private $htmlRenderer;
     private $frontMatterReader;

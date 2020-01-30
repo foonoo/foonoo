@@ -7,6 +7,7 @@ use nyansapow\content\Content;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 use nyansapow\sites\FrontMatterReader;
+use nyansapow\text\TagParser;
 use nyansapow\text\TextConverter;
 
 /**
@@ -14,31 +15,26 @@ use nyansapow\text\TextConverter;
  *
  * @package nyansapow\sites
  */
-class MarkupContent extends Content implements PreprocessableInterface
+class MarkupContent extends Content
 {
     use ExtensionAdjuster;
 
     private $body;
     private $frontMatter;
     private $firstLineOfBody = 0;
-    private $htmlRenderer;
+    private $textConverter;
     private $frontMatterReader;
     private $rendered;
 
     protected $document;
 
-    public function __construct(TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader, string $document, string $destination)
+    public function __construct(TextConverter $textConverter, FrontMatterReader $frontMatterReader, string $document, string $destination)
     {
         $this->document = $document;
-        $this->htmlRenderer = $htmlRenderer;
+        $this->textConverter = $textConverter;
         $this->destination = $this->adjustFileExtension($destination, 'html');
         $this->frontMatterReader = $frontMatterReader;
     }
-
-//    public function setSite(AbstractSite $site) : void
-//    {
-//        $this->site = $site;
-//    }
 
     protected function getFrontMatter() : array
     {
@@ -48,7 +44,7 @@ class MarkupContent extends Content implements PreprocessableInterface
         return $this->frontMatter;
     }
 
-    public function getBody() : string
+    protected function getBody() : string
     {
         if(!$this->body) {
             $file = new \SplFileObject($this->document);
@@ -67,7 +63,7 @@ class MarkupContent extends Content implements PreprocessableInterface
             $this->getFrontMatter();
             $fromFormat = pathinfo($this->document, PATHINFO_EXTENSION);
             $toFormat = pathinfo($this->destination, PATHINFO_EXTENSION);
-            $this->rendered = $this->htmlRenderer->convert($this->getBody(), $fromFormat, $toFormat);
+            $this->rendered = $this->textConverter->convert($this->getBody(), $fromFormat, $toFormat);
         }
         return $this->rendered;
     }

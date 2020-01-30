@@ -10,7 +10,7 @@ use ntentan\honam\TemplateRenderer;
 use nyansapow\sites\AbstractSite;
 use nyansapow\sites\ExtensionAdjuster;
 
-class TemplateContent extends Content implements DataRendererInterface
+class TemplateContent extends Content implements DataRenderer
 {
     use ExtensionAdjuster;
 

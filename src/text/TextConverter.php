@@ -44,9 +44,7 @@ class TextConverter
             throw new NyansapowException("There isn't a converter to convert $from to $to");
         }
         $converter = $this->converters[$from][$to];
-        if(is_a($converter, PreprocessableInterface::class, )) {
-            $content = $this->parser->parse($content);
-        }
+        $content = $this->parser->parse($content);
         return $converter->convert($content);
     }
 }

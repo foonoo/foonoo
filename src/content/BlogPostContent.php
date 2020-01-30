@@ -33,7 +33,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
      * An instance of the HTML renderer
      * @var TextConverter
      */
-    private $htmlRenderer;
+    private $textConverter;
     private $templateEngine;
     private $rendered;
     private $preview;
@@ -42,7 +42,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     public function __construct(TemplateEngine $templateEngine, TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
         parent::__construct($htmlRenderer, $frontMatterReader, $document, $destination);
-        $this->htmlRenderer = $htmlRenderer;
+        $this->textConverter = $htmlRenderer;
         $this->templateEngine = $templateEngine;
     }
 
@@ -118,7 +118,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
         if(!$this->preview) {
             $splitPost = $this->splitPost();
             $format = pathinfo($this->document, PATHINFO_EXTENSION);
-            $this->preview = $this->htmlRenderer->convert($splitPost['preview'], $format, 'html');
+            $this->preview = $this->textConverter->convert($splitPost['preview'], $format, 'html');
         }
         return $this->preview;
     }

@@ -4,7 +4,7 @@
 namespace nyansapow\content;
 
 
-interface DataRendererInterface
+interface DataRenderer
 {
     public function setData(array $data): void;
 }
