@@ -5,6 +5,7 @@ namespace nyansapow;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
+use ntentan\utils\filesystem\File;
 use ntentan\utils\Text;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PluginsInitialized;
@@ -126,6 +127,7 @@ class Builder
 
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
         $shortPath = substr($path, strlen($this->options['input']));
+        unset($metaData['plugins']);
 
         $site->setPath($shortPath);
         $site->setSourceRoot($this->options['input']);
@@ -155,14 +157,14 @@ class Builder
                 $imageSource = $site->getSourcePath("np_images");
                 $imagesDestination = $site->getDestinationPath("np_images");
                 $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
-                Filesystem::get($imageSource)->copyTo($imagesDestination);
+                Filesystem::get($imageSource)->copyTo($imagesDestination, File::OVERWRITE_OLDER);
             }
 
             if (is_dir($site->getSourcePath("np_assets"))) {
                 $assetsDestination = $site->getDestinationPath("assets");
                 $assetsSource = $site->getSourcePath("np_assets");
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
-                Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination);
+                Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
             }
 
             $this->siteWriter->write($site);

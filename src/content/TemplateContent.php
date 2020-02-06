@@ -7,22 +7,19 @@ use ntentan\honam\exceptions\FactoryException;
 use ntentan\honam\exceptions\TemplateEngineNotFoundException;
 use ntentan\honam\exceptions\TemplateResolutionException;
 use ntentan\honam\TemplateRenderer;
-use nyansapow\sites\AbstractSite;
-use nyansapow\sites\ExtensionAdjuster;
 
 class TemplateContent extends Content implements DataRenderer
 {
-    use ExtensionAdjuster;
-
     private $source;
     private $templates;
     private $data = [];
+    private $metaData = [];
 
     public function __construct(TemplateRenderer $templates, $source, $destination)
     {
         $this->templates = $templates;
         $this->source = $source;
-        $this->destination = $this->adjustFileExtension($destination, 'html');
+        $this->destination = $destination; //$this->adjustFileExtension($destination, 'html');
     }
 
     /**
@@ -46,6 +43,11 @@ class TemplateContent extends Content implements DataRenderer
 
     public function getMetaData(): array
     {
-        return [];
+        return $this->metaData;
+    }
+
+    public function setLayout($layout)
+    {
+        $this->metaData['layout'] = $layout;
     }
 }

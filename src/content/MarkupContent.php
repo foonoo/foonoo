@@ -3,11 +3,7 @@
 
 namespace nyansapow\content;
 
-use nyansapow\content\Content;
-use nyansapow\sites\AbstractSite;
-use nyansapow\sites\ExtensionAdjuster;
 use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TagParser;
 use nyansapow\text\TextConverter;
 
 /**
@@ -17,8 +13,6 @@ use nyansapow\text\TextConverter;
  */
 class MarkupContent extends Content
 {
-    use ExtensionAdjuster;
-
     private $body;
     private $frontMatter;
     private $firstLineOfBody = 0;
@@ -32,7 +26,7 @@ class MarkupContent extends Content
     {
         $this->document = $document;
         $this->textConverter = $textConverter;
-        $this->destination = $this->adjustFileExtension($destination, 'html');
+        $this->destination = $destination; //$this->adjustFileExtension($destination, 'html');
         $this->frontMatterReader = $frontMatterReader;
     }
 
