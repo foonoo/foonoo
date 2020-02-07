@@ -153,7 +153,7 @@ class BlogSite extends AbstractSite
             if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
-                $templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
+                //$templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
                 $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath);
                 $page->setTemplateData($this->getTemplateData($this->getDestinationPath($page->getDestination())));
                 $page->setSiteTaxonomies($this->getTaxonomies());

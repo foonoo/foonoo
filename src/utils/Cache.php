@@ -24,11 +24,11 @@ class Cache
             $value = $this->cache->read($key);
             if($time && $time > $value['time']) {
                 $value = $this->wrap($factory());
-                $this->cache->write($key, $value);
+                $this->cache->write($key, $value, 16588800);
             }
         } else {
             $value = $this->wrap($factory());
-            $this->cache->write($key, $value);
+            $this->cache->write($key, $value, 16588800);
         }
         return $value['content'];
     }

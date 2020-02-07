@@ -46,28 +46,17 @@ class DefaultTags
     public function getRegexMap()
     {
         return [
-            [
-                "regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/",
-                "callable" => $this->getCallback([$this, "renderBlockOpenTag"])
-            ],
-            ["regex" => "/\/block/", "callable" => $this->getCallback([$this, "renderBlockOpenTag"])],
-            ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => $this->getCallback([$this, "renderLink"])],
+            ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"]],
+            ["regex" => "/\/block/", "callable" => [$this, "renderBlockOpenTag"]],
+            ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"]],
             [
                 "regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?/",
-                "callable" => $this->getCallback([$this, "renderImageTag"])
+                "callable" => [$this, "renderImageTag"]
             ],
-            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-            ["regex" => "|(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => $this->getCallback([$this, "renderPageLink"])],
-            ['regex' => "/_TOC_/", 'callable' => $this->getCallback([$this, 'renderTableOfContents'])],
+            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"]],
+            ["regex" => "|(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"]],
+            ['regex' => "/_TOC_/", 'callable' => [$this, 'renderTableOfContents']],
         ];
-    }
-
-    private function getCallback($method)
-    {
-        return $method;
-//        return function ($matches) use ($method) {
-//            return $method($matches);
-//        };
     }
 
     private function getImageTagAttributes($string)
@@ -103,35 +92,33 @@ class DefaultTags
      * @param array $matches
      * @return string
      */
-    public function renderImageTag(array $matches) //, AbstractSite $site, Content $page)
+    public function renderImageTag(array $matches)
     {
         $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
         $attributeString = '';
         foreach ($attributes as $key => $value) {
             $attributeString .= "$key = '$value' ";
         }
-        //$templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         return $this->templateEngine->render('image_tag',
             [
                 'alt' => $matches['alt'] ?? '',
-                'site_path' => $this->data['site_path'], // $templateVariables['site_path'],
-                'home_path' => $this->data['home_path'], // $templateVariables['home_path'],
+                'site_path' => $this->data['site_path'],
+                'home_path' => $this->data['home_path'],
                 'images' => $this->getImages($matches['image']),
                 'attribute_string' => $attributeString
             ]
         );
     }
 
-    public function renderPageLink(array $matches) //, AbstractSite $site, Content $page)
+    public function renderPageLink(array $matches)
     {
-        //$templateVariables = $site->getTemplateData($site->getDestinationPath($page->getDestination()));
         $link = strtolower($matches['markup']);
         foreach ($this->site->getPages() as $targetPage) {
             $title = $targetPage->getMetaData()['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
-                    'href' => "{$templateVariables['site_path']}{$targetPage->getDestination()}",
+                    'href' => "{$this->data['site_path']}{$targetPage->getDestination()}",
                     'link_text' => $title
                 ]);
             }

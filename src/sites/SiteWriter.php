@@ -46,6 +46,7 @@ class SiteWriter
         $event = $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
         $pages = $event ? $event->getPages() : $pages;
 
+        /** @var Content $page */
         foreach($pages as $page) {
             $this->eventDispatcher->dispatch(PageWriteStarted::class, ['page' => $page]);
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
