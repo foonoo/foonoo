@@ -34,6 +34,7 @@ class TagParser
         $parsed = '';
         foreach (explode("\n", $content) as $line) {
             if(trim($line) == "") {
+                $parsed .= "\n";
                 continue;
             }
             $parsed .= $this->parseLine($line) . "\n";
