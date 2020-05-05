@@ -3,7 +3,6 @@
 namespace nyansapow\text;
 
 
-use nyansapow\content\PreprocessableInterface;
 use nyansapow\events\EventDispatcher;
 use nyansapow\events\PageWriteStarted;
 use nyansapow\events\SiteWriteStarted;
@@ -47,7 +46,7 @@ class DefaultTags
     {
         return [
             ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"]],
-            ["regex" => "/\/block/", "callable" => [$this, "renderBlockOpenTag"]],
+            ["regex" => "/\/block/", "callable" => [$this, "renderBlockCloseTag"]],
             ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"]],
             [
                 "regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?/",

@@ -26,7 +26,7 @@ class MarkupContent extends Content
     {
         $this->document = $document;
         $this->textConverter = $textConverter;
-        $this->destination = $destination; //$this->adjustFileExtension($destination, 'html');
+        $this->destination = $destination;
         $this->frontMatterReader = $frontMatterReader;
     }
 
