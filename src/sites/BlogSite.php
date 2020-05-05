@@ -57,10 +57,10 @@ class BlogSite extends AbstractSite
      */
     public function getTaxonomies()
     {
-        if(!$this->taxonomies) {
+        if (!$this->taxonomies) {
             $this->taxonomies = [];
-            foreach($this->metaData['taxonomies'] ?? [] as $taxonomy => $taxonomyLabel) {
-                if(is_numeric($taxonomy) && !is_numeric($taxonomyLabel)) {
+            foreach ($this->metaData['taxonomies'] ?? [] as $taxonomy => $taxonomyLabel) {
+                if (is_numeric($taxonomy) && !is_numeric($taxonomyLabel)) {
                     $taxonomy = $taxonomyLabel;
                     $taxonomyLabel = $this->makeLabel($taxonomy);
                 }
@@ -74,13 +74,13 @@ class BlogSite extends AbstractSite
      * Get all the blog pages
      * @return array
      */
-    public function getPages() : array
+    public function getPages(): array
     {
         $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
         $pages[] = $this->getIndexPage('index.html', $this->posts, 'Index', 'index');
         $pages[] = $this->getIndexPage('posts.html', $this->posts);
         $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
-        foreach($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
+        foreach ($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
             $pages = array_merge($pages, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
         }
         return $pages;
@@ -122,7 +122,7 @@ class BlogSite extends AbstractSite
         foreach ($archive as $value => $posts) {
             $newTitle = $this->formatValue($stage, $value) . " $title";
             $newBaseUrl = "$baseUrl$value/";
-            $pages[]= $this->getIndexPage("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
+            $pages[] = $this->getIndexPage("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
             if ($nextStage != null) {
                 $pages = array_merge($pages, $this->getArchive($posts[$nextStage], $order, $nextStage, $newTitle, $newBaseUrl));
             }
@@ -150,7 +150,7 @@ class BlogSite extends AbstractSite
         rsort($files);
 
         foreach ($files as $file) {
-            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/",$file, $matches)) {
+            if (preg_match("/(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})-(?<title>[A-Za-z0-9\-\_]*)\.(md)/", $file, $matches)) {
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
                 //$templateData = array_merge($matches, $this->getTemplateData($this->getDestinationPath($destinationPath)));
@@ -158,7 +158,7 @@ class BlogSite extends AbstractSite
                 $page->setTemplateData($this->getTemplateData($this->getDestinationPath($page->getDestination())));
                 $page->setSiteTaxonomies($this->getTaxonomies());
                 $pages[] = $page;
-                if($lastPost) {
+                if ($lastPost) {
                     $page->setPrevious($lastPost);
                     $lastPost->setNext($page);
                 }
@@ -173,11 +173,11 @@ class BlogSite extends AbstractSite
     private function getBlogPages()
     {
         $pages = [];
-        if(!file_exists($this->getSourcePath('pages'))){
+        if (!file_exists($this->getSourcePath('pages'))) {
             return $pages;
         }
         $files = $this->getFiles('pages');
-        foreach($files as $file) {
+        foreach ($files as $file) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
             $destinationPath = "$filename.html";
             $templateData = $this->getTemplateData($this->getDestinationPath($destinationPath));
@@ -190,13 +190,13 @@ class BlogSite extends AbstractSite
 
     private function addPostToArchive($page, $matches)
     {
-        if(!isset($this->archives[$matches['year']])) {
+        if (!isset($this->archives[$matches['year']])) {
             $this->archives[$matches['year']] = ['posts' => []];
         }
-        if(!isset($this->archives[$matches['year']][$matches['month']])) {
+        if (!isset($this->archives[$matches['year']][$matches['month']])) {
             $this->archives[$matches['year']][$matches['month']] = ['posts' => []];
         }
-        if(!isset($this->archives[$matches['year']][$matches['month']][$matches['day']])) {
+        if (!isset($this->archives[$matches['year']][$matches['month']][$matches['day']])) {
             $this->archives[$matches['year']][$matches['month']][$matches['day']] = ['posts' => []];
         }
         $this->archives[$matches['year']]['posts'][] = $page;
@@ -208,11 +208,11 @@ class BlogSite extends AbstractSite
     {
         $selected = [];
         $pages = [];
-        foreach($this->posts as $post) {
-            if(isset($post->getMetaData()['frontmatter'][$taxonomy])) {
+        foreach ($this->posts as $post) {
+            if (isset($post->getMetaData()['frontmatter'][$taxonomy])) {
                 $taxonomyValues = $post->getMetaData()['frontmatter'][$taxonomy];
-                foreach(is_array($taxonomyValues) ? $taxonomyValues : [$taxonomyValues] as $value) {
-                    if(isset($selected[$value])) {
+                foreach (is_array($taxonomyValues) ? $taxonomyValues : [$taxonomyValues] as $value) {
+                    if (isset($selected[$value])) {
                         $selected[$value][] = $post;
                     } else {
                         $selected[$value] = [$post];
@@ -222,7 +222,7 @@ class BlogSite extends AbstractSite
         }
 
         $taxonomyIds = [];
-        foreach($selected as $label => $posts) {
+        foreach ($selected as $label => $posts) {
             $taxonomyId = $this->makeId($label, $taxonomyIds);
             $taxonomyIds[] = $taxonomyId;
             $pages[] = $this->getIndexPage("$taxonomy/$taxonomyId.html", $posts, $label);
@@ -231,7 +231,7 @@ class BlogSite extends AbstractSite
         return $pages;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return 'blog';
     }

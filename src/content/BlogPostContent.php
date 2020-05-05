@@ -49,7 +49,6 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     public function getMetaData() : array
     {
         if(!$this->metaData) {
-            //$templateData = $this->site->getTemplateData($this->site->getDestinationPath($this->getDestination()));
             preg_match(
             "|((?<year>[0-9]{4})/(?<month>[0-9]{2})/(?<day>[0-9]{2})/)?(?<title>[A-Za-z0-9\-\_]*)\.(html)|",
                 $this->getDestination(), $matches);

@@ -1,8 +1,5 @@
 <?php
-
-
 namespace nyansapow\sites;
-
 
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
@@ -37,17 +34,24 @@ class SiteWriter
         $this->templateEngine = $templateEngine;
     }
 
+    /**
+     * @param AbstractSite $site
+     * @throws FileAlreadyExistsException
+     * @throws FileNotWriteableException
+     */
     public function write(AbstractSite $site)
     {
         $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
-        $pages = array_map(function ($x) use ($site) {return $x->setSitePath($site->getDestinationPath());}, $site->getPages());
+        $pages = array_map(function ($x) use ($site) {
+            return $x->setSitePath($site->getDestinationPath());
+        }, $site->getPages());
         $event = $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
         $pages = $event ? $event->getPages() : $pages;
 
         /** @var Content $page */
-        foreach($pages as $page) {
+        foreach ($pages as $page) {
             $this->eventDispatcher->dispatch(PageWriteStarted::class, ['page' => $page]);
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $page);
@@ -71,11 +75,11 @@ class SiteWriter
         $destinationPath = $site->getDestinationPath($content->getDestination());
         $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();
 
-        if($layout) {
+        if ($layout) {
             $templateData = $site->getTemplateData($destinationPath);
             $templateData['body'] = $content->render();
             $templateData['page_title'] = $content->getMetaData()['title'] ?? "";
-            if(is_a($content, ThemableInterface::class)) {
+            if (is_a($content, ThemableInterface::class)) {
                 $templateData = array_merge($templateData, $content->getLayoutData());
             }
             $output = $this->templateEngine->render($layout, $templateData);

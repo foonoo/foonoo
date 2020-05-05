@@ -4,8 +4,6 @@ namespace nyansapow\text;
 
 use nyansapow\content\PreprocessableInterface;
 use nyansapow\NyansapowException;
-use nyansapow\sites\AbstractSite;
-use nyansapow\content\Content;
 
 class TextConverter
 {
@@ -38,7 +36,7 @@ class TextConverter
      * @return string
      * @throws NyansapowException
      */
-    public function convert(string $content, string $from, string $to) // Content $page=null)
+    public function convert(string $content, string $from, string $to)
     {
         if(!isset($this->converters[$from][$to])) {
             throw new NyansapowException("There isn't a converter to convert $from to $to");

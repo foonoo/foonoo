@@ -2,7 +2,6 @@
 
 namespace nyansapow;
 
-use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
 use ntentan\utils\filesystem\File;
