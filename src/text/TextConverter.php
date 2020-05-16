@@ -19,6 +19,11 @@ class TextConverter
         $this->parser = $parser;
     }
 
+    /**
+     * @param string $from
+     * @param string $to
+     * @param ConverterInterface $converter
+     */
     public function registerConverter(string $from, string $to, ConverterInterface $converter)
     {
         if(!isset($this->converters[$from])) {

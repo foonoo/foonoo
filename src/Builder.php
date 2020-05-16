@@ -14,10 +14,6 @@ use nyansapow\sites\SiteWriter;
 use nyansapow\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
-/**
- * The Nyansapow class which represents a nyansapow site. This class performs
- * the task of converting the input files into the output site.
- */
 class Builder
 {
     /**
@@ -152,6 +148,8 @@ class Builder
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
 
+            $this->siteWriter->write($site);
+
             if (is_dir($site->getSourcePath("np_images"))) {
                 $imageSource = $site->getSourcePath("np_images");
                 $imagesDestination = $site->getDestinationPath("np_images");
@@ -165,9 +163,6 @@ class Builder
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
             }
-
-            $this->siteWriter->write($site);
-
         }
         $this->eventDispatcher->setActiveSite(null);
     }
@@ -225,15 +220,15 @@ class Builder
 
     public function build($options, CacheFactory $cacheFactory)
     {
-        //try {
+        try {
             $this->cacheFactory = $cacheFactory;
             $this->setOptions($options);
             $this->initializePlugins();
             $this->buildSites();
-//        } catch (Exception $e) {
-//            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
-//            exit(102);
-//        }
+        } catch (Exception $e) {
+            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+            exit(102);
+        }
     }
 
     private function readData($path)
