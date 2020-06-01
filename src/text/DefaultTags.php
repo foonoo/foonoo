@@ -25,6 +25,7 @@ class DefaultTags
     private $data;
     private $site;
     private $templateData;
+    private $page;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
@@ -37,7 +38,8 @@ class DefaultTags
         );
         $eventDispatcher->addListener(PageWriteStarted::class,
             function (PageWriteStarted $event) {
-                $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
+                $this->page = $event->getContent();
+                $this->templateData = $this->site->getTemplateData($this->page->getFullDestination());
             }
         );
     }
@@ -143,9 +145,9 @@ class DefaultTags
         return $this->templateEngine->render('block_close_tag', []);
     }
 
-    public function renderTableOfContents(array $matches, AbstractSite $site, Content $page)
+    public function renderTableOfContents()
     {
-        $tocTree = $this->tocGenerator->get($page);
+        $tocTree = $this->tocGenerator->get($this->page);
         if($tocTree) {
             return $this->templateEngine->render('table_of_contents_tag', ['tree' => $tocTree]);
         }
