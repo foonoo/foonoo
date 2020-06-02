@@ -20,11 +20,34 @@ class DefaultTags
 {
     use Nomenclature;
 
+    /**
+     * @var TemplateEngine
+     */
     private $templateEngine;
+
+    /**
+     * @var TocGenerator
+     */
     private $tocGenerator;
+
+    /**
+     * @var array
+     */
     private $data;
+
+    /**
+     * @var AbstractSite
+     */
     private $site;
+
+    /**
+     * @var array
+     */
     private $templateData;
+
+    /**
+     * @var Content
+     */
     private $page;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
@@ -147,9 +170,9 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        $tocTree = $this->tocGenerator->get($this->page);
-        if($tocTree) {
-            return $this->templateEngine->render('table_of_contents_tag', ['tree' => $tocTree]);
-        }
+        return $this->tocGenerator->anticipate($this->page->getDestination());
+//        if($tocTree) {
+//            return $this->templateEngine->render('table_of_contents_tag', ['tree' => $tocTree]);
+//        }
     }
 }
