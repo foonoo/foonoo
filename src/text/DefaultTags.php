@@ -171,8 +171,5 @@ class DefaultTags
     public function renderTableOfContents()
     {
         return $this->tocGenerator->anticipate($this->page->getDestination());
-//        if($tocTree) {
-//            return $this->templateEngine->render('table_of_contents_tag', ['tree' => $tocTree]);
-//        }
     }
 }

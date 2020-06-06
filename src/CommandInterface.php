@@ -8,5 +8,5 @@ namespace nyansapow;
  * @author ekow
  */
 interface CommandInterface {
-    public function execute($options);
+    public function execute(array $options = []);
 }

@@ -33,6 +33,7 @@ use nyansapow\text\TemplateEngine;
 use nyansapow\text\TextConverter;
 
 $parser = new ArgumentParser();
+$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addOption([
     'short_name' => 'i',
@@ -41,7 +42,6 @@ $parser->addOption([
     'help' => "specifies where the input files for the site are found.",
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 'o',
     'name' => 'output',
@@ -49,7 +49,6 @@ $parser->addOption([
     "help" => "specifies where the site should be written to",
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 't',
     'name' => 'site-type',
@@ -58,7 +57,6 @@ $parser->addOption([
     'default' => 'plain',
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
@@ -66,9 +64,7 @@ $parser->addOption([
     'help' => 'set the name for the entire site',
     'command' => 'generate'
 ]);
-
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
-
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
@@ -76,7 +72,6 @@ $parser->addOption([
     'help' => "specifies where the input files for the site are found.",
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'o',
     'name' => 'output',
@@ -84,7 +79,6 @@ $parser->addOption([
     "help" => "specifies where the site should be written to",
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 't',
     'name' => 'site-type',
@@ -93,7 +87,6 @@ $parser->addOption([
     'default' => 'site',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
@@ -101,7 +94,6 @@ $parser->addOption([
     'help' => 'set the name for the entire site',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'h',
     'name' => 'host',
@@ -110,7 +102,6 @@ $parser->addOption([
     'default' => 'localhost',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'p',
     'name' => 'port',
@@ -126,11 +117,10 @@ nyansapow site generator
 $version
 EOT;
 
-$parser->enableHelp($description);
+$parser->enableHelp($description, "Find out more at https://github.com/ekowabaka/clearice");
 $options = $parser->parse();
 
 if(!isset($options['__command'])) {
-    
     if(isset($options['__args'][0])) {
         echo "Unknown command `{$options['__args'][0]}`.\nRun `{$options['__executed']} --help` for more information.\n";
     } else {

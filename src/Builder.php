@@ -208,6 +208,7 @@ class Builder
                 $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
                 $pluginClass = "\\nyansapow\\plugins\\$namespace\\$pluginName\\$pluginClassName";
                 $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
+                Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
                 require_once $pluginFile;
                 $pluginInstance = new $pluginClass($plugin, $this->io, $options);
                 foreach($pluginInstance->getEvents() as $event => $callable) {
@@ -225,8 +226,11 @@ class Builder
             $this->setOptions($options);
             $this->initializePlugins();
             $this->buildSites();
-        } catch (Exception $e) {
-            $this->io->error("\n*** Error! Failed to generate site: {$e->getMessage()}.\n");
+        } catch (\Exception $e) {
+            if ($options['debug']) {
+                throw $e;
+            }
+            $this->io->error("Error: {$e->getMessage()}\n");
             exit(102);
         }
     }

@@ -14,6 +14,14 @@ class TagParser
 {
     private $tags;
 
+    /**
+     * Register a Nyansapow Tag
+     *
+     * @param string $regex
+     * @param int $priority
+     * @param callable $callable
+     * @param string|null $name
+     */
     public function registerTag(string $regex, int $priority, callable $callable, string $name = null) : void
     {
         $regex = substr_replace($regex, '\[\[', 1, 0);
@@ -26,6 +34,9 @@ class TagParser
     }
 
     /**
+     * Parse any text for Nyansapow tags.
+     * Any tags found in the content are replaced with their expected HTML output.
+     *
      * @param string $content
      * @return string
      */
@@ -49,5 +60,4 @@ class TagParser
         }
         return $line;
     }
-
 }
