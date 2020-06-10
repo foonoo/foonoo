@@ -1,11 +1,11 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\text\TemplateEngine;
-use nyansapow\themes\Theme;
+use foonoo\text\TemplateEngine;
+use foonoo\themes\Theme;
 
 class ThemeLoaded extends Event
 {

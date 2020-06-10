@@ -1,13 +1,13 @@
 <?php
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
-use nyansapow\content\ContentFactory;
-use nyansapow\content\Content;
-use nyansapow\content\MarkupContent;
-use nyansapow\sites\AbstractSite;
-use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TextConverter;
+use foonoo\content\ContentFactory;
+use foonoo\content\Content;
+use foonoo\content\MarkupContent;
+use foonoo\sites\AbstractSite;
+use foonoo\sites\FrontMatterReader;
+use foonoo\text\TextConverter;
 
 class MarkupContentFactory implements ContentFactory
 {

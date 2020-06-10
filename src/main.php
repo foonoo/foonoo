@@ -10,27 +10,28 @@ use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
-use nyansapow\events\EventDispatcher;
-use nyansapow\content\AutomaticContentFactory;
-use nyansapow\events\PageOutputGenerated;
-use nyansapow\events\PagesReady;
-use nyansapow\events\PageWriteStarted;
-use nyansapow\events\PluginsInitialized;
-use nyansapow\events\SiteCreated;
-use nyansapow\events\SiteWriteStarted;
-use nyansapow\events\SiteWritten;
-use nyansapow\events\ThemeLoaded;
-use nyansapow\sites\BlogSiteFactory;
-use nyansapow\content\CopiedContentFactory;
-use nyansapow\sites\DefaultSiteFactory;
-use nyansapow\content\MarkupContentFactory;
-use nyansapow\sites\SiteTypeRegistry;
-use nyansapow\content\TemplateContentFactory;
-use nyansapow\text\DefaultTags;
-use nyansapow\text\MarkdownConverter;
-use nyansapow\text\TagParser;
-use nyansapow\text\TemplateEngine;
-use nyansapow\text\TextConverter;
+use foonoo\events\EventDispatcher;
+use foonoo\content\AutomaticContentFactory;
+use foonoo\events\PageOutputGenerated;
+use foonoo\events\PagesReady;
+use foonoo\events\PageWriteStarted;
+use foonoo\events\PluginsInitialized;
+use foonoo\events\SiteCreated;
+use foonoo\events\SiteWriteStarted;
+use foonoo\events\SiteWritten;
+use foonoo\events\ThemeLoaded;
+use foonoo\sites\BlogSiteFactory;
+use foonoo\content\CopiedContentFactory;
+use foonoo\sites\DefaultSiteFactory;
+use foonoo\content\MarkupContentFactory;
+use foonoo\sites\SiteTypeRegistry;
+use foonoo\content\TemplateContentFactory;
+use foonoo\text\DefaultTags;
+use foonoo\text\MarkdownConverter;
+use foonoo\text\TagParser;
+use foonoo\text\TemplateEngine;
+use foonoo\text\TextConverter;
+use Symfony\Component\Yaml\Parser;
 
 $parser = new ArgumentParser();
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
@@ -145,10 +146,12 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
+
 $container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
 $container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
 $container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
+$container->bind(Parser::class)->to(Parser::class)->asSingleton();
 
 $container->bind(TagParser::class)->to(function($container) {
     /** @var DefaultTags $defaultTags */
@@ -245,5 +248,5 @@ $container->bind(TextConverter::class)->to(
     }
 );
 
-$commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
+$commandClass = sprintf('\foonoo\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

@@ -1,6 +1,6 @@
 <?php
 
-namespace nyansapow;
+namespace foonoo;
 
 use clearice\io\Io;
 

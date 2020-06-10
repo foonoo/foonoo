@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
-use nyansapow\content\BlogContentFactory;
-use nyansapow\content\BlogListingContent;
-use nyansapow\content\BlogPostContent;
-use nyansapow\utils\Nomenclature;
+use foonoo\content\BlogContentFactory;
+use foonoo\content\BlogListingContent;
+use foonoo\content\BlogPostContent;
+use foonoo\utils\Nomenclature;
 
 /**
  * Represents a blog site that has posts and pages.

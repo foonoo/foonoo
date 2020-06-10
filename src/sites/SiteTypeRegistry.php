@@ -1,10 +1,10 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
-use nyansapow\NyansapowException;
+use foonoo\NyansapowException;
 
 class SiteTypeRegistry
 {

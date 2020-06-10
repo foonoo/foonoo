@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\utils;
+namespace foonoo\utils;
 
 
 trait Nomenclature

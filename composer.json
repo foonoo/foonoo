@@ -27,7 +27,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {"nyansapow\\": "src/"}
+        "psr-4": {"foonoo\\": "src/"}
     },
-    "bin" : ["bin/nyansapow"]
+    "bin" : ["bin/foonoo"]
 }

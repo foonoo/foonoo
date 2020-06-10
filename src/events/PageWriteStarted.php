@@ -1,10 +1,10 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\content\Content;
+use foonoo\content\Content;
 
 class PageWriteStarted
 {

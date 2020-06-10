@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\content\BlogPostContent;
-use nyansapow\content\Content;
-use nyansapow\content\ThemableInterface;
-use nyansapow\text\TemplateEngine;
+use foonoo\content\BlogPostContent;
+use foonoo\content\Content;
+use foonoo\content\ThemableInterface;
+use foonoo\text\TemplateEngine;
 
 class BlogListingContent extends Content implements ThemableInterface, ContentGroup
 {
@@ -38,7 +38,8 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
     public function getMetaData(): array
     {
         return [
-            'title' => $this->title
+            'title' => $this->title,
+            'path' => $this->destination
         ];
     }
 

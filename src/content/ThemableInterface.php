@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 /**
  * Allows content items to pass data to theme layouts.

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
 class PageWritten

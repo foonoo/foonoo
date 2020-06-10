@@ -1,9 +1,9 @@
 <?php
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\sites\AbstractSite;
+use foonoo\sites\AbstractSite;
 
 class AutomaticContentFactory
 {

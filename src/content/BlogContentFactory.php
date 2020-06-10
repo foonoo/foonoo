@@ -1,12 +1,12 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TextConverter;
-use nyansapow\text\TemplateEngine;
+use foonoo\sites\FrontMatterReader;
+use foonoo\text\TextConverter;
+use foonoo\text\TemplateEngine;
 
 class BlogContentFactory
 {

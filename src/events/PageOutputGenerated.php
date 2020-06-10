@@ -1,11 +1,11 @@
 <?php
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\content\Content;
-use nyansapow\content\ThemableInterface;
-use nyansapow\sites\AbstractSite;
+use foonoo\content\Content;
+use foonoo\content\ThemableInterface;
+use foonoo\sites\AbstractSite;
 
 class PageOutputGenerated
 {

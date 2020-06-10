@@ -1,42 +1,33 @@
 <?php
 
 
-namespace nyansapow\themes;
+namespace foonoo\themes;
 
 
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\exceptions\FileNotReadableException;
 use ntentan\utils\exceptions\FilesystemException;
 use ntentan\utils\Filesystem;
-use nyansapow\text\TemplateEngine;
+use foonoo\text\TemplateEngine;
 
 class Theme
 {
     private $themePath;
     private $templateEngine;
     private $templateHierachy;
+    private $definition;
 
-    public function __construct($themePath, TemplateEngine $templateEngine, array $templateHierachy)
+    public function __construct(string $themePath, TemplateEngine $templateEngine, array $themeDefinition)
     {
         $this->themePath = $themePath;
         $this->templateEngine = $templateEngine;
-        $this->templateHierachy = $templateHierachy;
-        $this->templateHierachy[]="$themePath/templates";
+        $this->templateHierachy = $themeDefinition['template_hierarchy'];
+        $this->definition = $themeDefinition;
     }
 
-    /**
-     * @param $destination
-     * @throws FileNotFoundException
-     * @throws FileNotReadableException
-     * @throws FilesystemException
-     */
-    public function copyAssets($destination)
+    public function getAssets()
     {
-        if(is_dir("$this->themePath/assets")) {
-            Filesystem::directory("$this->themePath/assets")
-                ->getFiles()
-                ->copyTo("$destination/assets");
-        }
+        return $this->definition['assets'] ?? [];
     }
 
     public function activate()

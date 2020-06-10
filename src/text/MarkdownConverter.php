@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
 
 class MarkdownConverter implements ConverterInterface

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 use ntentan\honam\exceptions\FactoryException;
 use ntentan\honam\exceptions\TemplateEngineNotFoundException;

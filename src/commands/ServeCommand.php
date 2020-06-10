@@ -1,8 +1,8 @@
 <?php
 
-namespace nyansapow\commands;
+namespace foonoo\commands;
 
-use nyansapow\CommandInterface;
+use foonoo\CommandInterface;
 use clearice\io\Io;
 use ntentan\utils\Filesystem;
 

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
-use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TemplateEngine;
-use nyansapow\text\TextConverter;
+use foonoo\sites\FrontMatterReader;
+use foonoo\text\TemplateEngine;
+use foonoo\text\TextConverter;
 
 class BlogPageContent extends MarkupContent implements ThemableInterface
 {

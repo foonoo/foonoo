@@ -1,9 +1,9 @@
 <?php
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
-use nyansapow\sites\AbstractSite;
-use nyansapow\content\Content;
+use foonoo\sites\AbstractSite;
+use foonoo\content\Content;
 
 /**
  * Parse text containing special Nyansapow tags.

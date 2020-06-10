@@ -1,9 +1,9 @@
 <?php
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
-use nyansapow\content\PreprocessableInterface;
-use nyansapow\NyansapowException;
+use foonoo\content\PreprocessableInterface;
+use foonoo\NyansapowException;
 
 class TextConverter
 {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
 
 interface ConverterInterface

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\content\Content;
+use foonoo\content\Content;
 
 class CopiedContent extends Content
 {

@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\content\ContentFactory;
-use nyansapow\content\Content;
-use nyansapow\content\CopiedContent;
-use nyansapow\sites\AbstractSite;
+use foonoo\content\ContentFactory;
+use foonoo\content\Content;
+use foonoo\content\CopiedContent;
+use foonoo\sites\AbstractSite;
 
 class CopiedContentFactory implements ContentFactory
 {

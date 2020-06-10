@@ -1,11 +1,11 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\content\AutomaticContentFactory;
-use nyansapow\content\Content;
+use foonoo\content\AutomaticContentFactory;
+use foonoo\content\Content;
 
 class PagesReady //extends Event
 {

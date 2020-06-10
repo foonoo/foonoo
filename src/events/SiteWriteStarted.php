@@ -1,10 +1,10 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\sites\AbstractSite;
+use foonoo\sites\AbstractSite;
 
 class SiteWriteStarted
 {

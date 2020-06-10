@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace nyansapow;
+namespace foonoo;
 
 /**
  * Description of Exception

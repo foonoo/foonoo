@@ -1,18 +1,20 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
-use nyansapow\content\AutomaticContentFactory;
+use foonoo\content\AutomaticContentFactory;
 
 class DefaultSiteFactory implements SiteFactoryInterface
 {
     private $automaticContentFactory;
+    private $assetPipeline;
 
-    public function __construct(AutomaticContentFactory $automaticContentFactory)
+    public function __construct(AutomaticContentFactory $automaticContentFactory, AssetPipeline $assetPipeline)
     {
         $this->automaticContentFactory = $automaticContentFactory;
+        $this->assetPipeline = $assetPipeline;
     }
 
     public function create(array $metadata, string $path): AbstractSite
@@ -21,7 +23,7 @@ class DefaultSiteFactory implements SiteFactoryInterface
         /** @var AbstractSite $instance */
         $instance = (new \ReflectionClass($class))->newInstance();
         $instance->setAutomaticContentFactory($this->automaticContentFactory);
-
+        $instance->setAssetPipeline($this->assetPipeline);
         return $instance;
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
 
-use nyansapow\events\EventDispatcher;
-use nyansapow\events\PageWriteStarted;
-use nyansapow\events\SiteWriteStarted;
-use nyansapow\sites\AbstractSite;
-use nyansapow\content\Content;
-use nyansapow\utils\Nomenclature;
-use nyansapow\utils\TocGenerator;
+use foonoo\events\EventDispatcher;
+use foonoo\events\PageWriteStarted;
+use foonoo\events\SiteWriteStarted;
+use foonoo\sites\AbstractSite;
+use foonoo\content\Content;
+use foonoo\utils\Nomenclature;
+use foonoo\utils\TocGenerator;
 
 /**
  * Renders the preprocessing tags.

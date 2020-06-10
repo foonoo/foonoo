@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nyansapow\events;
+namespace foonoo\events;
 
 
-use nyansapow\content\AutomaticContentFactory;
-use nyansapow\sites\SiteTypeRegistry;
-use nyansapow\text\TagParser;
-use nyansapow\text\TemplateEngine;
+use foonoo\content\AutomaticContentFactory;
+use foonoo\sites\SiteTypeRegistry;
+use foonoo\text\TagParser;
+use foonoo\text\TemplateEngine;
 
 class PluginsInitialized //extends Event
 {

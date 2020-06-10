@@ -1,11 +1,11 @@
 <?php
 
-namespace nyansapow\utils;
+namespace foonoo\utils;
 
 use DOMDocument;
-use nyansapow\events\EventDispatcher;
-use nyansapow\events\PageOutputGenerated;
-use nyansapow\text\TemplateEngine;
+use foonoo\events\EventDispatcher;
+use foonoo\events\PageOutputGenerated;
+use foonoo\text\TemplateEngine;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.

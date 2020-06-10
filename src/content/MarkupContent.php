@@ -1,10 +1,11 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
-use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TextConverter;
+use foonoo\sites\FrontMatterReader;
+use foonoo\text\TextConverter;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * Class MarkupContent
@@ -33,7 +34,11 @@ class MarkupContent extends Content
     protected function getFrontMatter() : array
     {
         if(!$this->frontMatter) {
-            $this->frontMatter = $this->frontMatterReader->read($this->document, $this->firstLineOfBody);
+            try{
+                $this->frontMatter = $this->frontMatterReader->read($this->document, $this->firstLineOfBody);
+            } catch (ParseException $e) {
+                throw new ParseException("While parsing {$this->document}: {$e->getMessage()}");
+            }
         }
         return $this->frontMatter;
     }

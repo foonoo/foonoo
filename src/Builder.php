@@ -1,17 +1,17 @@
 <?php
 
-namespace nyansapow;
+namespace foonoo;
 
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
 use ntentan\utils\filesystem\File;
 use ntentan\utils\Text;
-use nyansapow\events\EventDispatcher;
-use nyansapow\events\PluginsInitialized;
-use nyansapow\events\SiteCreated;
-use nyansapow\sites\AbstractSite;
-use nyansapow\sites\SiteWriter;
-use nyansapow\sites\SiteTypeRegistry;
+use foonoo\events\EventDispatcher;
+use foonoo\events\PluginsInitialized;
+use foonoo\events\SiteCreated;
+use foonoo\sites\AbstractSite;
+use foonoo\sites\SiteWriter;
+use foonoo\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
 class Builder
@@ -206,7 +206,7 @@ class Builder
                 $namespace = dirname($plugin);
                 $pluginName = basename($plugin);
                 $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
-                $pluginClass = "\\nyansapow\\plugins\\$namespace\\$pluginName\\$pluginClassName";
+                $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
                 $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
                 Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
                 require_once $pluginFile;

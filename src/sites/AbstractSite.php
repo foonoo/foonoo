@@ -1,11 +1,11 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
-use nyansapow\utils\Cache;
-use nyansapow\content\AutomaticContentFactory;
+use foonoo\utils\Cache;
+use foonoo\content\AutomaticContentFactory;
 
 /**
  * Base abstract class for all sites
@@ -54,6 +54,11 @@ abstract class AbstractSite
      * @var AutomaticContentFactory
      */
     protected $automaticContentFactory;
+
+    /**
+     * @var AssetPipeline
+     */
+    protected $assetPipeline;
 
     /**
      * Set the path to this site, relative to the root path
@@ -197,6 +202,16 @@ abstract class AbstractSite
     public function getCache(): Cache
     {
         return $this->cache;
+    }
+
+    public function setAssetPipeline(AssetPipeline $assetPipeline) : void
+    {
+        $this->assetPipeline = $assetPipeline;
+    }
+
+    public function getAssetPipeline() : AssetPipeline
+    {
+        return $this->assetPipeline;
     }
 
     public abstract function getPages(): array;

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace nyansapow;
+namespace foonoo;
 
 
 use ntentan\kaikai\backends\FileCache;
-use nyansapow\utils\Cache;
+use foonoo\utils\Cache;
 
 class CacheFactory
 {

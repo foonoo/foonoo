@@ -1,10 +1,10 @@
 <?php
 
-namespace nyansapow\commands;
+namespace foonoo\commands;
 
-use nyansapow\CacheFactory;
-use nyansapow\CommandInterface;
-use nyansapow\Builder;
+use foonoo\CacheFactory;
+use foonoo\CommandInterface;
+use foonoo\Builder;
 
 /**
  * Implements the "generate" command that builds the site.

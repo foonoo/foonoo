@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
 interface SiteFactoryInterface

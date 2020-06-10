@@ -1,21 +1,21 @@
 <?php
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
-use nyansapow\content\Content;
-use nyansapow\content\ThemableInterface;
-use nyansapow\events\EventDispatcher;
-use nyansapow\events\PageOutputGenerated;
-use nyansapow\events\PagesReady;
-use nyansapow\events\PageWriteStarted;
-use nyansapow\events\PageWritten;
-use nyansapow\events\SiteWriteStarted;
-use nyansapow\events\ThemeLoaded;
-use nyansapow\text\TemplateEngine;
-use nyansapow\themes\Theme;
-use nyansapow\themes\ThemeManager;
+use foonoo\content\Content;
+use foonoo\content\ThemableInterface;
+use foonoo\events\EventDispatcher;
+use foonoo\events\PageOutputGenerated;
+use foonoo\events\PagesReady;
+use foonoo\events\PageWriteStarted;
+use foonoo\events\PageWritten;
+use foonoo\events\SiteWriteStarted;
+use foonoo\events\ThemeLoaded;
+use foonoo\text\TemplateEngine;
+use foonoo\themes\Theme;
+use foonoo\themes\ThemeManager;
 use clearice\io\Io;
 
 class SiteWriter

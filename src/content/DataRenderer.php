@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
 interface DataRenderer

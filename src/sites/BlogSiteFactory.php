@@ -1,22 +1,26 @@
 <?php
 
 
-namespace nyansapow\sites;
+namespace foonoo\sites;
 
 
-use nyansapow\content\BlogContentFactory;
+use foonoo\content\BlogContentFactory;
 
 class BlogSiteFactory implements SiteFactoryInterface
 {
     private $blogContentFactory;
+    private $assetPipeline;
 
-    public function __construct(BlogContentFactory $blogContentFactory)
+    public function __construct(BlogContentFactory $blogContentFactory, AssetPipeline $assetPipeline)
     {
         $this->blogContentFactory = $blogContentFactory;
+        $this->assetPipeline = $assetPipeline;
     }
 
     public function create(array $metadata, string $path): AbstractSite
     {
-        return new BlogSite($this->blogContentFactory);
+        $site = new BlogSite($this->blogContentFactory);
+        $site->setAssetPipeline($this->assetPipeline);
+        return $site;
     }
 }

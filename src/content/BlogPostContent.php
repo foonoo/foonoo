@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nyansapow\content;
+namespace foonoo\content;
 
 
-use nyansapow\sites\FrontMatterReader;
-use nyansapow\text\TextConverter;
-use nyansapow\text\TemplateEngine;
-use nyansapow\utils\Nomenclature;
+use foonoo\sites\FrontMatterReader;
+use foonoo\text\TextConverter;
+use foonoo\text\TemplateEngine;
+use foonoo\utils\Nomenclature;
 
 class BlogPostContent extends MarkupContent implements ThemableInterface, SerialContentInterface
 {

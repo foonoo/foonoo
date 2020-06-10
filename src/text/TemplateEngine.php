@@ -1,5 +1,5 @@
 <?php
-namespace nyansapow\text;
+namespace foonoo\text;
 
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
