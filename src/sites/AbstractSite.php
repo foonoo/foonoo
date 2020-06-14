@@ -137,17 +137,19 @@ abstract class AbstractSite
 
     public function getTemplateData(string $pageDestination = null): array
     {
-        if ($pageDestination) {
+        if ($pageDestination !== null) {
+            $sitePath = $this->makeRelativeLocation($pageDestination, $this->getDestinationPath());
             return array_merge([
-                'home_path' => $this->makeRelativeLocation($pageDestination, $this->destinationRoot),
-                'site_path' => $this->makeRelativeLocation($pageDestination, $this->getDestinationPath()),
-                'site_name' => $this->settings['name'] ?? '',
-                'date' => date('jS F Y')
-            ],
+                    'home_path' => $this->makeRelativeLocation($pageDestination, $this->destinationRoot),
+                    'site_path' => $sitePath,
+                    'site_name' => $this->settings['name'] ?? '',
+                    'date' => date('jS F Y'),
+                    'assets_markup' => $this->assetPipeline->getMarkup($sitePath)
+                ],
                 $this->templateData
             );
         }
-        return $this->templateData;
+        return array_merge(['assets_markup' => $this->assetPipeline->getMarkup('')], $this->templateData);
     }
 
     private function makeRelativeLocation($path, $relativeTo)
@@ -211,6 +213,7 @@ abstract class AbstractSite
 
     public function getAssetPipeline() : AssetPipeline
     {
+        $this->assetPipeline->setSitePaths($this->getDestinationPath(), $this->getPath());
         return $this->assetPipeline;
     }
 

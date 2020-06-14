@@ -39,4 +39,9 @@ class Theme
     {
         return 'layout';
     }
+
+    public function getPath()
+    {
+        return $this->themePath;
+    }
 }

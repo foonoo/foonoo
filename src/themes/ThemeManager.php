@@ -23,7 +23,7 @@ class ThemeManager
 
     /**
      * @param AbstractSite $site
-     * @return mixed
+     * @return Theme
      * @throws \Exception
      */
     private function loadTheme($site)
@@ -58,7 +58,7 @@ class ThemeManager
     public function getTheme(AbstractSite $site) : Theme
     {
         $theme = $this->loadTheme($site);
-        $site->getAssetPipeline()->merge($theme->getAssets());
+        $site->getAssetPipeline()->merge($theme->getAssets(), $theme->getPath());
         $theme->activate();
         return $theme;
     }

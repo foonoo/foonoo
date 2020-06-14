@@ -20,6 +20,7 @@ class DefaultSiteFactory implements SiteFactoryInterface
     public function create(array $metadata, string $path): AbstractSite
     {
         $class = "\\nyansapow\\sites\\" . ucfirst($metaData['type'] ?? 'plain') . "Site";
+
         /** @var AbstractSite $instance */
         $instance = (new \ReflectionClass($class))->newInstance();
         $instance->setAutomaticContentFactory($this->automaticContentFactory);

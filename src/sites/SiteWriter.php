@@ -44,6 +44,7 @@ class SiteWriter
         $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
+        $site->getAssetPipeline()->buildAssets();
         $pages = array_map(function ($x) use ($site) {
             return $x->setSitePath($site->getDestinationPath());
         }, $site->getPages());
