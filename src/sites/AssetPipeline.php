@@ -17,6 +17,7 @@ class AssetPipeline
 
     private function addItem($path, $options, &$collection) : void
     {
+        Filesystem::checkExists($path);
         $options['order'] = $options['order'] ?? 1;
         $options['mode'] = ($options['inline'] ?? false) ? 'inline' : 'external';
         $collection[] = ['path' => $path, 'options' => $options];
@@ -34,6 +35,9 @@ class AssetPipeline
 
     public function addFile($path, $options) : void
     {
+        if(!is_array($options)) {
+            $options = ['destination' => $options];
+        }
         $this->files[] = ['path' => $path, 'options' => $options];
     }
 
@@ -102,10 +106,7 @@ class AssetPipeline
     private function generateMarkup($items, $sitePath, $externalWrapper, $inlineWrapper) : string
     {
         $markup = "";
-        $wrappers = [
-            'inline' => $inlineWrapper,
-            'external' => $externalWrapper
-        ];
+        $wrappers = ['inline' => $inlineWrapper, 'external' => $externalWrapper];
         Filesystem::directory("$this->destinationPath/js")->createIfNotExists();
         foreach ($items as $script) {
             $markup .= $wrappers[$script['mode']]($script, $sitePath);
@@ -113,10 +114,21 @@ class AssetPipeline
         return $markup;
     }
 
+    private function copyFiles()
+    {
+        foreach ($this->files as $file) {
+            $destination = "$this->destinationPath/{$file['options']['destination']}";
+            $f = Filesystem::get($file['path']);
+            Filesystem::directory(dirname($destination))->createIfNotExists(true);
+            $f->copyTo($destination);
+        }
+    }
+
     public function buildAssets() : void
     {
         $this->builtJavascripts = $this->buildItems($this->javascripts, 'js');
         $this->builtStylesheets = $this->buildItems($this->stylesheets, 'css');
+        $this->copyFiles();
     }
 
     public function getMarkup($sitePath)
@@ -129,22 +141,22 @@ class AssetPipeline
     {
         $methods = [
             'css' => [$this, 'addStylesheet'],
-            'js' => [$this, 'addJavascript']
+            'js' => [$this, 'addJavascript'],
+            'files' => [$this, 'addFile']
         ];
-        foreach(['js', 'css', 'images'] as $class) {
+        foreach(['js', 'css', 'files'] as $class) {
             if(!isset($assets[$class])) {
                 continue;
             }
-            foreach($assets[$class] as $key => $value) {
-                if(is_numeric($key)) {
-                    $path = $value;
-                    $options = [];
+            foreach($assets[$class] as $index => $asset) {
+                if(is_array($asset)) {
+                    $path = array_key_first($asset);
+                    $options = $asset[$path];
                 } else {
-                    $path = $key;
-                    $options = $value;
+                    $path = $asset;
+                    $options = [];
                 }
                 $assetPath = "$baseDirectory/$path";
-                Filesystem::checkExists($assetPath);
                 $methods[$class]($assetPath, $options);
             }
         }
