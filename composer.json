@@ -10,6 +10,7 @@
         "ntentan/kaikai": "@stable",
         "symfony/yaml" : "~4.0",
         "smarty/smarty": "~3.0",
+        "matthiasmullie/minify": "~1.3",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-fileinfo": "*",

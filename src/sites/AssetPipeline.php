@@ -3,6 +3,9 @@
 namespace foonoo\sites;
 
 
+use MatthiasMullie\Minify\CSS;
+use MatthiasMullie\Minify\JS;
+use MatthiasMullie\Minify\Minify;
 use ntentan\utils\Filesystem;
 
 class AssetPipeline
@@ -14,6 +17,14 @@ class AssetPipeline
     private $builtJavascripts = [];
     private $sitePath;
     private $destinationPath;
+    private $cssMinifier;
+    private $jsMinifier;
+
+    public function __construct(CSS $cssMinifier, JS $jsMinifier)
+    {
+        $this->cssMinifier = $cssMinifier;
+        $this->jsMinifier = $jsMinifier;
+    }
 
     private function addItem($path, $options, &$collection) : void
     {
@@ -33,6 +44,12 @@ class AssetPipeline
         $this->addItem($path, $options, $this->javascripts,);
     }
 
+    private function minify(Minify $minifier, string $script) : string
+    {
+        $minifier->add($script);
+        return $minifier->minify();
+    }
+
     public function addFile($path, $options) : void
     {
         if(!is_array($options)) {
@@ -46,8 +63,10 @@ class AssetPipeline
         if(strlen($buffer) > 0) {
             if($currentMode == 'external') {
                 $assetPath = "assets/$extension/bundle-{$written}.$extension";
+                $fullPath = "$this->destinationPath$assetPath";
+                Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
+                Filesystem::file($fullPath)->putContents($buffer);
                 $written += 1;
-                Filesystem::file("$this->destinationPath$assetPath")->putContents($buffer);
                 return ['mode' => $currentMode, 'contents' => $assetPath];
             } else {
                 return ['mode' => $currentMode, 'contents' => $buffer];
@@ -107,7 +126,6 @@ class AssetPipeline
     {
         $markup = "";
         $wrappers = ['inline' => $inlineWrapper, 'external' => $externalWrapper];
-        Filesystem::directory("$this->destinationPath/js")->createIfNotExists();
         foreach ($items as $script) {
             $markup .= $wrappers[$script['mode']]($script, $sitePath);
         }
@@ -126,8 +144,14 @@ class AssetPipeline
 
     public function buildAssets() : void
     {
-        $this->builtJavascripts = $this->buildItems($this->javascripts, 'js');
-        $this->builtStylesheets = $this->buildItems($this->stylesheets, 'css');
+        $this->builtJavascripts = $this->buildItems(
+            $this->javascripts, 'js',
+            function(string $contents) { return $this->minify($this->jsMinifier, $contents); }
+        );
+        $this->builtStylesheets = $this->buildItems(
+            $this->stylesheets, 'css',
+            function(string $contents) { return $this->minify($this->cssMinifier, $contents); }
+        );
         $this->copyFiles();
     }
 
