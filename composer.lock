@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef546a4da552f349e55e5079d766cda0",
+    "content-hash": "673c31bf96fbcf0fe2b9cf4f6ea2190d",
     "packages": [
         {
             "name": "ekowabaka/clearice",
@@ -251,22 +251,22 @@
         },
         {
             "name": "ntentan/honam",
-            "version": "v0.6.3",
+            "version": "v0.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/honam.git",
-                "reference": "25448e290effffb0a9aa83857acfccb8dfc6c7d3"
+                "reference": "0142b27c29586ff2a3b0631dbe490332e966d99f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/honam/zipball/25448e290effffb0a9aa83857acfccb8dfc6c7d3",
-                "reference": "25448e290effffb0a9aa83857acfccb8dfc6c7d3",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/0142b27c29586ff2a3b0631dbe490332e966d99f",
+                "reference": "0142b27c29586ff2a3b0631dbe490332e966d99f",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-simplexml": "*",
-                "ntentan/utils": "~0.9.0"
+                "ntentan/utils": "0.*"
             },
             "require-dev": {
                 "mikey179/vfsstream": "@stable",
@@ -296,7 +296,7 @@
                 }
             ],
             "description": "The views component of the ntentan framework.",
-            "time": "2020-02-06T15:49:02+00:00"
+            "time": "2020-06-15T20:15:30+00:00"
         },
         {
             "name": "ntentan/kaikai",
@@ -377,16 +377,16 @@
         },
         {
             "name": "ntentan/utils",
-            "version": "v0.9.1",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "ecf00ff7cc956ab91b659dc289fed8c3a016fa40"
+                "reference": "1c81a26c8c61d2da09bcb4d0eb33c7bb5774b9fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/ecf00ff7cc956ab91b659dc289fed8c3a016fa40",
-                "reference": "ecf00ff7cc956ab91b659dc289fed8c3a016fa40",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/1c81a26c8c61d2da09bcb4d0eb33c7bb5774b9fd",
+                "reference": "1c81a26c8c61d2da09bcb4d0eb33c7bb5774b9fd",
                 "shasum": ""
             },
             "require-dev": {
@@ -412,7 +412,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2019-11-17T15:12:48+00:00"
+            "time": "2020-02-25T08:18:51+00:00"
         },
         {
             "name": "psr/container",

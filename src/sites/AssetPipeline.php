@@ -98,7 +98,10 @@ class AssetPipeline
             }
             $buffer .= "$content\n";
         }
-        $output[] = $this->writeBuffer($buffer, $currentMode, $extension, $written);
+        $finalBuffer = $this->writeBuffer($buffer, $currentMode, $extension, $written);
+        if($finalBuffer) {
+            $output[] = $finalBuffer;
+        }
         return $output;
     }
 

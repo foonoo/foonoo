@@ -14,6 +14,10 @@ use foonoo\sites\SiteWriter;
 use foonoo\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
+/**
+ * Performs the actual building of sites.
+ * 
+ */
 class Builder
 {
     /**

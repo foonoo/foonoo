@@ -126,8 +126,8 @@ class DefaultTags
         return $this->templateEngine->render('image_tag',
             [
                 'alt' => $matches['alt'] ?? '',
-                'site_path' => $this->data['site_path'],
-                'home_path' => $this->data['home_path'],
+                'site_path' => $this->data['site_path'] ?? '',
+                'home_path' => $this->data['home_path'] ?? '',
                 'images' => $this->getImages($matches['image']),
                 'attribute_string' => $attributeString
             ]

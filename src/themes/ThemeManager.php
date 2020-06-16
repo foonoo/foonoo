@@ -1,6 +1,5 @@
 <?php
 
-
 namespace foonoo\themes;
 
 
@@ -41,14 +40,14 @@ class ThemeManager
         $key = "$themePath$sourcePath";
 
         if(!isset($this->themes[$key])) {
-            if (is_dir($themePath)) {
+            if (is_dir($themePath) && file_exists("$themePath/theme.yaml")) {
                 $definition = $this->yamlParser->parse(file_get_contents("$themePath/theme.yaml"));
                 $definition['path'] = $themePath;
                 $definition['template_hierarchy'] = $this->getTemplateHierarchy($site, $definition);
                 $theme = new Theme($themePath, $this->templateEngine, $definition);
                 $this->themes[$key] = $theme;
             } else {
-                throw new \Exception("Could not find '$customTheme' directory for '$theme' theme");
+                throw new \Exception("Directory '$themePath' for '$theme' theme is not properly setup.");
             }
         }
 
