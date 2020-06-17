@@ -46,6 +46,7 @@ class AssetPipeline
 
     private function minify(Minify $minifier, string $script) : string
     {
+        $minifier->execute();
         $minifier->add($script);
         return $minifier->minify();
     }
@@ -93,11 +94,13 @@ class AssetPipeline
             }
 
             $content = file_get_contents($item['path']);
-            if($postProcess) {
-                $content = $postProcess($content);
-            }
             $buffer .= "$content\n";
         }
+
+        if($postProcess) {
+            $buffer = $postProcess($buffer);
+        }
+        
         $finalBuffer = $this->writeBuffer($buffer, $currentMode, $extension, $written);
         if($finalBuffer) {
             $output[] = $finalBuffer;
