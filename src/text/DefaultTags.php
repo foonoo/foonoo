@@ -9,7 +9,6 @@ use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
 use foonoo\content\Content;
 use foonoo\utils\Nomenclature;
-use foonoo\utils\TocGenerator;
 
 /**
  * Renders the preprocessing tags.

@@ -114,11 +114,11 @@ $parser->addOption([
 
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
-nyansapow site generator
+foonoo site generator
 $version
 EOT;
 
-$parser->enableHelp($description, "Find out more at https://github.com/ekowabaka/clearice");
+$parser->enableHelp($description, "Find out more at https://foonoo.org");
 $options = $parser->parse();
 
 if(!isset($options['__command'])) {

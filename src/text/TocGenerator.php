@@ -6,6 +6,7 @@ use DOMDocument;
 use foonoo\events\EventDispatcher;
 use foonoo\events\PageOutputGenerated;
 use foonoo\text\TemplateEngine;
+use foonoo\utils\Nomenclature;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.
