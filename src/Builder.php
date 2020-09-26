@@ -54,7 +54,6 @@ class Builder
 
 
     /**
-     * Nyansapow constructor.
      * Create an instance of the context object through which Nyansapow works.
      *
      * @param Io $io
@@ -182,7 +181,7 @@ class Builder
             ? '' : DIRECTORY_SEPARATOR;
 
         if (!file_exists($options['input']) && !is_dir($options['input'])) {
-            throw new NyansapowException("Input directory `{$options['input']}` does not exist or is not a directory.");
+            throw new FoonooException("Input directory `{$options['input']}` does not exist or is not a directory.");
         }
 
         if (!isset($options['output']) || $options['output'] === '') {

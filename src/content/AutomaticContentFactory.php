@@ -3,8 +3,13 @@
 namespace foonoo\content;
 
 
-use foonoo\sites\AbstractSite;
-
+/**
+ * Creates instances of Content classes for registered content types.
+ * In cases where registered content types do not exist, files passed are wrapped with the CopiedContent type, which
+ * allows files to be copied to the destination site.
+ *
+ * @package foonoo\content
+ */
 class AutomaticContentFactory
 {
     private $contentFactories = [];
@@ -27,10 +32,10 @@ class AutomaticContentFactory
      * @param string $destination
      * @return Content
      */
-    public function create(string $source, string $destination) : Content
+    public function create(string $source, string $destination): Content
     {
         foreach ($this->contentFactories as $factory) {
-            if($factory['test'](['source' => $source, 'destination' => $destination])) {
+            if ($factory['test'](['source' => $source, 'destination' => $destination])) {
                 return $factory['instance']->create($source, $destination);
             }
         }

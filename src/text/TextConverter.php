@@ -3,7 +3,7 @@
 namespace foonoo\text;
 
 use foonoo\content\PreprocessableInterface;
-use foonoo\NyansapowException;
+use foonoo\FoonooException;
 
 class TextConverter
 {
@@ -39,12 +39,12 @@ class TextConverter
      * @param string $from
      * @param string $to
      * @return string
-     * @throws NyansapowException
+     * @throws FoonooException
      */
     public function convert(string $content, string $from, string $to)
     {
         if(!isset($this->converters[$from][$to])) {
-            throw new NyansapowException("There isn't a converter to convert $from to $to");
+            throw new FoonooException("There isn't a converter to convert $from to $to");
         }
         $converter = $this->converters[$from][$to];
         $content = $this->parser->parse($content);

@@ -4,7 +4,7 @@
 namespace foonoo\events;
 
 
-use foonoo\NyansapowException;
+use foonoo\FoonooException;
 
 class EventDispatcher
 {
@@ -35,7 +35,7 @@ class EventDispatcher
     private function createEvent(string $event, array $args)
     {
         if(!isset($this->eventTypes[$event])) {
-            throw new NyansapowException("Event type [{$event}] has not been registered.");
+            throw new FoonooException("Event type [{$event}] has not been registered.");
         }
         return $this->eventTypes[$event]($args);
     }

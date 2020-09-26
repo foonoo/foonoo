@@ -4,7 +4,7 @@
 namespace foonoo\sites;
 
 
-use foonoo\NyansapowException;
+use foonoo\FoonooException;
 
 class SiteTypeRegistry
 {
@@ -18,7 +18,7 @@ class SiteTypeRegistry
     public function get($type) : SiteFactoryInterface
     {
         if(!isset($this->factories[$type])) {
-            throw new NyansapowException("Could not create site of type '$type'");
+            throw new FoonooException("Could not create site of type '$type'");
         }
         return $this->factories[$type];
     }

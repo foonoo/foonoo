@@ -7,7 +7,7 @@ use foonoo\CommandInterface;
 use foonoo\Builder;
 
 /**
- * Implements the "generate" command that builds the site.
+ * Implements the "generate" command used for building sites.
  *
  * @author ekow
  */

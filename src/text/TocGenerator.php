@@ -1,6 +1,6 @@
 <?php
 
-namespace foonoo\utils;
+namespace foonoo\text;
 
 use DOMDocument;
 use foonoo\events\EventDispatcher;
