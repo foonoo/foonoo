@@ -1,6 +1,7 @@
 <?php
 namespace foonoo\sites;
 
+use foonoo\events\AssetPipelineReady;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
 use ntentan\utils\exceptions\FileNotWriteableException;
 use ntentan\utils\Filesystem;
@@ -44,7 +45,9 @@ class SiteWriter
         $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
-        $site->getAssetPipeline()->buildAssets();
+        $assetPipeline = $site->getAssetPipeline();
+        $this->eventDispatcher->dispatch(AssetPipelineReady::class, ['pipeline' => $assetPipeline]);
+        $assetPipeline->buildAssets();
         $pages = array_map(function ($x) use ($site) {
             return $x->setSitePath($site->getDestinationPath());
         }, $site->getPages());

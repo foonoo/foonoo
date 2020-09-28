@@ -7,7 +7,7 @@ namespace foonoo\events;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\content\Content;
 
-class PagesReady //extends Event
+class PagesReady
 {
     private $pages;
     private $contentFactory;
