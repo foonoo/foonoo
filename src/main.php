@@ -2,6 +2,7 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 use foonoo\events\AssetPipelineReady;
+use foonoo\events\ContentWritten;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -239,7 +240,12 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     );
     $eventDispatcher->registerEventType(AssetPipelineReady::class,
         function($args) {
-        return new AssetPipelineReady($args['pipeline']);
+            return new AssetPipelineReady($args['pipeline']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentWritten::class,
+        function($args) {
+            return new ContentWritten($args['content'], $args['destination_path']);
         }
     );
     return $eventDispatcher;

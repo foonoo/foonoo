@@ -166,7 +166,6 @@ class Builder
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
             }
         }
-        $this->eventDispatcher->setActiveSite(null);
     }
 
     private function setOptions($options)

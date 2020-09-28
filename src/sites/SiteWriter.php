@@ -96,6 +96,6 @@ class SiteWriter
             Filesystem::directory(dirname($destinationPath))->create(true);
         }
         file_put_contents($destinationPath, $output);
-        $this->eventDispatcher->dispatch(ContentWritten::class, ['page' => $content, 'destination_path' => $destinationPath]);
+        $this->eventDispatcher->dispatch(ContentWritten::class, ['content' => $content, 'destination_path' => $destinationPath]);
     }
 }

@@ -13,6 +13,7 @@ class EventDispatcher
 
     public function addListener(string $eventType, callable $listener) : void
     {
+        $this->checkEventType($eventType);
         if (!isset($this->listeners[$eventType])) {
             $this->listeners[$eventType] = [];
         }
@@ -21,9 +22,7 @@ class EventDispatcher
 
     public function dispatch(string $eventType, array $args)
     {
-        if(!array_key_exists($eventType, $this->eventTypes)) {
-            throw new FoonooException("Event type {$eventType} has not been registered with the event dispatcher");
-        }
+        $this->checkEventType($eventType);
         if(empty($this->listeners[$eventType])) {
             return null;
         }
@@ -45,5 +44,12 @@ class EventDispatcher
     public function registerEventType(string $eventType, callable $factory) : void
     {
         $this->eventTypes[$eventType] = $factory;
+    }
+
+    private function checkEventType(string $eventType)
+    {
+        if(!array_key_exists($eventType, $this->eventTypes)) {
+            throw new FoonooException("Event type {$eventType} has not been registered with the event dispatcher");
+        }
     }
 }
