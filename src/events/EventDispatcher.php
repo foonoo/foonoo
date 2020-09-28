@@ -10,7 +10,6 @@ class EventDispatcher
 {
     private $listeners;
     private $eventTypes;
-    private $activeSite;
 
     public function addListener(string $eventType, callable $listener) : void
     {
@@ -22,6 +21,9 @@ class EventDispatcher
 
     public function dispatch(string $eventType, array $args)
     {
+        if(!array_key_exists($eventType, $this->eventTypes)) {
+            throw new FoonooException("Event type {$eventType} has not been registered with the event dispatcher");
+        }
         if(empty($this->listeners[$eventType])) {
             return null;
         }
@@ -43,10 +45,5 @@ class EventDispatcher
     public function registerEventType(string $eventType, callable $factory) : void
     {
         $this->eventTypes[$eventType] = $factory;
-    }
-
-    public function setActiveSite($site) : void
-    {
-        $this->activeSite = $site;
     }
 }

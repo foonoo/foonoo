@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . "/../vendor/autoload.php";
 
+use foonoo\events\AssetPipelineReady;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -12,9 +13,9 @@ use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
 use foonoo\events\EventDispatcher;
 use foonoo\content\AutomaticContentFactory;
-use foonoo\events\PageOutputGenerated;
-use foonoo\events\PagesReady;
-use foonoo\events\PageWriteStarted;
+use foonoo\events\ContentOutputGenerated;
+use foonoo\events\ContentReady;
+use foonoo\events\ContentWriteStarted;
 use foonoo\events\PluginsInitialized;
 use foonoo\events\SiteCreated;
 use foonoo\events\SiteWriteStarted;
@@ -205,15 +206,15 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new ThemeLoaded($args['theme'], $templateEngine);
         }
     );
-    $eventDispatcher->registerEventType(PageOutputGenerated::class,
+    $eventDispatcher->registerEventType(ContentOutputGenerated::class,
         function ($args) {
-            return new PageOutputGenerated($args['output'], $args['page'], $args['site']);
+            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
         }
     );
-    $eventDispatcher->registerEventType(PagesReady::class,
+    $eventDispatcher->registerEventType(ContentReady::class,
         function ($args) use ($container) {
             $automaticContentFactory = $container->get(AutomaticContentFactory::class);
-            return new PagesReady($args['pages'], $automaticContentFactory);
+            return new ContentReady($args['pages'], $automaticContentFactory);
         }
     );
     $eventDispatcher->registerEventType(SiteCreated::class,
@@ -231,9 +232,14 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new SiteWritten($args['site']);
         }
     );
-    $eventDispatcher->registerEventType(PageWriteStarted::class,
+    $eventDispatcher->registerEventType(ContentWriteStarted::class,
         function($args) {
-            return new PageWriteStarted($args['page']);
+            return new ContentWriteStarted($args['page']);
+        }
+    );
+    $eventDispatcher->registerEventType(AssetPipelineReady::class,
+        function($args) {
+        return new AssetPipelineReady($args['pipeline']);
         }
     );
     return $eventDispatcher;

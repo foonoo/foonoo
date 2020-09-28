@@ -12,7 +12,7 @@ use foonoo\sites\AbstractSite;
  *
  * @package foonoo\events
  */
-class PageOutputGenerated
+class ContentOutputGenerated
 {
     private $output;
     private $page;

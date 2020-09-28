@@ -1,8 +1,6 @@
 <?php
 
-
 namespace foonoo\events;
-
 
 use foonoo\sites\AssetPipeline;
 
@@ -17,11 +15,13 @@ class AssetPipelineReady
 {
     private $pipeline;
 
-    public function __construct(AssetPipeline  $pipeline) {
+    public function __construct(AssetPipeline $pipeline)
+    {
         $this->pipeline = $pipeline;
     }
 
-    public function getAssetPipeline() : AssetPipeline {
+    public function getAssetPipeline(): AssetPipeline
+    {
         return $this->pipeline;
     }
 }

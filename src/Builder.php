@@ -147,7 +147,6 @@ class Builder
 
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
-            $this->eventDispatcher->setActiveSite($site);
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
 

@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 
 use foonoo\events\EventDispatcher;
-use foonoo\events\PageWriteStarted;
+use foonoo\events\ContentWriteStarted;
 use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
 use foonoo\content\Content;
@@ -58,8 +58,8 @@ class DefaultTags
                 $this->site = $event->getSite();
             }
         );
-        $eventDispatcher->addListener(PageWriteStarted::class,
-            function (PageWriteStarted $event) {
+        $eventDispatcher->addListener(ContentWriteStarted::class,
+            function (ContentWriteStarted $event) {
                 $this->page = $event->getContent();
                 $this->templateData = $this->site->getTemplateData($this->page->getFullDestination());
             }

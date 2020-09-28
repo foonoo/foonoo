@@ -8,6 +8,13 @@ use MatthiasMullie\Minify\JS;
 use MatthiasMullie\Minify\Minify;
 use ntentan\utils\Filesystem;
 
+/**
+ * Manages all the assets for a site.
+ * Stylesheets and Javascripts added to the pipeline can be combined and minified. Other files are just copied to
+ * specified destinations when sites are built.
+ *
+ * @package foonoo\sites
+ */
 class AssetPipeline
 {
     private $stylesheets = [];
@@ -20,12 +27,26 @@ class AssetPipeline
     private $cssMinifier;
     private $jsMinifier;
 
+    /**
+     * AssetPipeline constructor.
+     *
+     * @param CSS $cssMinifier
+     * @param JS $jsMinifier
+     */
     public function __construct(CSS $cssMinifier, JS $jsMinifier)
     {
         $this->cssMinifier = $cssMinifier;
         $this->jsMinifier = $jsMinifier;
     }
 
+    /**
+     * Add an item to the pipeline.
+     *
+     * @param $path
+     * @param $options
+     * @param $collection
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     */
     private function addItem($path, $options, &$collection) : void
     {
         Filesystem::checkExists($path);
@@ -34,11 +55,25 @@ class AssetPipeline
         $collection[] = ['path' => $path, 'options' => $options];
     }
 
+    /**
+     * Add a stylesheet to the pipeline.
+     *
+     * @param $path
+     * @param array $options
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     */
     public function addStylesheet($path, $options = []) : void
     {
         $this->addItem($path, $options, $this->stylesheets);
     }
 
+    /**
+     * Add a javascript to the pipeline.
+     *
+     * @param $path
+     * @param array $options
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     */
     public function addJavascript($path, $options = []) : void
     {
         $this->addItem($path, $options, $this->javascripts,);
@@ -51,6 +86,12 @@ class AssetPipeline
         return $minifier->minify();
     }
 
+    /**
+     * Add an arbitrary file to the pipeline.
+     *
+     * @param $path
+     * @param $options
+     */
     public function addFile($path, $options) : void
     {
         if(!is_array($options)) {

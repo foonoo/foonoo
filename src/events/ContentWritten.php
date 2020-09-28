@@ -4,7 +4,7 @@
 namespace foonoo\events;
 
 
-class PageWritten
+class ContentWritten
 {
 
 }

@@ -6,7 +6,7 @@ namespace foonoo\events;
 
 use foonoo\content\Content;
 
-class PageWriteStarted
+class ContentWriteStarted
 {
     private $content;
 

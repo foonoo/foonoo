@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 use DOMDocument;
 use foonoo\events\EventDispatcher;
-use foonoo\events\PageOutputGenerated;
+use foonoo\events\ContentOutputGenerated;
 use foonoo\text\TemplateEngine;
 use foonoo\utils\Nomenclature;
 
@@ -22,7 +22,7 @@ class TocGenerator
 
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
-        $events->addListener(PageOutputGenerated::class, $this->getTOCRenderer());
+        $events->addListener(ContentOutputGenerated::class, $this->getTOCRenderer());
         $this->templateEngine = $templateEngine;
     }
 
@@ -35,7 +35,7 @@ class TocGenerator
 
     private function getTOCRenderer()
     {
-        return function (PageOutputGenerated $event) {
+        return function (ContentOutputGenerated $event) {
             $content = $event->getPage();
             $destination = $content->getDestination();
             if(!isset($this->pendingTables[$destination])) {

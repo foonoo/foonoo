@@ -8,10 +8,10 @@ use ntentan\utils\Filesystem;
 use foonoo\content\Content;
 use foonoo\content\ThemableInterface;
 use foonoo\events\EventDispatcher;
-use foonoo\events\PageOutputGenerated;
-use foonoo\events\PagesReady;
-use foonoo\events\PageWriteStarted;
-use foonoo\events\PageWritten;
+use foonoo\events\ContentOutputGenerated;
+use foonoo\events\ContentReady;
+use foonoo\events\ContentWriteStarted;
+use foonoo\events\ContentWritten;
 use foonoo\events\SiteWriteStarted;
 use foonoo\events\ThemeLoaded;
 use foonoo\text\TemplateEngine;
@@ -51,12 +51,12 @@ class SiteWriter
         $pages = array_map(function ($x) use ($site) {
             return $x->setSitePath($site->getDestinationPath());
         }, $site->getPages());
-        $event = $this->eventDispatcher->dispatch(PagesReady::class, ['pages' => $pages]);
+        $event = $this->eventDispatcher->dispatch(ContentReady::class, ['pages' => $pages]);
         $pages = $event ? $event->getPages() : $pages;
 
         /** @var Content $page */
         foreach ($pages as $page) {
-            $this->eventDispatcher->dispatch(PageWriteStarted::class, ['page' => $page]);
+            $this->eventDispatcher->dispatch(ContentWriteStarted::class, ['page' => $page]);
             $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $page);
         }
@@ -90,12 +90,12 @@ class SiteWriter
         } else {
             $output = $content->render();
         }
-        $event = $this->eventDispatcher->dispatch(PageOutputGenerated::class, ['output' => $output, 'page' => $content, 'site' => $site]);
+        $event = $this->eventDispatcher->dispatch(ContentOutputGenerated::class, ['output' => $output, 'page' => $content, 'site' => $site]);
         $output = $event ? $event->getOutput() : $output;
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);
         }
         file_put_contents($destinationPath, $output);
-        $this->eventDispatcher->dispatch(PageWritten::class, ['page' => $content, 'destination_path' => $destinationPath]);
+        $this->eventDispatcher->dispatch(ContentWritten::class, ['page' => $content, 'destination_path' => $destinationPath]);
     }
 }
