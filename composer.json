@@ -1,5 +1,5 @@
 {
-    "name": "ekowabaka/nyansapow",
+    "name": "ekowabaka/foonoo",
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
     "require": {
         "ekowabaka/clearice": "~3.0",
@@ -19,7 +19,8 @@
       "ext-imagick": "*"
     },
     "require-dev" : {
-        "phing/phing" : "@stable"
+        "phing/phing" : "@stable",
+        "phpunit/phpunit": "@stable"
     },
     "license": "MIT",
     "authors": [
@@ -29,7 +30,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {"foonoo\\": "src/"}
+        "psr-4": {"foonoo\\": "src/", "foonoo\\tests\\":  "tests"}
     },
     "bin" : ["bin/foonoo"]
 }
