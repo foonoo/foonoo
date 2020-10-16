@@ -16,10 +16,10 @@ class TagParser
     private const TOKENS = [
         'START_TAG' => '\[\[',
         'END_TAG' => '\]\]',
-        'CHUNK' => '((?![\[\]])\S)+|\]|\[',
+        'IDENTIFIER' => '([a-zA-Z_\.\-][a-zA-Z_\.\-]*)(\s*)(=)',
+        'CHUNK' => '((?![\[\]\|])\S)+|\]|\[',
         'WHITESPACE' => '[\s]+',
-        'SEPARATOR' => '|',
-        'IDENTIFIER' => '[a-zA-Z_\.-][a-zA-Z_\.-]+(\s+)?(=)',
+        'SEPARATOR' => '\|',
     ];
 
     /**
@@ -73,8 +73,9 @@ class TagParser
         yield ['token' => 'END'];
     }
 
-    private function processTag($text, $attributes) {
-        foreach($this->registeredTags as $tag) {
+    private function processTag($text, $attributes)
+    {
+        foreach ($this->registeredTags as $tag) {
             if (preg_match($tag['regex'], $text, $matches)) {
                 return $tag['callable']($matches, $text, $attributes);
             }
@@ -84,20 +85,46 @@ class TagParser
     /**
      * @param $tokens
      */
-    private function eatWhite(\Generator $tokens) {
-        while($tokens->current()['token'] == 'WHITESPACE') {
+    private function eatWhite(\Generator $tokens)
+    {
+        while ($tokens->current()['token'] == 'WHITESPACE') {
             $tokens->next();
         }
+    }
+
+    private function parseAttributeTags(\Generator $tokens)
+    {
+        $attributes = [];
+        while($tokens->current()['token'] == 'IDENTIFIER') {
+            $key = trim(substr($tokens->current()['value'], -1));
+            $tokens->next();
+            $attributes[$key] = $tokens->current()['value'];
+        }
+        return $attributes;
+    }
+
+    private function parseDefaultAttribute($tokens) {
+        $tag = "";
+        $currentToken = $tokens->current();
+        while (!in_array($currentToken['token'], ['SEPARATOR', 'END_TAG', 'START_TAG', 'END'])) {
+            $tag .= $currentToken['value'];
+            $tokens->next();
+            $currentToken = $tokens->current();
+        }
+        return ['__default' => $tag];
     }
 
     /**
      * @param \Generator $tokens
      */
-    private function parseAttributes(\Generator $tokens) {
+    private function parseAttributes(\Generator $tokens)
+    {
+        $tokens->next();
         $this->eatWhite($tokens);
         if ($tokens->current()['token'] == "IDENTIFIER") {
-            $this->eatWhite($tokens);
-
+            return $this->parseAttributeTags($tokens);
+        } else {
+            return $this->parseDefaultAttribute($tokens);
         }
     }
 
@@ -118,12 +145,13 @@ class TagParser
         if ($currentToken['token'] == 'END_TAG') {
             // Process tag on end tag
             return $this->processTag($tag, []);
-        } else if($currentToken['token'] == 'SEPARATOR') {
+        } else if ($currentToken['token'] == 'SEPARATOR') {
             // Parse attributes on separator
-            return $this->processTag($tag, $this->parseAttributes($tokens));
+            $output = $this->processTag($tag, $this->parseAttributes($tokens));
+            return $output;
         } else if ($currentToken['token'] == 'START_TAG') {
             // Recursively parse a new tag for incomplete tags
-            return "[[" . $tag .  $this->parseFoonooTag($tokens);
+            return "[[" . $tag . $this->parseFoonooTag($tokens);
         }
 
         return "[[" . $tag;
@@ -150,30 +178,4 @@ class TagParser
         }
         return $output;
     }
-//    private function parseLine($line)
-//    {
-//        $parsed = "";
-//        $offset = 0;
-//        while($offset < strlen($line)) {
-//            $buffer = substr($line, $offset);
-//            if (!preg_match("/\[\[/", $buffer, $matches, PREG_OFFSET_CAPTURE)) {
-//                return $parsed . $buffer;
-//            }
-//            $start = $matches[0][1];
-//            if(!preg_match("/\]\]/", $buffer, $matches, PREG_OFFSET_CAPTURE)) {
-//                return $parsed . $buffer;
-//            }
-//            $parsed .= substr($buffer, 0, $start);
-//            $start += 2;
-//            $text = substr($buffer, $start, $matches[0][1] - $start);
-//            $offset += $matches[0][1] + 2;
-//            foreach($this->tags as $tag) {
-//                if (preg_match($tag['regex'], $text, $matches)) {
-//                    $parsed .= $tag['callable']($matches, $text);
-//                    break;
-//                }
-//            }
-//        }
-//        return $parsed;
-//    }
 }
