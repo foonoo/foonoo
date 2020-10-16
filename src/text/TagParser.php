@@ -2,9 +2,6 @@
 
 namespace foonoo\text;
 
-use foonoo\sites\AbstractSite;
-use foonoo\content\Content;
-
 /**
  * Parse text containing special Foonoo tags.
  *
@@ -66,12 +63,28 @@ class TagParser
      */
     private function parseLine($line)
     {
-        if (!preg_match("/\[\[/", $line, $matches, PREG_OFFSET_CAPTURE)) {
-            return $line;
+        $parsed = "";
+        $offset = 0;
+        while($offset < strlen($line)) {
+            $buffer = substr($line, $offset);
+            if (!preg_match("/\[\[/", $buffer, $matches, PREG_OFFSET_CAPTURE)) {
+                return $parsed .= $buffer;
+            }
+            $start = $matches[0][1] + 2;
+            $parsed .= substr($buffer, 0, $matches[0][1]);
+            if(!preg_match("/\]\]/", $buffer, $matches, PREG_OFFSET_CAPTURE)) {
+                return $parsed .= $buffer;
+            }
+            $end = $matches[0][1];
+            var_dump($start, $end);
+            var_dump(substr($buffer, $start, $end));
+            break;
+            //$parsed .= $matches[0]
+//            foreach ($this->tags as $tag) {
+//                $line = preg_replace_callback($tag['regex'], $tag['callable'], $line);
+//            }
+//            return $line;            
         }
-        foreach ($this->tags as $tag) {
-            $line = preg_replace_callback($tag['regex'], $tag['callable'], $line);
-        }
-        return $line;
+        return $parsed;
     }
 }
