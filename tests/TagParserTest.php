@@ -36,6 +36,17 @@ class TagParserTest extends TestCase
         $this->assertEquals("Hello [[caps world, this is an interesting tag.\n", $response);
         $response = $this->tagParser->parse("Hello [[caps world]], this is an interesting [[caps tag.");
         $this->assertEquals("Hello WORLD, this is an interesting [[caps tag.\n", $response);
+        $response = $this->tagParser->parse("Hello [[caps world, this is an interesting [[caps tag]].");
+        $this->assertEquals("Hello [[caps world, this is an interesting TAG.\n", $response);
     }
 
+    public function testDefaultAttributes()
+    {
+
+    }
+
+    public function testAttributes()
+    {
+
+    }
 }
