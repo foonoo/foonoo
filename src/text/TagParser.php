@@ -96,9 +96,11 @@ class TagParser
     {
         $attributes = [];
         while($tokens->current()['token'] == 'IDENTIFIER') {
-            $key = trim(substr($tokens->current()['value'], -1));
+            $key = trim(substr($tokens->current()['value'], 0, -1));
             $tokens->next();
             $attributes[$key] = $tokens->current()['value'];
+            $tokens->next();
+            $this->eatWhite($tokens);
         }
         return $attributes;
     }
@@ -147,8 +149,10 @@ class TagParser
             return $this->processTag($tag, []);
         } else if ($currentToken['token'] == 'SEPARATOR') {
             // Parse attributes on separator
-            $output = $this->processTag($tag, $this->parseAttributes($tokens));
-            return $output;
+            $attributes = $this->parseAttributes($tokens);
+            if($tokens->current()['token'] == 'END_TAG') {
+                return $this->processTag($tag, $attributes);
+            }
         } else if ($currentToken['token'] == 'START_TAG') {
             // Recursively parse a new tag for incomplete tags
             return "[[" . $tag . $this->parseFoonooTag($tokens);

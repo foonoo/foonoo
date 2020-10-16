@@ -18,7 +18,7 @@ class TagParserTest extends TestCase
                 foreach($attributes as $attribute => $value) {
                     $attrs .= "$attribute:$value ";
                 }
-                return $this->replaceText($matches) . "[$attrs]";
+                return "[{$this->replaceText($matches)}]->[$attrs]";
             }, "test");
 
     }
@@ -57,7 +57,7 @@ class TagParserTest extends TestCase
 
     public function testAttributes()
     {
-        $response = $this->tagParser->parse("Hello [[caps Args | key=value ]] arguments");
+        $response = $this->tagParser->parse("Hello [[caps Args| key=value ]] arguments");
         $this->assertEquals("Hello ARGS[key:value ] arguments", $response);
     }
 }
