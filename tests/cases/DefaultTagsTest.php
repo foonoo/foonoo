@@ -48,7 +48,13 @@ class DefaultTagsTest extends TestCase
 
     public function testRenderImage()
     {
-        $parsed = $this->tagParser->parse("This should generate an image tag [[something.jpeg]]");
-        $this->assertEquals("This should generate an image tag <img src=\"np_images/something.jpeg\"/>\n", $parsed);
+        $parsed = $this->tagParser->parse("[[something.jpeg]]");
+        $this->assertEquals("<img src=\"np_images/something.jpeg\"/>\n", $parsed);
+    }
+
+    public function testRenderMultiImage()
+    {
+        $parsed = $this->tagParser->parse("[[something.jpeg, another.png]]");
+        var_dump($parsed);
     }
 }
