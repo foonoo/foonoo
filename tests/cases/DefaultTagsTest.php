@@ -10,6 +10,9 @@ use foonoo\text\TagParser;
 use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 use ntentan\honam\EngineRegistry;
+use ntentan\honam\engines\php\HelperVariable;
+use ntentan\honam\engines\php\Janitor;
+use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +24,10 @@ class DefaultTagsTest extends TestCase
     public function setUp(): void
     {
         $templateFileResolver = new TemplateFileResolver();
-        $templateRenderer = new TemplateRenderer(new EngineRegistry(), $templateFileResolver);
+        $templateFileResolver->appendToPathHierarchy(__DIR__ .  "/../../themes/parser");
+        $engineRegistry = new EngineRegistry();
+        $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
+        $engineRegistry->registerEngine([".tpl.php"], new PhpEngineFactory($templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()));
         $templateEngine = new TemplateEngine($templateFileResolver, $templateRenderer);
         $tocGenerator = $this->getMockBuilder(TocGenerator::class)->disableOriginalConstructor()->getMock();
         $tocGenerator->method('anticipate')->willReturn('[TOC anticipated]');
@@ -38,5 +44,11 @@ class DefaultTagsTest extends TestCase
     {
         $parsed = $this->tagParser->parse("Some content [[_TOC_]] that I love");
         $this->assertEquals("Some content [TOC anticipated] that I love\n", $parsed);
+    }
+
+    public function testRenderImage()
+    {
+        $parsed = $this->tagParser->parse("This should generate an image tag [[something.jpeg]]");
+        $this->assertEquals("This should generate an image tag <img src=\"np_images/something.jpeg\"/>\n", $parsed);
     }
 }

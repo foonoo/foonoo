@@ -62,4 +62,10 @@ class TagParserTest extends TestCase
         $response = $this->tagParser->parse("Hello [[caps Args| key=value word=meaning ]] arguments");
         $this->assertEquals("Hello [ARGS]->[key:value word:meaning ] arguments\n", $response);
     }
+
+    public function testCombinedAttributes()
+    {
+        $response = $this->tagParser->parse("Combined attributes [[caps combined| Value of default | key=value]]. Yeah!");
+        $this->assertEquals("Combined attributes [COMBINED]->[__default:Value of default key:value ]. Yeah!\n", $response);
+    }
 }

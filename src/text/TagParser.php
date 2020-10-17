@@ -113,7 +113,7 @@ class TagParser
             $tokens->next();
             $currentToken = $tokens->current();
         }
-        return ['__default' => $tag];
+        return ['__default' => trim($tag)];
     }
 
     /**
@@ -126,7 +126,11 @@ class TagParser
         if ($tokens->current()['token'] == "IDENTIFIER") {
             return $this->parseAttributeTags($tokens);
         } else {
-            return $this->parseDefaultAttribute($tokens);
+            $attributes = $this->parseDefaultAttribute($tokens);
+            if($tokens->current()['token'] == "SEPARATOR") {
+                $attributes = $attributes + $this->parseAttributes($tokens);
+            }
+            return $attributes;
         }
     }
 

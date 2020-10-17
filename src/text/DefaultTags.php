@@ -78,20 +78,20 @@ class DefaultTags
         ];
     }
 
-    private function getImageTagAttributes($string)
-    {
-        preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
-        $attributes = array();
-        foreach ($matches['attribute'] as $key => $attribute) {
-            if ($matches['value'][$key] == '') {
-                $attributes[$attribute] = true;
-            } else {
-                $attributes[$attribute] = $matches['value'][$key];
-            }
-        }
-
-        return $attributes;
-    }
+//    private function getImageTagAttributes($string)
+//    {
+//        preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
+//        $attributes = array();
+//        foreach ($matches['attribute'] as $key => $attribute) {
+//            if ($matches['value'][$key] == '') {
+//                $attributes[$attribute] = true;
+//            } else {
+//                $attributes[$attribute] = $matches['value'][$key];
+//            }
+//        }
+//
+//        return $attributes;
+//    }
 
     public function setData(array $data)
     {
@@ -101,7 +101,7 @@ class DefaultTags
     private function getImages($string)
     {
         preg_match_all("/((?<image>.*\.(jpeg|jpg|png|gif|webp))\s*,\s*)*(?<last_image>.*\.(jpeg|jpg|png|gif|webp))/", $string, $matches);
-        $images = array_filter(array_merge($matches['image'], $matches['last_image']), function($item){return $item !== "";});
+        $images = array_values(array_filter(array_merge($matches['image'], $matches['last_image']), function($item){return $item !== "";}));
         return $images;
     }
 
@@ -111,22 +111,17 @@ class DefaultTags
      * @param array $matches
      * @return string
      */
-    public function renderImageTag(array $matches)
+    public function renderImageTag(array $matches, string $tag, array $attributes)
     {
-        $attributes =$this->getImageTagAttributes($matches['options'] ?? '');
-        $attributeString = '';
-        foreach ($attributes as $key => $value) {
-            $attributeString .= "$key = '$value' ";
-        }
-        return $this->templateEngine->render('image_tag',
+        return trim($this->templateEngine->render('image_tag',
             [
                 'alt' => $matches['alt'] ?? '',
                 'site_path' => $this->data['site_path'] ?? '',
                 'home_path' => $this->data['home_path'] ?? '',
                 'images' => $this->getImages($matches['image']),
-                'attribute_string' => $attributeString
+                'attributes' => $attributes
             ]
-        );
+        ));
     }
 
     public function renderPageLink(array $matches)
