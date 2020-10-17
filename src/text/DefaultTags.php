@@ -45,9 +45,9 @@ class DefaultTags
     private $templateData;
 
     /**
-     * @var Content
+     * @var string
      */
-    private $page;
+    private $pageDestination;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
@@ -60,8 +60,8 @@ class DefaultTags
         );
         $eventDispatcher->addListener(ContentWriteStarted::class,
             function (ContentWriteStarted $event) {
-                $this->page = $event->getContent();
-                $this->templateData = $this->site->getTemplateData($this->page->getFullDestination());
+                $this->pageDestination = $event->getContent()->getDestination();
+                $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
             }
         );
     }
@@ -72,13 +72,9 @@ class DefaultTags
             ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"]],
             ["regex" => "/\/block/", "callable" => [$this, "renderBlockCloseTag"]],
             ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"]],
-            [
-                "regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))\s*(\|'?(?<alt>[a-zA-Z0-9 ,.-]*)'?)?(?<options>[a-zA-Z0-9_=|:%]+)?/",
-                "callable" => [$this, "renderImageTag"]
-            ],
-            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"]],
-            ["regex" => "|(?<title>[a-zA-Z0-9 _\-.]*)\|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"]],
+            ["regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))/", "callable" => [$this, "renderImageTag"]],
             ['regex' => "/_TOC_/", 'callable' => [$this, 'renderTableOfContents']],
+            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"]],
         ];
     }
 
@@ -169,6 +165,6 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        return $this->tocGenerator->anticipate($this->page->getDestination());
+        return $this->tocGenerator->anticipate($this->pageDestination);
     }
 }

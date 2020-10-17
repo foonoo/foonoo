@@ -8,8 +8,8 @@ use foonoo\FoonooException;
 
 class EventDispatcher
 {
-    private $listeners;
-    private $eventTypes;
+    private $listeners = [];
+    private $eventTypes = [];
 
     public function addListener(string $eventType, callable $listener) : void
     {

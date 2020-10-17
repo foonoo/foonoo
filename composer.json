@@ -30,7 +30,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {"foonoo\\": "src/", "foonoo\\tests\\":  "tests"}
+        "psr-4": {"foonoo\\": "src/", "foonoo\\tests\\":  "tests/cases/"}
     },
     "bin" : ["bin/foonoo"]
 }
