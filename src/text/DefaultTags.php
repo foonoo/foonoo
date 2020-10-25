@@ -78,21 +78,6 @@ class DefaultTags
         ];
     }
 
-//    private function getImageTagAttributes($string)
-//    {
-//        preg_match_all("/(\|((?<attribute>[a-zA-Z0-9]+)(:(?<value>[a-zA-Z0-9]*))?))/", $string, $matches);
-//        $attributes = array();
-//        foreach ($matches['attribute'] as $key => $attribute) {
-//            if ($matches['value'][$key] == '') {
-//                $attributes[$attribute] = true;
-//            } else {
-//                $attributes[$attribute] = $matches['value'][$key];
-//            }
-//        }
-//
-//        return $attributes;
-//    }
-
     public function setData(array $data)
     {
         $this->data = $data;
