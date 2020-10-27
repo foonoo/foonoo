@@ -6,7 +6,7 @@ namespace foonoo\content;
 /**
  * Creates instances of Content classes for registered content types.
  * In cases where registered content types do not exist, files passed are wrapped with the CopiedContent type, which
- * allows files to be copied to the destination site.
+ * allows files to be copied to the destination site without any processing.
  *
  * @package foonoo\content
  */

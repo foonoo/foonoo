@@ -71,7 +71,7 @@ class Builder
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    private function readSiteMeta($path)
+    private function readSiteMetadata($path)
     {
         $meta = false;
         if (file_exists("{$path}site.yml")) {
@@ -93,7 +93,7 @@ class Builder
     {
         $sites = array();
         $dir = dir($path);
-        $metaData = $this->readSiteMeta($path);
+        $metaData = $this->readSiteMetadata($path);
 
         if(is_array($metaData) || $root) {
             $site = $this->createSite($metaData, $path);
@@ -195,7 +195,7 @@ class Builder
 
     private function initializePlugins()
     {
-        $rootSite = $this->readSiteMeta($this->options['input']);
+        $rootSite = $this->readSiteMetadata($this->options['input']);
         if(is_array($rootSite) && isset($rootSite['plugins'])) {
             foreach ($rootSite['plugins'] as $plugin) {
                 if(is_array($plugin)) {
