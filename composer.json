@@ -1,5 +1,5 @@
 {
-    "name": "ekowabaka/foonoo",
+    "name": "foonoo/foonoo",
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
     "require": {
         "ekowabaka/clearice": "~3.0",
@@ -16,7 +16,8 @@
         "ext-libxml": "*",
         "ext-fileinfo": "*",
         "ext-pcntl": "*",
-      "ext-imagick": "*"
+        "ext-imagick": "*",
+        "ext-json": "*"
     },
     "require-dev" : {
         "phing/phing" : "@stable",

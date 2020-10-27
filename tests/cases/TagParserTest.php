@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 class TagParserTest extends TestCase
 {
     private $tagParser;
-    private $attributeParser;
 
     public function setUp(): void
     {
