@@ -15,7 +15,9 @@ use foonoo\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
- * Performs the actual building of sites.
+ * Builds sites.
+ * This class reads the input directory to detect sites, and it goes ahead to load all the site generators that are
+ * needed to build the sites.
  * 
  */
 class Builder

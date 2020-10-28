@@ -1,2 +1,8 @@
-## YAML Template.
----
+name: Default foonoo blog theme
+author: Ekow Abaka
+
+default_layout: layout
+assets:
+  css:
+    - assets/css/reset.css
+    - assets/css/blog.css

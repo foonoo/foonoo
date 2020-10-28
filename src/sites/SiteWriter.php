@@ -36,6 +36,8 @@ class SiteWriter
     }
 
     /**
+     * Write a site.
+     *
      * @param AbstractSite $site
      * @throws FileAlreadyExistsException
      * @throws FileNotWriteableException
@@ -48,17 +50,17 @@ class SiteWriter
         $assetPipeline = $site->getAssetPipeline();
         $this->eventDispatcher->dispatch(AssetPipelineReady::class, ['pipeline' => $assetPipeline]);
         $assetPipeline->buildAssets();
-        $pages = array_map(function ($x) use ($site) {
+        $contents = array_map(function ($x) use ($site) {
             return $x->setSitePath($site->getDestinationPath());
         }, $site->getPages());
-        $event = $this->eventDispatcher->dispatch(ContentReady::class, ['pages' => $pages]);
-        $pages = $event ? $event->getPages() : $pages;
+        $event = $this->eventDispatcher->dispatch(ContentReady::class, ['pages' => $contents]);
+        $contents = $event ? $event->getPages() : $contents;
 
-        /** @var Content $page */
-        foreach ($pages as $page) {
-            $this->eventDispatcher->dispatch(ContentWriteStarted::class, ['page' => $page]);
-            $this->io->output("- Writing page {$site->getDestinationPath($page->getDestination())} \n");
-            $this->writeContentToOutputPath($site, $theme, $page);
+        /** @var Content $content */
+        foreach ($contents as $content) {
+            $this->eventDispatcher->dispatch(ContentWriteStarted::class, ['page' => $content]);
+            $this->io->output("- Writing page {$site->getDestinationPath($content->getDestination())} \n");
+            $this->writeContentToOutputPath($site, $theme, $content);
         }
     }
 
