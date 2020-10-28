@@ -10,14 +10,16 @@ class EventDispatcher
 {
     private $listeners = [];
     private $eventTypes = [];
+    private $index = 0;
 
-    public function addListener(string $eventType, callable $listener) : void
+    public function addListener(string $eventType, callable $listener) : int
     {
         $this->checkEventType($eventType);
         if (!isset($this->listeners[$eventType])) {
             $this->listeners[$eventType] = [];
         }
         $this->listeners[$eventType][] = $listener;
+        return ++$this->index;
     }
 
     public function dispatch(string $eventType, array $args)
