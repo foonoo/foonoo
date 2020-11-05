@@ -54,6 +54,8 @@ class Builder
 
     private $cacheFactory;
 
+    private $loadedPluginEvents = [];
+
 
     /**
      * Create an instance of the context object through which Nyansapow works.
@@ -127,7 +129,6 @@ class Builder
 
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
         $shortPath = substr($path, strlen($this->options['input']));
-        unset($metaData['plugins']);
 
         $site->setPath($shortPath);
         $site->setSourceRoot($this->options['input']);
@@ -151,6 +152,8 @@ class Builder
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
+
+            $this->initializePlugins($site->getMetaData()['plugins'] ?? null);
 
             $this->siteWriter->write($site);
 
@@ -195,28 +198,43 @@ class Builder
 
     }
 
-    private function initializePlugins()
+    private function removePluginEvents()
     {
-        $rootSite = $this->readSiteMetadata($this->options['input']);
-        if(is_array($rootSite) && isset($rootSite['plugins'])) {
-            foreach ($rootSite['plugins'] as $plugin) {
-                if(is_array($plugin)) {
-                    $options = reset($plugin);
-                    $plugin = array_keys($plugin)[0];
-                } else {
-                    $options = [];
+        foreach ($this->loadedPluginEvents as $eventType => $listeners) {
+            foreach ($listeners as $listener) {
+                $this->eventDispatcher->removeListener($eventType, $listener);
+            }
+        }
+        $this->loadedPluginEvents = [];
+    }
+
+    private function initializePlugins($plugins) : void
+    {
+        $this->removePluginEvents();
+        if($plugins === null) {
+            return;
+        }
+        foreach ($plugins as $plugin) {
+            if(is_array($plugin)) {
+                $options = reset($plugin);
+                $plugin = array_keys($plugin)[0];
+            } else {
+                $options = [];
+            }
+            $namespace = dirname($plugin);
+            $pluginName = basename($plugin);
+            $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
+            $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
+            $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
+            Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
+            require_once $pluginFile;
+            $pluginInstance = new $pluginClass($plugin, $this->io, $options);
+            foreach($pluginInstance->getEvents() as $event => $callable) {
+                $id = $this->eventDispatcher->addListener($event, $callable);
+                if(!isset($this->loadedPluginEvents[$event])) {
+                    $this->loadedPluginEvents[$event] = [];
                 }
-                $namespace = dirname($plugin);
-                $pluginName = basename($plugin);
-                $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
-                $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
-                $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
-                Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
-                require_once $pluginFile;
-                $pluginInstance = new $pluginClass($plugin, $this->io, $options);
-                foreach($pluginInstance->getEvents() as $event => $callable) {
-                    $this->eventDispatcher->addListener($event, $callable);
-                }
+                $this->loadedPluginEvents[$event][] = $id;
             }
         }
         $this->eventDispatcher->dispatch(PluginsInitialized::class, []);
@@ -227,7 +245,7 @@ class Builder
         try {
             $this->cacheFactory = $cacheFactory;
             $this->setOptions($options);
-            $this->initializePlugins();
+            //$this->initializePlugins();
             $this->buildSites();
         } catch (\Exception $e) {
             if ($options['debug']) {

@@ -10,8 +10,13 @@ class EventDispatcher
 {
     private $listeners = [];
     private $eventTypes = [];
-    private $index = 0;
 
+    /**
+     * @param string $eventType
+     * @param callable $listener
+     * @return int
+     * @throws FoonooException
+     */
     public function addListener(string $eventType, callable $listener) : int
     {
         $this->checkEventType($eventType);
@@ -19,7 +24,12 @@ class EventDispatcher
             $this->listeners[$eventType] = [];
         }
         $this->listeners[$eventType][] = $listener;
-        return ++$this->index;
+        return array_key_last($this->listeners[$eventType]);
+    }
+
+    public function removeListener(string $eventType, int $id)
+    {
+        unset($this->listeners[$eventType][$id]);
     }
 
     public function dispatch(string $eventType, array $args)
