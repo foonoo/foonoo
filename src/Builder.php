@@ -153,7 +153,7 @@ class Builder
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
 
-            $this->initializePlugins($site->getMetaData()['plugins'] ?? null);
+            $this->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath('np_plugins'));
 
             $this->siteWriter->write($site);
 
@@ -208,7 +208,7 @@ class Builder
         $this->loadedPluginEvents = [];
     }
 
-    private function initializePlugins($plugins) : void
+    private function initializePlugins($plugins, $sitePath) : void
     {
         $this->removePluginEvents();
         if($plugins === null) {
@@ -225,7 +225,7 @@ class Builder
             $pluginName = basename($plugin);
             $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
             $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
-            $pluginFile = $this->options['input'] . "/np_plugins/$namespace/$pluginName/$pluginClassName.php";
+            $pluginFile = "$sitePath/$namespace/$pluginName/$pluginClassName.php";
             Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
             require_once $pluginFile;
             $pluginInstance = new $pluginClass($plugin, $this->io, $options);
