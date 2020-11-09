@@ -22,7 +22,6 @@ class MarkupContentFactory implements ContentFactory
 
     public function create(string $source, string $destination): Content
     {
-        $content = new MarkupContent($this->htmlRenderer, $this->frontMatterReader, $source, $destination);
-        return $content;
+        return new MarkupContent($this->htmlRenderer, $this->frontMatterReader, $source, $destination);
     }
 }

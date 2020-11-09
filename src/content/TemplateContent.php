@@ -19,7 +19,7 @@ class TemplateContent extends Content implements DataRenderer
     {
         $this->templates = $templates;
         $this->source = $source;
-        $this->destination = $destination; //$this->adjustFileExtension($destination, 'html');
+        $this->destination = $destination;
     }
 
     /**
@@ -30,13 +30,10 @@ class TemplateContent extends Content implements DataRenderer
      */
     public function render(): string
     {
-        return $this->templates->render(
-            $this->source,
-            $this->data //?? $this->site->getTemplateData($this->site->getDestinationPath($this->destination))
-        );
+        return $this->templates->render($this->source, $this->data);
     }
 
-    public function setData($data) : void
+    public function setData($data): void
     {
         $this->data = $data;
     }

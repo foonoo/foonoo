@@ -29,4 +29,9 @@ class TemplateEngine
     {
         return $this->templateRenderer->render($template, $data);
     }
+
+    public function isRenderable($file) : bool
+    {
+        return $this->templateRenderer->canRender($file);
+    }
 }

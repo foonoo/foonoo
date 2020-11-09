@@ -122,7 +122,7 @@ class Builder
     private function createSite($metaData, $path)
     {
         if (!is_array($metaData)) {
-            $metaData = ['name' => $this->options['site-name'] ?? '', 'type' => $this->options['site-type'] ?? 'plain'];
+            $metaData = ['name' => $this->options['site-name'], 'type' => $this->options['site-type']];
         }
         $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/np_*"]
             + ($metaData['excluded_paths'] ?? []);
@@ -245,7 +245,6 @@ class Builder
         try {
             $this->cacheFactory = $cacheFactory;
             $this->setOptions($options);
-            //$this->initializePlugins();
             $this->buildSites();
         } catch (\Exception $e) {
             if ($options['debug']) {
