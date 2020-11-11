@@ -115,13 +115,12 @@ ol > li {
 
 
 code {
-    display: block;
     font-family: "Fira Code", monospace;
-    font-size: small;
-    padding: 10px;
+    font-size: 0.9em;
     background-color: #f0f0f0;
-    color:#202020;
+    color:#000;
     border-radius: 3px;
+    padding: 3px;
 }
 
 @media only screen and (max-width:700px) {

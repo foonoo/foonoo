@@ -7,6 +7,11 @@ namespace foonoo\events;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\content\Content;
 
+/**
+ * An event dispatched when all the content needed for a site are completely generated.
+ *
+ * @package foonoo\events
+ */
 class ContentReady
 {
     private $pages;
