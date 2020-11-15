@@ -1,5 +1,5 @@
 foonoo
 ======
-Like most static site generators, foonoo is designed to convert flat text files into websites that can be hosted almost anywhere. Unlike others, however, foonoo provides site generators that convert your text files to specific kinds of sites — like the usual blog or the documentation website. And in cases where you want to control the structure of your projects, foonoo allows you lump up all your text files and work with them directly as you please, or for the more technical folk, you can code your own generators.
+Like most static site generators, foonoo is designed to convert flat text files into websites that can be hosted almost anywhere. Foonoo provides site generators that convert your text files to specific kinds of sites, like the ever ubiquitous blog or a documentation website for your project. In cases where you want further control over the structure of your site, foonoo allows you to lump up all your text files and work with them directly as you please.
 
 
