@@ -1,8 +1,5 @@
 <?php
-
-
 namespace foonoo\sites;
-
 
 use foonoo\content\BlogContentFactory;
 use foonoo\content\BlogListingContent;
@@ -11,7 +8,7 @@ use foonoo\utils\Nomenclature;
 
 /**
  * Represents a blog site that has posts and pages.
- * @package nyansapow\sites
+ * @package foonoo\sites
  */
 class BlogSite extends AbstractSite
 {
@@ -49,8 +46,10 @@ class BlogSite extends AbstractSite
 
     /**
      * Return all taxonomies created for the site.
-     * Taxonomies are returned as an associative array where the keys represent machine names for the taxonomies, and
-     * values represent the corresponding human readable labels.
+     * 
+     * Taxonomies are returned as an associative array where the keys represent 
+     * machine names for the taxonomies, and values represent the corresponding 
+     * human readable labels.
      *
      * @return array
      */
