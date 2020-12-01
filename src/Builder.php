@@ -16,9 +16,8 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
  * Builds sites.
- * This class reads the input directory to detect sites, and it goes ahead to load all the site generators that are
- * needed to build the sites.
- * 
+ * This class reads the input directory to detect sites, loads all the site generators that are needed, and writes
+ * the sites to their output locations.
  */
 class Builder
 {

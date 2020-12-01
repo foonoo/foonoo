@@ -121,7 +121,7 @@ foonoo site generator
 $version
 EOT;
 
-$parser->enableHelp($description, "Find out more at https://foonoo.org");
+$parser->enableHelp($description, "Find out more at https://github.com/foonoo");
 $options = $parser->parse();
 
 if(!isset($options['__command'])) {

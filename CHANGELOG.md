@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v0.3.0 - 2020-12-01
 
 This release presents a shift in the underlying architecture of the code for this project. The original architecture, which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these directories, the generators were responsible for using their own internal code to write their own sites based on what it read from the site directory. Essentially, once a generator was loaded, all control was yielded to it, and there was no way third party code could be executed. An architecture like this is almost inextensible, and this release hopes to fix that.
 
@@ -10,8 +10,7 @@ For third party code to integrate with this process, there is an event system wh
 
 Another significant change in this release is the theme engine. This time around, due to the need to improve integration, assets for themes are not fixed. Plugins have the ability to inject custom stylesheets and scripts into the build process so themes could properly represent their functionality.
 
-I do not know what else to say except that this is — in every complete essence of the word — a total rewrite. To honour that, the project is also taking up a new name: foonoo.
-
+I don't know what else to say except that this is — in every complete essence of the word — a total rewrite. To honour that, the project is also taking up a new name: foonoo. 
 
 ## v0.2.2 - 2019-11-05
 ###  Added

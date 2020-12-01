@@ -11,7 +11,5 @@ By design, when it comes to the actual work of building sites, foonoo is almost 
    - Assets management and building. 
    - And most importantly, a user interface through which end users can interact with the system. 
 
-Given this structure of separated site builders, foonoo makes it possible to simply manage a — somewhat — complicated site containing different sections from a single project directory. That specific usecase was the primary motivation for this project.
-
-
+With its structure of separated site builders, foonoo makes it possible to  manage a complicated site that contains different sections — in a somewhat simplified manner — from a single project directory. This specific use case was the primary motivation for this project.
 
