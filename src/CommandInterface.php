@@ -1,12 +1,12 @@
 <?php
 
-namespace nyansapow;
+namespace foonoo;
 
 /**
- * Description of CommandInterface
+ * Interface for all commands that can be executed through the main foonoo binary.
  *
  * @author ekow
  */
 interface CommandInterface {
-    public function execute($options);
+    public function execute(array $options = []);
 }

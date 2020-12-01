@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.3.0 - 2020-12-01
+
+This release presents a shift in the underlying architecture of the code for this project. The original architecture, which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these directories, the generators were responsible for using their own internal code to write their own sites based on what it read from the site directory. Essentially, once a generator was loaded, all control was yielded to it, and there was no way third party code could be executed. An architecture like this is almost inextensible, and this release hopes to fix that.
+
+In this release, the commands for invoking the scripts from the shell haven't changed much. You can still generate your sites the way you used to without any issues. Internally, however, the code has changed a lot. First, the entire generator system has been scrapped. In its place, there is a `Builder` class which is responsible for coordinating the building of sites, a `SiteWriter` class for writing each individual site, and a `Site` class which tells the `SiteWriter` what to write. The site classes read the site directories, and then create `Content` objects which represent the actual files to be written. These `Content` objects are the media through which the `Site` objects tell the `SiteWriter` what files to write. 
+
+For third party code to integrate with this process, there is an event system which passes messages at different stages of the build process. Given that Site and Content objects are abstract, they also present another integration point for third party plugins to implement their own. Other integration points that currently exist are custom tags for the Nyansapow markdown parser, content converters that convert files from one format to another (such as Markdown to HTML),
+
+Another significant change in this release is the theme engine. This time around, due to the need to improve integration, assets for themes are not fixed. Plugins have the ability to inject custom stylesheets and scripts into the build process so themes could properly represent their functionality.
+
+I don't know what else to say except that this is — in every complete essence of the word — a total rewrite. To honour that, the project is also taking up a new name: foonoo. 
+
 ## v0.2.2 - 2019-11-05
 ###  Added
 - Front matter for posts are now sent to the layout renderer, so they are available when rendering layouts for blog posts and pages.

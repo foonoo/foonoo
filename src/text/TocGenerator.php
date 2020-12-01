@@ -1,8 +1,12 @@
 <?php
 
-namespace nyansapow\text;
+namespace foonoo\text;
 
 use DOMDocument;
+use foonoo\events\EventDispatcher;
+use foonoo\events\ContentOutputGenerated;
+use foonoo\text\TemplateEngine;
+use foonoo\utils\Nomenclature;
 
 /**
  * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.
@@ -11,65 +15,91 @@ use DOMDocument;
  */
 class TocGenerator
 {
-    public $hasToc = false;
-    private $toc;
+    use Nomenclature;
 
-    /**
-     * An instance of the dom document from which the TOC would be generated.
-     * @var DomDocument
-     */
-    private $dom;
+    private $pendingTables = [];
+    private $templateEngine;
 
-    private function getTableOfContentsMarkup($toc = null)
+    public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
-        $output = "";
-        if ($toc === null) {
-            $toc = $this->toc;
-        }
-
-        foreach ($toc as $node) {
-            $output .= "<li><a href='#{$node['id']}'>{$node['title']}</a>" . $this->getTableOfContentsMarkup($node['children']) . "</li>\n";
-        }
-
-        return count($toc) > 0 ? "\n<ul class='toc toc-{$toc[0]['level']}'>\n$output\n </ul>\n" : '';
+        $events->addListener(ContentOutputGenerated::class, $this->getTOCRenderer());
+        $this->templateEngine = $templateEngine;
     }
 
-    private function getTableOfContentsTree($level = 1, $index = 0)
+    public function anticipate($destination)
     {
-        $tocTree = array();
+        $id = md5($destination);
+        $this->pendingTables[$destination] = $id;
+        return "<div nptoc='$id'/>";
+    }
 
-        $xpath = new \DOMXPath($this->dom);;
-        $nodes = $xpath->query("//h1|//h2|//h3|//h4|//h5|//h6");
+    private function getTOCRenderer()
+    {
+        return function (ContentOutputGenerated $event) {
+            $content = $event->getPage();
+            $destination = $content->getDestination();
+            if(!isset($this->pendingTables[$destination])) {
+                return;
+            }
+            $id = $this->pendingTables[$destination];
+            $dom = new DOMDocument();
+            $dom->loadHTML($content->render());
+            $xpath = new \DOMXPath($dom);
+            $tree = $this->getTableOfContentsTree($xpath->query("//h2|//h3|//h4|//h5|//h6"));
+            $tocContainer = $xpath->query("//div[@nptoc='$id']");
+            $toc = $dom->createDocumentFragment();
+            $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
+            $tocContainer->item(0)->appendChild($toc);
+            $event->setOutput($dom->saveHTML());
+        };
+    }
+
+    /**
+     *
+     *
+     * @param \DOMNodeList $nodes
+     * @param int $level
+     * @param int $index
+     * @return array
+     */
+    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level=2, int $index=0)
+    {
+        $tocTree = [];
 
         for ($i = $index; $i < $nodes->length; $i++) {
-            $nodeId = str_replace(array(" ", "\t"), "-", strtolower($nodes->item($i)->nodeValue));
-            $anchor = $this->dom->createElement('a');
-            $anchor->setAttribute('name', $nodeId);
-            $anchor->setAttribute('class', 'title-anchor');
-            $nodes->item($i)->insertBefore($anchor);
-            if ($nodes->item($i) && $nodes->item($i)->nodeName == "h{$level}") {
-                if ($nodes->item($i + 1) && $nodes->item($i + 1)->nodeName == "h{$level}" || $nodes->item($i + 1) === null) {
+            $node = $nodes->item($i);
+            if ($node && $node->nodeName == "h{$level}") {
+                //$headerPath = $node->getNodePath();
+                $id = $this->makeId($node->textContent) . "-" . ($i + 1);
+                $nextItem = $nodes->item($i + 1);
+                $nextItemLevel = (int) (isset($nextItem) ? substr($nextItem->nodeName, -1) : 0);
+                $node->setAttribute("id", $id);
+
+                if ($nextItemLevel === $level) { //$nextItem && $nextItem->nodeName == "h{$level}") {
+                    // Add node and continue to node on same level
                     $tocTree[] = array(
-                        'id' => $nodeId,
-                        'title' => $nodes->item($i)->nodeValue,
+                        //'header_path' => $headerPath,
+                        'id' => $id,
+                        'title' => $node->nodeValue,
                         'level' => $level,
                         'children' => array()
                     );
-                } else if ($nodes->item($i + 1)->nodeName == "h" . ($level - 1)) {
+                } else if ($nextItemLevel < $level) {
+                    // Add node on current level and exit for node on lower level
                     $tocTree[] = array(
-                        'id' => $nodeId,
-                        'title' => $nodes->item($i)->nodeValue,
+                        'id' => $id,
+                        'title' => $node->nodeValue,
                         'level' => $level,
                         'children' => array()
                     );
                     break;
                 } else {
-                    $children = $this->getTableOfContentsTree($level + 1, $i + 1);
+                    $children = $this->getTableOfContentsTree($nodes, $nextItemLevel, $i + 1);
                     $newIndex = $children['index'];
                     unset($children['index']);
                     $tocTree[] = array(
-                        'id' => $nodeId,
-                        'title' => $nodes->item($i)->nodeValue,
+                        'id' => $id,
+                        'title' => $node->nodeValue,
                         'level' => $level,
                         'children' => $children
                     );
@@ -80,24 +110,7 @@ class TocGenerator
             }
         }
 
-        if ($level > 1) $tocTree['index'] = $i;
-
+        if ($level > 2) $tocTree['index'] = $i;
         return $tocTree;
-    }
-
-    public function getTableOfContents()
-    {
-        return $this->toc;
-    }
-
-    public function domCreated($dom)
-    {
-        $this->dom = $dom;
-        $this->toc = $this->getTableOfContentsTree();
-    }
-
-    public function renderTableOfContents()
-    {
-        return "<div class='toc-wrapper'><span>Contents</span>" . $this->getTableOfContentsMarkup() . "</div>";
     }
 }

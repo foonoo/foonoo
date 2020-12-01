@@ -1,15 +1,16 @@
 <div class="post">
-    <div class="time">{{date}} under {{category}}</div>
+    <div class="time">{{date}} under {{frontmatter.category}}</div>
     <div>
-        <h2 class='post-title'>{{title}}</h2>
-        {{#previews}}
+        <h2 class='post-title'>{{#previews_only}}<a href="{{site_path}}{{path}}">{{/previews_only}}{{title}}{{#previews_only}}</a>{{/previews_only}}</h2>
+        {{#previews_only}}
             {{{preview}}}
-            {{#more_link}}<a href="{{site_path}}{{path}}">Continue reading</a>{{/more_link}}
-        {{/previews}}
-        {{^previews}}
+            <a href="{{site_path}}{{path}}">Continue reading</a>
+        {{/previews_only}}
+        {{^previews_only}}
             {{{body}}}
-        {{/previews}}
+        {{/previews_only}}
     </div>
+    {{^previews_only}}
     <div id="bottomnav">
         {{#prev}}
         <div id="prev">
@@ -22,4 +23,5 @@
         </div>
         {{/next}}
     </div>
+    {{/previews_only}}
 </div>

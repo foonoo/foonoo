@@ -1,22 +1,42 @@
 <?php
 require __DIR__ . "/../vendor/autoload.php";
 
-use clearice\io\Io;
+use foonoo\events\AssetPipelineReady;
+use foonoo\events\ContentWritten;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
-use ntentan\honam\factories\HelperFactory;
 use ntentan\honam\factories\MustacheEngineFactory;
 use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
-use nyansapow\Nyansapow;
 use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
-use nyansapow\text\Parser;
-use nyansapow\text\TemplateEngine;
+use foonoo\events\EventDispatcher;
+use foonoo\content\AutomaticContentFactory;
+use foonoo\events\ContentOutputGenerated;
+use foonoo\events\ContentReady;
+use foonoo\events\ContentWriteStarted;
+use foonoo\events\PluginsInitialized;
+use foonoo\events\SiteCreated;
+use foonoo\events\SiteWriteStarted;
+use foonoo\events\SiteWritten;
+use foonoo\events\ThemeLoaded;
+use foonoo\sites\BlogSiteFactory;
+use foonoo\content\CopiedContentFactory;
+use foonoo\sites\PlainSiteFactory;
+use foonoo\content\MarkupContentFactory;
+use foonoo\sites\SiteTypeRegistry;
+use foonoo\content\TemplateContentFactory;
+use foonoo\text\DefaultTags;
+use foonoo\text\MarkdownConverter;
+use foonoo\text\TagParser;
+use foonoo\text\TemplateEngine;
+use foonoo\text\TextConverter;
+use Symfony\Component\Yaml\Parser;
 
 $parser = new ArgumentParser();
+$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addOption([
     'short_name' => 'i',
@@ -25,7 +45,6 @@ $parser->addOption([
     'help' => "specifies where the input files for the site are found.",
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 'o',
     'name' => 'output',
@@ -33,16 +52,14 @@ $parser->addOption([
     "help" => "specifies where the site should be written to",
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 't',
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
-    'default' => 'site',
+    'default' => 'plain',
     'command' => 'generate'
 ]);
-
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
@@ -50,9 +67,7 @@ $parser->addOption([
     'help' => 'set the name for the entire site',
     'command' => 'generate'
 ]);
-
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
-
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
@@ -60,7 +75,6 @@ $parser->addOption([
     'help' => "specifies where the input files for the site are found.",
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'o',
     'name' => 'output',
@@ -68,24 +82,22 @@ $parser->addOption([
     "help" => "specifies where the site should be written to",
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 't',
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
-    'default' => 'site',
+    'default' => 'plain',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
     'type' => 'string',
+    'default' => '',
     'help' => 'set the name for the entire site',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'h',
     'name' => 'host',
@@ -94,7 +106,6 @@ $parser->addOption([
     'default' => 'localhost',
     'command' => 'serve'
 ]);
-
 $parser->addOption([
     'short_name' => 'p',
     'name' => 'port',
@@ -106,20 +117,18 @@ $parser->addOption([
 
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
-nyansapow site generator
+foonoo site generator
 $version
 EOT;
 
-$parser->enableHelp($description);
+$parser->enableHelp($description, "Find out more at https://github.com/foonoo");
 $options = $parser->parse();
 
 if(!isset($options['__command'])) {
-    
     if(isset($options['__args'][0])) {
         echo "Unknown command `{$options['__args'][0]}`.\nRun `{$options['__executed']} --help` for more information.\n";
     } else {
         echo $parser->getHelpMessage();
-        
     }
     exit(1);    
 }
@@ -140,9 +149,117 @@ $container->bind(TemplateRenderer::class)->to(function ($container){
         ));
     return $templateRenderer;
 })->asSingleton();
-$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+
+$container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
 $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+$container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
+$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
+$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+
+$container->bind(TagParser::class)->to(function($container) {
+    /** @var DefaultTags $defaultTags */
+    $defaultTags = $container->get(DefaultTags::class);
+    $tagParser = new TagParser();
+    $regexMap = $defaultTags->getRegexMap();
+    foreach($regexMap as $priority => $regex) {
+        $tagParser->registerTag($regex['regex'], $priority, $regex['callable']);
+    }
+    return $tagParser;
+})->asSingleton();
 
 
-$commandClass = sprintf('\nyansapow\commands\%sCommand', ucfirst($options['__command']));
+$container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
+    $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return $extension == 'md';
+        },
+        $container->get(MarkupContentFactory::class)
+    );
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return file_exists($params['source']) && in_array($extension, ['mustache', 'php']);
+        },
+        $container->get(TemplateContentFactory::class)
+    );
+    return $registry;
+})->asSingleton();
+
+$container->bind(SiteTypeRegistry::class)->to(function(Container $container) {
+    $registry = new SiteTypeRegistry();
+    $defaultRegistry = $container->get(PlainSiteFactory::class);
+    $registry->register($defaultRegistry, 'plain');
+    $registry->register($container->get(BlogSiteFactory::class), 'blog');
+    return $registry;
+});
+
+$container->bind(EventDispatcher::class)->to(function (Container $container) {
+    $eventDispatcher = new EventDispatcher();
+    $eventDispatcher->registerEventType(PluginsInitialized::class,
+        function() use ($container) {
+            return $container->get(PluginsInitialized::class);
+        }
+    );
+    $eventDispatcher->registerEventType(ThemeLoaded::class,
+        function ($args) use ($container) {
+            $templateEngine = $container->get(TemplateEngine::class);
+            return new ThemeLoaded($args['theme'], $templateEngine);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentOutputGenerated::class,
+        function ($args) {
+            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentReady::class,
+        function ($args) use ($container) {
+            $automaticContentFactory = $container->get(AutomaticContentFactory::class);
+            return new ContentReady($args['pages'], $automaticContentFactory);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteCreated::class,
+        function ($args) {
+            return new SiteCreated($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteWriteStarted::class,
+        function ($args) {
+            return new SiteWriteStarted($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteWritten::class,
+        function ($args) {
+            return new SiteWritten($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentWriteStarted::class,
+        function($args) {
+            return new ContentWriteStarted($args['page']);
+        }
+    );
+    $eventDispatcher->registerEventType(AssetPipelineReady::class,
+        function($args) {
+            return new AssetPipelineReady($args['pipeline']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentWritten::class,
+        function($args) {
+            return new ContentWritten($args['content'], $args['destination_path']);
+        }
+    );
+    return $eventDispatcher;
+});
+
+$container->bind(TextConverter::class)->to(
+    function($container) {
+        $converter = new TextConverter($container->get(TagParser::class));
+        $converter->registerConverter('md', 'html', $container->get(MarkdownConverter::class));
+
+        return $converter;
+    }
+);
+
+$commandClass = sprintf('\foonoo\commands\%sCommand', ucfirst($options['__command']));
 $container->resolve($commandClass)->execute($options);

@@ -1,28 +1,50 @@
 <?php
 
-namespace nyansapow\commands;
+namespace foonoo\commands;
 
-use nyansapow\CommandInterface;
-use nyansapow\Nyansapow;
+use foonoo\CacheFactory;
+use foonoo\CommandInterface;
+use foonoo\Builder;
 
 /**
- * Description of GenerateCommand
+ * Implements the "generate" command used for building sites.
  *
  * @author ekow
  */
 class GenerateCommand implements CommandInterface
 {
-    private $nyansapow;
+    /**
+     * Instance of the site builder.
+     * @var Builder
+     */
+    private $builder;
 
-    public function __construct(Nyansapow $nyansapow)
+    /**
+     * Instanec of the cache factory.
+     * @var CacheFactory
+     */
+    private $cacheFactory;
+
+    /**
+     * Create the generate command
+     *
+     * @param Builder $builder
+     * @param CacheFactory $cacheFactory
+     */
+    public function __construct(Builder $builder, CacheFactory $cacheFactory)
     {
-        $this->nyansapow = $nyansapow;
+        $this->builder = $builder;
+        $this->cacheFactory = $cacheFactory;
     }
 
-
-    public function execute($options)
+    /**
+     * Start the site builder
+     *
+     * @param $options
+     */
+    public function execute(array $options = [])
     {
-        $this->nyansapow->write($options);
+        $this->builder->build($options, $this->cacheFactory);
     }
 
 }

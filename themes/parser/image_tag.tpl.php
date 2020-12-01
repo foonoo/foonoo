@@ -1,13 +1,23 @@
-<figure>
-<?php if(count($images) > 0): ?>
+<?php if($attributes['frame'] == "figure"): ?> <figure> <?php endif; ?>
+<?php if($attributes['frame'] == "div"): ?> <div> <?php endif; ?>
+<?php
+$alt = htmlspecialchars($attributes['alt'] ?? $attributes['__default'] ?? "");
+if($alt != ""){
+    $altString = "alt=\"{$alt}\"";
+} else {
+    $altString = "";
+}
+$loading = $attributes['loading'] ?? "lazy";
+?>
+<?php if(count($images->unescape()) > 1): ?>
 <picture>
     <?php foreach($images as $image): ?>
-    <source srcset="<?= "{$path_to_base}np_images/{$image}" ?>" />
+    <source srcset="<?= "{$site_path}np_images/{$image}" ?>" >
     <?php endforeach; ?>
-    <img src="<?= "{$path_to_base}np_images/{$image}" ?>" alt="<?= $alt ?>" <?= $attribute_string ?> />
+    <img src="<?= "{$site_path}np_images/{$image}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
 </picture>
 <?php else: ?>
-    <img src="<?="{$path_to_base}np_images/{$image}' alt='{$alt}' $attribute_string" ?>"  />
+    <img src="<?="{$site_path}np_images/{$images[0]}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
 <?php endif; ?>
-    <figcaption> <?= $alt ?></figcaption>
-</figure>
+<?php if($attributes['frame'] == "figure"): ?><figcaption> <?= $alt ?></figcaption><?php endif; ?>
+<?php if($attributes['frame'] == "div"):?></div><?php endif; ?>

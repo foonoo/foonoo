@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Nyansapow" default="package" basedir="." description="Static site generator">
+<project name="foonoo" default="package" basedir="." description="Static site generator">
 
     <property name="build.dir" value="./build"/>
     <property name="repo.target" value="./build/code"/>
@@ -23,7 +23,7 @@
             </fileset>
         </copy>
         <exec command="git describe --tags" outputProperty="build.version" />
-        <property name="build.output" value="${build.dir}/nyansapow-${build.version}.phar" />
+        <property name="build.output" value="${build.dir}/foonoo-${build.version}.phar" />
         <php expression="Phar::createDefaultStub('src/main.php')" returnProperty="pharstub" />
         <echo msg="#!/usr/bin/env php ${line.separator}&lt;?php define('PHING_BUILD_VERSION', '${build.version}') ?>${line.separator}${pharstub}" file="${repo.target}/cli.php" />
         <if>

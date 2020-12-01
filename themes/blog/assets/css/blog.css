@@ -6,24 +6,38 @@ body{
     font-family: "Open Sans", sans-serif;
     font-weight: 400;
     background-color: #fff;
-}
+    line-height: 1.6;
+    color: #404040;
+ }
 
 #banner{
-    background-color:#5ebdff;
-    height:250px;
+    height:200px;
     width:100%;
     text-align: center;
     line-height: 250px;
     font-family: "Montserrat", sans-serif
 }
 
+h2.post-title {
+    font-size: xx-large;
+    font-weight: bold;
+    margin: 5px 0px 20px;
+    color: black;
+    line-height: 1.1;
+}
+
 h2{
-    font-family: sans-serif, "Montserrat"
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: x-large;
+    margin-top:30px;
+    color: black;
+    line-height: 1.1;
 }
 
 #banner a{
     text-decoration: none;
-    color: #fff;
+    color: #a0a0a0;
     font-size: 3em;
     font-weight: 700;
 }
@@ -40,21 +54,17 @@ h2{
     font-size: small;
 }
 
-.post-title{
-    margin:0px;
-    font-size: xx-large;
-}
-
 .post p{
     text-align: justify;
+    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 #footer{
-    font-size: xx-small;
+    font-size: small;
     text-align: center;
     padding:50px;
     margin-top:50px;
-    background-color:#f0f0f0;
 }
 
 #bottomnav{
@@ -90,10 +100,28 @@ a{
     font-family: sans-serif, Montserrat
 }
 
-code{
-    font-size: 1.0em;
+ul, ol {
+    margin-left: 30px;
 }
 
+ul > li {
+    list-style: disc;
+}
+
+ol > li {
+    list-style: decimal;
+}
+
+
+
+code {
+    font-family: "Fira Code", monospace;
+    font-size: 0.9em;
+    background-color: #f0f0f0;
+    color:#000;
+    border-radius: 3px;
+    padding: 3px;
+}
 
 @media only screen and (max-width:700px) {
     #banner {

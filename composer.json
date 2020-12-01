@@ -1,5 +1,5 @@
 {
-    "name": "ekowabaka/nyansapow",
+    "name": "foonoo/foonoo",
     "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
     "require": {
         "ekowabaka/clearice": "~3.0",
@@ -7,15 +7,21 @@
         "erusev/parsedown" : "~1.0",
         "ntentan/honam": "~0.6.0",
         "ntentan/panie": "~0.7.0",
+        "ntentan/kaikai": "@stable",
+        "ntentan/utils": "~0.11",
         "symfony/yaml" : "~4.0",
         "smarty/smarty": "~3.0",
+        "matthiasmullie/minify": "~1.3",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-fileinfo": "*",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+        "ext-imagick": "*",
+        "ext-json": "*"
     },
     "require-dev" : {
-        "phing/phing" : "@stable"
+        "phing/phing" : "@stable",
+        "phpunit/phpunit": "@stable"
     },
     "license": "MIT",
     "authors": [
@@ -25,7 +31,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {"nyansapow\\": "src/"}
+        "psr-4": {"foonoo\\": "src/", "foonoo\\tests\\":  "tests/cases/"}
     },
-    "bin" : ["bin/nyansapow"]
+    "bin" : ["bin/foonoo"]
 }
