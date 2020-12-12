@@ -161,8 +161,8 @@ $container->bind(TagParser::class)->to(function($container) {
     $defaultTags = $container->get(DefaultTags::class);
     $tagParser = new TagParser();
     $regexMap = $defaultTags->getRegexMap();
-    foreach($regexMap as $priority => $regex) {
-        $tagParser->registerTag($regex['regex'], $priority, $regex['callable']);
+    foreach($regexMap as $regex) {
+        $tagParser->registerTag($regex['regex'], $regex['priority'] ?? 0, $regex['callable'], $regex['name']);
     }
     return $tagParser;
 })->asSingleton();

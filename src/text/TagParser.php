@@ -30,12 +30,10 @@ class TagParser
      * @param callable $callable
      * @param string|null $name
      */
-    public function registerTag(string $regex, int $priority, callable $callable, string $name = null): void
+    public function registerTag(string $regex, int $priority, callable $callable, string $name): void
     {
         $this->registeredTags[] = ['regex' => $regex, 'priority' => $priority, 'callable' => $callable, 'name' => $name];
-        usort($this->registeredTags, function ($a, $b) {
-            return $a['priority'] - $b['priority'];
-        });
+        usort($this->registeredTags, function ($a, $b) { return $b['priority'] - $a['priority'];});
     }
 
     /**

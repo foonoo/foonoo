@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Unreleased
+
+### Changed
+- Text parser priorities are now reversed, with high priority bearing larger priority numbers.
+
+### Fixed
+- Now ensuring that all text parsers are named, and properly prioritized.
+
 ## v0.3.0 - 2020-12-01
 
 This release presents a shift in the underlying architecture of the code for this project. The original architecture, which was somewhat restrictive, had generators that read the site directories. With the information retrieved from these directories, the generators were responsible for using their own internal code to write their own sites based on what it read from the site directory. Essentially, once a generator was loaded, all control was yielded to it, and there was no way third party code could be executed. An architecture like this is almost inextensible, and this release hopes to fix that.
