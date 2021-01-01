@@ -5,7 +5,6 @@ namespace foonoo;
 use clearice\io\Io;
 use foonoo\events\EventDispatcher;
 use foonoo\events\PluginsInitialized;
-use ntentan\utils\Filesystem;
 use ntentan\utils\Text;
 use XdgBaseDir\Xdg;
 
@@ -33,6 +32,11 @@ class PluginManager
         $this->eventDispatcher = $eventDispatcher;
         $this->pluginPaths = [$xdg->getDataDirs()[0] . "/foonoo/plugins"];
         $this->io = $io;
+    }
+
+    public function addPluginPaths(array $paths)
+    {
+        $this->pluginPaths = array_merge($paths, $this->loadedPluginEvents);
     }
 
     private function removePluginEvents()

@@ -50,9 +50,13 @@ class GenerateCommand implements CommandInterface
      * Start the site builder
      *
      * @param $options
+     * @throws \Exception
      */
     public function execute(array $options = [])
     {
+        if(isset($options['add-plugins-path'])) {
+            $this->pluginManager->addPluginPaths(array_reverse($options['add-plugins-path']));
+        }
         $this->builder->build($options, $this->cacheFactory, $this->pluginManager);
     }
 

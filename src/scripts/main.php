@@ -37,6 +37,7 @@ use Symfony\Component\Yaml\Parser;
 
 $parser = new ArgumentParser();
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
+$parser->addOption(['name' => 'add-plugins-path', 'help' => 'Adds path to the list of plugin paths', 'repeats' => true, 'type' => 'string']);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addOption([
     'short_name' => 'i',
