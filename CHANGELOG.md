@@ -2,11 +2,15 @@
 
 ## Unreleased
 
+### Added
+- Plugins can now be installed into an external location for global use. During runtime, a list of such directories can be searched in some form of path hierarchy for a class file for a plugin. By default, two directories: a foonoo specific sub-directory the operating system's application data, and an `fn_plugins` directory in the site are searched.
+
+
 ### Changed
-- Text parser priorities are now reversed, with high priority bearing larger priority numbers.
+- Text parser priorities are now reversed; tags with higher priorities bear larger priority numbers.
 
 ### Fixed
-- Now ensuring that all text parsers are named, and properly prioritized.
+- Now ensuring that all text parser tags are named and properly prioritized.
 
 ## v0.3.0 - 2020-12-01
 
