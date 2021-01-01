@@ -51,9 +51,15 @@ class Builder
      */
     private $eventDispatcher;
 
+    /**
+     * @var CacheFactory
+     */
     private $cacheFactory;
 
-    private $loadedPluginEvents = [];
+    /**
+     * @var PluginManager
+     */
+    private $pluginManager;
 
 
     /**
@@ -152,7 +158,7 @@ class Builder
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
 
-            $this->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath('np_plugins'));
+            $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
 
             $this->siteWriter->write($site);
 
@@ -197,52 +203,11 @@ class Builder
 
     }
 
-    private function removePluginEvents()
-    {
-        foreach ($this->loadedPluginEvents as $eventType => $listeners) {
-            foreach ($listeners as $listener) {
-                $this->eventDispatcher->removeListener($eventType, $listener);
-            }
-        }
-        $this->loadedPluginEvents = [];
-    }
-
-    private function initializePlugins($plugins, $sitePath) : void
-    {
-        $this->removePluginEvents();
-        if($plugins === null) {
-            return;
-        }
-        foreach ($plugins as $plugin) {
-            if(is_array($plugin)) {
-                $options = reset($plugin);
-                $plugin = array_keys($plugin)[0];
-            } else {
-                $options = [];
-            }
-            $namespace = dirname($plugin);
-            $pluginName = basename($plugin);
-            $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
-            $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
-            $pluginFile = "$sitePath/$namespace/$pluginName/$pluginClassName.php";
-            Filesystem::checkExists($pluginFile, "Failed to load the $pluginName plugin. Could not find [$pluginFile].");
-            require_once $pluginFile;
-            $pluginInstance = new $pluginClass($plugin, $this->io, $options);
-            foreach($pluginInstance->getEvents() as $event => $callable) {
-                $id = $this->eventDispatcher->addListener($event, $callable);
-                if(!isset($this->loadedPluginEvents[$event])) {
-                    $this->loadedPluginEvents[$event] = [];
-                }
-                $this->loadedPluginEvents[$event][] = $id;
-            }
-        }
-        $this->eventDispatcher->dispatch(PluginsInitialized::class, []);
-    }
-
-    public function build($options, CacheFactory $cacheFactory)
+    public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager)
     {
         try {
             $this->cacheFactory = $cacheFactory;
+            $this->pluginManager = $pluginManager;
             $this->setOptions($options);
             $this->buildSites();
         } catch (\Exception $e) {
