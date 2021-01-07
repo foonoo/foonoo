@@ -1,8 +1,7 @@
 <?php
 require __DIR__ . "/../../vendor/autoload.php";
 
-use foonoo\events\AssetPipelineReady;
-use foonoo\events\ContentWritten;
+use clearice\argparser\ArgumentParser;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -10,8 +9,9 @@ use ntentan\honam\factories\MustacheEngineFactory;
 use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
-use clearice\argparser\ArgumentParser;
 use ntentan\panie\Container;
+use foonoo\events\AssetPipelineReady;
+use foonoo\events\ContentWritten;
 use foonoo\events\EventDispatcher;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\events\ContentOutputGenerated;
@@ -115,6 +115,8 @@ $parser->addOption([
     'default' => '7000',
     'command' => 'serve'
 ]);
+
+$parser->addCommand(['name' => "install-plugin", "help" => "Install a foonoo plugin"]);
 
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
@@ -262,5 +264,5 @@ $container->bind(TextConverter::class)->to(
     }
 );
 
-$commandClass = sprintf('\foonoo\commands\%sCommand', ucfirst($options['__command']));
+$commandClass = sprintf('\foonoo\commands\%sCommand', Text::($options['__command']));
 $container->resolve($commandClass)->execute($options);
