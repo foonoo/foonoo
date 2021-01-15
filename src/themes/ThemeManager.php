@@ -25,7 +25,7 @@ class ThemeManager
      * @return Theme
      * @throws \Exception
      */
-    private function loadTheme($site)
+    private function loadTheme(AbstractSite $site) : Theme
     {
         $theme = $site->getMetaData()['theme'] ?? $site->getDefaultTheme();
         $sourcePath = $site->getSourcePath();
@@ -64,15 +64,16 @@ class ThemeManager
 
     /**
      * @param AbstractSite $site
+     * @param array $themeDefinition
      * @return array
      */
-    private function getTemplateHierarchy($site, $themeDefinition)
+    private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition) : array
     {
         $hierarchy = [__DIR__ . "/../../themes/parser"];
         $path = $site->getSourcePath();
 
-        if (is_dir("{$path}np_templates")) {
-            $hierarchy[] = "{$path}np_templates";
+        if (is_dir("{$path}fn_templates")) {
+            $hierarchy[] = "{$path}fn_templates";
         }
 
         $siteTemplates = $site->getSetting('templates');

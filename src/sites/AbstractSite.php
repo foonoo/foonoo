@@ -135,12 +135,18 @@ abstract class AbstractSite
         $this->templateData = $templateData;
     }
 
-    public function getTemplateData(string $pageDestination = null): array
+    /**
+     * Get template data that is relevant for rendering a particular content item.
+     *
+     * @param string|null $contentDestination Destination path of the content.
+     * @return array
+     */
+    public function getTemplateData(string $contentDestination = null): array
     {
-        if ($pageDestination !== null) {
-            $sitePath = $this->makeRelativeLocation($pageDestination, $this->getDestinationPath());
+        if ($contentDestination !== null) {
+            $sitePath = $this->makeRelativeLocation($contentDestination, $this->getDestinationPath());
             return array_merge([
-                    'home_path' => $this->makeRelativeLocation($pageDestination, $this->destinationRoot),
+                    'home_path' => $this->makeRelativeLocation($contentDestination, $this->destinationRoot),
                     'site_path' => $sitePath,
                     'site_name' => $this->metaData['name'] ?? '',
                     'date' => date('jS F Y'),
@@ -213,7 +219,7 @@ abstract class AbstractSite
 
     public function getAssetPipeline() : AssetPipeline
     {
-        $this->assetPipeline->setSitePaths($this->getDestinationPath(), $this->getPath());
+        $this->assetPipeline->setOutputPath($this->getDestinationPath());
         return $this->assetPipeline;
     }
 

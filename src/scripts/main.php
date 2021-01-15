@@ -34,6 +34,7 @@ use foonoo\text\TagParser;
 use foonoo\text\TemplateEngine;
 use foonoo\text\TextConverter;
 use Symfony\Component\Yaml\Parser;
+use ntentan\utils\Text;
 
 $parser = new ArgumentParser();
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
@@ -264,5 +265,5 @@ $container->bind(TextConverter::class)->to(
     }
 );
 
-$commandClass = sprintf('\foonoo\commands\%sCommand', Text::($options['__command']));
+$commandClass = sprintf('\foonoo\commands\%sCommand', Text::ucamelize($options['__command']));
 $container->resolve($commandClass)->execute($options);

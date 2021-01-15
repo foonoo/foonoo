@@ -98,6 +98,7 @@ class BlogSite extends AbstractSite
         $data = $this->getTemplateData($this->getDestinationPath($target));
         $data['listing_title'] = $title;
         $data['previews'] = true;
+        //$data['page_type'] = $template;
         $listingContent = $this->blogContentFactory->createListing($posts, $target, $data, $title);
         $listingContent->setTemplate($template);
         return $listingContent;

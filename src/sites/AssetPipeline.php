@@ -6,6 +6,7 @@ namespace foonoo\sites;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 use MatthiasMullie\Minify\Minify;
+use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 
 /**
@@ -18,12 +19,10 @@ use ntentan\utils\Filesystem;
 class AssetPipeline
 {
     private $stylesheets = [];
-    private $javascripts = [];
+    private $javaScripts = [];
     private $files = [];
-    private $builtStylesheets = [];
-    private $builtJavascripts = [];
-    private $sitePath;
-    private $destinationPath;
+    private $bundles = [];
+    private $outputPath;
     private $cssMinifier;
     private $jsMinifier;
 
@@ -45,14 +44,21 @@ class AssetPipeline
      * @param $path
      * @param $options
      * @param $collection
-     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws FileNotFoundException
      */
     private function addItem($path, $options, &$collection) : void
     {
         Filesystem::checkExists($path);
         $options['order'] = $options['order'] ?? 1;
         $options['mode'] = ($options['inline'] ?? false) ? 'inline' : 'external';
-        $collection[] = ['path' => $path, 'options' => $options];
+        $bundles = $options['bundles'] ?? ["default"];
+        unset($options['bundles']);
+        foreach($bundles as $bundle) {
+            if(!isset($collection[$bundle])) {
+                $collection[$bundle] = [];
+            }
+            $collection[$bundle][] = ['path' => $path, 'options' => $options];
+        }
     }
 
     /**
@@ -60,7 +66,7 @@ class AssetPipeline
      *
      * @param $path
      * @param array $options
-     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function addStylesheet($path, $options = []) : void
     {
@@ -72,11 +78,11 @@ class AssetPipeline
      *
      * @param $path
      * @param array $options
-     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function addJavascript($path, $options = []) : void
     {
-        $this->addItem($path, $options, $this->javascripts,);
+        $this->addItem($path, $options, $this->javaScripts,);
     }
 
     private function minify(Minify $minifier, string $script) : string
@@ -100,53 +106,34 @@ class AssetPipeline
         $this->files[] = ['path' => $path, 'options' => $options];
     }
 
-    private function writeBuffer($buffer, $currentMode, $extension, &$written)
+    private function buildItems(array $collection, string $extension, callable $postProcess = null) : void
     {
-        if(strlen($buffer) > 0) {
-            if($currentMode == 'external') {
-                $assetPath = "assets/$extension/bundle-{$written}.$extension";
-                $fullPath = "$this->destinationPath$assetPath";
+        foreach($collection as $bundle => $items) {
+            $output = [];
+            $buffers = ['inline' => '', 'external' => ''];
+            usort($items, function ($a, $b) { return $a['options']['order'] > $b['options']['order']; });
+
+            foreach($items as $item) {
+                $buffers[$item['options']['mode']] .= file_get_contents($item['path']);
+            }
+
+            if($buffers['external']) {
+                $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
+                $fullPath = "{$this->outputPath}{$assetPath}";
                 Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
-                Filesystem::file($fullPath)->putContents($buffer);
-                $written += 1;
-                return ['mode' => $currentMode, 'contents' => $assetPath];
-            } else {
-                return ['mode' => $currentMode, 'contents' => $buffer];
-            }
-        }
-    }
-
-    private function buildItems(array $items, string $extension, callable $postProcess = null) : array
-    {
-        $buffer = '';
-        $output = [];
-        $currentMode = null;
-        $written = 0;
-
-        usort($items, function ($a, $b) { return $a['options']['order'] > $b['options']['order']; });
-
-        foreach($items as $item) {
-            if($currentMode !== null && $item['options']['mode'] != $currentMode) {
-                $output[] = $this->writeBuffer($buffer, $currentMode, $extension, $written);
-                $buffer = '';
-                $currentMode = $item['options']['mode'];
-            } else {
-                $currentMode = $item['options']['mode'];
+                Filesystem::file($fullPath)->putContents($postProcess($buffers['external']));
+                $output['external'] = ['path' => $assetPath];
             }
 
-            $content = file_get_contents($item['path']);
-            $buffer .= "$content\n";
-        }
+            if($buffers['inline']) {
+                $output['inline'] = ['contents' => $postProcess($buffers['inline'])];
+            }
 
-        if($postProcess) {
-            $buffer = $postProcess($buffer);
+            if(!isset($this->bundles[$bundle])) {
+                $this->bundles[$bundle] = [];
+            }
+            $this->bundles[$bundle][$extension] = $output;
         }
-        
-        $finalBuffer = $this->writeBuffer($buffer, $currentMode, $extension, $written);
-        if($finalBuffer) {
-            $output[] = $finalBuffer;
-        }
-        return $output;
     }
 
     private function wrapInlineJs($script)
@@ -156,7 +143,7 @@ class AssetPipeline
 
     private function wrapExternalJs($script, $sitePath)
     {
-        return "<script type='application/javascript' src='{$sitePath}{$script['contents']}'></script>";
+        return "<script type='application/javascript' src='{$sitePath}{$script['path']}'></script>";
     }
 
     private function wrapInlineCss($script, $sitePath)
@@ -166,23 +153,17 @@ class AssetPipeline
 
     private function wrapExternalCss($script, $sitePath)
     {
-        return "<link rel='stylesheet' href='{$sitePath}{$script['contents']}' />";
+        return "<link rel='stylesheet' href='{$sitePath}{$script['path']}' />";
     }
 
-    private function generateMarkup($items, $sitePath, $externalWrapper, $inlineWrapper) : string
+    private function generateMarkup($sitePath, $wrappers) : array
     {
-        $markup = "";
-        $wrappers = ['inline' => $inlineWrapper, 'external' => $externalWrapper];
-        foreach ($items as $script) {
-            $markup .= $wrappers[$script['mode']]($script, $sitePath);
-        }
-        return $markup;
     }
 
     private function copyFiles()
     {
         foreach ($this->files as $file) {
-            $destination = "$this->destinationPath/{$file['options']['destination']}";
+            $destination = "$this->outputPath/{$file['options']['destination']}";
             $f = Filesystem::get($file['path']);
             Filesystem::directory(dirname($destination))->createIfNotExists(true);
             $f->copyTo($destination);
@@ -191,24 +172,37 @@ class AssetPipeline
 
     public function buildAssets() : void
     {
-        $this->builtJavascripts = $this->buildItems(
-            $this->javascripts, 'js',
+        $this->buildItems(
+            $this->javaScripts, 'js',
             function(string $contents) { return $this->minify($this->jsMinifier, $contents); }
         );
-        $this->builtStylesheets = $this->buildItems(
+        $this->buildItems(
             $this->stylesheets, 'css',
             function(string $contents) { return $this->minify($this->cssMinifier, $contents); }
         );
         $this->copyFiles();
     }
 
-    public function getMarkup($sitePath)
+    public function getMarkup(string $sitePath) : array
     {
-        return $this->generateMarkup($this->builtJavascripts, $sitePath, [$this, 'wrapExternalJs'], [$this, 'wrapInternalJs'])
-             . $this->generateMarkup($this->builtStylesheets, $sitePath, [$this, 'wrapExternalCss'], [$this, 'wrapInternalCss']);
+        $wrappers = [
+            'js' => ['inline' => [$this, 'wrapInternalJs'], 'external' => [$this, 'wrapExternalJs']],
+            'css' => ['inline' => [$this, 'wrapInternalCss'], 'external' => [$this, 'wrapExternalCss']]
+        ];
+        $markups = [];
+        foreach ($this->bundles as $bundle => $types) {
+            $markup = '';
+            foreach($types as $type => $assets) {
+                foreach ($assets as $target => $asset) {
+                    $markup .= $wrappers[$type][$target]($asset, $sitePath);
+                }
+            }
+            $markups[$bundle] = $markup;
+        }
+        return $markups;
     }
 
-    public function merge($assets, $baseDirectory = null)
+    public function merge(array $assets, string $baseDirectory = null) : void
     {
         $methods = [
             'css' => [$this, 'addStylesheet'],
@@ -233,9 +227,8 @@ class AssetPipeline
         }
     }
 
-    public function setSitePaths(string $destinationPath, string $sitePath)
+    public function setOutputPath(string $outputPath)
     {
-        $this->sitePath = $sitePath;
-        $this->destinationPath = $destinationPath;
+        $this->outputPath = $outputPath;
     }
 }
