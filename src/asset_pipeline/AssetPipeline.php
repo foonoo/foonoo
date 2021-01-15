@@ -1,6 +1,6 @@
 <?php
 
-namespace foonoo\sites;
+namespace foonoo\asset_pipeline;
 
 
 use MatthiasMullie\Minify\CSS;
@@ -18,79 +18,52 @@ use ntentan\utils\Filesystem;
  */
 class AssetPipeline
 {
-    private $stylesheets = [];
-    private $javaScripts = [];
+    private $items = [];
     private $files = [];
     private $bundles = [];
     private $outputPath;
-    private $cssMinifier;
-    private $jsMinifier;
+    private $processors = [];
 
-    /**
-     * AssetPipeline constructor.
-     *
-     * @param CSS $cssMinifier
-     * @param JS $jsMinifier
-     */
-    public function __construct(CSS $cssMinifier, JS $jsMinifier)
+    public function registerProcessor(string $type, Processor $processor)
     {
-        $this->cssMinifier = $cssMinifier;
-        $this->jsMinifier = $jsMinifier;
+        if (!isset($this->processors[$type])) {
+            $this->processors[$type] = [];
+        }
+        $this->processors[$type][] = $processor;
     }
 
     /**
      * Add an item to the pipeline.
      *
-     * @param $path
-     * @param $options
-     * @param $collection
+     * @param string $path
+     * @param string $type
+     * @param object $options
      * @throws FileNotFoundException
      */
-    private function addItem($path, $options, &$collection) : void
+    private function addItem(string $path, string $type, array $options): void
     {
         Filesystem::checkExists($path);
         $options['order'] = $options['order'] ?? 1;
         $options['mode'] = ($options['inline'] ?? false) ? 'inline' : 'external';
         $bundles = $options['bundles'] ?? ["default"];
         unset($options['bundles']);
-        foreach($bundles as $bundle) {
-            if(!isset($collection[$bundle])) {
-                $collection[$bundle] = [];
+        foreach ($bundles as $bundle) {
+            if (!isset($this->items[$bundle])) {
+                $this->items[$bundle] = [$type => []];
             }
-            $collection[$bundle][] = ['path' => $path, 'options' => $options];
+            if (!isset($this->items[$bundle][$type])) {
+                $this->items[$bundle][$type] = [];
+            }
+            $this->items[$bundle][$type][] = ['path' => $path, 'options' => $options];
         }
     }
 
-    /**
-     * Add a stylesheet to the pipeline.
-     *
-     * @param $path
-     * @param array $options
-     * @throws FileNotFoundException
-     */
-    public function addStylesheet($path, $options = []) : void
-    {
-        $this->addItem($path, $options, $this->stylesheets);
-    }
-
-    /**
-     * Add a javascript to the pipeline.
-     *
-     * @param $path
-     * @param array $options
-     * @throws FileNotFoundException
-     */
-    public function addJavascript($path, $options = []) : void
-    {
-        $this->addItem($path, $options, $this->javaScripts,);
-    }
-
-    private function minify(Minify $minifier, string $script) : string
-    {
-        $minifier->execute();
-        $minifier->add($script);
-        return $minifier->minify();
-    }
+//    private function minify(Minify $minifier, string $script): string
+//    {
+//        $minifier->execute();
+//        $minifier->add($script);
+//        return $minifier->minify();
+//    }
 
     /**
      * Add an arbitrary file to the pipeline.
@@ -98,26 +71,28 @@ class AssetPipeline
      * @param $path
      * @param $options
      */
-    public function addFile($path, $options) : void
+    public function addFile($path, $options): void
     {
-        if(!is_array($options)) {
+        if (!is_array($options)) {
             $options = ['destination' => $options];
         }
         $this->files[] = ['path' => $path, 'options' => $options];
     }
 
-    private function buildItems(array $collection, string $extension, callable $postProcess = null) : void
+    private function buildItems(array $collection, string $extension, callable $postProcess = null): void
     {
-        foreach($collection as $bundle => $items) {
+        foreach ($collection as $bundle => $items) {
             $output = [];
             $buffers = ['inline' => '', 'external' => ''];
-            usort($items, function ($a, $b) { return $a['options']['order'] > $b['options']['order']; });
+            usort($items, function ($a, $b) {
+                return $a['options']['order'] > $b['options']['order'];
+            });
 
-            foreach($items as $item) {
+            foreach ($items as $item) {
                 $buffers[$item['options']['mode']] .= file_get_contents($item['path']);
             }
 
-            if($buffers['external']) {
+            if ($buffers['external']) {
                 $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
                 $fullPath = "{$this->outputPath}{$assetPath}";
                 Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
@@ -125,11 +100,11 @@ class AssetPipeline
                 $output['external'] = ['path' => $assetPath];
             }
 
-            if($buffers['inline']) {
+            if ($buffers['inline']) {
                 $output['inline'] = ['contents' => $postProcess($buffers['inline'])];
             }
 
-            if(!isset($this->bundles[$bundle])) {
+            if (!isset($this->bundles[$bundle])) {
                 $this->bundles[$bundle] = [];
             }
             $this->bundles[$bundle][$extension] = $output;
@@ -156,7 +131,7 @@ class AssetPipeline
         return "<link rel='stylesheet' href='{$sitePath}{$script['path']}' />";
     }
 
-    private function generateMarkup($sitePath, $wrappers) : array
+    private function generateMarkup($sitePath, $wrappers): array
     {
     }
 
@@ -170,20 +145,25 @@ class AssetPipeline
         }
     }
 
-    public function buildAssets() : void
+    public function buildAssets(): void
     {
-        $this->buildItems(
-            $this->javaScripts, 'js',
-            function(string $contents) { return $this->minify($this->jsMinifier, $contents); }
-        );
-        $this->buildItems(
-            $this->stylesheets, 'css',
-            function(string $contents) { return $this->minify($this->cssMinifier, $contents); }
-        );
-        $this->copyFiles();
+        return;
+//        $this->buildItems(
+//            $this->javaScripts, 'js',
+//            function (string $contents) {
+//                return $this->minify($this->jsMinifier, $contents);
+//            }
+//        );
+//        $this->buildItems(
+//            $this->stylesheets, 'css',
+//            function (string $contents) {
+//                return $this->minify($this->cssMinifier, $contents);
+//            }
+//        );
+//        $this->copyFiles();
     }
 
-    public function getMarkup(string $sitePath) : array
+    public function getMarkup(string $sitePath): array
     {
         $wrappers = [
             'js' => ['inline' => [$this, 'wrapInternalJs'], 'external' => [$this, 'wrapExternalJs']],
@@ -192,7 +172,7 @@ class AssetPipeline
         $markups = [];
         foreach ($this->bundles as $bundle => $types) {
             $markup = '';
-            foreach($types as $type => $assets) {
+            foreach ($types as $type => $assets) {
                 foreach ($assets as $target => $asset) {
                     $markup .= $wrappers[$type][$target]($asset, $sitePath);
                 }
@@ -202,29 +182,50 @@ class AssetPipeline
         return $markups;
     }
 
-    public function merge(array $assets, string $baseDirectory = null) : void
+    public function merge(array $assets, string $baseDirectory = null): void
     {
-        $methods = [
-            'css' => [$this, 'addStylesheet'],
-            'js' => [$this, 'addJavascript'],
-            'files' => [$this, 'addFile']
-        ];
-        foreach(['js', 'css', 'files'] as $class) {
-            if(!isset($assets[$class])) {
-                continue;
-            }
-            foreach($assets[$class] as $index => $asset) {
-                if(is_array($asset)) {
-                    $path = array_key_first($asset);
-                    $options = $asset[$path];
+        foreach ($assets as $type => $items) {
+            foreach ($items as $index => $item) {
+                if(is_array($item)) {
+                    $path = array_key_first($item);
+                    $options = $item[$path];
                 } else {
-                    $path = $asset;
+                    $path = $item;
                     $options = [];
                 }
-                $assetPath = "$baseDirectory/$path";
-                $methods[$class]($assetPath, $options);
+                $itemPath = "$baseDirectory/$path";
+                $this->addItem($itemPath, $type, $options);
             }
+//            if(is_array($asset)) {
+//                $path = array_key_first($asset);
+//                $options = $asset[$path];
+//            } else {
+//                $path = $asset;
+//                $options = [];
+//            }
+//            $this->ad
         }
+//        $methods = [
+//            'css' => [$this, 'addStylesheet'],
+//            'js' => [$this, 'addJavascript'],
+//            'files' => [$this, 'addFile']
+//        ];
+//        foreach(['js', 'css', 'files'] as $class) {
+//            if(!isset($assets[$class])) {
+//                continue;
+//            }
+//            foreach($assets[$class] as $index => $asset) {
+//                if(is_array($asset)) {
+//                    $path = array_key_first($asset);
+//                    $options = $asset[$path];
+//                } else {
+//                    $path = $asset;
+//                    $options = [];
+//                }
+//                $assetPath = "$baseDirectory/$path";
+//                $methods[$class]($assetPath, $options);
+//            }
+//        }
     }
 
     public function setOutputPath(string $outputPath)

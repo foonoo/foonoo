@@ -2,7 +2,7 @@
 
 namespace foonoo\commands;
 
-use foonoo\CacheFactory;
+use foonoo\utils\CacheFactory;
 use foonoo\CommandInterface;
 use foonoo\Builder;
 use foonoo\PluginManager;

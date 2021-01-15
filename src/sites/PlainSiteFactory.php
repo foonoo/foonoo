@@ -4,6 +4,7 @@
 namespace foonoo\sites;
 
 
+use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\text\TemplateEngine;
 

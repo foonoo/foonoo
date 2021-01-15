@@ -2,12 +2,11 @@
 
 namespace foonoo;
 
+use foonoo\utils\CacheFactory;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
 use ntentan\utils\filesystem\File;
-use ntentan\utils\Text;
 use foonoo\events\EventDispatcher;
-use foonoo\events\PluginsInitialized;
 use foonoo\events\SiteCreated;
 use foonoo\sites\AbstractSite;
 use foonoo\sites\SiteWriter;
