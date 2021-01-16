@@ -19,10 +19,10 @@ use ntentan\utils\Filesystem;
 class AssetPipeline
 {
     private $items = [];
+    private $builtItems = [];
     private $files = [];
-    private $bundles = [];
-    private $outputPath;
     private $processors = [];
+    private $markupGenerators = [];
 
     public function registerProcessor(string $type, Processor $processor)
     {
@@ -32,19 +32,22 @@ class AssetPipeline
         $this->processors[$type][] = $processor;
     }
 
+    public function registerMarkupGenerator(string $type, MarkupGenerator $generator)
+    {
+        $this->markupGenerators[$type] = $generator;
+    }
+
     /**
      * Add an item to the pipeline.
      *
      * @param string $path
      * @param string $type
-     * @param object $options
+     * @param array|string $options
      * @throws FileNotFoundException
      */
     private function addItem(string $path, string $type, array $options): void
     {
         Filesystem::checkExists($path);
-        $options['order'] = $options['order'] ?? 1;
-        $options['mode'] = ($options['inline'] ?? false) ? 'inline' : 'external';
         $bundles = $options['bundles'] ?? ["default"];
         unset($options['bundles']);
         foreach ($bundles as $bundle) {
@@ -57,13 +60,6 @@ class AssetPipeline
             $this->items[$bundle][$type][] = ['path' => $path, 'options' => $options];
         }
     }
-
-//    private function minify(Minify $minifier, string $script): string
-//    {
-//        $minifier->execute();
-//        $minifier->add($script);
-//        return $minifier->minify();
-//    }
 
     /**
      * Add an arbitrary file to the pipeline.
@@ -79,103 +75,35 @@ class AssetPipeline
         $this->files[] = ['path' => $path, 'options' => $options];
     }
 
-    private function buildItems(array $collection, string $extension, callable $postProcess = null): void
-    {
-        foreach ($collection as $bundle => $items) {
-            $output = [];
-            $buffers = ['inline' => '', 'external' => ''];
-            usort($items, function ($a, $b) {
-                return $a['options']['order'] > $b['options']['order'];
-            });
-
-            foreach ($items as $item) {
-                $buffers[$item['options']['mode']] .= file_get_contents($item['path']);
-            }
-
-            if ($buffers['external']) {
-                $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
-                $fullPath = "{$this->outputPath}{$assetPath}";
-                Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
-                Filesystem::file($fullPath)->putContents($postProcess($buffers['external']));
-                $output['external'] = ['path' => $assetPath];
-            }
-
-            if ($buffers['inline']) {
-                $output['inline'] = ['contents' => $postProcess($buffers['inline'])];
-            }
-
-            if (!isset($this->bundles[$bundle])) {
-                $this->bundles[$bundle] = [];
-            }
-            $this->bundles[$bundle][$extension] = $output;
-        }
-    }
-
-    private function wrapInlineJs($script)
-    {
-        return "<script type='application/javascript'>{$script['contents']}</script>";
-    }
-
-    private function wrapExternalJs($script, $sitePath)
-    {
-        return "<script type='application/javascript' src='{$sitePath}{$script['path']}'></script>";
-    }
-
-    private function wrapInlineCss($script, $sitePath)
-    {
-        return "<style>{$script['contents']}</style>";
-    }
-
-    private function wrapExternalCss($script, $sitePath)
-    {
-        return "<link rel='stylesheet' href='{$sitePath}{$script['path']}' />";
-    }
-
-    private function generateMarkup($sitePath, $wrappers): array
-    {
-    }
-
-    private function copyFiles()
-    {
-        foreach ($this->files as $file) {
-            $destination = "$this->outputPath/{$file['options']['destination']}";
-            $f = Filesystem::get($file['path']);
-            Filesystem::directory(dirname($destination))->createIfNotExists(true);
-            $f->copyTo($destination);
-        }
-    }
-
     public function buildAssets(): void
     {
-        return;
-//        $this->buildItems(
-//            $this->javaScripts, 'js',
-//            function (string $contents) {
-//                return $this->minify($this->jsMinifier, $contents);
-//            }
-//        );
-//        $this->buildItems(
-//            $this->stylesheets, 'css',
-//            function (string $contents) {
-//                return $this->minify($this->cssMinifier, $contents);
-//            }
-//        );
-//        $this->copyFiles();
+        foreach($this->items as $bundle => $types) {
+            $this->builtItems[$bundle] = [];
+            foreach($types as $type => $items) {
+                $processors = $this->processors[$type];
+                $this->builtItems[$bundle][$type] = [];
+                foreach($processors as $processor) {
+                    foreach($items as $item) {
+                        $processedItem = $processor->process($item['path'], $item['options']);
+                        $processedItem['bundle'] = $bundle;
+                        $this->builtItems[$bundle][$type][] = $processedItem;
+                    }
+                }
+            }
+        }
     }
 
     public function getMarkup(string $sitePath): array
     {
-        $wrappers = [
-            'js' => ['inline' => [$this, 'wrapInternalJs'], 'external' => [$this, 'wrapExternalJs']],
-            'css' => ['inline' => [$this, 'wrapInternalCss'], 'external' => [$this, 'wrapExternalCss']]
-        ];
         $markups = [];
-        foreach ($this->bundles as $bundle => $types) {
+        foreach($this->builtItems as $bundle => $types) {
             $markup = '';
-            foreach ($types as $type => $assets) {
-                foreach ($assets as $target => $asset) {
-                    $markup .= $wrappers[$type][$target]($asset, $sitePath);
+            foreach($types as $type => $items) {
+                if(!isset($this->markupGenerators[$type]) || empty($this->markupGenerators[$type])) {
+                    continue;
                 }
+                $markupGenerator = $this->markupGenerators[$type];
+                $markup .= $markupGenerator->generateMarkup($items, $sitePath);
             }
             $markups[$bundle] = $markup;
         }
@@ -189,6 +117,9 @@ class AssetPipeline
                 if(is_array($item)) {
                     $path = array_key_first($item);
                     $options = $item[$path];
+                    if(!is_array($options)) {
+                        $options = ['param' => $options];
+                    }
                 } else {
                     $path = $item;
                     $options = [];
@@ -196,40 +127,6 @@ class AssetPipeline
                 $itemPath = "$baseDirectory/$path";
                 $this->addItem($itemPath, $type, $options);
             }
-//            if(is_array($asset)) {
-//                $path = array_key_first($asset);
-//                $options = $asset[$path];
-//            } else {
-//                $path = $asset;
-//                $options = [];
-//            }
-//            $this->ad
         }
-//        $methods = [
-//            'css' => [$this, 'addStylesheet'],
-//            'js' => [$this, 'addJavascript'],
-//            'files' => [$this, 'addFile']
-//        ];
-//        foreach(['js', 'css', 'files'] as $class) {
-//            if(!isset($assets[$class])) {
-//                continue;
-//            }
-//            foreach($assets[$class] as $index => $asset) {
-//                if(is_array($asset)) {
-//                    $path = array_key_first($asset);
-//                    $options = $asset[$path];
-//                } else {
-//                    $path = $asset;
-//                    $options = [];
-//                }
-//                $assetPath = "$baseDirectory/$path";
-//                $methods[$class]($assetPath, $options);
-//            }
-//        }
-    }
-
-    public function setOutputPath(string $outputPath)
-    {
-        $this->outputPath = $outputPath;
     }
 }

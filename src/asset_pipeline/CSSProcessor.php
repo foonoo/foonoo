@@ -9,8 +9,23 @@ use MatthiasMullie\Minify\Minify;
 
 class CSSProcessor extends MinifiableProcessor
 {
-    public function createMinifier(): Minify
+    public function getMinifier(): Minify
     {
         return new CSS();
+    }
+
+    protected function wrapInline(string $content) : string
+    {
+        return "<style>{$content}</style>";
+    }
+
+    protected function wrapExternal(string $content, string $sitePath) : string
+    {
+        return "<link rel='stylesheet' href='{$sitePath}{$content}' />";
+    }
+
+    protected function getExtension(): string
+    {
+        return 'css';
     }
 }

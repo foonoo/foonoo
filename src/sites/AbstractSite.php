@@ -220,7 +220,6 @@ abstract class AbstractSite
 
     public function getAssetPipeline() : AssetPipeline
     {
-        $this->assetPipeline->setOutputPath($this->getDestinationPath());
         return $this->assetPipeline;
     }
 

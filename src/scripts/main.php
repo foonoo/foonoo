@@ -2,6 +2,10 @@
 require __DIR__ . "/../../vendor/autoload.php";
 
 use clearice\argparser\ArgumentParser;
+use foonoo\asset_pipeline\AssetPipeline;
+use foonoo\asset_pipeline\CSSProcessor;
+use foonoo\asset_pipeline\FileProcessor;
+use foonoo\asset_pipeline\JSProcessor;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -18,7 +22,7 @@ use foonoo\events\ContentOutputGenerated;
 use foonoo\events\ContentReady;
 use foonoo\events\ContentWriteStarted;
 use foonoo\events\PluginsInitialized;
-use foonoo\events\SiteCreated;
+use foonoo\events\SiteObjectCreated;
 use foonoo\events\SiteWriteStarted;
 use foonoo\events\SiteWritten;
 use foonoo\events\ThemeLoaded;
@@ -223,9 +227,9 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new ContentReady($args['pages'], $automaticContentFactory);
         }
     );
-    $eventDispatcher->registerEventType(SiteCreated::class,
+    $eventDispatcher->registerEventType(SiteObjectCreated::class,
         function ($args) {
-            return new SiteCreated($args['site']);
+            return new SiteObjectCreated($args['site']);
         }
     );
     $eventDispatcher->registerEventType(SiteWriteStarted::class,
@@ -262,6 +266,20 @@ $container->bind(TextConverter::class)->to(
         $converter->registerConverter('md', 'html', $container->get(MarkdownConverter::class));
 
         return $converter;
+    }
+);
+
+$container->bind(AssetPipeline::class)->to(
+    function ($container) {
+        $pipeline = new AssetPipeline();
+        $cssProcessor = $container->get(CSSProcessor::class);
+        $jsProcessor = $container->get(JSProcessor::class);
+        $pipeline->registerProcessor('css', $cssProcessor);
+        $pipeline->registerProcessor('js', $jsProcessor);
+        $pipeline->registerProcessor('files', $container->get(FileProcessor::class));
+        $pipeline->registerMarkupGenerator('css', $cssProcessor);
+        $pipeline->registerMarkupGenerator('js', $jsProcessor);
+        return $pipeline;
     }
 );
 

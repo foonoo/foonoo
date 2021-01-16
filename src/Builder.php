@@ -7,7 +7,7 @@ use ntentan\utils\Filesystem;
 use clearice\io\Io;
 use ntentan\utils\filesystem\File;
 use foonoo\events\EventDispatcher;
-use foonoo\events\SiteCreated;
+use foonoo\events\SiteObjectCreated;
 use foonoo\sites\AbstractSite;
 use foonoo\sites\SiteWriter;
 use foonoo\sites\SiteTypeRegistry;
@@ -141,7 +141,7 @@ class Builder
         $cacheDir = "{$this->options['input']}{$shortPath}np_cache";
         Filesystem::directory($cacheDir)->createIfNotExists();
         $site->setCache($this->cacheFactory->create($cacheDir));
-        $this->eventDispatcher->dispatch(SiteCreated::class, ['site' => $site]);
+        $this->eventDispatcher->dispatch(SiteObjectCreated::class, ['site' => $site]);
 
         return $site;
     }

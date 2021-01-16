@@ -6,5 +6,5 @@ namespace foonoo\asset_pipeline;
 
 interface Processor
 {
-    public function process(string $content): string;
+    public function process(string $path, array $options) : array;
 }
