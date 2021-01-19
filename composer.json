@@ -1,6 +1,6 @@
 {
     "name": "foonoo/foonoo",
-    "description": "A static site generator. Ideal for generating blogs, docs and just about any kind of site you can think of.",
+    "description": "A static site generator that is ideal for generating blogs, documentation and just about any kind of site you can think of.",
     "require": {
         "ekowabaka/clearice": "~3.0",
         "mustache/mustache": "~2.0",
@@ -25,10 +25,15 @@
         "phpunit/phpunit": "@stable"
     },
     "license": "MIT",
+    "homepage": "https://ekowabaka.me/projects/foonoo",
+    "support": {
+        "issues": "https://github.com/foonoo/foonoo/issues"
+    },
     "authors": [
         {
             "name": "Ekow Abaka Ainooson",
-            "email": "jainooson@gmail.com"
+            "email": "jainooson@gmail.com",
+            "role": "lead"
         }
     ],
     "autoload": {
