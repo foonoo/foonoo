@@ -97,7 +97,7 @@ class Builder
      * @param bool $root
      * @return array<AbstractSite>
      */
-    private function getSites(string $path, bool $root = false)
+    private function getSites(string $path, bool $root = false): array
     {
         $sites = array();
         $dir = dir($path);
@@ -123,7 +123,7 @@ class Builder
         return $sites;
     }
 
-    private function createSite($metaData, $path)
+    private function createSite($metaData, $path): AbstractSite
     {
         if (!is_array($metaData)) {
             $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
@@ -205,10 +205,13 @@ class Builder
     public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager)
     {
         try {
+            $startTime = hrtime(true);
             $this->cacheFactory = $cacheFactory;
             $this->pluginManager = $pluginManager;
             $this->setOptions($options);
             $this->buildSites();
+            $duration = hrtime(true) - $startTime;
+            $this->io->output(sprintf("Total build time: %.02fs", $duration / 1e+9));
         } catch (\Exception $e) {
             if ($options['debug']) {
                 throw $e;

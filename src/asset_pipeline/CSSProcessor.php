@@ -21,7 +21,7 @@ class CSSProcessor extends MinifiableProcessor
 
     protected function wrapExternal(string $content, string $sitePath) : string
     {
-        return "<link rel='stylesheet' href='{$sitePath}{$content}' />";
+        return "<link rel='stylesheet' href='{$sitePath}{$content}' media='none' onload='this.media=\"all\"' />";
     }
 
     protected function getExtension(): string

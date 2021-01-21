@@ -58,9 +58,11 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
         if($buffers['external'] !== '') {
             $extension = $this->getExtension();
             $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
-            $fullPath = $this->site->getDestinationPath($sitePath . $assetPath);
-            Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
-            Filesystem::file($fullPath)->putContents($buffers['external']);
+            $fullPath = $this->site->getDestinationPath($assetPath);
+            if(!file_exists($fullPath)) {
+                Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
+                Filesystem::file($fullPath)->putContents($buffers['external']);git stat
+            }
             $markup .= $this->wrapExternal($assetPath, $sitePath);
         }
         return $markup;

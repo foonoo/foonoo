@@ -145,13 +145,13 @@ abstract class AbstractSite
     public function getTemplateData(string $contentDestination = null): array
     {
         if ($contentDestination !== null) {
-            $sitePath = $this->makeRelativeLocation($contentDestination, $this->getDestinationPath());
+            $relativeSitePath = $this->makeRelativeLocation($contentDestination, $this->getDestinationPath());
             return array_merge([
                     'home_path' => $this->makeRelativeLocation($contentDestination, $this->destinationRoot),
-                    'site_path' => $sitePath,
+                    'site_path' => $relativeSitePath,
                     'site_name' => $this->metaData['name'] ?? '',
                     'date' => date('jS F Y'),
-                    'assets_markup' => $this->assetPipeline->getMarkup($sitePath)
+                    'assets_markup' => $this->assetPipeline->getMarkup($relativeSitePath)
                 ],
                 $this->templateData
             );
