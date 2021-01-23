@@ -6,7 +6,6 @@ use clearice\io\Io;
 use foonoo\events\EventDispatcher;
 use foonoo\events\PluginsInitialized;
 use ntentan\utils\Text;
-use XdgBaseDir\Xdg;
 
 /**
  * Loads plugins.
@@ -25,15 +24,34 @@ class PluginManager
      */
     private $loadedPluginEvents = [];
 
+    /**
+     * 
+     * @var Io
+     */
     private $io;
 
-    public function __construct(EventDispatcher $eventDispatcher, Io $io, Xdg $xdg)
+    public function __construct(EventDispatcher $eventDispatcher, Io $io)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->pluginPaths = [$xdg->getDataDirs()[0] . "/foonoo/plugins"];
+        $this->pluginPaths = [$this->getUserDataDir() . DIRECTORY_SEPARATOR . "foonoo" . DIRECTORY_SEPARATOR . "plugins"];
         $this->io = $io;
     }
+    
+    private function getUserDataDir() : string
+    {
+        $operatingSystem = strtolower(php_uname("s"));
+        if(substr($operatingSystem, 0, 7) == "windows") {
+            return getenv("LOCALAPPDATA");
+        } 
+        if($operatingSystem == "linux") {
+            return getenv('XDG_DATA_HOME') === false ? getenv("HOME") . DIRECTORY_SEPARATOR . '.local' . DIRECTORY_SEPARATOR . 'share' : getenv("XDG_DATA_HOME");
+        }
+    }
 
+    /**
+     * 
+     * @param array $paths
+     */
     public function addPluginPaths(array $paths)
     {
         $this->pluginPaths = array_merge($paths, $this->loadedPluginEvents);
