@@ -44,8 +44,12 @@ class PluginManager
             return getenv("LOCALAPPDATA");
         } 
         if($operatingSystem == "linux") {
-            return getenv('XDG_DATA_HOME') === false ? getenv("HOME") . DIRECTORY_SEPARATOR . '.local' . DIRECTORY_SEPARATOR . 'share' : getenv("XDG_DATA_HOME");
+            return getenv('XDG_DATA_HOME') === false ? getenv("HOME") . '/.local/share' : getenv("XDG_DATA_HOME");
         }
+        if($operatingSystem == "darwin") {
+            return getenv("HOME") . "/Library/Application Support";
+        }
+        die($operatingSystem);
     }
 
     /**
