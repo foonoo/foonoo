@@ -40,10 +40,154 @@ use foonoo\text\TextConverter;
 use Symfony\Component\Yaml\Parser;
 use ntentan\utils\Text;
 
+/** @var Container $container */
+$container = new Container();
+
+$container->bind(TemplateRenderer::class)->to(function ($container) {
+    /** @var EngineRegistry $engineRegistry */
+    $engineRegistry = $container->get(EngineRegistry::class);
+    $templateFileResolver = $container->get(TemplateFileResolver::class);
+    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
+    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
+    $engineRegistry->registerEngine(['tpl.php'],
+        new PhpEngineFactory($templateRenderer,
+            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
+            $container->get(Janitor::class)
+        ));
+    return $templateRenderer;
+})->asSingleton();
+
+$container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
+$container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
+$container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
+$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
+$container->bind(Parser::class)->to(Parser::class)->asSingleton();
+
+$container->bind(TagParser::class)->to(function ($container) {
+    /** @var DefaultTags $defaultTags */
+    $defaultTags = $container->get(DefaultTags::class);
+    $tagParser = new TagParser();
+    $regexMap = $defaultTags->getRegexMap();
+    foreach ($regexMap as $regex) {
+        $tagParser->registerTag($regex['regex'], $regex['priority'] ?? 0, $regex['callable'], $regex['name']);
+    }
+    return $tagParser;
+})->asSingleton();
+
+
+$container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
+    $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return $extension == 'md';
+        },
+        $container->get(MarkupContentFactory::class)
+    );
+    $registry->register(
+        function ($params) {
+            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
+            return file_exists($params['source']) && in_array($extension, ['mustache', 'php']);
+        },
+        $container->get(TemplateContentFactory::class)
+    );
+    return $registry;
+})->asSingleton();
+
+$container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
+    $registry = new SiteTypeRegistry();
+    $defaultRegistry = $container->get(PlainSiteFactory::class);
+    $registry->register($defaultRegistry, 'plain');
+    $registry->register($container->get(BlogSiteFactory::class), 'blog');
+    return $registry;
+});
+
+$container->bind(EventDispatcher::class)->to(function (Container $container) {
+    $eventDispatcher = new EventDispatcher();
+    $eventDispatcher->registerEventType(PluginsInitialized::class,
+        function () use ($container) {
+            return $container->get(PluginsInitialized::class);
+        }
+    );
+    $eventDispatcher->registerEventType(ThemeLoaded::class,
+        function ($args) use ($container) {
+            $templateEngine = $container->get(TemplateEngine::class);
+            return new ThemeLoaded($args['theme'], $templateEngine);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentOutputGenerated::class,
+        function ($args) {
+            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentReady::class,
+        function ($args) use ($container) {
+            $automaticContentFactory = $container->get(AutomaticContentFactory::class);
+            return new ContentReady($args['pages'], $automaticContentFactory);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteObjectCreated::class,
+        function ($args) {
+            return new SiteObjectCreated($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteWriteStarted::class,
+        function ($args) {
+            return new SiteWriteStarted($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(SiteWritten::class,
+        function ($args) {
+            return new SiteWritten($args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentWriteStarted::class,
+        function ($args) {
+            return new ContentWriteStarted($args['page']);
+        }
+    );
+    $eventDispatcher->registerEventType(AssetPipelineReady::class,
+        function ($args) {
+            return new AssetPipelineReady($args['pipeline']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentWritten::class,
+        function ($args) {
+            return new ContentWritten($args['content'], $args['destination_path']);
+        }
+    );
+    return $eventDispatcher;
+});
+
+$container->bind(TextConverter::class)->to(
+    function ($container) {
+        $converter = new TextConverter($container->get(TagParser::class));
+        $converter->registerConverter('md', 'html', $container->get(MarkdownConverter::class));
+
+        return $converter;
+    }
+);
+
+$container->bind(AssetPipeline::class)->to(
+    function ($container) {
+        $pipeline = new AssetPipeline();
+        $cssProcessor = $container->get(CSSProcessor::class);
+        $jsProcessor = $container->get(JSProcessor::class);
+        $pipeline->registerProcessor('css', $cssProcessor);
+        $pipeline->registerProcessor('js', $jsProcessor);
+        $pipeline->registerProcessor('files', $container->get(FileProcessor::class));
+        $pipeline->registerMarkupGenerator('css', $cssProcessor);
+        $pipeline->registerMarkupGenerator('js', $jsProcessor);
+        return $pipeline;
+    }
+);
+
 $parser = new ArgumentParser();
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
-$parser->addOption(['name' => 'add-plugins-path', 'help' => 'Adds path to the list of plugin paths', 'repeats' => true, 'type' => 'string']);
+$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
+$parser->addCommand(['name' => 'plugins', 'help' => 'list all plugins and the plugin path hierarchy']);
+
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
@@ -55,8 +199,9 @@ $parser->addOption([
     'short_name' => 'o',
     'name' => 'output',
     'type' => 'string',
-    "help" => "specifies where the site should be written to",
-    'command' => 'generate'
+    "help" => "sets PATH as the output site's root directory",
+    'value' => 'PATH',
+    'command' => ['generate', 'plugins']
 ]);
 $parser->addOption([
     'short_name' => 't',
@@ -121,8 +266,6 @@ $parser->addOption([
     'command' => 'serve'
 ]);
 
-$parser->addCommand(['name' => "install-plugin", "help" => "Install a foonoo plugin"]);
-
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT
 foonoo site generator
@@ -132,156 +275,14 @@ EOT;
 $parser->enableHelp($description, "Find out more at https://github.com/foonoo");
 $options = $parser->parse();
 
-if(!isset($options['__command'])) {
-    if(isset($options['__args'][0])) {
+if (!isset($options['__command'])) {
+    if (isset($options['__args'][0])) {
         echo "Unknown command `{$options['__args'][0]}`.\nRun `{$options['__executed']} --help` for more information.\n";
     } else {
         echo $parser->getHelpMessage();
     }
-    exit(1);    
+    exit(1);
 }
-
-/** @var Container $container */
-$container = new Container();
-
-$container->bind(TemplateRenderer::class)->to(function ($container){
-    /** @var EngineRegistry $engineRegistry */
-    $engineRegistry = $container->get(EngineRegistry::class);
-    $templateFileResolver = $container->get(TemplateFileResolver::class);
-    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
-    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
-    $engineRegistry->registerEngine(['tpl.php'],
-        new PhpEngineFactory($templateRenderer,
-            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
-            $container->get(Janitor::class)
-        ));
-    return $templateRenderer;
-})->asSingleton();
-
-$container->bind(EngineRegistry::class)->to(EngineRegistry::class)->asSingleton();
-$container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->asSingleton();
-$container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
-$container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
-$container->bind(Parser::class)->to(Parser::class)->asSingleton();
-
-$container->bind(TagParser::class)->to(function($container) {
-    /** @var DefaultTags $defaultTags */
-    $defaultTags = $container->get(DefaultTags::class);
-    $tagParser = new TagParser();
-    $regexMap = $defaultTags->getRegexMap();
-    foreach($regexMap as $regex) {
-        $tagParser->registerTag($regex['regex'], $regex['priority'] ?? 0, $regex['callable'], $regex['name']);
-    }
-    return $tagParser;
-})->asSingleton();
-
-
-$container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
-    $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
-    $registry->register(
-        function ($params) {
-            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return $extension == 'md';
-        },
-        $container->get(MarkupContentFactory::class)
-    );
-    $registry->register(
-        function ($params) {
-            $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return file_exists($params['source']) && in_array($extension, ['mustache', 'php']);
-        },
-        $container->get(TemplateContentFactory::class)
-    );
-    return $registry;
-})->asSingleton();
-
-$container->bind(SiteTypeRegistry::class)->to(function(Container $container) {
-    $registry = new SiteTypeRegistry();
-    $defaultRegistry = $container->get(PlainSiteFactory::class);
-    $registry->register($defaultRegistry, 'plain');
-    $registry->register($container->get(BlogSiteFactory::class), 'blog');
-    return $registry;
-});
-
-$container->bind(EventDispatcher::class)->to(function (Container $container) {
-    $eventDispatcher = new EventDispatcher();
-    $eventDispatcher->registerEventType(PluginsInitialized::class,
-        function() use ($container) {
-            return $container->get(PluginsInitialized::class);
-        }
-    );
-    $eventDispatcher->registerEventType(ThemeLoaded::class,
-        function ($args) use ($container) {
-            $templateEngine = $container->get(TemplateEngine::class);
-            return new ThemeLoaded($args['theme'], $templateEngine);
-        }
-    );
-    $eventDispatcher->registerEventType(ContentOutputGenerated::class,
-        function ($args) {
-            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
-        }
-    );
-    $eventDispatcher->registerEventType(ContentReady::class,
-        function ($args) use ($container) {
-            $automaticContentFactory = $container->get(AutomaticContentFactory::class);
-            return new ContentReady($args['pages'], $automaticContentFactory);
-        }
-    );
-    $eventDispatcher->registerEventType(SiteObjectCreated::class,
-        function ($args) {
-            return new SiteObjectCreated($args['site']);
-        }
-    );
-    $eventDispatcher->registerEventType(SiteWriteStarted::class,
-        function ($args) {
-            return new SiteWriteStarted($args['site']);
-        }
-    );
-    $eventDispatcher->registerEventType(SiteWritten::class,
-        function ($args) {
-            return new SiteWritten($args['site']);
-        }
-    );
-    $eventDispatcher->registerEventType(ContentWriteStarted::class,
-        function($args) {
-            return new ContentWriteStarted($args['page']);
-        }
-    );
-    $eventDispatcher->registerEventType(AssetPipelineReady::class,
-        function($args) {
-            return new AssetPipelineReady($args['pipeline']);
-        }
-    );
-    $eventDispatcher->registerEventType(ContentWritten::class,
-        function($args) {
-            return new ContentWritten($args['content'], $args['destination_path']);
-        }
-    );
-    return $eventDispatcher;
-});
-
-$container->bind(TextConverter::class)->to(
-    function($container) {
-        $converter = new TextConverter($container->get(TagParser::class));
-        $converter->registerConverter('md', 'html', $container->get(MarkdownConverter::class));
-
-        return $converter;
-    }
-);
-
-$container->bind(AssetPipeline::class)->to(
-    function ($container) {
-        $pipeline = new AssetPipeline();
-        $cssProcessor = $container->get(CSSProcessor::class);
-        $jsProcessor = $container->get(JSProcessor::class);
-        $pipeline->registerProcessor('css', $cssProcessor);
-        $pipeline->registerProcessor('js', $jsProcessor);
-        $pipeline->registerProcessor('files', $container->get(FileProcessor::class));
-        $pipeline->registerMarkupGenerator('css', $cssProcessor);
-        $pipeline->registerMarkupGenerator('js', $jsProcessor);
-        return $pipeline;
-    }
-);
 
 $commandClass = sprintf('\foonoo\commands\%sCommand', Text::ucamelize($options['__command']));
 $container->resolve($commandClass)->execute($options);

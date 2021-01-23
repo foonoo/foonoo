@@ -15,6 +15,8 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
      * @var AbstractSite
      */
     private $site;
+    private $buffers = [];
+    protected $glue = "";
 
     protected abstract function getMinifier(): Minify;
 
@@ -41,28 +43,44 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
         ];
     }
 
-    public function generateMarkup(array $processed, string $sitePath): string
+    private function createBuffersIfNotExists(array $processed): string
     {
-        $buffers = ['inline' => '', 'external' => ''];
+        if(empty($processed)) {
+            return "";
+        }
+        $bundle = $processed[0]['bundle'];
+        if(isset($this->buffers[$bundle])) {
+            return $bundle;
+        }
+        $this->buffers[$bundle] = ['inline' => '', 'external' => ''];
         usort($processed, function ($a, $b) {
             return $a['order'] > $b['order'];
         });
         foreach ($processed as $item) {
-            $buffers[$item['target']] .= $item['processed'];
+            $this->buffers[$bundle][$item['target']] = "{$this->buffers[$bundle][$item['target']]}{$item['processed']}{$this->glue}";
         }
-        $markup = '';
-        $bundle = $item['bundle'];
-        if ($buffers['inline'] !== '') {
-            $markup .= $this->wrapInline($buffers['inline']);
-        }
-        if($buffers['external'] !== '') {
+
+        if($this->buffers[$bundle]['external'] !== '') {
             $extension = $this->getExtension();
             $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
             $fullPath = $this->site->getDestinationPath($assetPath);
-            if(!file_exists($fullPath)) {
-                Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
-                Filesystem::file($fullPath)->putContents($buffers['external']);git stat
-            }
+            Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
+            Filesystem::file($fullPath)->putContents($this->buffers[$bundle]['external']);
+        }
+
+        return $bundle;
+    }
+
+    public function generateMarkup(array $processed, string $sitePath): string
+    {
+        $bundle = $this->createBuffersIfNotExists($processed);
+        $markup = '';
+        if ($this->buffers[$bundle]['inline'] !== '') {
+            $markup = $this->wrapInline($this->buffers['inline']);
+        }
+        if($this->buffers[$bundle]['external'] !== '') {
+            $extension = $this->getExtension();
+            $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
             $markup .= $this->wrapExternal($assetPath, $sitePath);
         }
         return $markup;

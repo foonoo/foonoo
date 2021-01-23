@@ -85,7 +85,7 @@ class PluginManager
         if($plugins === null) {
             return;
         }
-        $allPluginPaths = array_merge($this->pluginPaths, ["{$sitePath}fn_plugins"]);
+        $allPluginPaths = array_merge(["{$sitePath}fn_plugins"], $this->pluginPaths);
 
         foreach ($plugins as $plugin) {
             list($plugin, $options) = $this->getPluginOptions($plugin);
@@ -99,5 +99,10 @@ class PluginManager
             }
         }
         $this->eventDispatcher->dispatch(PluginsInitialized::class, []);
+    }
+
+    public function getPluginPaths()
+    {
+        return $this->pluginPaths;
     }
 }

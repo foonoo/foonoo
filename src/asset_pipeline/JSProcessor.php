@@ -9,6 +9,8 @@ use MatthiasMullie\Minify\Minify;
 
 class JSProcessor extends MinifiableProcessor
 {
+    protected $glue = ";";
+
     public function getMinifier(): Minify
     {
         return new JS();

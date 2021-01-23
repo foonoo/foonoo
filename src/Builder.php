@@ -211,7 +211,7 @@ class Builder
             $this->setOptions($options);
             $this->buildSites();
             $duration = hrtime(true) - $startTime;
-            $this->io->output(sprintf("Total build time: %.02fs", $duration / 1e+9));
+            $this->io->output(sprintf("Total build time: %.02fs\n", $duration / 1e+9));
         } catch (\Exception $e) {
             if ($options['debug']) {
                 throw $e;
