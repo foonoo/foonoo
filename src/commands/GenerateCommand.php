@@ -54,8 +54,8 @@ class GenerateCommand implements CommandInterface
      */
     public function execute(array $options = [])
     {
-        if(isset($options['add-plugins-path'])) {
-            $this->pluginManager->addPluginPaths(array_reverse($options['add-plugins-path']));
+        if(isset($options['plugin-path'])) {
+            $this->pluginManager->addPluginPaths(array_reverse($options['plugin-path']));
         }
         $this->builder->build($options, $this->cacheFactory, $this->pluginManager);
     }
