@@ -58,7 +58,7 @@ class PluginManager
      */
     public function addPluginPaths(array $paths)
     {
-        $this->pluginPaths = array_merge($paths, $this->loadedPluginEvents);
+        $this->pluginPaths = array_merge(array_map(function ($path) {return realpath($path);}, $paths), $this->pluginPaths);
     }
 
     private function removePluginEvents()
@@ -96,8 +96,8 @@ class PluginManager
             }
         }
         throw new \Exception(
-            "Failed to load plugin [$plugin]. The class [$pluginClass] could not be found in path: "
-            . implode($pluginPaths, "; ")
+            "Failed to load plugin [$plugin]. The class [$pluginClass] could not be found in path: ["
+            . implode($pluginPaths, "; ") . "]"
         );
     }
 
