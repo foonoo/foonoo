@@ -2,7 +2,7 @@
     "name": "foonoo/foonoo",
     "description": "A static site generator that is ideal for generating blogs, documentation and just about any kind of site you can think of.",
     "require": {
-        "ekowabaka/clearice": "~3.0",
+        "ekowabaka/clearice": "~3.2",
         "mustache/mustache": "~2.0",
         "erusev/parsedown" : "~1.0",
         "ntentan/honam": "~0.6.0",

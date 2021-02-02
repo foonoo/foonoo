@@ -1,13 +1,13 @@
 # CHANGELOG
 
-## Unreleased
+## v0.4.0 - 2021-02-01
 
 ### Added
 - Plugins can now be installed into an external location for global use. During runtime a list of these plugin directories are be searched in a hierarchical way for the class code for a plugin. By default, two directories: a foonoo specific sub-directory the operating system's application data, and an `fn_plugins` directory in the site are searched.
 
 
 ### Changed
-- Text parser priorities are now reversed; tags with higher priorities bear larger priority numbers.
+- Text parser priorities are now reversed; tags with higher priorities now bear higher priority values instead.
 - Asset manager can now create multiple asset bundles to be served on different pages.
 
 ### Fixed
