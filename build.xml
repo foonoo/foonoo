@@ -24,7 +24,7 @@
         </copy>
         <exec command="git describe --tags" outputProperty="build.version" />
         <property name="build.output" value="${build.dir}/foonoo-${build.version}.phar" />
-        <php expression="Phar::createDefaultStub('src/main.php')" returnProperty="pharstub" />
+        <php expression="Phar::createDefaultStub('src/scripts/main.php')" returnProperty="pharstub" />
         <echo msg="#!/usr/bin/env php ${line.separator}&lt;?php define('PHING_BUILD_VERSION', '${build.version}') ?>${line.separator}${pharstub}" file="${repo.target}/cli.php" />
         <if>
             <equals arg1="${build.composer}" arg2="execute" />
