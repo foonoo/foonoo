@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## Unreleased
+## v0.4.1 - 2021-02-04
 
 ### Fixed
 - Phar archives can now be executed. The broken main script path has been fixed.
-- Phar archives which work can now find relative plugins.
+- Phar archives which work can now find plugins stored in directories that are specified with relative paths.
 
 ## v0.4.0 - 2021-02-01
 
