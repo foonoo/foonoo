@@ -21,7 +21,13 @@ class PlainSite extends AbstractSite
         $this->templateEngine = $templateEngine;
     }
 
-    private function convertExtensions($file)
+    /**
+     * Converts the extensions of all renderable files to .html
+     *
+     * @param $file
+     * @return string
+     */
+    private function convertExtensions(string $file): string
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         if ($extension == 'md' || $this->templateEngine->isRenderable($file)) {
@@ -31,18 +37,23 @@ class PlainSite extends AbstractSite
         }
     }
 
-    public function getPages(): array
+    /**
+     * Return all the content needed to render the site.
+     *
+     * @return array
+     */
+    public function getContent(): array
     {
-        $pages = array();
+        $content = array();
 
         $files = $this->getFiles();
         foreach ($files as $file) {
             $sourceFile = $this->getSourcePath($file);
             $destinationFile = $this->convertExtensions($file);
-            $pages [] = $this->automaticContentFactory->create($sourceFile, $destinationFile);
+            $content [] = $this->automaticContentFactory->create($sourceFile, $destinationFile);
         }
 
-        return $pages;
+        return $content;
     }
 
     public function getDefaultTheme(): string

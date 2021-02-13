@@ -112,7 +112,7 @@ class DefaultTags
     public function renderPageLink(array $matches)
     {
         $link = strtolower($matches['markup']);
-        foreach ($this->site->getPages() as $targetPage) {
+        foreach ($this->site->getContent() as $targetPage) {
             $title = $targetPage->getMetaData()['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {

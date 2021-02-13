@@ -52,7 +52,7 @@ class SiteWriter
         $assetPipeline->buildAssets();
         $contents = array_map(function ($x) use ($site) {
             return $x->setSitePath($site->getDestinationPath());
-        }, $site->getPages());
+        }, $site->getContent());
         $event = $this->eventDispatcher->dispatch(ContentReady::class, ['pages' => $contents]);
         $contents = $event ? $event->getPages() : $contents;
 

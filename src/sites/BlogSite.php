@@ -72,16 +72,16 @@ class BlogSite extends AbstractSite
      * Get all the blog pages
      * @return array
      */
-    public function getPages(): array
+    public function getContent(): array
     {
-        $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
-        $pages[] = $this->getIndexPage('index.html', $this->posts, "", 'index');
-        $pages[] = $this->getIndexPage('posts.html', $this->posts);
-        $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
+        $content = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
+        $content[] = $this->getIndexPage('index.html', $this->posts, "", 'index');
+        $content[] = $this->getIndexPage('posts.html', $this->posts);
+        $content = array_merge($content, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
         foreach ($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
-            $pages = array_merge($pages, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
+            $content = array_merge($content, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
         }
-        return $pages;
+        return $content;
     }
 
     /**

@@ -223,9 +223,20 @@ abstract class AbstractSite
         return $this->assetPipeline;
     }
 
-    public abstract function getPages(): array;
+    public abstract function getContent(): array;
 
+    /**
+     * Returns a machine readable name of the site type.
+     * Whatever value is returned by this function determines the tag that is used in the site.yml file.
+     *
+     * @return string
+     */
     public abstract function getType(): string;
 
+    /**
+     * Get the name of the default theme for this site type.
+     *
+     * @return string
+     */
     public abstract function getDefaultTheme(): string;
 }
