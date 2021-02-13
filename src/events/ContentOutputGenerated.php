@@ -20,9 +20,9 @@ class ContentOutputGenerated
     private $dom;
     private $domPossiblyModified;
 
-    public function __construct(string $output, Content $page, AbstractSite $site)
+    public function __construct(string $output, Content $content, AbstractSite $site)
     {
-        $this->page = $page;
+        $this->page = $content;
         $this->site = $site;
         $this->setOutput($output);
     }

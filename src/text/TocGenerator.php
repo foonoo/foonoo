@@ -42,15 +42,13 @@ class TocGenerator
                 return;
             }
             $id = $this->pendingTables[$destination];
-            $dom = new DOMDocument();
-            $dom->loadHTML($content->render());
+            $dom = $event->getDOM();
             $xpath = new \DOMXPath($dom);
             $tree = $this->getTableOfContentsTree($xpath->query("//h2|//h3|//h4|//h5|//h6"));
             $tocContainer = $xpath->query("//div[@nptoc='$id']");
             $toc = $dom->createDocumentFragment();
             $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
             $tocContainer->item(0)->appendChild($toc);
-            $event->setOutput($dom->saveHTML());
         };
     }
 

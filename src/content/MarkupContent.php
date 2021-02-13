@@ -12,7 +12,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *
  * @package nyansapow\sites
  */
-class MarkupContent extends Content
+class MarkupContent extends Content implements ThemableInterface
 {
     private $body;
     private $frontMatter;
@@ -70,5 +70,10 @@ class MarkupContent extends Content
     public function getMetaData(): array
     {
         return $this->getFrontMatter();
+    }
+
+    public function getLayoutData()
+    {
+        return [];
     }
 }
