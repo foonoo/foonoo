@@ -8,7 +8,7 @@ use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\text\TemplateEngine;
 
-class PlainSiteFactory implements SiteFactoryInterface
+class DefaultSiteFactory implements SiteFactoryInterface
 {
     private $automaticContentFactory;
     private $assetPipeline;
@@ -23,7 +23,7 @@ class PlainSiteFactory implements SiteFactoryInterface
 
     public function create(array $metadata, string $path): AbstractSite
     {
-        $class = "\\foonoo\\sites\\" . ucfirst($metaData['type'] ?? 'plain') . "Site";
+        $class = "\\foonoo\\sites\\" . ucfirst($metaData['type'] ?? 'default') . "Site";
 
         /** @var AbstractSite $instance */
         $instance = (new \ReflectionClass($class))->newInstanceArgs([$this->templateEngine]);

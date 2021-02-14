@@ -145,6 +145,6 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        return $this->tocGenerator->anticipate($this->pageDestination);
+        return $this->tocGenerator->createContainer($this->pageDestination);
     }
 }

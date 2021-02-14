@@ -9,7 +9,7 @@ use foonoo\text\TemplateEngine;
 use foonoo\utils\Nomenclature;
 
 /**
- * Generates the table of contents by analyzing the DOMDocument generated after the page is rendered.
+ * Generates the table of contents from rendered HTML.
  *
  * @package nyansapow
  */
@@ -17,23 +17,41 @@ class TocGenerator
 {
     use Nomenclature;
 
+    /**
+     * Used to map destination paths to their respective ids.
+     * @var array
+     */
     private $pendingTables = [];
+
+    /**
+     * An instance of the template engine/
+     * @var \foonoo\text\TemplateEngine
+     */
     private $templateEngine;
 
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
-        $events->addListener(ContentOutputGenerated::class, $this->getTOCRenderer());
+        $events->addListener(ContentOutputGenerated::class, $this->render());
         $this->templateEngine = $templateEngine;
     }
 
-    public function anticipate($destination)
+    /**
+     * Creates a container DIV for the TOC.
+     * This method is called in advance when the [[_TOC_]] tag is encountered. The DIV created by this method acts
+     * as a placeholder while the rest of the page is genereted. After all content is ready, the ContentOutputGenerated
+     * event registered through the constructor calls the
+     *
+     * @param $destination
+     * @return string
+     */
+    public function createContainer($destination) : string
     {
         $id = md5($destination);
         $this->pendingTables[$destination] = $id;
-        return "<div nptoc='$id'/>";
+        return "<div class='fn-toc' nptoc='$id'/>";
     }
 
-    private function getTOCRenderer()
+    private function render() : callable
     {
         return function (ContentOutputGenerated $event) {
             $content = $event->getPage();
@@ -45,22 +63,23 @@ class TocGenerator
             $dom = $event->getDOM();
             $xpath = new \DOMXPath($dom);
             $tree = $this->getTableOfContentsTree($xpath->query("//h2|//h3|//h4|//h5|//h6"));
-            $tocContainer = $xpath->query("//div[@nptoc='$id']");
+            $tocContainer = $xpath->query("//div[@nptoc='$id']")->item(0);
             $toc = $dom->createDocumentFragment();
             $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
-            $tocContainer->item(0)->appendChild($toc);
+            $tocContainer->appendChild($toc);
+            $tocContainer->removeAttribute("nptoc");
         };
     }
 
     /**
-     *
+     * Recursively run through the DOM nodes and generate a tree for the TOC.
      *
      * @param \DOMNodeList $nodes
      * @param int $level
      * @param int $index
      * @return array
      */
-    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level=2, int $index=0)
+    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level=2, int $index=0) : array
     {
         $tocTree = [];
 

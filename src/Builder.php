@@ -21,6 +21,10 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 class Builder
 {
     /**
+     * Contains default options for the site builder.
+     * Most of these options are set directly through the command line arguments. Default values are provided by the
+     * command line argument parser.
+     * 
      * @var array
      */
     private $options;

@@ -28,7 +28,7 @@ use foonoo\events\SiteWritten;
 use foonoo\events\ThemeLoaded;
 use foonoo\sites\BlogSiteFactory;
 use foonoo\content\CopiedContentFactory;
-use foonoo\sites\PlainSiteFactory;
+use foonoo\sites\DefaultSiteFactory;
 use foonoo\content\MarkupContentFactory;
 use foonoo\sites\SiteTypeRegistry;
 use foonoo\content\TemplateContentFactory;
@@ -96,7 +96,7 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
 
 $container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
     $registry = new SiteTypeRegistry();
-    $defaultRegistry = $container->get(PlainSiteFactory::class);
+    $defaultRegistry = $container->get(DefaultSiteFactory::class);
     $registry->register($defaultRegistry, 'plain');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;

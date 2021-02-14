@@ -118,6 +118,7 @@ abstract class AbstractSite
 
     /**
      * Get a value from the metadata.
+     *
      * @param $setting
      * @return mixed|null
      */
@@ -126,6 +127,11 @@ abstract class AbstractSite
         return $this->metaData[$setting] ?? null;
     }
 
+    /**
+     * Inject the automatic content factory into the site.
+     *
+     * @param AutomaticContentFactory $automaticContentFactory
+     */
     public function setAutomaticContentFactory(AutomaticContentFactory $automaticContentFactory)
     {
         $this->automaticContentFactory = $automaticContentFactory;
