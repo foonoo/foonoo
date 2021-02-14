@@ -5,11 +5,14 @@ namespace foonoo\text;
 use DOMDocument;
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
+use foonoo\events\SiteObjectCreated;
 use foonoo\text\TemplateEngine;
 use foonoo\utils\Nomenclature;
 
 /**
- * Generates the table of contents from rendered HTML.
+ * Generates the table of contents and handles the rendering of the [[_TOC_]] tag.
+ * Apart from generating tables of content for inidividual pages, this class can also accumulate all the TOCs generated
+ * for use as a global TOC.
  *
  * @package nyansapow
  */
@@ -29,9 +32,26 @@ class TocGenerator
      */
     private $templateEngine;
 
+    /**
+     * Accumulator for the global table of contents.
+     * @var array
+     */
+    private $globalTOC;
+
+    /**
+     * A flag that is set when the site wants the global table of contents collected.
+     * @var bool
+     */
+    private $collectTOC;
+
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
-        $events->addListener(ContentOutputGenerated::class, $this->render());
+        $events->addListener(ContentOutputGenerated::class, $this->getRenderer());
+        $events->addListener(SiteObjectCreated::class, function (SiteObjectCreated $event) {
+            $this->globalTOC = [];
+            $meta = $event->getSite()->getMetaData();
+            $this->collectTOC = (bool) ($meta['global-toc'] ?? false);
+        });
         $this->templateEngine = $templateEngine;
     }
 
@@ -44,30 +64,41 @@ class TocGenerator
      * @param $destination
      * @return string
      */
-    public function createContainer($destination) : string
+    public function createContainer($destination): string
     {
         $id = md5($destination);
         $this->pendingTables[$destination] = $id;
         return "<div class='fn-toc' nptoc='$id'/>";
     }
 
-    private function render() : callable
+    private function getRenderer(): callable
     {
         return function (ContentOutputGenerated $event) {
             $content = $event->getPage();
             $destination = $content->getDestination();
-            if(!isset($this->pendingTables[$destination])) {
+            $render = isset($this->pendingTables[$destination]);
+            if (!$render && !$this->collectTOC) {
                 return;
             }
-            $id = $this->pendingTables[$destination];
             $dom = $event->getDOM();
             $xpath = new \DOMXPath($dom);
-            $tree = $this->getTableOfContentsTree($xpath->query("//h2|//h3|//h4|//h5|//h6"));
-            $tocContainer = $xpath->query("//div[@nptoc='$id']")->item(0);
-            $toc = $dom->createDocumentFragment();
-            $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
-            $tocContainer->appendChild($toc);
-            $tocContainer->removeAttribute("nptoc");
+            $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"));
+            // Use this for the global TOC
+            if ($this->collectTOC) {
+                $this->globalTOC[$content->getDestination()] = $tree;
+            }
+            if ($render) {
+                // If there is just a single h1 shave it off and assume it's the title.
+                if(count($tree) == 1 && !empty($tree[0]['children'])) {
+                    $tree = $tree[0]['children'];
+                }
+
+                $tocContainer = $xpath->query("//div[@nptoc='{$this->pendingTables[$destination]}']")->item(0);
+                $toc = $dom->createDocumentFragment();
+                $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
+                $tocContainer->appendChild($toc);
+                $tocContainer->removeAttribute("nptoc");
+            }
         };
     }
 
@@ -79,7 +110,7 @@ class TocGenerator
      * @param int $index
      * @return array
      */
-    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level=2, int $index=0) : array
+    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level = 1, int $index = 0): array
     {
         $tocTree = [];
 
@@ -89,7 +120,7 @@ class TocGenerator
                 //$headerPath = $node->getNodePath();
                 $id = $this->makeId($node->textContent) . "-" . ($i + 1);
                 $nextItem = $nodes->item($i + 1);
-                $nextItemLevel = (int) (isset($nextItem) ? substr($nextItem->nodeName, -1) : 0);
+                $nextItemLevel = (int)(isset($nextItem) ? substr($nextItem->nodeName, -1) : 0);
                 $node->setAttribute("id", $id);
 
                 if ($nextItemLevel === $level) { //$nextItem && $nextItem->nodeName == "h{$level}") {
@@ -127,7 +158,7 @@ class TocGenerator
             }
         }
 
-        if ($level > 2) $tocTree['index'] = $i;
+        if ($level > 1) $tocTree['index'] = $i;
         return $tocTree;
     }
 }

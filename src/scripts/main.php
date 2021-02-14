@@ -97,7 +97,7 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
 $container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
     $registry = new SiteTypeRegistry();
     $defaultRegistry = $container->get(DefaultSiteFactory::class);
-    $registry->register($defaultRegistry, 'plain');
+    $registry->register($defaultRegistry, 'default');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;
 });
