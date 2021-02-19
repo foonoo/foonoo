@@ -10,9 +10,9 @@ class ContentWriteStarted
 {
     private $content;
 
-    public function __construct(Content $page)
+    public function __construct(Content $content)
     {
-        $this->content = $page;
+        $this->content = $content;
     }
 
     public function getContent() : Content

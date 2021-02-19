@@ -6,6 +6,8 @@ use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\asset_pipeline\CSSProcessor;
 use foonoo\asset_pipeline\FileProcessor;
 use foonoo\asset_pipeline\JSProcessor;
+use foonoo\events\ContentLayoutApplied;
+use foonoo\events\AllContentsRendered;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -96,8 +98,7 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
 
 $container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
     $registry = new SiteTypeRegistry();
-    $defaultRegistry = $container->get(DefaultSiteFactory::class);
-    $registry->register($defaultRegistry, 'default');
+    $registry->register($container->get(DefaultSiteFactory::class), 'default');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;
 });
@@ -117,13 +118,13 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     );
     $eventDispatcher->registerEventType(ContentOutputGenerated::class,
         function ($args) {
-            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
+            return new ContentOutputGenerated($args['output'], $args['content'], $args['site']);
         }
     );
     $eventDispatcher->registerEventType(ContentReady::class,
         function ($args) use ($container) {
             $automaticContentFactory = $container->get(AutomaticContentFactory::class);
-            return new ContentReady($args['pages'], $automaticContentFactory);
+            return new ContentReady($args['contents'], $automaticContentFactory);
         }
     );
     $eventDispatcher->registerEventType(SiteObjectCreated::class,
@@ -143,7 +144,7 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     );
     $eventDispatcher->registerEventType(ContentWriteStarted::class,
         function ($args) {
-            return new ContentWriteStarted($args['page']);
+            return new ContentWriteStarted($args['content']);
         }
     );
     $eventDispatcher->registerEventType(AssetPipelineReady::class,
@@ -154,6 +155,16 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     $eventDispatcher->registerEventType(ContentWritten::class,
         function ($args) {
             return new ContentWritten($args['content'], $args['destination_path']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentLayoutApplied::class,
+        function ($args) {
+            return new ContentLayoutApplied($args['output'], $args['content'], $args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(AllContentsRendered::class,
+        function ($args) {
+            return new AllContentsRendered($args['site']);
         }
     );
     return $eventDispatcher;
@@ -181,6 +192,7 @@ $container->bind(AssetPipeline::class)->to(
         return $pipeline;
     }
 );
+$container->bind(\foonoo\text\TocGenerator::class)->asSingleton();
 
 $parser = new ArgumentParser();
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);

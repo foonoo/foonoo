@@ -160,9 +160,7 @@ class Builder
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
-
             $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
-
             $this->siteWriter->write($site);
 
             if (is_dir($site->getSourcePath("np_images"))) {

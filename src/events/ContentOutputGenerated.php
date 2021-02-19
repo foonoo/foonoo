@@ -12,73 +12,26 @@ use foonoo\sites\AbstractSite;
  *
  * @package foonoo\events
  */
-class ContentOutputGenerated
+class ContentOutputGenerated extends BaseOutputEvent
 {
-    private $output;
-    private $page;
-    private $site;
-    private $dom;
-    private $domPossiblyModified;
-
-    public function __construct(string $output, Content $content, AbstractSite $site)
-    {
-        $this->page = $content;
-        $this->site = $site;
-        $this->setOutput($output);
-    }
-
-    /**
-     * Replace the output to be written.
-     *
-     * @param string $output
-     */
-    public function setOutput(string $output): void
-    {
-        $this->output = $output;
-    }
-
-    /**
-     * Get the output that was generated.
-     *
-     * @return string
-     */
-    public function getOutput(): string
-    {
-        if($this->dom && $this->domPossiblyModified) {
-            $this->output = $this->dom->saveHTML();
-            $this->domPossiblyModified = false;
-        }
-        return $this->output;
-    }
-
-    /**
-     * Get the site for which this output was generated.
-     *
-     * @return AbstractSite
-     */
-    public function getSite(): AbstractSite
-    {
-        return $this->site;
-    }
-
-    /**
-     * If content has a DOM, you can use this to get it.
-     *
-     * @return \DOMDocument
-     */
-    public function getDOM() : \DOMDocument
+    public function getDOM(): \DOMNode
     {
         // Create a DOM tree for objects that are possibly themed
-        if(!$this->dom && is_a($this->page, ThemableInterface::class)) {
+        if (!$this->dom && is_a($this->content, ThemableInterface::class)) {
             $this->dom = new \DOMDocument();
-            @$this->dom->loadHTML($this->output);
+            $this->dom->loadHTML($this->output, LIBXML_HTML_NODEFDTD);
         }
         $this->domPossiblyModified = true;
         return $this->dom;
     }
 
-    public function getPage(): Content
+    public function getOutput(): string
     {
-        return $this->page;
+        if ($this->dom && $this->domPossiblyModified) {
+            $this->output = $this->dom->saveHTML($this->dom->childNodes->item(0)->childNodes->item(0));
+            //$this->output = $this->dom->childNodes->item(0)->sav;
+            $this->domPossiblyModified = false;
+        }
+        return $this->output;
     }
 }

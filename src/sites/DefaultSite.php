@@ -2,10 +2,14 @@
 
 namespace foonoo\sites;
 
+use foonoo\events\AllContentsRendered;
+use foonoo\events\EventDispatcher;
 use foonoo\text\TemplateEngine;
+use foonoo\text\TocGenerator;
 
 /**
- * The default site generated when tere are no configurations in the root directory.
+ * The default site generated when there are either no configurations in the root directory or a site type is not
+ * specified in the configuration.
  *
  * A plain site reads in and converts any supported text formats (Markdown and Templates) to html. If there is an index
  * template file, or an index markdown that becomes the default page for the site. The plain site was added so a site
@@ -21,9 +25,17 @@ class DefaultSite extends AbstractSite
      */
     private $templateEngine;
 
-    public function __construct(TemplateEngine $templateEngine)
+    /**
+     * @var TocGenerator
+     */
+    private $tocGenerator;
+
+    private $globalTOC;
+
+    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
     {
         $this->templateEngine = $templateEngine;
+        $this->tocGenerator = $tocGenerator;
     }
 
     /**
@@ -61,13 +73,28 @@ class DefaultSite extends AbstractSite
         return $content;
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultTheme(): string
     {
-        return 'plain';
+        return 'default';
     }
 
+    public function getTemplateData(string $contentDestination = null): array
+    {
+        $templateData = parent::getTemplateData($contentDestination);
+        $globalToc = $this->tocGenerator->getGlobalTOC();
+        ksort($globalToc);
+        $templateData['global_toc'] = $globalToc;
+        return $templateData;
+    }
+
+    /**
+     * @return string
+     */
     public function getType(): string
     {
-        return 'plain';
+        return 'default';
     }
 }

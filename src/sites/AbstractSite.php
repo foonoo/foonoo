@@ -165,7 +165,7 @@ abstract class AbstractSite
         return array_merge(['assets_markup' => $this->assetPipeline->getMarkup('')], $this->templateData);
     }
 
-    private function makeRelativeLocation($path, $relativeTo)
+    private function makeRelativeLocation($path, $relativeTo): string
     {
         // Generate a relative location for the assets
         $dir = substr(preg_replace('#/+#', '/', $path), strlen($relativeTo));

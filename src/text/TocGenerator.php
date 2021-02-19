@@ -2,11 +2,10 @@
 
 namespace foonoo\text;
 
-use DOMDocument;
+use foonoo\content\Content;
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
 use foonoo\events\SiteObjectCreated;
-use foonoo\text\TemplateEngine;
 use foonoo\utils\Nomenclature;
 
 /**
@@ -50,7 +49,7 @@ class TocGenerator
         $events->addListener(SiteObjectCreated::class, function (SiteObjectCreated $event) {
             $this->globalTOC = [];
             $meta = $event->getSite()->getMetaData();
-            $this->collectTOC = (bool) ($meta['global-toc'] ?? false);
+            $this->collectTOC = (bool)($meta['global-toc'] ?? false);
         });
         $this->templateEngine = $templateEngine;
     }
@@ -71,10 +70,24 @@ class TocGenerator
         return "<div class='fn-toc' nptoc='$id'/>";
     }
 
+    private function shaveTreeRoot(array $tree, Content $content): array
+    {
+        if (count($tree) == 1 && !empty($tree[0]['children']) && $tree[0]['title'] == $content->getMetaData()['title']) {
+            $tree = $tree[0]['children'];
+        }
+        return $tree;
+    }
+
+    /**
+     * Return the callable function that's used by the text renderer.
+     *
+     * @return callable
+     */
     private function getRenderer(): callable
     {
         return function (ContentOutputGenerated $event) {
-            $content = $event->getPage();
+            $content = $event->getContent();
+            $metaData = $content->getMetaData();
             $destination = $content->getDestination();
             $render = isset($this->pendingTables[$destination]);
             if (!$render && !$this->collectTOC) {
@@ -83,16 +96,16 @@ class TocGenerator
             $dom = $event->getDOM();
             $xpath = new \DOMXPath($dom);
             $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"));
+
             // Use this for the global TOC
             if ($this->collectTOC) {
                 $this->globalTOC[$content->getDestination()] = $tree;
             }
             if ($render) {
                 // If there is just a single h1 shave it off and assume it's the title.
-                if(count($tree) == 1 && !empty($tree[0]['children'])) {
+                if (count($tree) == 1 && !empty($tree[0]['children']) && (!isset($metaData['title']) || $tree[0]['title'] == $content->getMetaData()['title'])) {
                     $tree = $tree[0]['children'];
                 }
-
                 $tocContainer = $xpath->query("//div[@nptoc='{$this->pendingTables[$destination]}']")->item(0);
                 $toc = $dom->createDocumentFragment();
                 $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
@@ -160,5 +173,16 @@ class TocGenerator
 
         if ($level > 1) $tocTree['index'] = $i;
         return $tocTree;
+    }
+
+    public function getGlobalTOC(): array
+    {
+        $toc = [];
+        foreach ($this->globalTOC as $contentTOC) {
+            foreach ($contentTOC as $item) {
+                $toc[] = $item;
+            }
+        }
+        return $toc;
     }
 }

@@ -8,6 +8,12 @@ use foonoo\sites\AssetPipeline;
 use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
 
+/**
+ * Loads themes by injecting their paths into the global template hierarchy and copying all required assets to the
+ * site's destination path.
+ *
+ * @package foonoo\themes
+ */
 class ThemeManager
 {
     private $themes;
