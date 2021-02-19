@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 
 use foonoo\events\EventDispatcher;
-use foonoo\events\ContentWriteStarted;
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
 use foonoo\content\Content;
@@ -47,7 +47,7 @@ class DefaultTags
     /**
      * @var string
      */
-    private $pageDestination;
+    private $contentDestination;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
@@ -58,9 +58,9 @@ class DefaultTags
                 $this->site = $event->getSite();
             }
         );
-        $eventDispatcher->addListener(ContentWriteStarted::class,
-            function (ContentWriteStarted $event) {
-                $this->pageDestination = $event->getContent()->getDestination();
+        $eventDispatcher->addListener(ContentGenerationStarted::class,
+            function (ContentGenerationStarted $event) {
+                $this->contentDestination = $event->getContent()->getDestination();
                 $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
             }
         );
@@ -145,6 +145,6 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        return $this->tocGenerator->createContainer($this->pageDestination);
+        return $this->tocGenerator->createContainer($this->contentDestination);
     }
 }

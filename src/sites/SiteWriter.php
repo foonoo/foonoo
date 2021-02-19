@@ -2,6 +2,7 @@
 namespace foonoo\sites;
 
 use foonoo\events\AssetPipelineReady;
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\ContentLayoutApplied;
 use foonoo\events\AllContentsRendered;
 use ntentan\utils\exceptions\FileAlreadyExistsException;
@@ -61,6 +62,7 @@ class SiteWriter
         // Render content
         /** @var Content $content */
         foreach ($contents as $i =>$content) {
+            $this->eventDispatcher->dispatch(ContentGenerationStarted::class, ['content' => $content]);
             $output = $content->render();
             /** @var ContentOutputGenerated $event */
             $event = $this->eventDispatcher->dispatch(ContentOutputGenerated::class, ['output' => $output, 'content' => $content, 'site' => $site]);

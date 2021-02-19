@@ -22,7 +22,7 @@ use foonoo\events\EventDispatcher;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\events\ContentOutputGenerated;
 use foonoo\events\ContentReady;
-use foonoo\events\ContentWriteStarted;
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\PluginsInitialized;
 use foonoo\events\SiteObjectCreated;
 use foonoo\events\SiteWriteStarted;
@@ -142,9 +142,9 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new SiteWritten($args['site']);
         }
     );
-    $eventDispatcher->registerEventType(ContentWriteStarted::class,
+    $eventDispatcher->registerEventType(ContentGenerationStarted::class,
         function ($args) {
-            return new ContentWriteStarted($args['content']);
+            return new ContentGenerationStarted($args['content']);
         }
     );
     $eventDispatcher->registerEventType(AssetPipelineReady::class,

@@ -14,12 +14,12 @@ use foonoo\sites\AbstractSite;
  */
 class ContentOutputGenerated extends BaseOutputEvent
 {
-    public function getDOM(): \DOMNode
+    public function getDOM(): \DOMDocument
     {
         // Create a DOM tree for objects that are possibly themed
         if (!$this->dom && is_a($this->content, ThemableInterface::class)) {
             $this->dom = new \DOMDocument();
-            $this->dom->loadHTML($this->output, LIBXML_HTML_NODEFDTD);
+            @$this->dom->loadHTML("<section>$this->output</section>", LIBXML_HTML_NODEFDTD|LIBXML_HTML_NOIMPLIED);
         }
         $this->domPossiblyModified = true;
         return $this->dom;
@@ -28,8 +28,11 @@ class ContentOutputGenerated extends BaseOutputEvent
     public function getOutput(): string
     {
         if ($this->dom && $this->domPossiblyModified) {
-            $this->output = $this->dom->saveHTML($this->dom->childNodes->item(0)->childNodes->item(0));
-            //$this->output = $this->dom->childNodes->item(0)->sav;
+            $wrapper =$this->dom->childNodes->item(0);
+            $this->output = '';
+            foreach ($wrapper->childNodes as $node) {
+                $this->output .= $this->dom->saveHTML($node);
+            }
             $this->domPossiblyModified = false;
         }
         return $this->output;
