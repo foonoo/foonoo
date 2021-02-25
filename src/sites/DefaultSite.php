@@ -87,6 +87,9 @@ class DefaultSite extends AbstractSite
         $globalToc = $this->tocGenerator->getGlobalTOC();
         ksort($globalToc);
         $templateData['global_toc'] = $globalToc;
+        if(isset($this->metaData['title'])) {
+            $templateData['site_title'] = $this->metaData['title'];
+        }
         return $templateData;
     }
 
