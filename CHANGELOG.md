@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## Unreleased
+### Added
+- A `ContentOutputGenerated` event that fires whenever the output of a piece of content has been generated and is yet to be written to a file.
+- An `AllContentsRendered` event that fires when all contents have been rendered for a site and are about to be written to file.
+
+### Changed
+- The `plain` site type has now been renamed to `default`
+- Switched the sequence in which content is written to file. Instead of writing the content one-by-one as it is generated, content is instead generated in batch, with layouts applied aftwards in batch, and finally written in batch. This leaves room to collect information about all contents (such as the Table of Contents) to be rendered into layouts.
+
+### Fixed
+- The default stylesheet for the plain site has been improved.
+
+
 ## v0.4.1 - 2021-02-04
 
 ### Fixed

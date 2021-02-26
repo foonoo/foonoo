@@ -62,6 +62,7 @@ class SiteWriter
         // Render content
         /** @var Content $content */
         foreach ($contents as $i =>$content) {
+            $this->io->output("- Rendering content for {$site->getDestinationPath($content->getDestination())} \n");
             $this->eventDispatcher->dispatch(ContentGenerationStarted::class, ['content' => $content]);
             $output = $content->render();
             /** @var ContentOutputGenerated $event */
@@ -72,6 +73,7 @@ class SiteWriter
         $this->eventDispatcher->dispatch(AllContentsRendered::class, ['site' => $site]);
 
         foreach($contents as $i => $content) {
+            $this->io->output("- Writing content to {$site->getDestinationPath($content->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $outputs[$i], $content);
         }
     }
