@@ -21,6 +21,11 @@ use foonoo\themes\Theme;
 use foonoo\themes\ThemeManager;
 use clearice\io\Io;
 
+/**
+ * Writes all the content of a site to a given location.
+ *
+ * @package foonoo\sites
+ */
 class SiteWriter
 {
     private $themeManager;

@@ -3,7 +3,56 @@ body{
     font-family: Roboto, sans-serif;
 }
 
+a{
+    text-decoration: none;
+}
+
+.wrapper > * {
+    width: 100%;
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#banner-wrapper {
+    background-color: #0069d9;
+    color: #fff;
+}
+
 #banner {
     font-size: x-large;
     font-weight: bold;
+    padding: 10px
+}
+
+#body {
+    padding: 10px;
+}
+
+.fn-toc {
+    float: right;
+    width: 250px;
+    border: 1px solid #e0e0e0;
+    margin: 5px;
+    margin-top: 0px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    font-size: smaller;
+}
+
+.fn-toc > span {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.fn-toc ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 20px;
+}
+
+.fn-toc > ul {
+    padding: 0px;
 }

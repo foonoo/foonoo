@@ -66,7 +66,7 @@ class Builder
 
 
     /**
-     * Create an instance of the context object through which Nyansapow works.
+     * Create an instance of the context object through which Foonoo works.
      *
      * @param Io $io
      * @param SiteTypeRegistry $siteTypeRegistry
@@ -127,7 +127,15 @@ class Builder
         return $sites;
     }
 
-    private function createSite($metaData, $path): AbstractSite
+    /**
+     * Creates an instance of the AbstractSite for a given site metadata array.
+     * 
+     * @param array $metaData
+     * @param string $path
+     * 
+     * @return AbstractSite
+     */
+    private function createSite(array $metaData, string $path): AbstractSite
     {
         if (!is_array($metaData)) {
             $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];

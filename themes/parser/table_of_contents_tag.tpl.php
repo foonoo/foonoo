@@ -1,3 +1,4 @@
+<span>Contents</span>
 <ul>
     <?php foreach ($tree as $item): ?>
         <li><a href="#<?= $item['id'] ?>"><?= $item['title'] ?></a></li>
