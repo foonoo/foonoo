@@ -49,7 +49,7 @@ class TocGenerator
         $events->addListener(SiteObjectCreated::class, function (SiteObjectCreated $event) {
             $this->globalTOC = [];
             $meta = $event->getSite()->getMetaData();
-            $this->collectTOC = (bool)($meta['global-toc'] ?? false);
+            $this->collectTOC = (bool)($meta['enable-toc'] ?? false);
         });
         $this->templateEngine = $templateEngine;
     }
@@ -171,10 +171,17 @@ class TocGenerator
             }
         }
 
-        if ($level > 1) $tocTree['index'] = $i;
+        if ($level > 1) {
+            $tocTree['index'] = $i;
+        }
         return $tocTree;
     }
 
+    /**
+     * Get the global table of contents that was generated across all pages.
+     * 
+     * @return array
+     */
     public function getGlobalTOC(): array
     {
         $toc = [];

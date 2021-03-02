@@ -7,14 +7,18 @@ a{
     text-decoration: none;
 }
 
-.wrapper > * {
+.wrapper {
     width: 100%;
     max-width: 950px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#banner-wrapper {
+.wrapper.has-toc {
+    max-width:initial;
+}
+
+#banner-container {
     background-color: #0069d9;
     color: #fff;
 }
@@ -27,6 +31,12 @@ a{
 
 #body {
     padding: 10px;
+}
+
+article {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .fn-toc {

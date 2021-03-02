@@ -2,8 +2,6 @@
 
 namespace foonoo\sites;
 
-use foonoo\events\AllContentsRendered;
-use foonoo\events\EventDispatcher;
 use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 
@@ -29,8 +27,6 @@ class DefaultSite extends AbstractSite
      * @var TocGenerator
      */
     private $tocGenerator;
-
-    private $globalTOC;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
     {
@@ -81,12 +77,20 @@ class DefaultSite extends AbstractSite
         return 'default';
     }
 
+    /**
+     * 
+     * @param string $contentDestination
+     * @return array
+     */
     public function getTemplateData(string $contentDestination = null): array
     {
         $templateData = parent::getTemplateData($contentDestination);
-        $globalToc = $this->tocGenerator->getGlobalTOC();
-        ksort($globalToc);
-        $templateData['global_toc'] = $globalToc;
+        if(isset($this->metaData['enable-toc']) && $this->metaData['enable-toc'] == true) {
+            $globalToc = $this->tocGenerator->getGlobalTOC();
+            ksort($globalToc);
+            $templateData['has_toc'] = true;
+            $templateData['global_toc'] = $globalToc;            
+        }
         if(isset($this->metaData['title'])) {
             $templateData['site_title'] = $this->metaData['title'];
         }
