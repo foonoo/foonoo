@@ -18,7 +18,7 @@
         <?php endif ?>
         <div id="body-wrapper" class="wrapper <?= $toc_tag ?>">
             <?php if(isset($has_toc) && $has_toc): ?>
-            <div class="toc">
+            <div id="side-toc">
                 <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u()]) ?>
             </div>
             <?php endif; ?>

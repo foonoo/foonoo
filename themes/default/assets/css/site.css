@@ -33,6 +33,23 @@ a{
     padding: 10px;
 }
 
+#body-wrapper.wrapper.has-toc {
+    display: flex;
+    flex-direction: row;
+}
+
+#side-toc {
+    padding: 10px;
+    width: 280px;
+    border-right: 1px solid #808080;
+}
+
+#side-toc ul {
+    margin:0px;
+    padding: 0px;
+    padding-left: 20px;
+}
+
 article {
     max-width: 950px;
     margin-left: auto;
