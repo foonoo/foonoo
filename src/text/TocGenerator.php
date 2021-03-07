@@ -70,14 +70,6 @@ class TocGenerator
         return "<div class='fn-toc' nptoc='$id'/>";
     }
 
-    private function shaveTreeRoot(array $tree, Content $content): array
-    {
-        if (count($tree) == 1 && !empty($tree[0]['children']) && $tree[0]['title'] == $content->getMetaData()['title']) {
-            $tree = $tree[0]['children'];
-        }
-        return $tree;
-    }
-
     /**
      * Return the callable function that's used by the text renderer.
      *
@@ -95,11 +87,11 @@ class TocGenerator
             }
             $dom = $event->getDOM();
             $xpath = new \DOMXPath($dom);
-            $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"));
+            $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
 
             // Use this for the global TOC
             if ($this->collectTOC) {
-                $this->globalTOC[$content->getDestination()] = $tree;
+                $this->globalTOC[$destination] = $tree;
             }
             if ($render) {
                 // If there is just a single h1 shave it off and assume it's the title.
@@ -123,27 +115,26 @@ class TocGenerator
      * @param int $index
      * @return array
      */
-    private function getTableOfContentsTree(\DOMNodeList $nodes, int $level = 1, int $index = 0): array
+    private function getTableOfContentsTree(\DOMNodeList $nodes, string $destination, int $level = 1, int $index = 0): array
     {
         $tocTree = [];
 
         for ($i = $index; $i < $nodes->length; $i++) {
             $node = $nodes->item($i);
             if ($node && $node->nodeName == "h{$level}") {
-                //$headerPath = $node->getNodePath();
                 $id = $this->makeId($node->textContent) . "-" . ($i + 1);
                 $nextItem = $nodes->item($i + 1);
                 $nextItemLevel = (int)(isset($nextItem) ? substr($nextItem->nodeName, -1) : 0);
                 $node->setAttribute("id", $id);
 
-                if ($nextItemLevel === $level) { //$nextItem && $nextItem->nodeName == "h{$level}") {
+                if ($nextItemLevel === $level) {
                     // Add node and continue to node on same level
                     $tocTree[] = array(
-                        //'header_path' => $headerPath,
                         'id' => $id,
                         'title' => $node->nodeValue,
                         'level' => $level,
-                        'children' => array()
+                        'children' => array(),
+                        'destination' => $destination
                     );
                 } else if ($nextItemLevel < $level) {
                     // Add node on current level and exit for node on lower level
@@ -151,18 +142,20 @@ class TocGenerator
                         'id' => $id,
                         'title' => $node->nodeValue,
                         'level' => $level,
-                        'children' => array()
+                        'children' => array(),
+                        'destination' => $destination
                     );
                     break;
                 } else {
-                    $children = $this->getTableOfContentsTree($nodes, $nextItemLevel, $i + 1);
+                    $children = $this->getTableOfContentsTree($nodes, $destination, $nextItemLevel, $i + 1);
                     $newIndex = $children['index'];
                     unset($children['index']);
                     $tocTree[] = array(
                         'id' => $id,
                         'title' => $node->nodeValue,
                         'level' => $level,
-                        'children' => $children
+                        'children' => $children,
+                        'destination' => $destination
                     );
                     $i = $newIndex;
                 }

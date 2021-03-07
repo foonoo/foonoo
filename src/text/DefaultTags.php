@@ -7,7 +7,6 @@ use foonoo\events\EventDispatcher;
 use foonoo\events\ContentGenerationStarted;
 use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
-use foonoo\content\Content;
 use foonoo\utils\Nomenclature;
 
 /**

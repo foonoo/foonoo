@@ -3,9 +3,6 @@
 namespace foonoo\asset_pipeline;
 
 
-use MatthiasMullie\Minify\CSS;
-use MatthiasMullie\Minify\JS;
-use MatthiasMullie\Minify\Minify;
 use ntentan\utils\exceptions\FileNotFoundException;
 use ntentan\utils\Filesystem;
 
@@ -45,7 +42,7 @@ class AssetPipeline
      * @param array|string $options
      * @throws FileNotFoundException
      */
-    private function addItem(string $path, string $type, array $options): void
+    public function addItem(string $path, string $type, array $options=[]): void
     {
         Filesystem::checkExists($path);
         $bundles = $options['bundles'] ?? ["default"];

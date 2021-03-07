@@ -23,7 +23,7 @@ class JSProcessor extends MinifiableProcessor
 
     protected function wrapExternal(string $content, string $sitePath): string
     {
-        return "<script type='application/javascript' src='{$sitePath}{$content}' async defer></script>";
+        return "<script type='application/javascript' src='{$sitePath}{$content}' defer></script>";
     }
 
     protected function getExtension(): string
