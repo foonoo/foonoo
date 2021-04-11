@@ -100,6 +100,7 @@ class Builder
      * @param string $path
      * @param bool $root
      * @return array<AbstractSite>
+     * @throws FoonooException
      */
     private function getSites(string $path, bool $root = false): array
     {
@@ -129,11 +130,12 @@ class Builder
 
     /**
      * Creates an instance of the AbstractSite for a given site metadata array.
-     * 
+     *
      * @param array $metaData
      * @param string $path
-     * 
+     *
      * @return AbstractSite
+     * @throws FoonooException
      */
     private function createSite(array $metaData, string $path): AbstractSite
     {
@@ -207,7 +209,6 @@ class Builder
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
-        //$this->siteWriter->setOptions($options);
         $this->options = $options;
 
     }

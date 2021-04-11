@@ -5,8 +5,6 @@ namespace foonoo\text;
 /**
  * Parse text containing special Foonoo tags.
  *
- * Foonoo tags start with
- *
  * @package nyansapow
  */
 class TagParser
