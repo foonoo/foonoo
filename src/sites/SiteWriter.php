@@ -22,14 +22,14 @@ use foonoo\themes\ThemeManager;
 use clearice\io\Io;
 
 /**
- * Writes all the content of a site to a given location.
+ * Writes all the content of a site to its output destination.
  *
  * @package foonoo\sites
  */
 class SiteWriter
 {
     private $themeManager;
-    private $options;
+    //private $options;
     private $eventDispatcher;
     private $io;
     private $templateEngine;

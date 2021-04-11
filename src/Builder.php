@@ -207,7 +207,7 @@ class Builder
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
-        $this->siteWriter->setOptions($options);
+        //$this->siteWriter->setOptions($options);
         $this->options = $options;
 
     }

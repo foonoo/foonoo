@@ -25,7 +25,6 @@ a{
 
 #banner {
     font-size: x-large;
-    font-weight: bold;
     padding: 10px
 }
 
@@ -39,16 +38,35 @@ a{
 }
 
 #side-toc {
-    padding: 10px;
-    width: 280px;
-    border-right: 1px solid #808080;
+    padding: 20px;
+    width: 250px;
+    border-right: 1px solid #e0e0e0;
+    background-color: #f4f4f4;
+}
+
+#side-toc a{
+    color: #909090;
+    display: block;
+    margin-bottom: 5px;
 }
 
 #side-toc ul {
     margin:0px;
     padding: 0px;
-    padding-left: 20px;
+    list-style: none;
+    font-size: 0.98em;
+    /*padding-left: 20px;*/
 }
+
+#side-toc > ul > li > a {
+    color: #002752;
+    font-size: 1em;
+}
+
+#side-toc > ul > li{
+    margin-bottom: 25px
+}
+
 
 article {
     max-width: 950px;
@@ -82,4 +100,13 @@ article {
 
 .fn-toc > ul {
     padding: 0px;
+}
+
+article {
+    color:#404040;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #002752;
+    font-weight: normal
 }

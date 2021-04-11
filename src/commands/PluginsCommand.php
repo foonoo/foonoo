@@ -8,6 +8,9 @@ use clearice\io\Io;
 use foonoo\CommandInterface;
 use foonoo\PluginManager;
 
+/**
+ * This command list all installed plugins.
+ */
 class PluginsCommand implements CommandInterface
 {
     private $pluginManager;
