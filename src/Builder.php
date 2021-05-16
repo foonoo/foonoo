@@ -83,6 +83,10 @@ class Builder
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    /**
+     * @param $path
+     * @return array|false|mixed|\stdClass|\Symfony\Component\Yaml\Tag\TaggedValue|null
+     */
     private function readSiteMetadata($path)
     {
         $meta = false;
@@ -160,6 +164,14 @@ class Builder
         return $site;
     }
 
+    /**
+     * @throws FoonooException
+     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws \ntentan\utils\exceptions\FileNotReadableException
+     * @throws \ntentan\utils\exceptions\FileNotWriteableException
+     * @throws \ntentan\utils\exceptions\FilesystemException
+     */
     private function buildSites()
     {
         $sites = $this->getSites($this->options['input'], true);
@@ -189,6 +201,10 @@ class Builder
         }
     }
 
+    /**
+     * @param $options
+     * @throws FoonooException
+     */
     private function setOptions($options)
     {
         if (!isset($options['input']) || $options['input'] === '') {
@@ -213,6 +229,17 @@ class Builder
 
     }
 
+    /**
+     * @param array $options
+     * @param CacheFactory $cacheFactory
+     * @param PluginManager $pluginManager
+     * @throws FoonooException
+     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws \ntentan\utils\exceptions\FileNotReadableException
+     * @throws \ntentan\utils\exceptions\FileNotWriteableException
+     * @throws \ntentan\utils\exceptions\FilesystemException
+     */
     public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager)
     {
         try {
@@ -232,7 +259,11 @@ class Builder
         }
     }
 
-    private function readData($path)
+    /**
+     * @param $path
+     * @return array
+     */
+    private function readData($path): array
     {
         $data = [];
         if(!is_dir($path)) {

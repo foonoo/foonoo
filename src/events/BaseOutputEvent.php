@@ -5,6 +5,7 @@ namespace foonoo\events;
 
 
 use foonoo\content\Content;
+use foonoo\content\ThemableInterface;
 use foonoo\sites\AbstractSite;
 
 /**
@@ -28,6 +29,11 @@ abstract class BaseOutputEvent
         $this->content = $content;
         $this->site = $site;
         $this->setOutput($output);
+    }
+
+    public function hasDOM(): bool
+    {
+        return is_a($this->content, ThemableInterface::class);
     }
 
     /**

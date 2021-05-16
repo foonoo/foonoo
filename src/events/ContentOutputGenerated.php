@@ -17,7 +17,7 @@ class ContentOutputGenerated extends BaseOutputEvent
     public function getDOM(): \DOMDocument
     {
         // Create a DOM tree for objects that are possibly themed
-        if (!$this->dom && is_a($this->content, ThemableInterface::class)) {
+        if (!$this->dom && $this->hasDOM()) {
             $this->dom = new \DOMDocument();
             @$this->dom->loadHTML("<section>$this->output</section>", LIBXML_HTML_NODEFDTD|LIBXML_HTML_NOIMPLIED);
         }
