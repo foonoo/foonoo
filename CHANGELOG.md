@@ -7,7 +7,7 @@
 
 ### Changed
 - The `plain` site type has now been renamed to `default`
-- Switched the sequence in which content is written to file. Instead of writing the content one-by-one as it is generated, content is instead generated in batch, with layouts applied aftwards in batch, and finally written in batch. This leaves room to collect information about all contents (such as the Table of Contents) to be rendered into layouts.
+- Switched the sequence in which content is written to files. Instead of writing the content one-by-one as they'r generated, content is instead generated in batch, with layouts applied afterwards in batch, and finally written in batch. This sequence leaves room to collect information about all content (such as the Table of Contents) to be rendered into layouts.
 
 ### Fixed
 - The default stylesheet for the plain site has been improved.
