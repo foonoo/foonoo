@@ -1,7 +1,10 @@
 # CHANGELOG
 
-## v0.4.1 - 2021-02-04
+## v0.4.2 - 2021-05-29
+### Updated
+- Security fixes concerning smarty
 
+## v0.4.1 - 2021-02-04
 ### Fixed
 - Phar archives can now be executed. The broken main script path has been fixed.
 - Phar archives which work can now find plugins stored in directories that are specified with relative paths.
