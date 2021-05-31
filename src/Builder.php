@@ -2,6 +2,7 @@
 
 namespace foonoo;
 
+use foonoo\exceptions\FoonooException;
 use foonoo\utils\CacheFactory;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
@@ -87,9 +88,9 @@ class Builder
      * @param $path
      * @return array|false|mixed|\stdClass|\Symfony\Component\Yaml\Tag\TaggedValue|null
      */
-    private function readSiteMetadata($path)
+    private function readSiteMetadata($path) : array
     {
-        $meta = false;
+        $meta = [];
         if (file_exists("{$path}site.yml")) {
             $file = "{$path}site.yml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
@@ -112,7 +113,7 @@ class Builder
         $dir = dir($path);
         $metaData = $this->readSiteMetadata($path);
 
-        if(is_array($metaData) || $root) {
+        if(!empty($metaData) || $root) {
             $site = $this->createSite($metaData, $path);
             $sites []= $site;
             while (false !== ($file = $dir->read())) {
@@ -143,10 +144,10 @@ class Builder
      */
     private function createSite(array $metaData, string $path): AbstractSite
     {
-        if (!is_array($metaData)) {
+        if (empty($metaData)) {
             $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
         }
-        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/np_*"]
+        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"]
             + ($metaData['excluded_paths'] ?? []);
 
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
@@ -156,8 +157,8 @@ class Builder
         $site->setSourceRoot($this->options['input']);
         $site->setDestinationRoot($this->options['output']);
         $site->setMetaData($metaData);
-        $cacheDir = "{$this->options['input']}{$shortPath}np_cache";
-        Filesystem::directory($cacheDir)->createIfNotExists();
+        $cacheDir = "{$this->options['input']}{$shortPath}_foonoo/cache";
+        Filesystem::directory($cacheDir)->createIfNotExists(true);
         $site->setCache($this->cacheFactory->create($cacheDir));
         $this->eventDispatcher->dispatch(SiteObjectCreated::class, ['site' => $site]);
 
@@ -181,20 +182,20 @@ class Builder
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
-            $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
+            $site->setTemplateData($this->readData($site->getSourcePath("_foonoo/data")));
             $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
             $this->siteWriter->write($site);
 
-            if (is_dir($site->getSourcePath("np_images"))) {
-                $imageSource = $site->getSourcePath("np_images");
-                $imagesDestination = $site->getDestinationPath("np_images");
+            if (is_dir($site->getSourcePath("_foonoo/images"))) {
+                $imageSource = $site->getSourcePath("_foonoo/images");
+                $imagesDestination = $site->getDestinationPath("images");
                 $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
                 Filesystem::get($imageSource)->copyTo($imagesDestination, File::OVERWRITE_OLDER);
             }
 
-            if (is_dir($site->getSourcePath("np_assets"))) {
+            if (is_dir($site->getSourcePath("_foonoo/assets"))) {
                 $assetsDestination = $site->getDestinationPath("assets");
-                $assetsSource = $site->getSourcePath("np_assets");
+                $assetsSource = $site->getSourcePath("_foonoo/assets");
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
             }

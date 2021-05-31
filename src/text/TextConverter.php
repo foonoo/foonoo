@@ -3,7 +3,7 @@
 namespace foonoo\text;
 
 use foonoo\content\PreprocessableInterface;
-use foonoo\FoonooException;
+use foonoo\exceptions\FoonooException;
 
 class TextConverter
 {

@@ -4,7 +4,7 @@
 namespace foonoo\events;
 
 
-use foonoo\FoonooException;
+use foonoo\exceptions\FoonooException;
 
 class EventDispatcher
 {

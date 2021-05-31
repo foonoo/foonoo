@@ -220,7 +220,7 @@ $parser->addOption([
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
-    'default' => 'plain',
+    'default' => 'default',
     'command' => 'generate'
 ]);
 $parser->addOption([

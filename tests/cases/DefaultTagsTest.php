@@ -49,16 +49,16 @@ class DefaultTagsTest extends TestCase
     public function testRenderImage()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" />\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" />\n", $parsed);
     }
 
     public function testRenderMultiImage()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg, another.png]]");
         $this->assertEquals('<picture>
-        <source srcset="np_images/something.jpeg" >
-        <source srcset="np_images/another.png" >
-        <img src="np_images/another.png" />
+        <source srcset="images/something.jpeg" >
+        <source srcset="images/another.png" >
+        <img src="images/another.png" />
 </picture>
 ', $parsed);
     }
@@ -66,8 +66,8 @@ class DefaultTagsTest extends TestCase
     public function testRenderImageAlt()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg | A description of something ]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
         $parsed = $this->tagParser->parse("[[something.jpeg | alt=description ]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" alt=\"description\"/>\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"description\"/>\n", $parsed);
     }
 }

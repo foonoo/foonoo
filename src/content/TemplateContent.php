@@ -8,7 +8,7 @@ use ntentan\honam\exceptions\TemplateEngineNotFoundException;
 use ntentan\honam\exceptions\TemplateResolutionException;
 use ntentan\honam\TemplateRenderer;
 
-class TemplateContent extends Content implements DataRenderer
+class TemplateContent extends Content implements DataRenderer, ThemableInterface
 {
     private $source;
     private $templates;
@@ -46,5 +46,10 @@ class TemplateContent extends Content implements DataRenderer
     public function setLayout($layout)
     {
         $this->metaData['layout'] = $layout;
+    }
+
+    public function getLayoutData()
+    {
+        return ['page_type' => 'template'];
     }
 }

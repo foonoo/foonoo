@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <?= $assets_markup['default']->unescape() ?>
-        <title><?= $content_title ?> - <?= $site_title ?></title>
+        <title><?= $content_title ?> <?= isset($site_title) ? "- $site_title": "" ?></title>
     </head>
     <body>
         <?php if(isset($site_title)): ?>

@@ -157,7 +157,7 @@ abstract class AbstractSite
                     'site_path' => $relativeSitePath,
                     'site_name' => $this->metaData['name'] ?? '',
                     'date' => date('jS F Y'),
-                    'description' => $this->metaData['description'],
+                    'description' => $this->metaData['description'] ?? '',
                     'assets_markup' => $this->assetPipeline->getMarkup($relativeSitePath)
                 ],
                 $this->templateData

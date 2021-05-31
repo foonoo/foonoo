@@ -22,16 +22,34 @@ use foonoo\themes\ThemeManager;
 use clearice\io\Io;
 
 /**
- * Writes all the content of a site to its output destination.
+ * Writes all the content of a site to its output path.
  *
  * @package foonoo\sites
  */
 class SiteWriter
 {
+    /**
+     * Instance of a theme manager.
+     * @var ThemeManager
+     */
     private $themeManager;
-    //private $options;
+
+    /**
+     * Instance of the event dispatcher.
+     * @var EventDispatcher
+     */
     private $eventDispatcher;
+
+    /**
+     * Instance of the IO class from clearice
+     * @var Io
+     */
     private $io;
+
+    /**
+     * Instance of the template engine for rendering templates.
+     * @var TemplateEngine
+     */
     private $templateEngine;
 
     public function __construct(Io $io, ThemeManager $themeManager, EventDispatcher $eventDispatcher, TemplateEngine $templateEngine)
@@ -43,7 +61,7 @@ class SiteWriter
     }
 
     /**
-     * Write a site.
+     * Write the given site to its output path.
      *
      * @param AbstractSite $site
      * @throws FileAlreadyExistsException
