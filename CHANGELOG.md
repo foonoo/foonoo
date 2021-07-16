@@ -11,6 +11,7 @@
 
 ### Fixed
 - The default stylesheet for the plain site has been improved.
+- UTF-8 encoding errors that were generated whenever content was modified through the plugin system's DOM class.
 
 
 ## v0.4.1 - 2021-02-04
