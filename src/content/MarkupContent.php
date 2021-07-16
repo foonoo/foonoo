@@ -31,6 +31,12 @@ class MarkupContent extends Content implements ThemableInterface
         $this->frontMatterReader = $frontMatterReader;
     }
 
+    /**
+     * Return the front matter from the markup.
+     * 
+     * @throws ParseException
+     * @return array
+     */
     protected function getFrontMatter() : array
     {
         if(!$this->frontMatter) {
@@ -43,6 +49,11 @@ class MarkupContent extends Content implements ThemableInterface
         return $this->frontMatter;
     }
 
+    /**
+     * Return the rendered body of the Markedup string.
+     * 
+     * @return string
+     */
     protected function getBody() : string
     {
         if(!$this->body) {
@@ -52,6 +63,7 @@ class MarkupContent extends Content implements ThemableInterface
             while(!$file->eof()) {
                 $this->body .= $file->fgets();
             }
+            $this->body = mb_convert_encoding($this->body, 'UTF-8', mb_detect_encoding($this->body));
         }
         return $this->body;
     }

@@ -4,6 +4,10 @@
 namespace foonoo\content;
 
 
+/**
+ * Base class for all content types in foonoo.
+ * 
+ */
 abstract class Content
 {
     /**
@@ -28,6 +32,11 @@ abstract class Content
      */
     abstract public function render(): string;
 
+    /**
+     * 
+     * @param type $sitePath
+     * @return Content
+     */
     public function setSitePath($sitePath): Content
     {
         $this->sitePath = $sitePath;

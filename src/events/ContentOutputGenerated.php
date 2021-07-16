@@ -3,9 +3,9 @@
 namespace foonoo\events;
 
 
-use foonoo\content\Content;
-use foonoo\content\ThemableInterface;
-use foonoo\sites\AbstractSite;
+// use foonoo\content\Content;
+// use foonoo\content\ThemableInterface;
+// use foonoo\sites\AbstractSite;
 
 /**
  * This event is triggered after the output of any content is generated and ready to be written.
@@ -19,7 +19,8 @@ class ContentOutputGenerated extends BaseOutputEvent
         // Create a DOM tree for objects that are possibly themed
         if (!$this->dom && $this->hasDOM()) {
             $this->dom = new \DOMDocument();
-            @$this->dom->loadHTML("<section>$this->output</section>", LIBXML_HTML_NODEFDTD|LIBXML_HTML_NOIMPLIED);
+            $this->dom->encoding = "UTF-8";
+            @$this->dom->loadHTML(mb_convert_encoding("<section>$this->output</section>", "HTML-ENTITIES", "UTF-8"), LIBXML_HTML_NODEFDTD|LIBXML_HTML_NOIMPLIED);
         }
         $this->domPossiblyModified = true;
         return $this->dom;
