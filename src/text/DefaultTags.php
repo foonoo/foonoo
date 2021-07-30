@@ -70,7 +70,7 @@ class DefaultTags
         return [
             ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
             ["regex" => "/\/block/", "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
-            ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"], 'name' => 'http link '],
+            ["regex" => "/(?<protocol>[a-z]+:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"], 'name' => 'http link '],
             ["regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))/", "callable" => [$this, "renderImageTag"], 'name' => 'name'],
             ['regex' => "/_TOC_/", 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
             ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
@@ -124,11 +124,11 @@ class DefaultTags
         return "[[{$matches['markup']}]]";
     }
 
-    public function renderLink(array $matches)
+    public function renderLink(array $matches, string $text, array $args)
     {
         return $this->templateEngine->render('anchor_tag', [
-            'href' => "http://{$matches['link']}",
-            'link_text' => "http://{$matches['link']}"
+            'href' => "{$matches['protocol']}//{$matches['link']}",
+            'link_text' => $args['__default'] ?? "http://{$matches['link']}"
         ]);
     }
 

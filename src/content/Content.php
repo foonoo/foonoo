@@ -33,6 +33,7 @@ abstract class Content
     abstract public function render(): string;
 
     /**
+     * Set the path for the current site.
      * 
      * @param type $sitePath
      * @return Content
