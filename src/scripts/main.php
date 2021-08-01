@@ -195,17 +195,19 @@ $container->bind(AssetPipeline::class)->to(
 $container->bind(\foonoo\text\TocGenerator::class)->asSingleton();
 
 $parser = new ArgumentParser();
-$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
-$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addCommand(['name' => 'plugins', 'help' => 'list all plugins and the plugin path hierarchy']);
+$parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+
+$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
+$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
 
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
-    'command' => 'generate'
+    'command' => ['generate', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 'o',
@@ -213,7 +215,7 @@ $parser->addOption([
     'type' => 'string',
     "help" => "sets PATH as the output site's root directory",
     'value' => 'PATH',
-    'command' => ['generate', 'plugins']
+    'command' => ['generate', 'plugins', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 't',
@@ -221,46 +223,24 @@ $parser->addOption([
     'type' => 'string',
     'help' => 'Default site type',
     'default' => 'default',
-    'command' => 'generate'
+    'command' => ['generate', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
     'type' => 'string',
     'help' => 'set the name for the entire site',
-    'command' => 'generate'
+    'command' => ['generate', 'serve']
 ]);
-$parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+
 $parser->addOption([
-    'short_name' => 'i',
-    'name' => 'input',
+    'short_name' => 'D',
+    'name' => 'set-data',
     'type' => 'string',
-    'help' => "specifies where the input files for the site are found.",
-    'command' => 'serve'
+    'help' => 'pass data to the site in the form [key]:[value]',
+    'command' => ['generate', 'serve']
 ]);
-$parser->addOption([
-    'short_name' => 'o',
-    'name' => 'output',
-    'type' => 'string',
-    "help" => "specifies where the site should be written to",
-    'command' => 'serve'
-]);
-$parser->addOption([
-    'short_name' => 't',
-    'name' => 'site-type',
-    'type' => 'string',
-    'help' => 'Default site type',
-    'default' => 'plain',
-    'command' => 'serve'
-]);
-$parser->addOption([
-    'short_name' => 'n',
-    'name' => 'site-name',
-    'type' => 'string',
-    'default' => '',
-    'help' => 'set the name for the entire site',
-    'command' => 'serve'
-]);
+
 $parser->addOption([
     'short_name' => 'h',
     'name' => 'host',
