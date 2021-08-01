@@ -129,6 +129,7 @@ class DefaultTags
         return $this->templateEngine->render('anchor_tag', [
             'href' => "{$matches['protocol']}//{$matches['link']}",
             'link_text' => $args['__default'] ?? "{$matches['protocol']}//{$matches['link']}"
+                
         ]);
     }
 
