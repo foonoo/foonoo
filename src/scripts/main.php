@@ -235,10 +235,11 @@ $parser->addOption([
 
 $parser->addOption([
     'short_name' => 'D',
-    'name' => 'set-data',
+    'name' => 'add-data',
     'type' => 'string',
     'help' => 'pass data to the site in the form [key]:[value]',
-    'command' => ['generate', 'serve']
+    'command' => ['generate', 'serve'],
+    'repeats' => true
 ]);
 
 $parser->addOption([

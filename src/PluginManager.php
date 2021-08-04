@@ -8,24 +8,26 @@ use foonoo\events\PluginsInitialized;
 use ntentan\utils\Text;
 
 /**
- * Loads plugins.
+ * Resolves paths to plugin files, loads classes when needed, and dispatches initial plugin events.
  *
  * @package foonoo
  */
 class PluginManager
 {
     /**
+     * An instance of an event dispatcher.
      * @var EventDispatcher
      */
     private $eventDispatcher;
 
     /**
+     * Keeps track of the events of all currently loaded plugins. 
      * @var array
      */
     private $loadedPluginEvents = [];
 
     /**
-     * 
+     * An instance of the IO channel to be passed on to loaded plugins. 
      * @var Io
      */
     private $io;
@@ -37,6 +39,13 @@ class PluginManager
         $this->io = $io;
     }
     
+    /**
+     * Returns a path to the users home directory.
+     * This is used as the final location in the path hierarchy when checking for plugin instances. Ultimately, plugins
+     * that are meant to be globally accessible should be stored in a special subdirectory in this path.
+     * 
+     * @return string
+     */
     private function getUserDataDir() : string
     {
         $operatingSystem = strtolower(php_uname("s"));
@@ -53,7 +62,8 @@ class PluginManager
     }
 
     /**
-     * 
+     * Add a path to the plugin path hierarchy.
+     * When loading plugins, this class works its way through this hierarcgy to find plugin code.
      * @param array $paths
      */
     public function addPluginPaths(array $paths)
@@ -61,6 +71,9 @@ class PluginManager
         $this->pluginPaths = array_merge(array_map(function ($path) {return realpath($path);}, $paths), $this->pluginPaths);
     }
 
+    /**
+     * Remove the events of all loaded plugins.
+     */
     private function removePluginEvents()
     {
         foreach ($this->loadedPluginEvents as $eventType => $listeners) {
@@ -71,6 +84,12 @@ class PluginManager
         $this->loadedPluginEvents = [];
     }
 
+    /**
+     * Retrieve any options the plugin may have been setup with from the site.yml file.
+     * 
+     * @param mixed $plugin
+     * @return array
+     */
     private function getPluginOptions($plugin) : array
     {
         if(is_array($plugin)) {
@@ -82,6 +101,17 @@ class PluginManager
         return [$plugin, $options];
     }
 
+    /**
+     * Run through the entire plugin hierarchy path to load classes for a given plugin.
+     * Plugin names are in the format [namespace]/[plugin], and these translate into the following class name: 
+     * \foonoo\plugins\[namespace]\[plugin]/[Plugin]ClassName.
+     * 
+     * @param string $plugin
+     * @param array $options
+     * @param array $pluginPaths
+     * @throws \Exception
+     * @return Plugin
+     */
     private function getPluginClass(string $plugin, array $options, array $pluginPaths) : Plugin
     {
         $namespace = dirname($plugin);
@@ -101,6 +131,13 @@ class PluginManager
         );
     }
 
+    /**
+     * Initialize the plugin subsystem for a site by loading all plugin classes and sending the PluginsInitialized
+     * event.
+     * 
+     * @param mixed $plugins
+     * @param string $sitePath
+     */
     public function initializePlugins($plugins, $sitePath) : void
     {
         $this->removePluginEvents();
@@ -123,6 +160,11 @@ class PluginManager
         $this->eventDispatcher->dispatch(PluginsInitialized::class, []);
     }
 
+    /**
+     * Get the plugin paths hierarchy. 
+     * 
+     * @return string[]|array
+     */
     public function getPluginPaths()
     {
         return $this->pluginPaths;

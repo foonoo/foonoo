@@ -211,6 +211,7 @@ class Builder
         if (!isset($options['input']) || $options['input'] === '') {
             $options['input'] = getcwd();
         } else {
+            FileSystem::checkExists($options['input'], "Failed to open input path [{$options['input']}]");
             $options['input'] = realpath($options['input']);
         }
         $options['input'] .= ($options['input'][-1] == '/' || $options['input'][-1] == '\\')
@@ -261,6 +262,8 @@ class Builder
     }
 
     /**
+     * Read data from a bunch of YAML files and put them into a single array.
+     * 
      * @param $path
      * @return array
      */
