@@ -4,10 +4,6 @@
 namespace foonoo\themes;
 
 
-use ntentan\utils\exceptions\FileNotFoundException;
-use ntentan\utils\exceptions\FileNotReadableException;
-use ntentan\utils\exceptions\FilesystemException;
-use ntentan\utils\Filesystem;
 use foonoo\text\TemplateEngine;
 
 class Theme

@@ -4,7 +4,6 @@ namespace foonoo\themes;
 
 
 use foonoo\sites\AbstractSite;
-use foonoo\sites\AssetPipeline;
 use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
 

@@ -4,9 +4,6 @@
 namespace foonoo\content;
 
 
-use foonoo\content\BlogPostContent;
-use foonoo\content\Content;
-use foonoo\content\ThemableInterface;
 use foonoo\text\TemplateEngine;
 
 class BlogListingContent extends Content implements ThemableInterface, ContentGroup

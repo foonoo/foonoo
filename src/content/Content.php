@@ -35,10 +35,10 @@ abstract class Content
     /**
      * Set the path for the current site.
      * 
-     * @param type $sitePath
+     * @param string $sitePath
      * @return Content
      */
-    public function setSitePath($sitePath): Content
+    public function setSitePath(string $sitePath): Content
     {
         $this->sitePath = $sitePath;
         return $this;

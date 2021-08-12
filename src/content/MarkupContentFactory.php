@@ -2,10 +2,6 @@
 
 namespace foonoo\content;
 
-use foonoo\content\ContentFactory;
-use foonoo\content\Content;
-use foonoo\content\MarkupContent;
-use foonoo\sites\AbstractSite;
 use foonoo\sites\FrontMatterReader;
 use foonoo\text\TextConverter;
 

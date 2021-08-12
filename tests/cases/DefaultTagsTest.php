@@ -30,13 +30,16 @@ class DefaultTagsTest extends TestCase
         $engineRegistry->registerEngine([".tpl.php"], new PhpEngineFactory($templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()));
         $templateEngine = new TemplateEngine($templateFileResolver, $templateRenderer);
         $tocGenerator = $this->getMockBuilder(TocGenerator::class)->disableOriginalConstructor()->getMock();
-        $tocGenerator->method('anticipate')->willReturn('[TOC anticipated]');
-        $eventDispatcher = $this->getMockBuilder(EventDispatcher::class)->getMock();
+        $tocGenerator->method('createContainer')->willReturn('[TOC anticipated]');
+        //$eventDispatcher = $this->getMockBuilder(EventDispatcher::class)->getMock();
+        
+        $eventDispatcher = new EventDispatcher();
+        
         $defaultTags = new DefaultTags($templateEngine, $tocGenerator, $eventDispatcher);
 
         $this->tagParser = new TagParser();
         foreach($defaultTags->getRegexMap() as $priority => $regex) {
-            $this->tagParser->registerTag($regex['regex'], $priority, $regex['callable']);
+            $this->tagParser->registerTag($regex['regex'], $priority, $regex['callable'], $regex["name"]);
         }
     }
 

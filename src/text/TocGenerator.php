@@ -2,7 +2,6 @@
 
 namespace foonoo\text;
 
-use foonoo\content\Content;
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
 use foonoo\events\SiteObjectCreated;
@@ -10,8 +9,14 @@ use foonoo\utils\Nomenclature;
 
 /**
  * Generates the table of contents and handles the rendering of the [[_TOC_]] tag.
+ * 
  * Apart from generating tables of content for inidividual pages, this class can also accumulate all the TOCs generated
  * for use as a global TOC.
+ * 
+ * Whenever the [[_TOC_]] tag is encountered by the default tag parser, this class is called to create a container. 
+ * After any content is rendered, the registered event in this class is then used to replace the the container with
+ * an actual table of contents. This delayed process is necessary because all other changes to the content must be made
+ * so the TOC generator can capture those, too.
  *
  * @package nyansapow
  */

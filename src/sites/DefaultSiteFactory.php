@@ -6,8 +6,6 @@ namespace foonoo\sites;
 
 use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\content\AutomaticContentFactory;
-use foonoo\events\AllContentsRendered;
-use foonoo\events\EventDispatcher;
 use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 

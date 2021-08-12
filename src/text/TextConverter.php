@@ -2,7 +2,6 @@
 
 namespace foonoo\text;
 
-use foonoo\content\PreprocessableInterface;
 use foonoo\exceptions\FoonooException;
 
 class TextConverter
