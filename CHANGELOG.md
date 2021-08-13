@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v0.5.0 - 2021-08-12
 ### Added
 - A `ContentOutputGenerated` event that fires whenever the output of a piece of content has been generated and is yet to be written to a file.
 - An `AllContentsRendered` event that fires when all contents have been rendered for a site and are about to be written to file.
