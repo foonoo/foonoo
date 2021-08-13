@@ -118,6 +118,7 @@ abstract class AbstractSite
 
     /**
      * Get a value from the metadata.
+     *
      * @param $setting
      * @return mixed|null
      */
@@ -126,6 +127,11 @@ abstract class AbstractSite
         return $this->metaData[$setting] ?? null;
     }
 
+    /**
+     * Inject the automatic content factory into the site.
+     *
+     * @param AutomaticContentFactory $automaticContentFactory
+     */
     public function setAutomaticContentFactory(AutomaticContentFactory $automaticContentFactory)
     {
         $this->automaticContentFactory = $automaticContentFactory;
@@ -151,6 +157,7 @@ abstract class AbstractSite
                     'site_path' => $relativeSitePath,
                     'site_name' => $this->metaData['name'] ?? '',
                     'date' => date('jS F Y'),
+                    'description' => $this->metaData['description'] ?? '',
                     'assets_markup' => $this->assetPipeline->getMarkup($relativeSitePath)
                 ],
                 $this->templateData
@@ -159,7 +166,7 @@ abstract class AbstractSite
         return array_merge(['assets_markup' => $this->assetPipeline->getMarkup('')], $this->templateData);
     }
 
-    private function makeRelativeLocation($path, $relativeTo)
+    private function makeRelativeLocation($path, $relativeTo): string
     {
         // Generate a relative location for the assets
         $dir = substr(preg_replace('#/+#', '/', $path), strlen($relativeTo));
@@ -223,9 +230,20 @@ abstract class AbstractSite
         return $this->assetPipeline;
     }
 
-    public abstract function getPages(): array;
+    public abstract function getContent(): array;
 
+    /**
+     * Returns a machine readable name of the site type.
+     * Whatever value is returned by this function determines the tag that is used in the site.yml file.
+     *
+     * @return string
+     */
     public abstract function getType(): string;
 
+    /**
+     * Get the name of the default theme for this site type.
+     *
+     * @return string
+     */
     public abstract function getDefaultTheme(): string;
 }

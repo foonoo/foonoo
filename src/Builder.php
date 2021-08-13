@@ -2,6 +2,7 @@
 
 namespace foonoo;
 
+use foonoo\exceptions\FoonooException;
 use foonoo\utils\CacheFactory;
 use ntentan\utils\Filesystem;
 use clearice\io\Io;
@@ -21,6 +22,10 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 class Builder
 {
     /**
+     * Contains default options for the site builder.
+     * Most of these options are set directly through the command line arguments. Default values are provided by the
+     * command line argument parser.
+     * 
      * @var array
      */
     private $options;
@@ -62,7 +67,7 @@ class Builder
 
 
     /**
-     * Create an instance of the context object through which Nyansapow works.
+     * Create an instance of the context object through which Foonoo works.
      *
      * @param Io $io
      * @param SiteTypeRegistry $siteTypeRegistry
@@ -79,9 +84,13 @@ class Builder
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    private function readSiteMetadata($path)
+    /**
+     * @param $path
+     * @return array|false|mixed|\stdClass|\Symfony\Component\Yaml\Tag\TaggedValue|null
+     */
+    private function readSiteMetadata($path) : array
     {
-        $meta = false;
+        $meta = [];
         if (file_exists("{$path}site.yml")) {
             $file = "{$path}site.yml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
@@ -96,6 +105,7 @@ class Builder
      * @param string $path
      * @param bool $root
      * @return array<AbstractSite>
+     * @throws FoonooException
      */
     private function getSites(string $path, bool $root = false): array
     {
@@ -103,7 +113,7 @@ class Builder
         $dir = dir($path);
         $metaData = $this->readSiteMetadata($path);
 
-        if(is_array($metaData) || $root) {
+        if(!empty($metaData) || $root) {
             $site = $this->createSite($metaData, $path);
             $sites []= $site;
             while (false !== ($file = $dir->read())) {
@@ -123,12 +133,21 @@ class Builder
         return $sites;
     }
 
-    private function createSite($metaData, $path): AbstractSite
+    /**
+     * Creates an instance of the AbstractSite for a given site metadata array.
+     *
+     * @param array $metaData
+     * @param string $path
+     *
+     * @return AbstractSite
+     * @throws FoonooException
+     */
+    private function createSite(array $metaData, string $path): AbstractSite
     {
-        if (!is_array($metaData)) {
+        if (empty($metaData)) {
             $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
         }
-        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/np_*"]
+        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"]
             + ($metaData['excluded_paths'] ?? []);
 
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
@@ -138,14 +157,22 @@ class Builder
         $site->setSourceRoot($this->options['input']);
         $site->setDestinationRoot($this->options['output']);
         $site->setMetaData($metaData);
-        $cacheDir = "{$this->options['input']}{$shortPath}np_cache";
-        Filesystem::directory($cacheDir)->createIfNotExists();
+        $cacheDir = "{$this->options['input']}{$shortPath}_foonoo/cache";
+        Filesystem::directory($cacheDir)->createIfNotExists(true);
         $site->setCache($this->cacheFactory->create($cacheDir));
         $this->eventDispatcher->dispatch(SiteObjectCreated::class, ['site' => $site]);
 
         return $site;
     }
 
+    /**
+     * @throws FoonooException
+     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws \ntentan\utils\exceptions\FileNotReadableException
+     * @throws \ntentan\utils\exceptions\FileNotWriteableException
+     * @throws \ntentan\utils\exceptions\FilesystemException
+     */
     private function buildSites()
     {
         $sites = $this->getSites($this->options['input'], true);
@@ -155,33 +182,36 @@ class Builder
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
-            $site->setTemplateData($this->readData($site->getSourcePath("np_data")));
-
+            $site->setTemplateData($this->readData($site->getSourcePath("_foonoo/data")));
             $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
-
             $this->siteWriter->write($site);
 
-            if (is_dir($site->getSourcePath("np_images"))) {
-                $imageSource = $site->getSourcePath("np_images");
-                $imagesDestination = $site->getDestinationPath("np_images");
+            if (is_dir($site->getSourcePath("_foonoo/images"))) {
+                $imageSource = $site->getSourcePath("_foonoo/images");
+                $imagesDestination = $site->getDestinationPath("images");
                 $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
                 Filesystem::get($imageSource)->copyTo($imagesDestination, File::OVERWRITE_OLDER);
             }
 
-            if (is_dir($site->getSourcePath("np_assets"))) {
+            if (is_dir($site->getSourcePath("_foonoo/assets"))) {
                 $assetsDestination = $site->getDestinationPath("assets");
-                $assetsSource = $site->getSourcePath("np_assets");
+                $assetsSource = $site->getSourcePath("_foonoo/assets");
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
             }
         }
     }
 
+    /**
+     * @param $options
+     * @throws FoonooException
+     */
     private function setOptions($options)
     {
         if (!isset($options['input']) || $options['input'] === '') {
             $options['input'] = getcwd();
         } else {
+            FileSystem::checkExists($options['input'], "Failed to open input path [{$options['input']}]");
             $options['input'] = realpath($options['input']);
         }
         $options['input'] .= ($options['input'][-1] == '/' || $options['input'][-1] == '\\')
@@ -197,11 +227,21 @@ class Builder
 
         $options['output'] = Filesystem::getAbsolutePath($options['output']);
         $options['output'] .= $options['output'][-1] == '/' || $options['output'][-1] == '\\' ? '' : DIRECTORY_SEPARATOR;
-        $this->siteWriter->setOptions($options);
         $this->options = $options;
 
     }
 
+    /**
+     * @param array $options
+     * @param CacheFactory $cacheFactory
+     * @param PluginManager $pluginManager
+     * @throws FoonooException
+     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
+     * @throws \ntentan\utils\exceptions\FileNotFoundException
+     * @throws \ntentan\utils\exceptions\FileNotReadableException
+     * @throws \ntentan\utils\exceptions\FileNotWriteableException
+     * @throws \ntentan\utils\exceptions\FilesystemException
+     */
     public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager)
     {
         try {
@@ -221,7 +261,13 @@ class Builder
         }
     }
 
-    private function readData($path)
+    /**
+     * Read data from a bunch of YAML files and put them into a single array.
+     * 
+     * @param $path
+     * @return array
+     */
+    private function readData($path): array
     {
         $data = [];
         if(!is_dir($path)) {

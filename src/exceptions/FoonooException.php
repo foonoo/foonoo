@@ -1,6 +1,6 @@
 <?php
 
-namespace foonoo;
+namespace foonoo\exceptions;
 
 /**
  * Base class for all foonoo exceptions.

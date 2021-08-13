@@ -4,10 +4,6 @@
 namespace foonoo\themes;
 
 
-use ntentan\utils\exceptions\FileNotFoundException;
-use ntentan\utils\exceptions\FileNotReadableException;
-use ntentan\utils\exceptions\FilesystemException;
-use ntentan\utils\Filesystem;
 use foonoo\text\TemplateEngine;
 
 class Theme
@@ -25,7 +21,7 @@ class Theme
         $this->definition = $themeDefinition;
     }
 
-    public function getAssets()
+    public function getAssets(): array
     {
         return $this->definition['assets'] ?? [];
     }
@@ -35,12 +31,12 @@ class Theme
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }
 
-    public function getDefaultLayoutTemplate()
+    public function getDefaultLayoutTemplate(): string
     {
         return 'layout';
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->themePath;
     }

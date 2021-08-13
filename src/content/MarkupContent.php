@@ -12,7 +12,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
  *
  * @package nyansapow\sites
  */
-class MarkupContent extends Content
+class MarkupContent extends Content implements ThemableInterface
 {
     private $body;
     private $frontMatter;
@@ -31,6 +31,12 @@ class MarkupContent extends Content
         $this->frontMatterReader = $frontMatterReader;
     }
 
+    /**
+     * Return the front matter from the markup.
+     * 
+     * @throws ParseException
+     * @return array
+     */
     protected function getFrontMatter() : array
     {
         if(!$this->frontMatter) {
@@ -43,6 +49,11 @@ class MarkupContent extends Content
         return $this->frontMatter;
     }
 
+    /**
+     * Return the rendered body of the Markedup string.
+     * 
+     * @return string
+     */
     protected function getBody() : string
     {
         if(!$this->body) {
@@ -52,6 +63,7 @@ class MarkupContent extends Content
             while(!$file->eof()) {
                 $this->body .= $file->fgets();
             }
+            $this->body = mb_convert_encoding($this->body, 'UTF-8', mb_detect_encoding($this->body));
         }
         return $this->body;
     }
@@ -70,5 +82,10 @@ class MarkupContent extends Content
     public function getMetaData(): array
     {
         return $this->getFrontMatter();
+    }
+
+    public function getLayoutData()
+    {
+        return [];
     }
 }

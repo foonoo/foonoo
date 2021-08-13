@@ -6,13 +6,13 @@ namespace foonoo\events;
 
 use foonoo\content\Content;
 
-class ContentWriteStarted
+class ContentGenerationStarted
 {
     private $content;
 
-    public function __construct(Content $page)
+    public function __construct(Content $content)
     {
-        $this->content = $page;
+        $this->content = $content;
     }
 
     public function getContent() : Content

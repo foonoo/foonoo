@@ -4,7 +4,7 @@
 namespace foonoo\sites;
 
 
-use foonoo\FoonooException;
+use foonoo\exceptions\FoonooException;
 
 class SiteTypeRegistry
 {

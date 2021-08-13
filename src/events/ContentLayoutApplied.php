@@ -3,37 +3,38 @@
 namespace foonoo\events;
 
 
-// use foonoo\content\Content;
-// use foonoo\content\ThemableInterface;
-// use foonoo\sites\AbstractSite;
-
 /**
  * This event is triggered after the output of any content is generated and ready to be written.
  *
  * @package foonoo\events
  */
-class ContentOutputGenerated extends BaseOutputEvent
+class ContentLayoutApplied extends BaseOutputEvent
 {
+    /**
+     * If content has a DOM, you can use this to get it.
+     *
+     * @return \DOMDocument
+     */
     public function getDOM(): \DOMDocument
     {
         // Create a DOM tree for objects that are possibly themed
         if (!$this->dom && $this->hasDOM()) {
             $this->dom = new \DOMDocument();
-            $this->dom->encoding = "UTF-8";
-            @$this->dom->loadHTML(mb_convert_encoding("<section>$this->output</section>", "HTML-ENTITIES", "UTF-8"), LIBXML_HTML_NODEFDTD|LIBXML_HTML_NOIMPLIED);
+            @$this->dom->loadHTML($this->output, LIBXML_HTML_NODEFDTD);
         }
         $this->domPossiblyModified = true;
         return $this->dom;
     }
 
+    /**
+     * Get the output that was generated.
+     *
+     * @return string
+     */
     public function getOutput(): string
     {
         if ($this->dom && $this->domPossiblyModified) {
-            $wrapper =$this->dom->childNodes->item(0);
-            $this->output = '';
-            foreach ($wrapper->childNodes as $node) {
-                $this->output .= $this->dom->saveHTML($node);
-            }
+            $this->output = $this->dom->saveHTML();
             $this->domPossiblyModified = false;
         }
         return $this->output;

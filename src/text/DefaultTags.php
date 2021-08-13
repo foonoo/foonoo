@@ -4,10 +4,9 @@ namespace foonoo\text;
 
 
 use foonoo\events\EventDispatcher;
-use foonoo\events\ContentWriteStarted;
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
-use foonoo\content\Content;
 use foonoo\utils\Nomenclature;
 
 /**
@@ -47,7 +46,7 @@ class DefaultTags
     /**
      * @var string
      */
-    private $pageDestination;
+    private $contentDestination;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
@@ -58,9 +57,9 @@ class DefaultTags
                 $this->site = $event->getSite();
             }
         );
-        $eventDispatcher->addListener(ContentWriteStarted::class,
-            function (ContentWriteStarted $event) {
-                $this->pageDestination = $event->getContent()->getDestination();
+        $eventDispatcher->addListener(ContentGenerationStarted::class,
+            function (ContentGenerationStarted $event) {
+                $this->contentDestination = $event->getContent()->getDestination();
                 $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
             }
         );
@@ -71,7 +70,7 @@ class DefaultTags
         return [
             ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
             ["regex" => "/\/block/", "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
-            ["regex" => "/(http:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"], 'name' => 'http link '],
+            ["regex" => "/(?<protocol>[a-z]+:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"], 'name' => 'http link '],
             ["regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))/", "callable" => [$this, "renderImageTag"], 'name' => 'name'],
             ['regex' => "/_TOC_/", 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
             ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
@@ -112,7 +111,7 @@ class DefaultTags
     public function renderPageLink(array $matches)
     {
         $link = strtolower($matches['markup']);
-        foreach ($this->site->getPages() as $targetPage) {
+        foreach ($this->site->getContent() as $targetPage) {
             $title = $targetPage->getMetaData()['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
@@ -125,11 +124,12 @@ class DefaultTags
         return "[[{$matches['markup']}]]";
     }
 
-    public function renderLink(array $matches)
+    public function renderLink(array $matches, string $text, array $args)
     {
         return $this->templateEngine->render('anchor_tag', [
-            'href' => "http://{$matches['link']}",
-            'link_text' => "http://{$matches['link']}"
+            'href' => "{$matches['protocol']}//{$matches['link']}",
+            'link_text' => $args['__default'] ?? "{$matches['protocol']}//{$matches['link']}"
+                
         ]);
     }
 
@@ -145,6 +145,6 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        return $this->tocGenerator->anticipate($this->pageDestination);
+        return $this->tocGenerator->createContainer($this->contentDestination);
     }
 }

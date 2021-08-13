@@ -2,7 +2,8 @@
 
 namespace foonoo\events;
 
-use foonoo\sites\AssetPipeline;
+
+use foonoo\asset_pipeline\AssetPipeline;
 
 /**
  * This event is dispatched when the asset pipeline for the site is ready.

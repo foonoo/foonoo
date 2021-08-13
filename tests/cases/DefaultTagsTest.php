@@ -30,13 +30,16 @@ class DefaultTagsTest extends TestCase
         $engineRegistry->registerEngine([".tpl.php"], new PhpEngineFactory($templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()));
         $templateEngine = new TemplateEngine($templateFileResolver, $templateRenderer);
         $tocGenerator = $this->getMockBuilder(TocGenerator::class)->disableOriginalConstructor()->getMock();
-        $tocGenerator->method('anticipate')->willReturn('[TOC anticipated]');
-        $eventDispatcher = $this->getMockBuilder(EventDispatcher::class)->getMock();
+        $tocGenerator->method('createContainer')->willReturn('[TOC anticipated]');
+        //$eventDispatcher = $this->getMockBuilder(EventDispatcher::class)->getMock();
+        
+        $eventDispatcher = new EventDispatcher();
+        
         $defaultTags = new DefaultTags($templateEngine, $tocGenerator, $eventDispatcher);
 
         $this->tagParser = new TagParser();
         foreach($defaultTags->getRegexMap() as $priority => $regex) {
-            $this->tagParser->registerTag($regex['regex'], $priority, $regex['callable']);
+            $this->tagParser->registerTag($regex['regex'], $priority, $regex['callable'], $regex["name"]);
         }
     }
 
@@ -49,16 +52,16 @@ class DefaultTagsTest extends TestCase
     public function testRenderImage()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" />\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" />\n", $parsed);
     }
 
     public function testRenderMultiImage()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg, another.png]]");
         $this->assertEquals('<picture>
-        <source srcset="np_images/something.jpeg" >
-        <source srcset="np_images/another.png" >
-        <img src="np_images/another.png" />
+        <source srcset="images/something.jpeg" >
+        <source srcset="images/another.png" >
+        <img src="images/another.png" />
 </picture>
 ', $parsed);
     }
@@ -66,8 +69,8 @@ class DefaultTagsTest extends TestCase
     public function testRenderImageAlt()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg | A description of something ]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
         $parsed = $this->tagParser->parse("[[something.jpeg | alt=description ]]");
-        $this->assertEquals("<img src=\"np_images/something.jpeg\" alt=\"description\"/>\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"description\"/>\n", $parsed);
     }
 }

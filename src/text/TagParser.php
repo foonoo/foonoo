@@ -3,9 +3,8 @@
 namespace foonoo\text;
 
 /**
- * Parse text containing special Foonoo tags.
- *
- * Foonoo tags start with
+ * This class provides the infrastructure for parsing special foonoo tags from text files. These tags start with a 
+ * doul
  *
  * @package nyansapow
  */

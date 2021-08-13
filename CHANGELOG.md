@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## Unreleased
+### Added
+- A `ContentOutputGenerated` event that fires whenever the output of a piece of content has been generated and is yet to be written to a file.
+- An `AllContentsRendered` event that fires when all contents have been rendered for a site and are about to be written to file.
+- Some incode documentation for classes.
+- A new namespace for exceptions `foonoo/exceptions`
+- Support for extra protocols in the hyperlinks parsed by the foonoo text parser.
+- Early support for a global table of contents that can be rendered on side bars or index pages.
+
+### Changed
+- All the `np_*` directories which stored site metadata, caches, images, assets, etc. have been put into a `_foonoo` local directory. These are probabily the final vestiges of the days this project was known as nyansapow. The translations are as follows:
+	* `np_cache` changed to `_foonoo/cache`
+ 	* `np_data` changed to `_foonoo/data`
+ 	* `np_images` changed to `_foonoo/data`
+ 	* `np_assets` changed to `_foonoo/assets`
+ 	* `fn_plugins` changed to `_foonoo/plugins`
+ 	* `np_themes` changed to `_fonnoo/themes`
+ 	* `fn_templates` changed to `_foonoo/templates`
+	
+- The `plain` site type has now been renamed to `default`
+- Switched the sequence in which content is written to files. Instead of writing the content one-by-one as they'r generated, content is instead generated in batch, with layouts applied afterwards in batch, and finally written in batch. This sequence leaves room to collect information about all content (such as the Table of Contents) to be rendered into layouts.
+
+### Fixed
+- The default stylesheet for the plain site has been improved.
+- A bug in the builder when generating a site with no metadata.
+- UTF-8 encoding errors that were generated whenever content was modified through the plugin system's DOM class.
+
+
 ## v0.4.2 - 2021-05-29
 ### Updated
 - Security fixes concerning smarty

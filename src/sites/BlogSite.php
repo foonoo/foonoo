@@ -72,16 +72,16 @@ class BlogSite extends AbstractSite
      * Get all the blog pages
      * @return array
      */
-    public function getPages(): array
+    public function getContent(): array
     {
-        $pages = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
-        $pages[] = $this->getIndexPage('index.html', $this->posts, "", 'index');
-        $pages[] = $this->getIndexPage('posts.html', $this->posts);
-        $pages = array_merge($pages, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
+        $content = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
+        $content[] = $this->getIndexPage('index.html', $this->posts, "", 'index');
+        $content[] = $this->getIndexPage('posts.html', $this->posts);
+        $content = array_merge($content, $this->getBlogPages(), $this->getArchive($this->archives, ['months', 'days'], 'years'));
         foreach ($this->getTaxonomies() as $taxonomy => $taxonomyLabel) {
-            $pages = array_merge($pages, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
+            $content = array_merge($content, $this->getPostsWithTaxonomy($taxonomy, $taxonomyLabel));
         }
-        return $pages;
+        return $content;
     }
 
     /**
@@ -93,7 +93,7 @@ class BlogSite extends AbstractSite
      * @param string $template
      * @return BlogListingContent
      */
-    private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing')
+    private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing'): BlogListingContent
     {
         $data = $this->getTemplateData($this->getDestinationPath($target));
         $data['listing_title'] = $title;
@@ -114,7 +114,7 @@ class BlogSite extends AbstractSite
      * @param string $baseUrl The base URL on which to build the archive.
      * @return array
      */
-    private function getArchive($archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = '')
+    private function getArchive(array $archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = ''): array
     {
         $pages = [];
         $nextStage = array_shift($order);
@@ -141,11 +141,11 @@ class BlogSite extends AbstractSite
         }
     }
 
-    private function getBlogPosts($files)
+    private function getBlogPosts($files): array
     {
         $pages = [];
-        /** @var BlogPostContent $lastPost */
-        $lastPost = null;
+        /** @var BlogPostContent $nextPost */
+        $nextPost = null;
         rsort($files);
 
         foreach ($files as $file) {
@@ -156,11 +156,11 @@ class BlogSite extends AbstractSite
                 $page->setTemplateData($this->getTemplateData($this->getDestinationPath($page->getDestination())));
                 $page->setSiteTaxonomies($this->getTaxonomies());
                 $pages[] = $page;
-                if ($lastPost) {
-                    $page->setPrevious($lastPost);
-                    $lastPost->setNext($page);
+                if ($nextPost) {
+                    $page->setNext($nextPost);
+                    $nextPost->setPrevious($page);
                 }
-                $lastPost = $page;
+                $nextPost = $page;
                 $this->addPostToArchive($page, $matches);
             }
         }
@@ -168,7 +168,7 @@ class BlogSite extends AbstractSite
         return $pages;
     }
 
-    private function getBlogPages()
+    private function getBlogPages(): array
     {
         $pages = [];
         if (!file_exists($this->getSourcePath('pages'))) {

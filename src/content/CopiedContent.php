@@ -4,8 +4,6 @@
 namespace foonoo\content;
 
 
-use foonoo\content\Content;
-
 class CopiedContent extends Content
 {
     private $source;

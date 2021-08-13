@@ -12,12 +12,12 @@ $loading = $attributes['loading'] ?? "lazy";
 <?php if(count($images->unescape()) > 1): ?>
 <picture>
     <?php foreach($images as $image): ?>
-    <source srcset="<?= "{$site_path}np_images/{$image}" ?>" >
+    <source srcset="<?= "{$site_path}images/{$image}" ?>" >
     <?php endforeach; ?>
-    <img src="<?= "{$site_path}np_images/{$image}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
+    <img src="<?= "{$site_path}images/{$image}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
 </picture>
 <?php else: ?>
-    <img src="<?="{$site_path}np_images/{$images[0]}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
+    <img src="<?="{$site_path}images/{$images[0]}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
 <?php endif; ?>
 <?php if($attributes['frame'] == "figure"): ?><figcaption> <?= $alt ?></figcaption><?php endif; ?>
 <?php if($attributes['frame'] == "div"):?></div><?php endif; ?>

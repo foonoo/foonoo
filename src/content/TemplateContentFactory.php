@@ -5,12 +5,8 @@ namespace foonoo\content;
 
 
 use ntentan\honam\TemplateRenderer;
-use foonoo\content\ContentFactory;
-use foonoo\content\Content;
-use foonoo\content\TemplateContent;
 use foonoo\events\EventDispatcher;
 use foonoo\events\SiteWriteStarted;
-use foonoo\sites\AbstractSite;
 
 class TemplateContentFactory implements ContentFactory
 {

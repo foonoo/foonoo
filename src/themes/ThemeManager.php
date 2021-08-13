@@ -4,10 +4,15 @@ namespace foonoo\themes;
 
 
 use foonoo\sites\AbstractSite;
-use foonoo\sites\AssetPipeline;
 use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
 
+/**
+ * Loads themes by injecting their paths into the global template hierarchy and copying all required assets to the
+ * site's destination path.
+ *
+ * @package foonoo\themes
+ */
 class ThemeManager
 {
     private $themes;
@@ -30,7 +35,7 @@ class ThemeManager
         $theme = $site->getMetaData()['theme'] ?? $site->getDefaultTheme();
         $sourcePath = $site->getSourcePath();
         $builtInTheme = __DIR__ . "/../../themes/{$theme}";
-        $customTheme = "{$sourcePath}/np_themes/{$theme}";
+        $customTheme = "{$sourcePath}/_foonoo/themes/{$theme}";
 
         if (!file_exists($customTheme)) {
             $themePath = $builtInTheme;
@@ -47,7 +52,7 @@ class ThemeManager
                 $theme = new Theme($themePath, $this->templateEngine, $definition);
                 $this->themes[$key] = $theme;
             } else {
-                throw new \Exception("Directory '$themePath' for '$theme' theme is not properly setup.");
+                throw new \Exception("Failed to load theme '$theme'.");
             }
         }
 
@@ -72,8 +77,8 @@ class ThemeManager
         $hierarchy = [__DIR__ . "/../../themes/parser"];
         $path = $site->getSourcePath();
 
-        if (is_dir("{$path}fn_templates")) {
-            $hierarchy[] = "{$path}fn_templates";
+        if (is_dir("{$path}_foonoo/templates")) {
+            $hierarchy[] = "{$path}_foonoo/templates";
         }
 
         $siteTemplates = $site->getSetting('templates');

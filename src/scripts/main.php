@@ -6,6 +6,8 @@ use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\asset_pipeline\CSSProcessor;
 use foonoo\asset_pipeline\FileProcessor;
 use foonoo\asset_pipeline\JSProcessor;
+use foonoo\events\ContentLayoutApplied;
+use foonoo\events\AllContentsRendered;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -20,7 +22,7 @@ use foonoo\events\EventDispatcher;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\events\ContentOutputGenerated;
 use foonoo\events\ContentReady;
-use foonoo\events\ContentWriteStarted;
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\PluginsInitialized;
 use foonoo\events\SiteObjectCreated;
 use foonoo\events\SiteWriteStarted;
@@ -28,7 +30,7 @@ use foonoo\events\SiteWritten;
 use foonoo\events\ThemeLoaded;
 use foonoo\sites\BlogSiteFactory;
 use foonoo\content\CopiedContentFactory;
-use foonoo\sites\PlainSiteFactory;
+use foonoo\sites\DefaultSiteFactory;
 use foonoo\content\MarkupContentFactory;
 use foonoo\sites\SiteTypeRegistry;
 use foonoo\content\TemplateContentFactory;
@@ -96,8 +98,7 @@ $container->bind(AutomaticContentFactory::class)->to(function (Container $contai
 
 $container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
     $registry = new SiteTypeRegistry();
-    $defaultRegistry = $container->get(PlainSiteFactory::class);
-    $registry->register($defaultRegistry, 'plain');
+    $registry->register($container->get(DefaultSiteFactory::class), 'default');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;
 });
@@ -117,13 +118,13 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     );
     $eventDispatcher->registerEventType(ContentOutputGenerated::class,
         function ($args) {
-            return new ContentOutputGenerated($args['output'], $args['page'], $args['site']);
+            return new ContentOutputGenerated($args['output'], $args['content'], $args['site']);
         }
     );
     $eventDispatcher->registerEventType(ContentReady::class,
         function ($args) use ($container) {
             $automaticContentFactory = $container->get(AutomaticContentFactory::class);
-            return new ContentReady($args['pages'], $automaticContentFactory);
+            return new ContentReady($args['contents'], $automaticContentFactory);
         }
     );
     $eventDispatcher->registerEventType(SiteObjectCreated::class,
@@ -141,9 +142,9 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new SiteWritten($args['site']);
         }
     );
-    $eventDispatcher->registerEventType(ContentWriteStarted::class,
+    $eventDispatcher->registerEventType(ContentGenerationStarted::class,
         function ($args) {
-            return new ContentWriteStarted($args['page']);
+            return new ContentGenerationStarted($args['content']);
         }
     );
     $eventDispatcher->registerEventType(AssetPipelineReady::class,
@@ -154,6 +155,16 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     $eventDispatcher->registerEventType(ContentWritten::class,
         function ($args) {
             return new ContentWritten($args['content'], $args['destination_path']);
+        }
+    );
+    $eventDispatcher->registerEventType(ContentLayoutApplied::class,
+        function ($args) {
+            return new ContentLayoutApplied($args['output'], $args['content'], $args['site']);
+        }
+    );
+    $eventDispatcher->registerEventType(AllContentsRendered::class,
+        function ($args) {
+            return new AllContentsRendered($args['site']);
         }
     );
     return $eventDispatcher;
@@ -181,19 +192,22 @@ $container->bind(AssetPipeline::class)->to(
         return $pipeline;
     }
 );
+$container->bind(\foonoo\text\TocGenerator::class)->asSingleton();
 
 $parser = new ArgumentParser();
-$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
-$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addCommand(['name' => 'plugins', 'help' => 'list all plugins and the plugin path hierarchy']);
+$parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+
+$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
+$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
 
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
-    'command' => 'generate'
+    'command' => ['generate', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 'o',
@@ -201,54 +215,33 @@ $parser->addOption([
     'type' => 'string',
     "help" => "sets PATH as the output site's root directory",
     'value' => 'PATH',
-    'command' => ['generate', 'plugins']
+    'command' => ['generate', 'plugins', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 't',
     'name' => 'site-type',
     'type' => 'string',
     'help' => 'Default site type',
-    'default' => 'plain',
-    'command' => 'generate'
+    'default' => 'default',
+    'command' => ['generate', 'serve']
 ]);
 $parser->addOption([
     'short_name' => 'n',
     'name' => 'site-name',
     'type' => 'string',
     'help' => 'set the name for the entire site',
-    'command' => 'generate'
+    'command' => ['generate', 'serve']
 ]);
-$parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+
 $parser->addOption([
-    'short_name' => 'i',
-    'name' => 'input',
+    'short_name' => 'D',
+    'name' => 'add-data',
     'type' => 'string',
-    'help' => "specifies where the input files for the site are found.",
-    'command' => 'serve'
+    'help' => 'pass data to the site in the form [key]:[value]',
+    'command' => ['generate', 'serve'],
+    'repeats' => true
 ]);
-$parser->addOption([
-    'short_name' => 'o',
-    'name' => 'output',
-    'type' => 'string',
-    "help" => "specifies where the site should be written to",
-    'command' => 'serve'
-]);
-$parser->addOption([
-    'short_name' => 't',
-    'name' => 'site-type',
-    'type' => 'string',
-    'help' => 'Default site type',
-    'default' => 'plain',
-    'command' => 'serve'
-]);
-$parser->addOption([
-    'short_name' => 'n',
-    'name' => 'site-name',
-    'type' => 'string',
-    'default' => '',
-    'help' => 'set the name for the entire site',
-    'command' => 'serve'
-]);
+
 $parser->addOption([
     'short_name' => 'h',
     'name' => 'host',
