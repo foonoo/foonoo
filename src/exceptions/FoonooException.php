@@ -9,5 +9,12 @@ namespace foonoo\exceptions;
  */
 class FoonooException extends \Exception
 {
-
+    private $currentSite;
+    
+    public function __construct(AbstractSite $site)
+    {
+        $this->currentSite = $site;
+    }
+    
+    
 }

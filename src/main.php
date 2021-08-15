@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../../vendor/autoload.php";
+require __DIR__ . "/../vendor/autoload.php";
 
 use clearice\argparser\ArgumentParser;
 use foonoo\asset_pipeline\AssetPipeline;
@@ -276,6 +276,7 @@ if (!isset($options['__command'])) {
     }
     exit(1);
 }
+
 
 $commandClass = sprintf('\foonoo\commands\%sCommand', Text::ucamelize($options['__command']));
 $container->resolve($commandClass)->execute($options);

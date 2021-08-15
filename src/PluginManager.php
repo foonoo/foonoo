@@ -126,8 +126,8 @@ class PluginManager
             }
         }
         throw new \Exception(
-            "Failed to load plugin [$plugin]. The class [$pluginClass] could not be found in path: ["
-            . implode($pluginPaths, "; ") . "]"
+            "It seems foonoo failed to load the plugin, $plugin, required by the site.\nThe class [$pluginClass] which is expected to hold the plugin's code could not be found in any of the following paths:\n - "
+            . implode("\n - ", $pluginPaths) . "\n"
         );
     }
 
@@ -144,7 +144,7 @@ class PluginManager
         if($plugins === null) {
             return;
         }
-        $allPluginPaths = array_merge(["{$sitePath}fn_plugins"], $this->pluginPaths);
+        $allPluginPaths = array_merge(["{$sitePath}_foonoo/plugins"], $this->pluginPaths);
 
         foreach ($plugins as $plugin) {
             list($plugin, $options) = $this->getPluginOptions($plugin);

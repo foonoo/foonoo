@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+### Changed
+- The `main.php` script now resides directly in the `/src` root.
+- Errors are now reported in a friendlier form with more information about what may have gone wrong.
+
 ## v0.5.0 - 2021-08-12
 ### Added
 - A `ContentOutputGenerated` event that fires whenever the output of a piece of content has been generated and is yet to be written to a file.

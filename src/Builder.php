@@ -64,6 +64,13 @@ class Builder
      * @var PluginManager
      */
     private $pluginManager;
+    
+    /**
+     * An instance of the current site being built.
+     * 
+     * @var AbstractSite
+     */
+    private $currentSite;
 
 
     /**
@@ -182,6 +189,7 @@ class Builder
         /** @var AbstractSite $site */
         foreach ($sites as $site) {
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
+            $this->currentSite = $site;
             $site->setTemplateData($this->readData($site->getSourcePath("_foonoo/data")));
             $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
             $this->siteWriter->write($site);
@@ -232,6 +240,8 @@ class Builder
     }
 
     /**
+     * 
+     * 
      * @param array $options
      * @param CacheFactory $cacheFactory
      * @param PluginManager $pluginManager
@@ -256,7 +266,7 @@ class Builder
             if ($options['debug']) {
                 throw $e;
             }
-            $this->io->error("Error: {$e->getMessage()}\n");
+            $this->io->error("An error occured while building the [{$this->currentSite->getPath()}] site:\n{$e->getMessage()}\n");
             exit(102);
         }
     }
