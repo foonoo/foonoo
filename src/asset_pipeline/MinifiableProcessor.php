@@ -62,7 +62,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
 
         if($this->buffers[$bundle]['external'] !== '') {
             $extension = $this->getExtension();
-            $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
+            $assetPath = "/{$this->site->getPath()}assets/$extension/bundle-{$bundle}.$extension";
             $fullPath = $this->site->getDestinationPath($assetPath);
             Filesystem::directory(dirname($fullPath))->createIfNotExists(true);
             Filesystem::file($fullPath)->putContents($this->buffers[$bundle]['external']);
@@ -80,7 +80,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
         }
         if($this->buffers[$bundle]['external'] !== '') {
             $extension = $this->getExtension();
-            $assetPath = "assets/$extension/bundle-{$bundle}.$extension";
+            $assetPath = "/{$this->site->getPath()}assets/$extension/bundle-{$bundle}.$extension";
             $markup .= $this->wrapExternal($assetPath, $sitePath);
         }
         return $markup;

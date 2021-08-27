@@ -110,7 +110,7 @@ class AssetPipeline
     public function merge(array $assets, string $baseDirectory = null): void
     {
         foreach ($assets as $type => $items) {
-            foreach ($items as $index => $item) {
+            foreach ($items as $item) {
                 if(is_array($item)) {
                     $path = array_key_first($item);
                     $options = $item[$path];

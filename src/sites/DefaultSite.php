@@ -9,7 +9,7 @@ use foonoo\text\TocGenerator;
  * The default site generated when there are either no configurations in the root directory or a site type is not
  * specified in the configuration.
  *
- * A plain site reads in and converts any supported text formats (Markdown and Templates) to html. If there is an index
+ * Default sites read in and converts any supported text formats (Markdown and Templates) to html. If there is an index
  * template file, or an index markdown that becomes the default page for the site. The plain site was added so a site
  * could easily be put together from a bunch of Markdown files. With the additional support of foonoo tags, links could
  * easily be created between these markdown files, and simples sites could be built without much effort.

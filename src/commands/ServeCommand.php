@@ -5,6 +5,7 @@ namespace foonoo\commands;
 use foonoo\CommandInterface;
 use clearice\io\Io;
 use ntentan\utils\Filesystem;
+use ntentan\utils\exceptions\FileNotFoundException;
 
 /**
  * Implements the serve command.
@@ -79,7 +80,11 @@ class ServeCommand implements CommandInterface
     private function shutdown()
     {
         print "\nShutting down ... ";
-        Filesystem::get($this->output)->delete();
-        print "OK\n";
+        try {
+            Filesystem::get($this->output)->delete();
+            print "OK\n";
+        } catch (FileNotFoundException $e) {
+            print "Seems the site was already deleted.";  
+        }
     }
 }

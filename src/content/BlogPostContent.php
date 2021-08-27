@@ -70,9 +70,9 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     private function getTaxonomyLinks()
     {
         $links = [];
-        $taxonomies = $this->siteTaxonomies;
+        $taxonomies = array_keys($this->siteTaxonomies);
 
-        foreach($taxonomies as $taxonomy => $taxonomyLabel) {
+        foreach($taxonomies as $taxonomy) {
             if(!isset($this->metaData['frontmatter'][$taxonomy])) {
                 continue;
             }

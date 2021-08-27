@@ -4,7 +4,6 @@
 namespace foonoo\utils;
 
 use ntentan\kaikai\backends\FileCache;
-use foonoo\utils\Cache;
 
 class CacheFactory
 {

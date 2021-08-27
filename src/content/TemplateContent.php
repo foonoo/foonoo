@@ -7,22 +7,33 @@ use ntentan\honam\exceptions\FactoryException;
 use ntentan\honam\exceptions\TemplateEngineNotFoundException;
 use ntentan\honam\exceptions\TemplateResolutionException;
 use ntentan\honam\TemplateRenderer;
+use foonoo\text\TagParser;
 
+/**
+ * This class represents content generated from rendered templates.
+ * 
+ * @author Ekow Abaka
+ *
+ */
 class TemplateContent extends Content implements DataRenderer, ThemableInterface
 {
     private $source;
     private $templates;
     private $data = [];
     private $metaData = [];
+    private $parser;
 
-    public function __construct(TemplateRenderer $templates, $source, $destination)
+    public function __construct(TemplateRenderer $templates, TagParser $parser, $source, $destination)
     {
         $this->templates = $templates;
         $this->source = $source;
         $this->destination = $destination;
+        $this->parser = $parser;
     }
 
     /**
+     * Generate the output by rendering the content with any data.
+     * 
      * @return string
      * @throws FactoryException
      * @throws TemplateEngineNotFoundException
@@ -30,7 +41,11 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
      */
     public function render(): string
     {
-        return $this->templates->render($this->source, $this->data);
+        $extension = substr($this->source, strpos($this->source, ".") + 1);
+        return $this->templates->render(
+                $this->parser->parse(file_get_contents($this->source)), 
+                $this->data, true, $extension
+            );
     }
 
     public function setData($data): void

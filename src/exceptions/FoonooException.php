@@ -2,6 +2,8 @@
 
 namespace foonoo\exceptions;
 
+use foonoo\sites\AbstractSite;
+
 /**
  * Base class for all foonoo exceptions.
  *
