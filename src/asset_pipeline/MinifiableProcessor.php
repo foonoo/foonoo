@@ -12,9 +12,15 @@ use ntentan\utils\Filesystem;
 abstract class MinifiableProcessor implements Processor, MarkupGenerator
 {
     /**
+     * The site for which minifiable content is being created.
      * @var AbstractSite
      */
     private $site;
+    
+    /**
+     * 
+     * @var array
+     */
     private $buffers = [];
     protected $glue = "";
 

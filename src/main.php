@@ -51,7 +51,7 @@ $container->bind(TemplateRenderer::class)->to(function ($container) {
     $templateFileResolver = $container->get(TemplateFileResolver::class);
     $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
     $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
-    $engineRegistry->registerEngine(['tpl.php'],
+    $engineRegistry->registerEngine(['tpl.php', 'tplphp'],
         new PhpEngineFactory($templateRenderer,
             new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
             $container->get(Janitor::class)
@@ -198,6 +198,7 @@ $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
 $parser->addCommand(['name' => 'plugins', 'help' => 'list all plugins and the plugin path hierarchy']);
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
+$parser->addCommand(['name' => 'create', 'help' => 'Create a new site in this location']);
 
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
 $parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
@@ -207,7 +208,7 @@ $parser->addOption([
     'name' => 'input',
     'type' => 'string',
     'help' => "specifies where the input files for the site are found.",
-    'command' => ['generate', 'serve']
+    'command' => ['generate', 'serve', 'create']
 ]);
 $parser->addOption([
     'short_name' => 'o',
@@ -254,10 +255,27 @@ $parser->addOption([
     'short_name' => 'p',
     'name' => 'port',
     'type' => 'string',
-    'help' => 'port on which to listen',
+    'help' => 'port on which to listen for connections',
     'default' => '7000',
     'command' => 'serve'
 ]);
+
+
+$parser->addOption([
+    'short_name' => 't',
+    'name' => 'type',
+    'type' => 'string',
+    'help' => 'the type of site to create',
+    'default' => 'default',
+    'command' => 'create'
+]);
+$parser->addOption([
+    'short_name' => 'f',
+    'name' => 'force',
+    'help' => 'force creation and overwrite any existing sites',
+    'command' => 'create'
+]);
+
 
 $version = defined('PHING_BUILD_VERSION') ? "version " . PHING_BUILD_VERSION : "live source version";
 $description = <<<EOT

@@ -4,6 +4,7 @@ namespace foonoo\sites;
 
 use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
+use foonoo\text\TextConverter;
 
 /**
  * The default site generated when there are either no configurations in the root directory or a site type is not
@@ -27,11 +28,14 @@ class DefaultSite extends AbstractSite
      * @var TocGenerator
      */
     private $tocGenerator;
+    
+    private $textConverter;
 
-    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator)
+    public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, TextConverter $textConverter)
     {
         $this->templateEngine = $templateEngine;
         $this->tocGenerator = $tocGenerator;
+        $this->textConverter = $textConverter;
     }
 
     /**
@@ -43,8 +47,8 @@ class DefaultSite extends AbstractSite
     private function convertExtensions(string $file): string
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
-        if ($extension == 'md' || $this->templateEngine->isRenderable($file)) {
-            return substr($file, 0, -strlen(".$extension")) . '.html';
+        if ($this->textConverter->isConvertible($extension, 'html') || $this->templateEngine->isRenderable($file)) {
+            return substr($file, 0, -strlen(".$extension")) . '.html'; 
         } else {
             return $file;
         }

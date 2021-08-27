@@ -178,8 +178,6 @@ class BlogSite extends AbstractSite
         foreach ($files as $file) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
             $destinationPath = "$filename.html";
-            //$templateData = $this->getTemplateData($this->getDestinationPath($destinationPath));
-            //$templateData['title'] = $filename;
             $page = $this->blogContentFactory->createPage($this->getSourcePath($file), $destinationPath);
             $pages[] = $page;
         }

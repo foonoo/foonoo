@@ -41,7 +41,7 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
      */
     public function render(): string
     {
-        $extension = substr($this->source, strpos($this->source, ".") + 1);
+        $extension = pathinfo($this->source, PATHINFO_EXTENSION);
         return $this->templates->render(
                 $this->parser->parse(file_get_contents($this->source)), 
                 $this->data, true, $extension

@@ -1,9 +1,14 @@
 # CHANGELOG
 
 ## Unreleased
+
+### Added
+- A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
+
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.
 - Errors are now reported in a friendlier form with more information about what may have gone wrong.
+- Sticking to a convention where extensions for templates and convertible text content cannot contain a dot '.' character.
 
 ## Fixed
 - A friendlier error message is now shown whenever the site files are deleted before the server is terminated.
