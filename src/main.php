@@ -270,6 +270,27 @@ $parser->addOption([
     'command' => 'create'
 ]);
 $parser->addOption([
+    'short_name' => 'd',
+    'name' => 'description',
+    'type' => 'string',
+    'help' => 'description for the site',
+    'command' => 'create'
+]);
+$parser->addOption([
+    'short_name' => 'u',
+    'name' => 'url',
+    'type' => 'string',
+    'help' => 'the url of your site',
+    'command' => 'create'
+]);
+$parser->addOption([
+    'short_name' => 'n',
+    'name' => 'site-name',
+    'type' => 'string',
+    'help' => 'the name of your site',
+    'command' => 'create'
+]);
+$parser->addOption([
     'short_name' => 'f',
     'name' => 'force',
     'help' => 'force creation and overwrite any existing sites',
