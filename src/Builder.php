@@ -266,7 +266,10 @@ class Builder
             if ($options['debug']) {
                 throw $e;
             }
-            $this->io->error("An error occured while building the [{$this->currentSite->getPath()}] site:\n{$e->getMessage()}\n");
+            $this->io->error(
+                "An error occured while building the " .
+                ($this->currentSite === null ? "" : "[{$this->currentSite->getPath()}] ") . 
+                "site:\n{$e->getMessage()}\n");
             exit(102);
         }
     }

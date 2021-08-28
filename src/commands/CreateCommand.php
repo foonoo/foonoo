@@ -49,8 +49,8 @@ class CreateCommand implements CommandInterface
         
         SITE_YML;
         
-        $input .= (isset($options['name'])
-                ? 'name: "' . addslashes($options['name']) . "."
+        $input .= (isset($options['site-name'])
+                ? 'name: "' . addslashes($options['site-name']) . '"'
                 : '# name: "Name your site"') . "\n"; 
         $input .= (isset($options['description']) 
                 ? 'description: "' . addslashes($options['description']) . '"' 
@@ -65,11 +65,14 @@ class CreateCommand implements CommandInterface
         SITE_YML;
         
         $file->putContents($input);
+        $this->io->output("Created the site.yml file.\n");
+        
         $paths = ['_foonoo/images', '_foonoo/assets'];
         foreach($paths as $path) {
             $dir = Filesystem::directory("$inputPath/$path");
             $dir->createIfNotExists(true);
         }
+        $this->io->output("Created the _foonoo directory.\n");
         
     }
     
