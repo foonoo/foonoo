@@ -4,6 +4,7 @@
 
 ### Added
 - A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
+- The ability to to add assets directly from the `site.yml` file to customize the theme.
 
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.

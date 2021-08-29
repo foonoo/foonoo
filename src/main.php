@@ -79,20 +79,27 @@ $container->bind(TagParser::class)->to(function ($container) {
 
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
     $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
+    $textConverter = $container->get(TextConverter::class);
+    $templateEngine = $container->get(TemplateEngine::class);
+    
+    // Register a markdown factory
     $registry->register(
-        function ($params) {
+        function ($params) use ($textConverter) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return $extension == 'md';
+            return $textConverter->isConvertible($extension, 'html');
         },
         $container->get(MarkupContentFactory::class)
     );
+    
+    // Register a templated content factory
     $registry->register(
-        function ($params) {
+        function ($params) use ($templateEngine) {
             $extension = strtolower(pathinfo($params['source'], PATHINFO_EXTENSION));
-            return file_exists($params['source']) && in_array($extension, ['mustache', 'php']);
+            return file_exists($params['source']) && $templateEngine->isRenderable($extension);
         },
         $container->get(TemplateContentFactory::class)
     );
+    
     return $registry;
 })->asSingleton();
 

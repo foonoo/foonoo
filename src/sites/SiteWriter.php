@@ -73,6 +73,9 @@ class SiteWriter
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
         $assetPipeline = $site->getAssetPipeline();
+        if(isset($site->getMetaData()['assets'])) {
+            $assetPipeline->merge($site->getMetaData()['assets'], $site->getSourcePath("_foonoo/assets"));
+        }
         $this->eventDispatcher->dispatch(AssetPipelineReady::class, ['pipeline' => $assetPipeline]);
         $assetPipeline->buildAssets();
         $contents = array_map(function ($x) use ($site) {

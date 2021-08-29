@@ -61,7 +61,7 @@ class CreateCommand implements CommandInterface
         <<< SITE_YML
         # plugins:
         #   - contrib/highlight
-        #   - contrib/responsive-images
+        #   - contrib/responsive_images
         SITE_YML;
         
         $file->putContents($input);
