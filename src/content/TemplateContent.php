@@ -1,12 +1,12 @@
 <?php
 
-
 namespace foonoo\content;
 
 use ntentan\honam\exceptions\FactoryException;
 use ntentan\honam\exceptions\TemplateEngineNotFoundException;
 use ntentan\honam\exceptions\TemplateResolutionException;
 use ntentan\honam\TemplateRenderer;
+use foonoo\sites\FrontMatterReader;
 use foonoo\text\TagParser;
 
 /**
@@ -17,18 +17,29 @@ use foonoo\text\TagParser;
  */
 class TemplateContent extends Content implements DataRenderer, ThemableInterface
 {
+
     private $source;
     private $templates;
     private $data = [];
     private $metaData = [];
+    
+    /**
+     * @var TagParser
+     */
     private $parser;
+    
+    /**
+     * @var FrontMatterReader
+     */
+    private $frontMatterParser;
 
-    public function __construct(TemplateRenderer $templates, TagParser $parser, $source, $destination)
+    public function __construct(TemplateRenderer $templates, TagParser $parser, FrontMatterReader $frontMatterParser, string $source, string $destination)
     {
         $this->templates = $templates;
         $this->source = $source;
         $this->destination = $destination;
         $this->parser = $parser;
+        $this->frontMatterParser = $frontMatterParser;
     }
 
     /**
@@ -42,10 +53,21 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
     public function render(): string
     {
         $extension = pathinfo($this->source, PATHINFO_EXTENSION);
+        list($this->metaData, $body) = $this->frontMatterParser->read($this->source);
         return $this->templates->render(
-                $this->parser->parse(file_get_contents($this->source)), 
+                $this->parser->parse($body),
                 $this->data, true, $extension
             );
+    }
+
+    public function setMetaData(array $metaData): void
+    {
+        $this->metaData = $metaData;
+    }
+    
+    public function setFirstLineOfBody(int $firstLineOfBody): void
+    {
+        $this->firstLineOfBody = $firstLineOfBody;
     }
 
     public function setData($data): void
@@ -58,13 +80,9 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
         return $this->metaData;
     }
 
-    public function setLayout($layout)
-    {
-        $this->metaData['layout'] = $layout;
-    }
-
     public function getLayoutData()
     {
         return ['page_type' => 'template'];
     }
+
 }

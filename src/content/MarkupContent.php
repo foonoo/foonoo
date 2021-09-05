@@ -5,7 +5,6 @@ namespace foonoo\content;
 
 use foonoo\sites\FrontMatterReader;
 use foonoo\text\TextConverter;
-use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * Class MarkupContent
@@ -40,11 +39,7 @@ class MarkupContent extends Content implements ThemableInterface
     protected function getFrontMatter() : array
     {
         if(!$this->frontMatter) {
-            try{
-                $this->frontMatter = $this->frontMatterReader->read($this->document, $this->firstLineOfBody);
-            } catch (ParseException $e) {
-                throw new ParseException("While parsing {$this->document}: {$e->getMessage()}");
-            }
+            list($this->frontMatter, $this->body) = $this->frontMatterReader->read($this->document);
         }
         return $this->frontMatter;
     }
@@ -56,15 +51,6 @@ class MarkupContent extends Content implements ThemableInterface
      */
     protected function getBody() : string
     {
-        if(!$this->body) {
-            $file = new \SplFileObject($this->document);
-            $file->seek($this->firstLineOfBody);
-
-            while(!$file->eof()) {
-                $this->body .= $file->fgets();
-            }
-            $this->body = mb_convert_encoding($this->body, 'UTF-8', mb_detect_encoding($this->body));
-        }
         return $this->body;
     }
 
