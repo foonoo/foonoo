@@ -4,7 +4,7 @@
 namespace foonoo\asset_pipeline;
 
 use foonoo\events\EventDispatcher;
-use foonoo\events\SiteObjectCreated;
+use foonoo\events\SiteWriteStarted;
 use foonoo\sites\AbstractSite;
 use MatthiasMullie\Minify\Minify;
 use ntentan\utils\Filesystem;
@@ -33,7 +33,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
     protected abstract function getExtension(): string;
 
     public function __construct(EventDispatcher $eventDispatcher) {
-        $eventDispatcher->addListener(SiteObjectCreated::class, function(SiteObjectCreated $event) {
+        $eventDispatcher->addListener(SiteWriteStarted::class, function(SiteWriteStarted $event) {
             $this->site = $event->getSite();
         });
     }
