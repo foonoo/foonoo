@@ -126,7 +126,7 @@ class PluginManager
             }
         }
         throw new \Exception(
-            "It seems foonoo failed to load the plugin, $plugin, required by the site.\nThe class [$pluginClass] which is expected to hold the plugin's code could not be found in any of the following paths:\n - "
+            "It seems foonoo failed to load the [$plugin] plugin required by the site. The class, [$pluginClass], which is expected to hold the plugin's code could not be found in any of the following paths:\n - "
             . implode("\n - ", $pluginPaths) . "\n"
         );
     }

@@ -202,12 +202,13 @@ abstract class AbstractSite
 
     public function getSourcePath(string $path = ""): string
     {
-        return preg_replace("|/+|", "/", "{$this->sourceRoot}/{$this->path}/{$path}");
+        return $this->sourceRoot . ($this->path == "" ? "" : "{$this->path}/") . ($path == "" ? "" : "$path");
     }
 
     public function getDestinationPath(string $path = ""): string
     {
-        return preg_replace("|/+|", "/", "{$this->destinationRoot}/{$this->path}/{$path}");
+        return $this->destinationRoot . ($this->path == "" ? "" : "{$this->path}/") . ($path == "" ? "" : "$path");
+        //return preg_replace("|/+|", "/", "{$this->destinationRoot}/{$this->path}/{$path}");
     }
 
     public function setCache(Cache $cache)
