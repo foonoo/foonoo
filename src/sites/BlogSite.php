@@ -74,6 +74,9 @@ class BlogSite extends AbstractSite
      */
     public function getContent(): array
     {
+        if(!file_exists($this->getSourcePath("posts"))) {
+            return [];
+        }
         $content = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
         $content[] = $this->getIndexPage('index.html', $this->posts, "", 'index');
         $content[] = $this->getIndexPage('posts.html', $this->posts);

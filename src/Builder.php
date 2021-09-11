@@ -194,18 +194,18 @@ class Builder
             $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
             $this->siteWriter->write($site);
 
-            if (is_dir($site->getSourcePath("_foonoo/images"))) {
+            if (is_dir($site->getSourcePath("_foonoo/images")) && is_dir($site->getDestinationPath())) {
                 $imageSource = $site->getSourcePath("_foonoo/images");
                 $imagesDestination = $site->getDestinationPath("images");
                 $this->io->output("- Copying images from $imageSource to $imagesDestination\n");
-                Filesystem::get($imageSource)->copyTo($imagesDestination, File::OVERWRITE_OLDER);
+                Filesystem::get($imageSource)->copyTo($imagesDestination, File::OVERWRITE_OLDER);                    
             }
 
-            if (is_dir($site->getSourcePath("_foonoo/assets"))) {
+            if (is_dir($site->getSourcePath("_foonoo/assets")) && is_dir($site->getDestinationPath())) {
                 $assetsDestination = $site->getDestinationPath("assets");
                 $assetsSource = $site->getSourcePath("_foonoo/assets");
                 $this->io->output("- Copying assets from $assetsSource to $assetsDestination\n");
-                Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);
+                Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);                    
             }
         }
     }
