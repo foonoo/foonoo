@@ -44,11 +44,9 @@ abstract class AbstractSite
      */
     private $templateData;
 
-    /**
-     * An instance of the cache holding data for this site.
-     * @var Cache
-     */
-    private $cache;
+    private $sourcePath;
+    
+    private $destinationPath;
 
     /**
      * Used for creating automatic content from files.
@@ -181,16 +179,16 @@ abstract class AbstractSite
     protected function getFiles(string $base = '', bool $recursive = false): array
     {
         $files = array();
-        $base = $base == '' ? '' : "$base/";
-        $dir = scandir("{$this->sourceRoot}{$this->path}/$base", SCANDIR_SORT_ASCENDING);
+        $base = $base == '' ? '' : "$base" . DIRECTORY_SEPARATOR;
+        $dir = scandir("{$this->sourceRoot}{$this->path}". DIRECTORY_SEPARATOR . $base, SCANDIR_SORT_ASCENDING);
         foreach ($dir as $file) {
             $path = "{$this->sourceRoot}$base$file";
             if (array_reduce(
                 $this->metaData['excluded_paths'],
                 function ($carry, $item) use ($path) {
-                    return $carry | fnmatch($item, $path);
+                    return $carry | fnmatch($item, $path, FNM_NOESCAPE);
                 }, false)
-            ) continue;
+            ) { continue; }
             if (is_dir($path) && $recursive) {
                 $files = array_merge($files, $this->getFiles($path, true));
             } else if (!is_dir($path)) {
@@ -199,16 +197,26 @@ abstract class AbstractSite
         }
         return $files;
     }
+    
+    private function getBasePath($root): string
+    {
+        return preg_replace(["|\\\\+|", "|/+|"], ["\\", "/"], $root . DIRECTORY_SEPARATOR . $this->path . DIRECTORY_SEPARATOR);
+    }
 
     public function getSourcePath(string $path = ""): string
     {
-        return $this->sourceRoot . ($this->path == "" ? "" : "{$this->path}/") . ($path == "" ? "" : "$path");
+        if(!$this->sourcePath) {
+            $this->sourcePath = $this->getBasePath($this->sourceRoot);
+        }
+        return $this->sourcePath . $path;
     }
 
     public function getDestinationPath(string $path = ""): string
     {
-        return $this->destinationRoot . ($this->path == "" ? "" : "{$this->path}/") . ($path == "" ? "" : "$path");
-        //return preg_replace("|/+|", "/", "{$this->destinationRoot}/{$this->path}/{$path}");
+        if(!$this->destinationPath) {
+            $this->destinationPath = $this->getBasePath($this->destinationRoot);
+        }
+        return $this->destinationPath . $path;
     }
 
     public function setCache(Cache $cache)

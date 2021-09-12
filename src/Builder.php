@@ -127,12 +127,14 @@ class Builder
                 if (array_reduce(
                     $site->getSetting('excluded_paths'),
                     function ($carry, $item) use ($path, $file) {
-                        return $carry | fnmatch($item, "{$path}{$file}");
+                        return $carry | fnmatch($item, "{$path}{$file}", FNM_NOESCAPE);
                     },
                     false)
-                ) continue;
+                ) {
+                    continue;
+                }
                 if (is_dir("{$path}{$file}")) {
-                    $sites = array_merge($sites, $this->getSites("{$path}{$file}/"));
+                    $sites = array_merge($sites, $this->getSites("{$path}{$file}" . DIRECTORY_SEPARATOR));
                 }
             }
         }
@@ -156,7 +158,14 @@ class Builder
         }
         $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"]
             + ($metaData['excluded_paths'] ?? []);
-
+        if(DIRECTORY_SEPARATOR != "/") {
+            $metaData['excluded_paths'] = array_map(
+                function($value) { 
+                    return str_replace("/", DIRECTORY_SEPARATOR, $value); 
+                }, 
+                $metaData['excluded_paths']
+            );
+        }
         $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
         $shortPath = substr($path, strlen($this->options['input']));
 
