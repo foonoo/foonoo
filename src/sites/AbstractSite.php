@@ -173,7 +173,7 @@ abstract class AbstractSite
             $dir .= substr($dir, -1) == '/' ? '' : '/';
             $relativeLocation = str_repeat('../', substr_count($dir, '/') - 1);
         }
-        return $relativeLocation;
+        return $relativeLocation == "" ? "./" : $relativeLocation;
     }
 
     protected function getFiles(string $base = '', bool $recursive = false): array
