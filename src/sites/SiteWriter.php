@@ -70,11 +70,14 @@ class SiteWriter
     public function write(AbstractSite $site)
     {
         $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
+        $assetPipeline = $site->getAssetPipeline();
+        if(isset($site->getMetaData()['assets_precede'])) {
+            $assetPipeline->merge($site->getMetaData()['assets_precede'], $site->getSourcePath("_foonoo/assets"));
+        }        
         $theme = $this->themeManager->getTheme($site);
         $this->eventDispatcher->dispatch(ThemeLoaded::class, ['theme' => $theme]);
-        $assetPipeline = $site->getAssetPipeline();
-        if(isset($site->getMetaData()['assets'])) {
-            $assetPipeline->merge($site->getMetaData()['assets'], $site->getSourcePath("_foonoo/assets"));
+        if(isset($site->getMetaData()['assets_follow'])) {
+            $assetPipeline->merge($site->getMetaData()['assets_follow'], $site->getSourcePath("_foonoo/assets"));
         }
         $this->eventDispatcher->dispatch(AssetPipelineReady::class, ['pipeline' => $assetPipeline]);
         $assetPipeline->buildAssets();
