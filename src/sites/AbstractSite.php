@@ -176,22 +176,23 @@ abstract class AbstractSite
         return $relativeLocation == "" ? "./" : $relativeLocation;
     }
 
-    protected function getFiles(string $base = '', bool $recursive = false): array
+    protected function getFiles(string $base = ''): array
     {
         $files = array();
         $base = $base == '' ? '' : "$base" . DIRECTORY_SEPARATOR;
         $dir = scandir("{$this->sourceRoot}{$this->path}". DIRECTORY_SEPARATOR . $base, SCANDIR_SORT_ASCENDING);
         foreach ($dir as $file) {
-            $path = "{$this->sourceRoot}$base$file";
+            $path = "{$this->sourceRoot}{$this->path}" . DIRECTORY_SEPARATOR . $base . $file;
             if (array_reduce(
                 $this->metaData['excluded_paths'],
                 function ($carry, $item) use ($path) {
                     return $carry | fnmatch($item, $path, FNM_NOESCAPE);
                 }, false)
             ) { continue; }
-            if (is_dir($path) && $recursive) {
-                $files = array_merge($files, $this->getFiles($path, true));
-            } else if (!is_dir($path)) {
+//            if (is_dir($path) && $recursive) {
+//                $files = array_merge($files, $this->getFiles($path, true));
+//            } else 
+            if (!is_dir($path)) {
                 $files[] = "$base$file";
             }
         }

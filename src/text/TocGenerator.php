@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
-use foonoo\events\SiteObjectCreated;
+use foonoo\events\SiteWriteStarted;
 use foonoo\utils\Nomenclature;
 
 /**
@@ -51,7 +51,7 @@ class TocGenerator
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
         $events->addListener(ContentOutputGenerated::class, $this->getRenderer());
-        $events->addListener(SiteObjectCreated::class, function (SiteObjectCreated $event) {
+        $events->addListener(SiteWriteStarted::class, function (SiteWriteStarted $event) {
             $this->globalTOC = [];
             $meta = $event->getSite()->getMetaData();
             $this->collectTOC = (bool)($meta['enable-toc'] ?? false);

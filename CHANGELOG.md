@@ -20,6 +20,7 @@
 - A bug in the text file reader which left opened files unclosed.
 - A bug in the asset pipeline which causes it to write only to the last site in a multi-site setup.
 - A bug that causes source and destination paths to contain double slashes on windows.
+- A bug in the table of contents generator, which causes the TOC status of the last initialized site to leak to all other previously loaded ones.
 
 ## v0.5.0 - 2021-08-12
 ### Added
