@@ -91,6 +91,9 @@ class TocGenerator
                 return;
             }
             $dom = $event->getDOM();
+            if($dom === null) {
+                return;
+            }
             $xpath = new \DOMXPath($dom);
             $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
 
@@ -188,6 +191,7 @@ class TocGenerator
                 $toc[] = $item;
             }
         }
+        ksort($toc);
         return $toc;
     }
 }

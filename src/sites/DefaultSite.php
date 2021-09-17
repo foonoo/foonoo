@@ -4,7 +4,9 @@ namespace foonoo\sites;
 
 use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
+use foonoo\content\TocContent;
 use foonoo\text\TextConverter;
+use foonoo\content\Content;
 
 /**
  * The default site generated when there are either no configurations in the root directory or a site type is not
@@ -25,10 +27,17 @@ class DefaultSite extends AbstractSite
     private $templateEngine;
 
     /**
+     * Generates the table of contents for a site.
+     * 
      * @var TocGenerator
      */
     private $tocGenerator;
     
+    /**
+     * Converts texts between different formats.
+     * 
+     * @var TextConnverter
+     */
     private $textConverter;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, TextConverter $textConverter)
@@ -69,7 +78,17 @@ class DefaultSite extends AbstractSite
             $destinationFile = $this->convertExtensions($file);
             $content[] = $this->automaticContentFactory->create($sourceFile, $destinationFile);
         }
-
+        
+        $this->addIndexContent($content);
+        return $content;
+    }
+    
+    private function addIndexContent(array &$content)
+    {
+        $index = $this->getMetaData()['index'] ?? null;
+        if ($index == "_TOC_") {
+            $content[] = new TocContent($this->tocGenerator, $this->templateEngine);
+        }
         return $content;
     }
 
@@ -91,7 +110,6 @@ class DefaultSite extends AbstractSite
         $templateData = parent::getTemplateData($contentDestination);
         if(isset($this->metaData['enable-toc']) && $this->metaData['enable-toc'] == true) {
             $globalToc = $this->tocGenerator->getGlobalTOC();
-            ksort($globalToc);
             $templateData['has_toc'] = true;
             $templateData['global_toc'] = $globalToc;            
         }

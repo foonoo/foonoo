@@ -15,7 +15,7 @@ class ContentLayoutApplied extends BaseOutputEvent
      *
      * @return \DOMDocument
      */
-    public function getDOM(): \DOMDocument
+    public function getDOM(): ?\DOMDocument
     {
         // Create a DOM tree for objects that are possibly themed
         if (!$this->dom && $this->hasDOM()) {
