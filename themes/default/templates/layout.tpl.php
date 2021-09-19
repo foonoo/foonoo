@@ -5,6 +5,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <?= $assets_markup['default']->unescape() ?>
         <title><?= $content_title ?> <?= isset($site_title) ? "- $site_title": "" ?></title>
     </head>
