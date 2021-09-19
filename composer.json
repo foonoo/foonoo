@@ -1,44 +1,45 @@
 {
-	"name" : "foonoo/foonoo",
-	"description" : "A static site generator that is ideal for generating blogs, documentation and just about any kind of site you can think of.",
-	"require" : {
-		"ekowabaka/clearice" : "~3.2",
-		"mustache/mustache" : "~2.0",
-		"erusev/parsedown" : "~1.0",
-		"ntentan/honam" : "~0.6.0",
-		"ntentan/panie" : "~0.7.0",
-		"ntentan/kaikai" : "@stable",
-		"ntentan/utils" : "~0.11",
-		"symfony/yaml" : "~4.0",
-		"smarty/smarty" : "~3.0",
-		"matthiasmullie/minify" : "~1.3",
-		"ext-dom" : "*",
-		"ext-libxml" : "*",
-		"ext-fileinfo" : "*",
-		"ext-json" : "*"
-	},
-	"require-dev" : {
-		"phing/phing" : "@stable",
-		"phpunit/phpunit" : "@stable"
-	},
-	"license" : "MIT",
-	"homepage" : "https://ekowabaka.me/projects/foonoo",
-	"support" : {
-		"issues" : "https://github.com/foonoo/foonoo/issues"
-	},
-	"authors" : [{
-			"name" : "Ekow Abaka Ainooson",
-			"email" : "jainooson@gmail.com",
-			"role" : "lead"
-		}
-	],
-	"autoload" : {
-		"psr-4" : {
-			"foonoo\\" : "src/",
-			"foonoo\\tests\\" : "tests/cases/"
-		}
-	},
-	"bin" : [
-		"bin/foonoo"
-	]
+    "name": "foonoo/foonoo",
+    "description": "A static site generator that is ideal for generating blogs, documentation and just about any kind of site you can think of.",
+    "require": {
+        "ekowabaka/clearice": "~3.2",
+        "mustache/mustache": "~2.0",
+        "erusev/parsedown": "~1.0",
+        "ntentan/honam": "~0.6.0",
+        "ntentan/panie": "~0.7.0",
+        "ntentan/kaikai": "@stable",
+        "ntentan/utils": "~0.11",
+        "symfony/yaml": "~4.0",
+        "smarty/smarty": "~3.0",
+        "matthiasmullie/minify": "~1.3",
+        "scssphp/scssphp": "~1.8",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-fileinfo": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phing/phing": "@stable",
+        "phpunit/phpunit": "@stable"
+    },
+    "license": "MIT",
+    "homepage": "https://ekowabaka.me/projects/foonoo",
+    "support": {
+        "issues": "https://github.com/foonoo/foonoo/issues"
+    },
+    "authors": [{
+            "name": "Ekow Abaka Ainooson",
+            "email": "jainooson@gmail.com",
+            "role": "lead"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "foonoo\\": "src/",
+            "foonoo\\tests\\": "tests/cases/"
+        }
+    },
+    "bin": [
+        "bin/foonoo"
+    ]
 }
