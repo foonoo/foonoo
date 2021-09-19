@@ -6,7 +6,6 @@ namespace foonoo\events;
 use foonoo\content\Content;
 use foonoo\content\ThemableInterface;
 use foonoo\sites\AbstractSite;
-use foonoo\exceptions\ContentGenerationException;
 
 /**
  * Class BaseOutputEvent
@@ -61,15 +60,6 @@ abstract class BaseOutputEvent
         return $this->content;
     }
     
-//    public function getDOM(): \DOMDocument
-//    {
-//        $dom = $this->extractDom();                    
-//        if($dom === null) {
-//            throw new ContentGenerationException("Failed to extract DOM for {$this->content->getFullDestination()}");
-//        }
-//        return $dom;
-//    }
-
     public abstract function getOutput() : string;
     
     public abstract function getDom(): ?\DOMDocument;

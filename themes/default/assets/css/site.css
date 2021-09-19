@@ -37,6 +37,20 @@ a{
     flex-direction: row;
 }
 
+article {
+    max-width: 950px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    color:#404040;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #002752;
+    font-weight: normal
+}
+
+/* The Table of Contents on the side panel */
 #side-toc {
     padding: 20px;
     width: 250px;
@@ -55,7 +69,6 @@ a{
     padding: 0px;
     list-style: none;
     font-size: 0.98em;
-    /*padding-left: 20px;*/
 }
 
 #side-toc > ul > li > a {
@@ -67,12 +80,7 @@ a{
     margin-bottom: 25px
 }
 
-
-article {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
+/* The table of contents displayed within an article for the _TOC_ tag */
 
 .fn-toc {
     float: right;
@@ -102,11 +110,25 @@ article {
     padding: 0px;
 }
 
-article {
-    color:#404040;
+/* The table of contents displayed on the index page. This can be rendered with [[_GTOC_]] */
+.index-toc ul {
+    list-style: none;
+    padding-left: 30px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+.index-toc ul a {
+    color: #404040
+}
+
+.index-toc > ul {
+    padding: 0px;
+}
+
+.index-toc > ul > li {
+    display: block;
+    padding-bottom: 15px;
+}
+
+.index-toc > ul > li > a {
     color: #002752;
-    font-weight: normal
 }

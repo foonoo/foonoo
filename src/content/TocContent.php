@@ -13,17 +13,21 @@ use foonoo\text\TemplateEngine;
 class TocContent extends Content
 {
     /**
-     * 
+     * An instance of the table of contents generator.
      * @var TocGenerator
      */
     private $tocGenerator;
     
     /**
-     * 
+     * An instance of the template engine.
      * @var TemplateEngine
      */
     private $templateEngine;
     
+    /**
+     * @param TocGenerator $tocGenerator
+     * @param TemplateEngine $templateEngine
+     */
     public function __construct(TocGenerator $tocGenerator, TemplateEngine $templateEngine)
     {
         $this->tocGenerator = $tocGenerator;
@@ -38,7 +42,6 @@ class TocContent extends Content
 
     public function render(): string
     {
-        //return "TOC";
-        return $this->templateEngine->render("table_of_contents_tag", $this->tocGenerator->getGlobalTOC());
+        return $this->templateEngine->render("toc", ['tree' => $this->tocGenerator->getGlobalTOC()]);
     }
 }
