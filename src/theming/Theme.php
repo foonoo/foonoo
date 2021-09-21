@@ -1,10 +1,11 @@
 <?php
 
 
-namespace foonoo\themes;
+namespace foonoo\theming;
 
 
 use foonoo\text\TemplateEngine;
+use ntentan\utils\Text;
 
 /**
  * A class wrapped around a theme.
@@ -65,9 +66,11 @@ class Theme
      */
     public function activate()
     {
-        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . "build.php");
+        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . Text::ucamelize($this->definition['theme-name']) . "Theme.php");
         if($path !== false) {
-            include $path;
+            $className = "foonoo\\themes\\";
+            include_once $path;
+            $instance = new
         }
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }

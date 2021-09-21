@@ -97,7 +97,7 @@ class DefaultSite extends AbstractSite
      */
     public function getDefaultTheme(): string
     {
-        return 'default';
+        return 'site';
     }
 
     /**

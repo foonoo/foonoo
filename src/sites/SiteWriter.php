@@ -17,8 +17,8 @@ use foonoo\events\ContentWritten;
 use foonoo\events\SiteWriteStarted;
 use foonoo\events\ThemeLoaded;
 use foonoo\text\TemplateEngine;
-use foonoo\themes\Theme;
-use foonoo\themes\ThemeManager;
+use foonoo\theming\Theme;
+use foonoo\theming\ThemeManager;
 use clearice\io\Io;
 
 /**

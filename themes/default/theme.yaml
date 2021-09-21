@@ -1,6 +1,0 @@
-name: Default Foonoo Theme
-author: Ekow Abaka
-default_layout: layout
-assets:
-  css:
-    - assets/scss/main.scss

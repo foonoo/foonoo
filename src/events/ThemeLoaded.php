@@ -5,7 +5,7 @@ namespace foonoo\events;
 
 
 use foonoo\text\TemplateEngine;
-use foonoo\themes\Theme;
+use foonoo\theming\Theme;
 
 class ThemeLoaded extends Event
 {

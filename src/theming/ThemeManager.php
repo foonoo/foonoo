@@ -1,16 +1,17 @@
 <?php
 
-namespace foonoo\themes;
+namespace foonoo\theming;
 
 use foonoo\sites\AbstractSite;
 use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
+use foonoo\exceptions\SiteGenerationException;
 
 /**
  * Loads themes by injecting their paths into the global template hierarchy and copying all required assets to the
  * site's destination path.
  *
- * @package foonoo\themes
+ * @package foonoo\theming
  */
 class ThemeManager
 {
@@ -61,7 +62,7 @@ class ThemeManager
                 $theme = new Theme($themePath, $this->templateEngine, $definition, $themeOptions);
                 $this->themes[$key] = $theme;
             } else {
-                throw new \Exception("Failed to load theme '$theme'.");
+                throw new SiteGenerationException("Failed to load theme '$themeName'.");
             }
         }
 
