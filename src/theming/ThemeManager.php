@@ -72,8 +72,9 @@ class ThemeManager
     public function getTheme(AbstractSite $site): Theme
     {
         $theme = $this->loadTheme($site);
-        $theme->activate();
-        $site->getAssetPipeline()->merge($theme->getAssets(), $theme->getPath());
+        $assetPipeline = $site->getAssetPipeline();
+        $assetPipeline->merge($theme->getAssets(), $theme->getPath() . DIRECTORY_SEPARATOR . "assets");
+        $theme->activate($assetPipeline);
         return $theme;
     }
 

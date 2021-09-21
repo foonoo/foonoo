@@ -4,4 +4,4 @@ author: Ekow Abaka
 default_layout: layout
 assets:
   css:
-    - assets/scss/main.scss
+    - scss/main.scss

@@ -6,7 +6,6 @@ use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 use foonoo\content\TocContent;
 use foonoo\text\TextConverter;
-use foonoo\content\Content;
 
 /**
  * The default site generated when there are either no configurations in the root directory or a site type is not

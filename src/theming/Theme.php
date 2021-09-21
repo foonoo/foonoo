@@ -64,14 +64,14 @@ class Theme
     /**
      * A method to activate the system.
      */
-    public function activate()
+    public function activate(\foonoo\asset_pipeline\AssetPipeline $pipeline)
     {
         $themeClassName = Text::ucamelize($this->definition['name']) . "Theme";
         $path = realpath($this->themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php");
         if($path !== false) {
             $themeClass = "foonoo\\themes\\{$this->definition['name']}\\$themeClassName";
             include_once $path;
-            $instance = new $themeClass();
+            (new $themeClass())->activated($this->templateEngine, $pipeline, $this->themeOptions, $this->definition);
         }
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }

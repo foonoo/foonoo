@@ -15,6 +15,7 @@ use foonoo\events\ContentOutputGenerated;
 use foonoo\events\ContentReady;
 use foonoo\events\ContentWritten;
 use foonoo\events\SiteWriteStarted;
+use foonoo\events\SiteWriteEnded;
 use foonoo\events\ThemeLoaded;
 use foonoo\text\TemplateEngine;
 use foonoo\theming\Theme;
@@ -102,6 +103,7 @@ class SiteWriter
             $this->io->output("- Writing content to {$site->getDestinationPath($content->getDestination())} \n");
             $this->writeContentToOutputPath($site, $theme, $outputs[$i], $content);
         }
+        $this->eventDispatcher->dispatch(SiteWriteEnded::class, ['site' => $site]);
     }
 
     public function setOptions($options)

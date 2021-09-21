@@ -189,9 +189,6 @@ abstract class AbstractSite
                     return $carry | fnmatch($item, $path, FNM_NOESCAPE);
                 }, false)
             ) { continue; }
-//            if (is_dir($path) && $recursive) {
-//                $files = array_merge($files, $this->getFiles($path, true));
-//            } else 
             if (!is_dir($path)) {
                 $files[] = "$base$file";
             }

@@ -44,7 +44,6 @@ class AssetPipeline
      */
     public function addItem(string $item, string $type, array $options=[]): void
     {
-        Filesystem::checkExists($item);
         $bundles = $options['bundles'] ?? ["default"];
         $options['priority'] = $options['priority'] ?? 0;
         unset($options['bundles']);
@@ -55,7 +54,23 @@ class AssetPipeline
             if (!isset($this->items[$bundle][$type])) {
                 $this->items[$bundle][$type] = [];
             }
-            $this->items[$bundle][$type][] = ['path' => $item, 'options' => $options];
+            $this->items[$bundle][$type][] = ['contents' => $item, 'options' => $options];
+        }
+    }
+    
+    public function replaceItem(string $contents, string $newContents, string $type, array $options=[]): void
+    {
+        $bundles = $options['bundles'] ?? ["default"];
+        $options['priority'] = $options['priority'] ?? 0;
+        unset($options['bundles']);
+        foreach($this->items as $bundle => $types) {
+            foreach($types as $type => $items) {
+                foreach($items as $key => $item) {
+                    if($item['contents'] == $contents) {
+                        $this->items[$bundle][$type][$key] = ['contents' => $newContents, 'options' => $options];
+                    }
+                }
+            }
         }
     }
 
@@ -83,7 +98,12 @@ class AssetPipeline
                 foreach($processors as $processor) {
                     usort($items, function($a, $b) { return $b['options']['priority'] - $a['options']['priority'];});
                     foreach($items as $item) {
-                        $processedItem = $processor->process($item['path'], $item['options']);
+                        $options = $item['options'];
+                        $processedItem = $processor->process(
+                                (isset($options['base_directory']) ? $options['base_directory'] . DIRECTORY_SEPARATOR : "") . 
+                                $item['contents'], 
+                                $options
+                            );
                         $processedItem['bundle'] = $bundle;
                         $this->builtItems[$bundle][$type][] = $processedItem;
                     }
@@ -114,17 +134,19 @@ class AssetPipeline
         foreach ($assets as $type => $items) {
             foreach ($items as $item) {
                 if(is_array($item)) {
-                    $path = array_key_first($item);
-                    $options = $item[$path];
+                    $contents = array_key_first($item);
+                    $options = $item[$contents];
                     if(!is_array($options)) {
                         $options = ['param' => $options];
                     }
                 } else {
-                    $path = $item;
+                    $contents = $item;
                     $options = [];
                 }
-                $itemPath = "$baseDirectory/$path";
-                $this->addItem($itemPath, $type, $options);
+                if(isset($baseDirectory)) {
+                    $options['base_directory'] = $baseDirectory;
+                }
+                $this->addItem($contents, $type, $options);
             }
         }
     }

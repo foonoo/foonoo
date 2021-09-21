@@ -23,7 +23,7 @@ use foonoo\events\ContentGenerationStarted;
 use foonoo\events\PluginsInitialized;
 use foonoo\events\SiteObjectCreated;
 use foonoo\events\SiteWriteStarted;
-use foonoo\events\SiteWritten;
+use foonoo\events\SiteWriteEnded;
 use foonoo\events\ThemeLoaded;
 use foonoo\sites\BlogSiteFactory;
 use foonoo\content\CopiedContentFactory;
@@ -141,9 +141,9 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
             return new SiteWriteStarted($args['site']);
         }
     );
-    $eventDispatcher->registerEventType(SiteWritten::class,
+    $eventDispatcher->registerEventType(SiteWriteEnded::class,
         function ($args) {
-            return new SiteWritten($args['site']);
+            return new SiteWriteEnded($args['site']);
         }
     );
     $eventDispatcher->registerEventType(ContentGenerationStarted::class,
