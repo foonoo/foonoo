@@ -3,4 +3,4 @@ author: Ekow Abaka
 default_layout: layout
 assets:
   css:
-    - assets/css/site.css
+    - assets/scss/main.scss

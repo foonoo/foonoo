@@ -1,0 +1,51 @@
+body{
+    margin:0px;
+    font-family: Roboto, sans-serif;
+}
+
+a{
+    text-decoration: none;
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wrapper.has-toc {
+    max-width:initial;
+}
+
+#banner-container {
+    background-color: #0069d9;
+    color: #fff;
+}
+
+#banner {
+    font-size: x-large;
+    padding: 10px
+}
+
+#body {
+    padding: 10px;
+}
+
+#body-wrapper.wrapper.has-toc {
+    display: flex;
+    flex-direction: row;
+}
+
+article {
+    max-width: 950px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    color:#404040;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #002752;
+    font-weight: normal
+}

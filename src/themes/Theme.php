@@ -36,6 +36,10 @@ class Theme
      */
     private $definition;
     
+    /**
+     * Options passed to this theme.
+     * @var array
+     */
     private $themeOptions;
 
     public function __construct(string $themePath, TemplateEngine $templateEngine, array $themeDefinition, array $themeOptions)
@@ -47,11 +51,18 @@ class Theme
         $this->themeOptions = $themeOptions;
     }
 
+    /**
+     * Return the list of assets this theme used.
+     * @return array
+     */
     public function getAssets(): array
     {
         return $this->definition['assets'] ?? [];
     }
 
+    /**
+     * A method to activate the system.
+     */
     public function activate()
     {
         $path = realpath($this->themePath . DIRECTORY_SEPARATOR . "build.php");
@@ -61,11 +72,19 @@ class Theme
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }
 
+    /**
+     * The name of the default template for the theme.
+     * @return string
+     */
     public function getDefaultLayoutTemplate(): string
     {
         return 'layout';
     }
 
+    /**
+     * Return the path of the theme.
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->themePath;

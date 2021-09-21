@@ -21,7 +21,7 @@ class AssetPipelineFactory
     public function create() : AssetPipeline
     {
         $pipeline = new AssetPipeline();
-        $cssProcessor = new CSSProcessor($this->eventDispatcher); //$container->get(CSSProcessor::class);
+        $cssProcessor = new CSSProcessor($this->eventDispatcher, new \ScssPhp\ScssPhp\Compiler()); //$container->get(CSSProcessor::class);
         $jsProcessor = new JSProcessor($this->eventDispatcher);
         $pipeline->registerProcessor('css', $cssProcessor);
         $pipeline->registerProcessor('js', $jsProcessor);
