@@ -37,15 +37,16 @@ class AssetPipeline
     /**
      * Add an item to the pipeline.
      *
-     * @param string $path
+     * @param string $item
      * @param string $type
      * @param array|string $options
      * @throws FileNotFoundException
      */
-    public function addItem(string $path, string $type, array $options=[]): void
+    public function addItem(string $item, string $type, array $options=[]): void
     {
-        Filesystem::checkExists($path);
+        Filesystem::checkExists($item);
         $bundles = $options['bundles'] ?? ["default"];
+        $options['priority'] = $options['priority'] ?? 0;
         unset($options['bundles']);
         foreach ($bundles as $bundle) {
             if (!isset($this->items[$bundle])) {
@@ -54,7 +55,7 @@ class AssetPipeline
             if (!isset($this->items[$bundle][$type])) {
                 $this->items[$bundle][$type] = [];
             }
-            $this->items[$bundle][$type][] = ['path' => $path, 'options' => $options];
+            $this->items[$bundle][$type][] = ['path' => $item, 'options' => $options];
         }
     }
 
@@ -80,6 +81,7 @@ class AssetPipeline
                 $processors = $this->processors[$type];
                 $this->builtItems[$bundle][$type] = [];
                 foreach($processors as $processor) {
+                    usort($items, function($a, $b) { return $b['options']['priority'] - $a['options']['priority'];});
                     foreach($items as $item) {
                         $processedItem = $processor->process($item['path'], $item['options']);
                         $processedItem['bundle'] = $bundle;

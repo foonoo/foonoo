@@ -66,11 +66,12 @@ class Theme
      */
     public function activate()
     {
-        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . Text::ucamelize($this->definition['theme-name']) . "Theme.php");
+        $themeClassName = Text::ucamelize($this->definition['name']) . "Theme";
+        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php");
         if($path !== false) {
-            $className = "foonoo\\themes\\";
+            $themeClass = "foonoo\\themes\\{$this->definition['name']}\\$themeClassName";
             include_once $path;
-            $instance = new
+            $instance = new $themeClass();
         }
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }
@@ -81,7 +82,7 @@ class Theme
      */
     public function getDefaultLayoutTemplate(): string
     {
-        return 'layout';
+        return $this->definition['default-layout'] ?? 'layout';
     }
 
     /**

@@ -1,4 +1,4 @@
-name: builtin/site
+name: site
 description: The default theme that is used by the default site whenever none is provided.
 author: Ekow Abaka
 default_layout: layout

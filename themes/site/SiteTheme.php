@@ -1,5 +1,5 @@
 <?php
-namespace foonoo\themes\builtin\site;
+namespace foonoo\themes\site;
     
 use foonoo\theming\ThemeInterface;
     
