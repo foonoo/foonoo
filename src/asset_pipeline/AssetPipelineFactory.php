@@ -26,6 +26,7 @@ class AssetPipelineFactory
         $pipeline->registerProcessor('css', $cssProcessor);
         $pipeline->registerProcessor('js', $jsProcessor);
         $pipeline->registerProcessor('files', new FileProcessor($this->eventDispatcher));
+        $pipeline->registerProcessor('sass', $cssProcessor);
         $pipeline->registerMarkupGenerator('css', $cssProcessor);
         $pipeline->registerMarkupGenerator('js', $jsProcessor);
         return $pipeline;        

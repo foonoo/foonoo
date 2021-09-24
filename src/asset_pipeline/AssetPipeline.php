@@ -99,11 +99,8 @@ class AssetPipeline
                     usort($items, function($a, $b) { return $b['options']['priority'] - $a['options']['priority'];});
                     foreach($items as $item) {
                         $options = $item['options'];
-                        $processedItem = $processor->process(
-                                (isset($options['base_directory']) ? $options['base_directory'] . DIRECTORY_SEPARATOR : "") . 
-                                $item['contents'], 
-                                $options
-                            );
+                        $options['asset_type'] = $type;
+                        $processedItem = $processor->process($item['contents'], $options);
                         $processedItem['bundle'] = $bundle;
                         $this->builtItems[$bundle][$type][] = $processedItem;
                     }

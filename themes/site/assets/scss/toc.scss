@@ -1,13 +1,12 @@
-
 /* The Table of Contents on the side panel */
 #side-toc {
     padding: 20px;
     width: 250px;
-    border-right: 1px solid #e0e0e0;
-    background-color: #f4f4f4;
+    border-right: 1px solid lighten($secondary-color, 20%);
+    background-color: lighten($secondary-color, 50%);
     
     a {
-        color: #909090;
+        color: $secondary-color;
         display: block;
         margin-bottom: 5px;
     }
@@ -23,7 +22,7 @@
         > li {
             margin-bottom: 25px;
             > a {
-                color: #002752;
+                color: darken($secondary-color, 20%);
                 font-size: 1em;
             }
         }        
@@ -31,14 +30,14 @@
 }
 
 
-
+/** The table of contents embedded into the article **/
 .fn-toc {
     float: right;
     width: 250px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid lighten($secondary-color, 40%);
     margin: 5px;
     margin-top: 0px;
-    background-color: #f0f0f0;
+    background-color: lighten($secondary-color, 55%);
     padding: 10px;
     font-size: smaller;
 
@@ -61,6 +60,7 @@
 
 }
 
+/** The table of contents for the index page **/
 .index-toc {   
     ul {
         list-style: none;

@@ -183,19 +183,6 @@ $container->bind(TextConverter::class)->to(
     }
 );
 $container->bind(AssetPipelineFactory::class)->asSingleton();
-//$container->bind(AssetPipeline::class)->to(
-//    function ($container) {
-//        $pipeline = new AssetPipeline();
-//        $cssProcessor = $container->get(CSSProcessor::class);
-//        $jsProcessor = $container->get(JSProcessor::class);
-//        $pipeline->registerProcessor('css', $cssProcessor);
-//        $pipeline->registerProcessor('js', $jsProcessor);
-//        $pipeline->registerProcessor('files', $container->get(FileProcessor::class));
-//        $pipeline->registerMarkupGenerator('css', $cssProcessor);
-//        $pipeline->registerMarkupGenerator('js', $jsProcessor);
-//        return $pipeline;
-//    }
-//);
 $container->bind(\foonoo\text\TocGenerator::class)->asSingleton();
 
 $parser = new ArgumentParser();

@@ -11,6 +11,8 @@ use ntentan\utils\Filesystem;
 
 abstract class MinifiableProcessor implements Processor, MarkupGenerator
 {
+    private $minifier;
+    
     /**
      * The site for which minifiable content is being created.
      * @var AbstractSite
@@ -24,14 +26,6 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
     private $buffers = [];
     protected $glue = "";
 
-    protected abstract function getMinifier(): Minify;
-
-    protected abstract function wrapInline(string $content): string;
-
-    protected abstract function wrapExternal(string $content, string $sitePath): string;
-
-    protected abstract function getExtension(): string;
-
     public function __construct(EventDispatcher $eventDispatcher) {
         $eventDispatcher->addListener(SiteWriteStarted::class, function(SiteWriteStarted $event) {
             $this->site = $event->getSite();
@@ -40,7 +34,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
 
     public function process(string $path, array $options): array
     {
-        $minifier = $this->getMinifier();
+        $minifier = $this->getCachedMinifier();
         $minifier->add($path);
         return [
             'processed' => $minifier->minify(),
@@ -91,4 +85,21 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
         }
         return $markup;
     }
+    
+    private function getCachedMinifier(): Minify
+    {
+        if(!$this->minifier) {
+            $this->minifier = $this->getMinifier();
+        }
+        return $this->minifier;
+    }
+    
+    protected abstract function getMinifier(): Minify;
+
+    protected abstract function wrapInline(string $content): string;
+
+    protected abstract function wrapExternal(string $content, string $sitePath): string;
+
+    protected abstract function getExtension(): string;
+
 }

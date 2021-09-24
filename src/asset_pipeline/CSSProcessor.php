@@ -8,6 +8,8 @@ use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\Minify;
 use foonoo\events\EventDispatcher;
 use ScssPhp\ScssPhp\Compiler;
+use ntentan\utils\Filesystem;
+use ntentan\utils\exceptions\FileNotFoundException;
 
 class CSSProcessor extends MinifiableProcessor
 {
@@ -42,19 +44,28 @@ class CSSProcessor extends MinifiableProcessor
     
     /**
      * 
-     * @param string $path
+     * @param string $item
      * @param array $options
      * @return array
      */
-    public function process(string $path, array $options): array
+    public function process(string $item, array $options): array
     {
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-        if($extension === "scss") {
-            $directory = pathinfo($path, PATHINFO_DIRNAME);
-            $this->sassCompiler->addImportPath($directory);
-            $path = $this->sassCompiler->compileString(file_get_contents($path))->getCss();
+        try {
+            $file = (isset($options['base_directory']) ? $options['base_directory'] . DIRECTORY_SEPARATOR : '') . $item;
+            Filesystem::checkExists($file);
+            $includePath = pathinfo($file, PATHINFO_DIRNAME);
+            $contents = file_get_contents($file);
+        } catch (FileNotFoundException $_) {
+            $contents = $item;
+            $includePath = $options['base_directory'] ?? '.';
         }
-        return parent::process($path, $options);
+                
+        if($options['asset_type'] === "sass") {
+            $this->sassCompiler->addImportPath($includePath);
+            $contents = $this->sassCompiler->compileString($contents)->getCss();
+        }
+        
+        return parent::process($contents, $options);
     }
 
     protected function wrapInline(string $content) : string

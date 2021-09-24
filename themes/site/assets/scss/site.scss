@@ -19,8 +19,8 @@ a{
 }
 
 #banner-container {
-    background-color: #0069d9;
-    color: #fff;
+    background-color: $banner-color;
+    color: $banner-text;
 }
 
 #banner {
@@ -46,6 +46,6 @@ article {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #002752;
+    color: $header-colors;
     font-weight: normal
 }
