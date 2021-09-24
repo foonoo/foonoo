@@ -41,7 +41,7 @@
     padding: 10px;
     font-size: smaller;
 
-    >span {
+    > span {
         font-weight: bold;
         display: block;
         margin-bottom: 10px;
@@ -52,10 +52,19 @@
         margin: 0px;
         padding: 0px;
         padding-left: 20px;
+        
+        a {
+            color: lighten($secondary-color, 10%);
+        }
     }
 
     > ul {
         padding: 0px;
+        > li {
+            > a {
+                color: darken($secondary-color, 10%);
+            }            
+        }
     }
 
 }
