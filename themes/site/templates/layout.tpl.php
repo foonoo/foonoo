@@ -22,6 +22,7 @@
             <div id="side-toc">
                 <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u()]) ?>
             </div>
+            <div id="side-toc-container"></div>
             <?php endif; ?>
             <article id="body"><?= $body->u() ?></article>
         </div>

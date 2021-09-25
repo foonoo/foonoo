@@ -6,10 +6,12 @@ namespace foonoo\asset_pipeline;
 
 use MatthiasMullie\Minify\JS;
 use MatthiasMullie\Minify\Minify;
+use ntentan\utils\Filesystem;
+
 
 class JSProcessor extends MinifiableProcessor
 {
-    protected $glue = ";";
+    protected $glue = ";\n\n";
 
     public function getMinifier(): Minify
     {
@@ -29,5 +31,19 @@ class JSProcessor extends MinifiableProcessor
     protected function getExtension(): string
     {
         return 'js';
+    }
+    
+    public function process(string $item, array $options): array
+    {
+        try {
+            $file = (isset($options['base_directory']) ? $options['base_directory'] . DIRECTORY_SEPARATOR : '') . $item;
+            Filesystem::checkExists($file);
+            $contents = file_get_contents($file);
+        } catch (FileNotFoundException $_) {
+            $contents = $item;
+        }
+                
+        return parent::process($contents, $options);
+        
     }
 }

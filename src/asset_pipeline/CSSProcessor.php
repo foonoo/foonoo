@@ -60,7 +60,7 @@ class CSSProcessor extends MinifiableProcessor
             $includePath = $options['base_directory'] ?? '.';
         }
                 
-        if($options['asset_type'] === "sass") {
+        if($options['asset_type'] === "scss") {
             $this->sassCompiler->addImportPath($includePath);
             $contents = $this->sassCompiler->compileString($contents)->getCss();
         }

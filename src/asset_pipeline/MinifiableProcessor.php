@@ -34,7 +34,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
 
     public function process(string $path, array $options): array
     {
-        $minifier = $this->getCachedMinifier();
+        $minifier = $this->getMinifier();
         $minifier->add($path);
         return [
             'processed' => $minifier->minify(),

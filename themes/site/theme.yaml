@@ -3,5 +3,7 @@ description: The default theme that is used by the default site whenever none is
 author: Ekow Abaka
 default_layout: layout
 assets:
-  sass:
+  scss:
     - scss/main.scss
+  js:
+    - js/site.js

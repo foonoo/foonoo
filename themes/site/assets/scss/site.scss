@@ -1,10 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Yaldevi:wght@400;700&display=swap');
+
+$banner-height: 48px;
+$side-toc-width: 300px;
+
 body{
     margin:0px;
     font-family: Roboto, sans-serif;
+    line-height: 1.4;
+    font-size: larger;
+        
 }
 
 a{
     text-decoration: none;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:target:before {
+    content: "";
+    display: block;
+    height: ($banner-height + 10);
+    margin: -($banner-height + 10) 0 0;
 }
 
 .wrapper {
@@ -21,20 +40,28 @@ a{
 #banner-container {
     background-color: $banner-color;
     color: $banner-text;
-}
-
-#banner {
-    font-size: x-large;
-    padding: 10px
+    position: fixed;
+    width: 100%;
+    top: 0px;
+    #banner {
+        font-size: 32px;
+        line-height: $banner-height;
+    }
 }
 
 #body {
     padding: 10px;
 }
 
-#body-wrapper.wrapper.has-toc {
+#body-wrapper.has-toc {
+    left: 250px;
     display: flex;
     flex-direction: row;
+    
+    #side-toc-container{
+        width:$side-toc-width;
+    }
+    
 }
 
 article {
@@ -42,10 +69,30 @@ article {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    margin-top:$banner-height;
     color:#404040;
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: $header-colors;
+        font-weight: normal;
+        margin-bottom: 5px;
+        margin-top: 30px;
+        font-family: Yaldevi;
+    }
+
+    p {
+        margin: 0px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    code {
+        background-color: #f0f0f0;
+        color: #444;
+        display: inline-block;
+        padding: 1px;
+        border-radius: 2px;
+        border:1px solid #e0e0e0;
+    }
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: $header-colors;
-    font-weight: normal
-}
