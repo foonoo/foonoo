@@ -63,6 +63,7 @@ class CSSProcessor extends MinifiableProcessor
         if($options['asset_type'] === "scss") {
             $this->sassCompiler->addImportPath($includePath);
             $contents = $this->sassCompiler->compileString($contents)->getCss();
+            $options['asset_type'] = "css";
         }
         
         return parent::process($contents, $options);

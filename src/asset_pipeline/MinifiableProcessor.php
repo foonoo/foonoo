@@ -38,6 +38,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
         $minifier->add($path);
         return [
             'processed' => $minifier->minify(),
+            'asset_type' => $options['asset_type'],
             'target' => isset($options['inline']) && $options['inline'] === true ? 'inline' : 'external',
             'order' => $options['order'] ?? 1
         ];
@@ -84,14 +85,6 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
             $markup .= $this->wrapExternal($assetPath, $sitePath);
         }
         return $markup;
-    }
-    
-    private function getCachedMinifier(): Minify
-    {
-        if(!$this->minifier) {
-            $this->minifier = $this->getMinifier();
-        }
-        return $this->minifier;
     }
     
     protected abstract function getMinifier(): Minify;

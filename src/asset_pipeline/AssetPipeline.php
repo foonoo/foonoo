@@ -94,7 +94,7 @@ class AssetPipeline
             $this->builtItems[$bundle] = [];
             foreach($types as $type => $items) {
                 $processors = $this->processors[$type];
-                $this->builtItems[$bundle][$type] = [];
+                //$this->builtItems[$bundle][$type] = [];
                 foreach($processors as $processor) {
                     usort($items, function($a, $b) { return $b['options']['priority'] - $a['options']['priority'];});
                     foreach($items as $item) {
@@ -102,7 +102,7 @@ class AssetPipeline
                         $options['asset_type'] = $type;
                         $processedItem = $processor->process($item['contents'], $options);
                         $processedItem['bundle'] = $bundle;
-                        $this->builtItems[$bundle][$type][] = $processedItem;
+                        $this->builtItems[$bundle][$processedItem['asset_type']][] = $processedItem;
                     }
                 }
             }
@@ -112,7 +112,7 @@ class AssetPipeline
     public function getMarkup(string $sitePath): array
     {
         $markups = [];
-        foreach($this->builtItems as $bundle => $types) {
+        foreach($this->builtItems as $bundle => $types) {            
             $markup = '';
             foreach($types as $type => $items) {
                 if(!isset($this->markupGenerators[$type]) || empty($this->markupGenerators[$type])) {

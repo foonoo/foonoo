@@ -29,7 +29,6 @@ class AssetPipelineFactory
         $pipeline->registerProcessor('scss', $cssProcessor);
         $pipeline->registerMarkupGenerator('css', $cssProcessor);
         $pipeline->registerMarkupGenerator('js', $jsProcessor);
-        $pipeline->registerMarkupGenerator('scss', $cssProcessor);
         return $pipeline;        
     }
 }
