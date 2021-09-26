@@ -81,7 +81,7 @@
         list-style: none;
         padding-left: 30px;
         a {
-            color: #404040        
+            color: lighten($secondary-color, 10%)       
         }
     }
 
@@ -90,8 +90,8 @@
         > li {
             display: block;
             padding-bottom: 15px;
-            a {
-                color: #002752;
+            > a {
+                color: darken($secondary-color, 10%)       
             }
         }
     }

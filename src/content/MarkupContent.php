@@ -1,6 +1,5 @@
 <?php
 
-
 namespace foonoo\content;
 
 use foonoo\sites\FrontMatterReader;
@@ -9,7 +8,7 @@ use foonoo\text\TextConverter;
 /**
  * Class MarkupContent
  *
- * @package nyansapow\sites
+ * @package foonoo\sites
  */
 class MarkupContent extends Content implements ThemableInterface
 {
@@ -19,6 +18,7 @@ class MarkupContent extends Content implements ThemableInterface
     private $textConverter;
     private $frontMatterReader;
     private $rendered;
+    private $id;
 
     protected $document;
 
@@ -28,6 +28,7 @@ class MarkupContent extends Content implements ThemableInterface
         $this->textConverter = $textConverter;
         $this->destination = $destination;
         $this->frontMatterReader = $frontMatterReader;
+        $this->id = uniqid("mc_", true);
     }
 
     /**
@@ -74,4 +75,10 @@ class MarkupContent extends Content implements ThemableInterface
     {
         return [];
     }
+
+    public function getID(): string
+    {
+        return $this->id;
+    }
+
 }

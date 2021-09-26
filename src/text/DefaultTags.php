@@ -46,7 +46,7 @@ class DefaultTags
     /**
      * @var string
      */
-    private $contentDestination;
+    private $contentID;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {
@@ -59,7 +59,7 @@ class DefaultTags
         );
         $eventDispatcher->addListener(ContentGenerationStarted::class,
             function (ContentGenerationStarted $event) {
-                $this->contentDestination = $event->getContent()->getDestination();
+                $this->contentID = $event->getContent()->getID();
                 $this->templateData = $this->site->getTemplateData($event->getContent()->getFullDestination());
             }
         );
@@ -145,6 +145,6 @@ class DefaultTags
 
     public function renderTableOfContents()
     {
-        return $this->tocGenerator->createContainer($this->contentDestination);
+        return $this->tocGenerator->createContainer($this->contentID);
     }
 }

@@ -68,11 +68,10 @@ class TocGenerator
      * @param $destination
      * @return string
      */
-    public function createContainer($destination): string
+    public function createContainer($id): string
     {
-        $id = md5($destination);
-        $this->pendingTables[$destination] = $id;
-        return "<div class='fn-toc' nptoc='$id'/>";
+        $this->pendingTables[] = $id;
+        return "<div class='fn-toc' fntoc='$id'/>";
     }
 
     /**
@@ -86,7 +85,8 @@ class TocGenerator
             $content = $event->getContent();
             $metaData = $content->getMetaData();
             $destination = $content->getDestination();
-            $render = isset($this->pendingTables[$destination]);
+            $id = $content->getID();
+            $render = in_array($id, $this->pendingTables);//isset($this->pendingTables[$destination]);
             if (!$render && !$this->collectTOC) {
                 return;
             }
@@ -106,11 +106,11 @@ class TocGenerator
                 if (count($tree) == 1 && !empty($tree[0]['children']) && (!isset($metaData['title']) || $tree[0]['title'] == $content->getMetaData()['title'])) {
                     $tree = $tree[0]['children'];
                 }
-                $tocContainer = $xpath->query("//div[@nptoc='{$this->pendingTables[$destination]}']")->item(0);
+                $tocContainer = $xpath->query("//div[@fntoc='{$id}']")->item(0);
                 $toc = $dom->createDocumentFragment();
                 $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
                 $tocContainer->appendChild($toc);
-                $tocContainer->removeAttribute("nptoc");
+                $tocContainer->removeAttribute("fntoc");
             }
         };
     }

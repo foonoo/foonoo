@@ -13,6 +13,7 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
     private $data;
     private $title;
     private $template = 'listing';
+    private $id;
 
     public function __construct(TemplateEngine $templateRenderer, array $posts, string $destination, array $data)
     {
@@ -20,6 +21,7 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
         $this->templateEngine = $templateRenderer;
         $this->destination = $destination;
         $this->data = $data;
+        $this->id = uniqid("bl_", true);
     }
 
     public function setTitle(string $title) :void
@@ -64,4 +66,10 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
     {
         return $this->posts;
     }
+
+    public function getID(): string
+    {
+        return $this->id;
+    }
+
 }

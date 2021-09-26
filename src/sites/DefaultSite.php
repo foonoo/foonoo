@@ -6,6 +6,7 @@ use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 use foonoo\content\TocContent;
 use foonoo\text\TextConverter;
+use foonoo\content\IndexWrapper;
 
 /**
  * The default site generated when there are either no configurations in the root directory or a site type is not
@@ -87,6 +88,13 @@ class DefaultSite extends AbstractSite
         $index = $this->getMetaData()['index'] ?? null;
         if ($index == "_TOC_") {
             $content[] = new TocContent($this->tocGenerator, $this->templateEngine);
+        } else if ($index !== null) {
+            foreach($content as $c) {
+                if($c->getMetaData()['title'] ?? '' == $index) {
+                    $content[] = new IndexWrapper($c);
+                    break;
+                }
+            }
         }
         return $content;
     }

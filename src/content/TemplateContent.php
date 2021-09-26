@@ -22,6 +22,7 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
     private $templates;
     private $data = [];
     private $metaData = [];
+    private $id;
     
     /**
      * @var TagParser
@@ -40,6 +41,7 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
         $this->destination = $destination;
         $this->parser = $parser;
         $this->frontMatterParser = $frontMatterParser;
+        $this->id = uniqid("tc_", true);
     }
 
     /**
@@ -83,6 +85,11 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
     public function getLayoutData()
     {
         return ['page_type' => 'template'];
+    }
+
+    public function getID(): string
+    {
+        return $this->id;
     }
 
 }
