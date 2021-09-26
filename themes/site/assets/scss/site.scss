@@ -43,8 +43,10 @@ html {
     position: fixed;
     width: 100%;
     top: 0px;
+    padding-left: 15px;
     #banner {
-        font-size: 32px;
+        font-size: 28px;
+        font-weight: bold;
         line-height: $banner-height;
     }
 }
@@ -93,6 +95,10 @@ article {
         padding: 1px;
         border-radius: 2px;
         border:1px solid #e0e0e0;
+    }
+    
+    pre > code {
+        border: none;
     }
 }
 
