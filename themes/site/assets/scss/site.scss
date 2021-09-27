@@ -13,6 +13,7 @@ body{
 
 a{
     text-decoration: none;
+    color: lighten($secondary-color, 10%);
 }
 
 html {
@@ -44,6 +45,28 @@ html {
     width: 100%;
     top: 0px;
     padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    
+    > #banner-wrapper {
+        display: flex;
+        > header {
+            flex-grow: 1
+        }
+        
+        > nav {
+            ul {
+                margin: 0px;
+                list-style: none;
+                li {
+                    display:inline-block;
+                    line-height: $banner-height;
+                    margin-left: 15px;
+                }
+            }
+        }
+    }
+    
     #banner {
         font-size: 28px;
         font-weight: bold;

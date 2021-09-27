@@ -30,6 +30,7 @@ class SiteTheme implements ThemeInterface
             @import "colors.scss";
             @import "site.scss";
             @import "toc.scss";   
+            @import "tables.scss";
             SCSS;
             $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', ['base_directory' => "{$definition['path']}/assets/scss"]);
         }

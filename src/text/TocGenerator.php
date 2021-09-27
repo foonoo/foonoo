@@ -98,7 +98,7 @@ class TocGenerator
             $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
 
             // Use this for the global TOC
-            if ($this->collectTOC) {
+            if ($this->collectTOC && !($metaData['skip-from-toc'] ?? false)) {
                 $this->globalTOC[$destination] = $tree;
             }
             if ($render) {
@@ -191,7 +191,6 @@ class TocGenerator
                 $toc[] = $item;
             }
         }
-        ksort($toc);
         return $toc;
     }
 }

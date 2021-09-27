@@ -13,7 +13,15 @@
         <?php if(isset($site_title)): ?>
         <div id="banner-container">
             <div id="banner-wrapper" class="wrapper <?= $toc_tag ?>">
-                <header id="banner"><span id="site-title"><?= $site_title ?></span></header>
+                <header id="banner">
+                    <span id="site-title"><?= $site_title ?></span>
+                </header>
+                <nav>
+                    <ul>
+                        <li>Menu 1</li>
+                        <li>Menu 2</li>
+                    </ul>
+                </nav>
             </div>            
         </div>
         <?php endif ?>

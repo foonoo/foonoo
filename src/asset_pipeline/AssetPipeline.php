@@ -4,7 +4,6 @@ namespace foonoo\asset_pipeline;
 
 
 use ntentan\utils\exceptions\FileNotFoundException;
-use ntentan\utils\Filesystem;
 
 /**
  * Manages all the assets for a site.
@@ -68,6 +67,7 @@ class AssetPipeline
                 foreach($items as $key => $item) {
                     if($item['contents'] == $contents) {
                         $this->items[$bundle][$type][$key] = ['contents' => $newContents, 'options' => $options];
+                        return;
                     }
                 }
             }

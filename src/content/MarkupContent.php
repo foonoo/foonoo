@@ -47,7 +47,6 @@ class MarkupContent extends Content implements ThemableInterface
 
     /**
      * Return the rendered body of the Markedup string.
-     * 
      * @return string
      */
     protected function getBody() : string
