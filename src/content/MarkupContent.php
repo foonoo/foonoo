@@ -67,7 +67,7 @@ class MarkupContent extends Content implements ThemableInterface
 
     public function getMetaData(): array
     {
-        return $this->getFrontMatter();
+        return ['frontmatter' => $this->getFrontMatter()];
     }
 
     public function getLayoutData()

@@ -90,7 +90,7 @@ class DefaultSite extends AbstractSite
             $content[] = new TocContent($this->tocGenerator, $this->templateEngine);
         } else if ($index !== null) {
             foreach($content as $c) {
-                if($c->getMetaData()['title'] ?? '' == $index) {
+                if($c->getMetaData()['frontmatter']['title'] ?? '' == $index) {
                     $content[] = new IndexWrapper($c);
                     break;
                 }
@@ -122,6 +122,9 @@ class DefaultSite extends AbstractSite
         }
         if(isset($this->metaData['title'])) {
             $templateData['site_title'] = $this->metaData['title'];
+        }
+        if(isset($this->metaData['menu'])) {
+            $templateData['site_menu'] = $this->metaData['menu'];
         }
         return $templateData;
     }

@@ -20,6 +20,7 @@ html {
     scroll-behavior: smooth;
 }
 
+// Place some margin on top of the header so it doesn't get under the banner
 :target:before {
     content: "";
     display: block;
@@ -44,12 +45,14 @@ html {
     position: fixed;
     width: 100%;
     top: 0px;
-    padding-left: 15px;
-    padding-right: 15px;
     box-sizing: border-box;
+    box-shadow: 2px rgba(0,0,0,0.5) 5px;
     
     > #banner-wrapper {
         display: flex;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
         > header {
             flex-grow: 1
         }
@@ -58,10 +61,17 @@ html {
             ul {
                 margin: 0px;
                 list-style: none;
+                font-size: 17px;
                 li {
                     display:inline-block;
                     line-height: $banner-height;
                     margin-left: 15px;
+                    a {
+                        color: lighten($banner-color, 50%)
+                    }
+                    a:hover {
+                        color: lighten($banner-color, 40%)
+                    }
                 }
             }
         }
@@ -74,12 +84,7 @@ html {
     }
 }
 
-#body {
-    padding: 10px;
-}
-
 #body-wrapper.has-toc {
-    left: 250px;
     display: flex;
     flex-direction: row;
     
@@ -94,8 +99,10 @@ article {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    padding: 10px;
     margin-top:$banner-height;
     color:#404040;
+    box-sizing: border-box;
     
     h1, h2, h3, h4, h5, h6 {
         color: $header-colors;
@@ -120,8 +127,11 @@ article {
         border:1px solid #e0e0e0;
     }
     
-    pre > code {
-        border: none;
-    }
+/*    pre {
+        box-sizing: border-box;
+        >code {
+            border: none;
+        }
+    }*/
 }
 

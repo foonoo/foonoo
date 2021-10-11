@@ -1,0 +1,18 @@
+<?php if(isset($site_title)): ?>
+<div id="banner-container">
+    <div id="banner-wrapper" class="wrapper <?= $toc_tag ?>">
+        <header id="banner">
+            <span id="site-title"><?= $site_title ?></span>
+        </header>
+        <nav>
+            <?php if(isset($site_menu)): ?>
+            <ul>
+                <?php foreach($site_menu as $menu_item): ?>
+                <li><a href="<?= $menu_item['url'] ?>"><?= $menu_item["title"] ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+        </nav>
+    </div>            
+</div>
+<?php endif ?>
