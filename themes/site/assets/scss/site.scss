@@ -1,14 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Yaldevi:wght@400;700&display=swap');
 
 $banner-height: 48px;
-$side-toc-width: 300px;
 
 body{
     margin:0px;
     font-family: Roboto, sans-serif;
     line-height: 1.4;
     font-size: larger;
-        
+    min-width: 300px;
 }
 
 a{
@@ -46,15 +45,20 @@ html {
     width: 100%;
     top: 0px;
     box-sizing: border-box;
-    box-shadow: 2px rgba(0,0,0,0.5) 5px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+    z-index: 150;
     
     > #banner-wrapper {
         display: flex;
         padding-left: 10px;
         padding-right: 10px;
         box-sizing: border-box;
+        
         > header {
-            flex-grow: 1
+            flex-grow: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
         
         > nav {
@@ -84,14 +88,26 @@ html {
     }
 }
 
-#body-wrapper.has-toc {
-    display: flex;
-    flex-direction: row;
-    
-    #side-toc-container{
-        width:$side-toc-width;
+#hamburger {
+    padding: 8px;
+    padding-left: 0px;
+    display: none;
+    > path {
+        fill: $banner-text
+    }
+}
+
+@media screen and (max-width: 1350px) {
+    .wrapper.has-toc {
+        width: 100%;
+        max-width: 950px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
+    #hamburger {
+        display: block
+    }
 }
 
 article {
