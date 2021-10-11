@@ -1,3 +1,7 @@
+let sideToc = document.getElementById('side-toc');
+let modal = document.getElementById('side-toc-modal');
+let hamburger = document.getElementById('hamburger');
+
 function resizeSideMenu() {
      
     // Automatically adjust the height of the side menu
@@ -5,18 +9,19 @@ function resizeSideMenu() {
     
     let height = window.innerHeight || document.body.clientHeight;
     height = height - document.getElementById('banner-wrapper').clientHeight;
-    document.getElementById('side-toc').style.height = height + 'px';
-    document.getElementById('side-toc-modal').style.height = height + 'px';
+    sideToc.style.height = height + 'px';
+    modal.style.height = height + 'px';
 }
 
 function toggleSideMenu() {
-    document.getElementById("side-toc").classList.toggle("active");
-    document.getElementById('side-toc-modal').classList.toggle("active");
+    sideToc.classList.toggle("active");
+    modal.classList.toggle("active");
+    hamburger.classList.toggle('active');
 }
 
 window.addEventListener('load', resizeSideMenu);
 window.addEventListener('resize', resizeSideMenu);
 
-document.getElementById('hamburger').addEventListener('click', toggleSideMenu);
-document.getElementById('side-toc-modal').addEventListener('click', toggleSideMenu);
+hamburger.addEventListener('click', toggleSideMenu);
+modal.addEventListener('click', toggleSideMenu);
 
