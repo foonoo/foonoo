@@ -2,7 +2,7 @@ let sideToc = document.getElementById('side-toc');
 let modal = document.getElementById('side-toc-modal');
 let hamburger = document.getElementById('hamburger');
 
-function resizeSideMenu() {
+function resizeSideToc() {
      
     // Automatically adjust the height of the side menu
     // @todo find a way to prevent this from running when menu is hidden
@@ -13,15 +13,17 @@ function resizeSideMenu() {
     modal.style.height = height + 'px';
 }
 
-function toggleSideMenu() {
+function toggleSideToc() {
     sideToc.classList.toggle("active");
     modal.classList.toggle("active");
     hamburger.classList.toggle('active');
 }
 
-window.addEventListener('load', resizeSideMenu);
-window.addEventListener('resize', resizeSideMenu);
+if(sideToc !== null) {
+    window.addEventListener('load', resizeSideToc);
+    window.addEventListener('resize', resizeSideToc);
 
-hamburger.addEventListener('click', toggleSideMenu);
-modal.addEventListener('click', toggleSideMenu);
+    hamburger.addEventListener('click', toggleSideToc);
+    modal.addEventListener('click', toggleSideToc);    
+}
 
