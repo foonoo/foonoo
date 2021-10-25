@@ -10,7 +10,7 @@
         <title><?= $content_title ?> <?= isset($site_title) ? "- $site_title": "" ?></title>
     </head>
     <body>
-        <?= $this->partial("header", ['site_title' => $site_title, 'toc_tag' => $toc_tag, 'site_menu' => $site_menu]) ?>
+        <?= $this->partial("header", ['site_title' => $site_title, 'toc_tag' => $toc_tag, 'site_menu' => $site_menu ?? []]) ?>
         <div id="body-wrapper" class="wrapper <?= $toc_tag ?>">
             <?php if(isset($has_toc) && $has_toc): ?>
             <div id="side-toc">

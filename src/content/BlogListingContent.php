@@ -37,7 +37,7 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
     public function getMetaData(): array
     {
         return [
-            'title' => $this->title,
+            'frontmatter' => ['title' => $this->title],
             'path' => $this->destination
         ];
     }

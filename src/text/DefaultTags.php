@@ -112,11 +112,11 @@ class DefaultTags
     {
         $link = strtolower($matches['markup']);
         foreach ($this->site->getContent() as $targetPage) {
-            $title = $targetPage->getMetaData()['title']
+            $title = $targetPage->getMetaData()['frontmatter']['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
-                    'href' => "{$this->data['site_path']}{$targetPage->getDestination()}",
+                    'href' => $this->templateData['site_path'] . $targetPage->getDestination(),
                     'link_text' => $title
                 ]);
             }
