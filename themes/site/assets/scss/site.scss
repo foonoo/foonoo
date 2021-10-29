@@ -38,6 +38,22 @@ html {
     max-width:initial;
 }
 
+.modal.active {
+    display: block;
+    opacity: 0.3
+}
+
+.modal {
+    position: fixed;
+    left: 0px;
+    top: $banner-height;
+    background-color: darken($banner-color, 30%);
+    width: 100%;
+    opacity: 0;
+    display: none;
+    transition: opacity 1s;
+}
+
 #banner-container {
     background-color: $banner-color;
     color: $banner-text;
@@ -45,13 +61,13 @@ html {
     width: 100%;
     top: 0px;
     box-sizing: border-box;
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+    //box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
     z-index: 150;
     
     > #banner-wrapper {
         display: flex;
-        padding-left: 10px;
-        padding-right: 10px;
+        //padding-left: 10px;
+        //padding-right: 10px;
         box-sizing: border-box;
         
         > header {
@@ -59,25 +75,7 @@ html {
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-        }
-        
-        > nav {
-            ul {
-                margin: 0px;
-                list-style: none;
-                font-size: 17px;
-                >li {
-                    display:inline-block;
-                    line-height: $banner-height;
-                    margin-left: 15px;
-                    a {
-                        color: lighten($banner-color, 50%)
-                    }
-                    a:hover {
-                        color: lighten($banner-color, 40%)
-                    }
-                }
-            }
+            margin-left: 10px
         }
     }
     
@@ -88,9 +86,30 @@ html {
     }
 }
 
+#main-navigation {
+    overflow: hidden;
+    ul {
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+        font-size: 17px;
+        >li {
+            display:inline-block;
+            line-height: $banner-height;
+            margin-left: 15px;
+            a {
+                color: lighten($banner-color, 50%);
+                display: block
+            }
+            a:hover {
+                color: lighten($banner-color, 40%)
+            }
+        }
+    }
+}
+
 .hamburger {
     padding: 8px;
-    padding-left: 0px;
     display: none;
     > path {
         fill: $banner-text
@@ -98,6 +117,10 @@ html {
 }
 
 @media screen and (max-width: 1350px) {
+    body {
+        font-size: normal;
+    }
+    
     .wrapper.has-toc {
         width: 100%;
         max-width: 950px;
@@ -110,9 +133,30 @@ html {
     }
     
     #main-navigation {
-        order: 2
+        width: 100%;
+        display: none;
+        position: absolute;
+        top: $banner-height;
+        left: 0px;
+    }
+    
+    #main-navigation.active {
+        display: block;
+        background-color: darken($banner-color, 10%);
+        z-index: 100;
+        ul {
+            width: 100%;
+            >li {
+                display:block;
+            }
+        }        
     }
 }
+
+#menu-hamburger.active {
+    background-color: darken($banner-color, 10%);
+}
+
 
 article {
     max-width: 950px;
@@ -146,12 +190,5 @@ article {
         border-radius: 2px;
         border:1px solid #e0e0e0;
     }
-    
-/*    pre {
-        box-sizing: border-box;
-        >code {
-            border: none;
-        }
-    }*/
 }
 

@@ -17,7 +17,7 @@
                 <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u()]) ?>
             </div>
             <div id="side-toc-container"></div>
-            <div id="side-toc-modal"></div>                            
+            <div id="side-toc-modal" class="modal"></div>                            
             <?php endif; ?>
             <article id="body"><?= $body->u() ?></article>
         </div>

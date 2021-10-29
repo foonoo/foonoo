@@ -1,11 +1,12 @@
 $side-toc-width: 300px;
+$side-toc-color: lighten($secondary-color, 50%);
 
 /* The Table of Contents on the side panel */
 #side-toc {
     box-sizing: border-box;
     width: $side-toc-width;
     border-right: 1px solid lighten($secondary-color, 20%);
-    background-color: lighten($secondary-color, 50%);
+    background-color: $side-toc-color;
     position: fixed;
     top: $banner-height;
     left: 0px;
@@ -41,25 +42,13 @@ $side-toc-width: 300px;
     }  
 }
 
+#toc-hamburger.active {
+    background-color: $side-toc-color;
+}
+
+
 #side-toc.active {
     left: 0px;
-}
-
-#side-toc-modal.active {
-    display: block;
-    opacity: 0.3
-}
-
-
-#side-toc-modal {
-    position: fixed;
-    left: 0px;
-    top: $banner-height;
-    background-color: darken($banner-color, 30%);
-    width: 100%;
-    opacity: 0;
-    display: none;
-    transition: opacity 1s;
 }
 
 #body-wrapper.has-toc {

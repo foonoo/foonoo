@@ -1,6 +1,6 @@
 <?php if(isset($site_title)): ?>
 <div id="banner-container">
-    <div id="banner-wrapper" class="wrapper <?= $toc_tag ?>">
+    <div id="banner-wrapper" class="<?= $toc_tag ?>">
         <?php if($toc_tag->u() !== ""): ?>
         <svg
            id="toc-hamburger"
@@ -34,6 +34,7 @@
             <svg id="menu-hamburger" class="hamburger" width="32px" height="32px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                 <path fill="#000" d="M32 96v64h448V96H32zm0 128v64h448v-64H32zm0 128v64h448v-64H32z"/>
             </svg>
+            <div id="menu-modal" class="modal"></div>        
         <?php endif; ?>
         
     </div>            
