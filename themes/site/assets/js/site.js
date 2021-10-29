@@ -1,6 +1,7 @@
 let sideToc = document.getElementById('side-toc');
 let modal = document.getElementById('side-toc-modal');
-let hamburger = document.getElementById('hamburger');
+let tocHamburger = document.getElementById('toc-hamburger');
+let menuHamburger = document.getElementById('menu-hamburger');
 
 function resizeSideToc() {
      
@@ -16,14 +17,14 @@ function resizeSideToc() {
 function toggleSideToc() {
     sideToc.classList.toggle("active");
     modal.classList.toggle("active");
-    hamburger.classList.toggle('active');
+    tocHamburger.classList.toggle('active');
 }
 
 if(sideToc !== null) {
     window.addEventListener('load', resizeSideToc);
     window.addEventListener('resize', resizeSideToc);
 
-    hamburger.addEventListener('click', toggleSideToc);
+    tocHamburger.addEventListener('click', toggleSideToc);
     modal.addEventListener('click', toggleSideToc);    
 }
 

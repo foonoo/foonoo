@@ -66,7 +66,7 @@ html {
                 margin: 0px;
                 list-style: none;
                 font-size: 17px;
-                li {
+                >li {
                     display:inline-block;
                     line-height: $banner-height;
                     margin-left: 15px;
@@ -88,7 +88,7 @@ html {
     }
 }
 
-#hamburger {
+.hamburger {
     padding: 8px;
     padding-left: 0px;
     display: none;
@@ -105,8 +105,12 @@ html {
         margin-right: auto;
     }
     
-    #hamburger {
+    .hamburger {
         display: block
+    }
+    
+    #main-navigation {
+        order: 2
     }
 }
 

@@ -25,10 +25,12 @@ $side-toc-width: 300px;
         padding: 0px;
         list-style: none;
         font-size: 0.98em;
+        margin-left: 15px;
     }
     
     >ul {
         padding: 20px;
+        margin-left: 0px;
         > li {
             margin-bottom: 25px;
             > a {
