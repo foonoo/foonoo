@@ -1,6 +1,5 @@
 <?php
 
-
 namespace foonoo\asset_pipeline;
 
 
@@ -21,7 +20,7 @@ class FileProcessor implements Processor
     public function process(string $path, array $options): array
     {
         $destination = "$this->outputPath/{$options['param']}";
-        $f = Filesystem::get($path);
+        $f = Filesystem::get(($options['base_directory'] ? "{$options['base_directory']}/" : ""). $path);
         Filesystem::directory(dirname($destination))->createIfNotExists(true);
         $f->copyTo($destination);
         return [];

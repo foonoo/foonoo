@@ -42,11 +42,6 @@ $side-toc-color: lighten($secondary-color, 50%);
     }  
 }
 
-#toc-hamburger.active {
-    background-color: $side-toc-color;
-}
-
-
 #side-toc.active {
     left: 0px;
 }

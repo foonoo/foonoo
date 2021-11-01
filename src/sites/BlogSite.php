@@ -5,6 +5,7 @@ use foonoo\content\BlogContentFactory;
 use foonoo\content\BlogListingContent;
 use foonoo\content\BlogPostContent;
 use foonoo\utils\Nomenclature;
+use clearice\io\Io;
 
 /**
  * Represents a blog site that has posts and pages.
@@ -33,15 +34,23 @@ class BlogSite extends AbstractSite
      * @var array|null When set, this property contains an array of frontmatter properties from which taxonomies should be built.
      */
     private $taxonomies;
+    
+
+    /**
+     * 
+     * @var Io
+     */
+    private $io;
 
     /**
      * BlogSite constructor.
      *
      * @param BlogContentFactory $blogContentFactory
      */
-    public function __construct(BlogContentFactory $blogContentFactory)
+    public function __construct(BlogContentFactory $blogContentFactory, \clearice\io\Io $io)
     {
         $this->blogContentFactory = $blogContentFactory;
+        $this->io = $io;
     }
 
     /**
@@ -165,6 +174,8 @@ class BlogSite extends AbstractSite
                 }
                 $nextPost = $page;
                 $this->addPostToArchive($page, $matches);
+            } else {
+                $this->io->output("* Skipping [{$file}] for consideration in blog posts. Files used as blog posts must follow the format YYYY-MM-DD-Title.ext.\n");
             }
         }
 

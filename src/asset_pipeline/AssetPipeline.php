@@ -16,7 +16,7 @@ class AssetPipeline
 {
     private $items = [];
     private $builtItems = [];
-    private $files = [];
+    //private $files = [];
     private $processors = [];
     private $markupGenerators = [];
 
@@ -57,6 +57,15 @@ class AssetPipeline
         }
     }
     
+    /**
+     * Replace an item in the asset pipeline.
+     * 
+     * @param string $contents The original contents
+     * @param string $newContents The contents to be replaced
+     * @param string $type The type of content
+     * @param array $options The options for the pipeline entry
+     * @return void
+     */
     public function replaceItem(string $contents, string $newContents, string $type, array $options=[]): void
     {
         $bundles = $options['bundles'] ?? ["default"];
@@ -73,20 +82,20 @@ class AssetPipeline
             }
         }
     }
-
-    /**
-     * Add an arbitrary file to the pipeline.
-     *
-     * @param $path
-     * @param $options
-     */
-    public function addFile($path, $options): void
-    {
-        if (!is_array($options)) {
-            $options = ['destination' => $options];
-        }
-        $this->files[] = ['path' => $path, 'options' => $options];
-    }
+//
+//    /**
+//     * Add an arbitrary file to the pipeline.
+//     *
+//     * @param $path
+//     * @param $options
+//     */
+//    public function addFile($path, $options): void
+//    {
+//        if (!is_array($options)) {
+//            $options = ['destination' => $options];
+//        }
+//        $this->files[] = ['path' => $path, 'options' => $options];
+//    }
 
     public function buildAssets(): void
     {
@@ -94,7 +103,6 @@ class AssetPipeline
             $this->builtItems[$bundle] = [];
             foreach($types as $type => $items) {
                 $processors = $this->processors[$type];
-                //$this->builtItems[$bundle][$type] = [];
                 foreach($processors as $processor) {
                     usort($items, function($a, $b) { return $b['options']['priority'] - $a['options']['priority'];});
                     foreach($items as $item) {
