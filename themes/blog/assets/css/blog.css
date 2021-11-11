@@ -60,6 +60,10 @@ h2{
     margin-top: 15px;
 }
 
+.post img {
+    width: 100%
+}
+
 #footer{
     font-size: small;
     text-align: center;

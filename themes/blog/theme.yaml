@@ -4,5 +4,5 @@ author: Ekow Abaka
 default_layout: layout
 assets:
   css:
-    - assets/css/reset.css
-    - assets/css/blog.css
+    - css/reset.css
+    - css/blog.css

@@ -16,7 +16,6 @@ class AssetPipeline
 {
     private $items = [];
     private $builtItems = [];
-    //private $files = [];
     private $processors = [];
     private $markupGenerators = [];
 
@@ -82,20 +81,6 @@ class AssetPipeline
             }
         }
     }
-//
-//    /**
-//     * Add an arbitrary file to the pipeline.
-//     *
-//     * @param $path
-//     * @param $options
-//     */
-//    public function addFile($path, $options): void
-//    {
-//        if (!is_array($options)) {
-//            $options = ['destination' => $options];
-//        }
-//        $this->files[] = ['path' => $path, 'options' => $options];
-//    }
 
     public function buildAssets(): void
     {
