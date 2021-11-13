@@ -5,13 +5,13 @@ namespace foonoo\theming;
 
 
 use foonoo\text\TemplateEngine;
-use ntentan\utils\Text;
+use foonoo\asset_pipeline\AssetPipeline;
 
 /**
  * A class wrapped around a theme.
  * 
  */
-class Theme
+abstract class Theme
 {
     /**
      * Path to the theme
@@ -43,13 +43,18 @@ class Theme
      */
     private $themeOptions;
 
-    public function __construct(string $themePath, TemplateEngine $templateEngine, array $themeDefinition, array $themeOptions)
+    public final function __construct(string $themePath, TemplateEngine $templateEngine, array $themeDefinition, array $themeOptions)
     {
         $this->themePath = $themePath;
         $this->templateEngine = $templateEngine;
         $this->templateHierachy = $themeDefinition['template_hierarchy'];
         $this->definition = $themeDefinition;
         $this->themeOptions = $themeOptions;
+    }
+    
+    public function setOptions($options)
+    {
+        $this->themeOptions = $options;
     }
 
     /**
@@ -64,17 +69,17 @@ class Theme
     /**
      * A method to activate the system.
      */
-    public function activate(\foonoo\asset_pipeline\AssetPipeline $pipeline)
-    {
-        $themeClassName = Text::ucamelize($this->definition['name']) . "Theme";
-        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php");
-        if($path !== false) {
-            $themeClass = "foonoo\\themes\\{$this->definition['name']}\\$themeClassName";
-            include_once $path;
-            (new $themeClass())->activated($this->templateEngine, $pipeline, $this->themeOptions, $this->definition);
-        }
-        $this->templateEngine->setPathHierarchy($this->templateHierachy);
-    }
+//    public function activate(\foonoo\asset_pipeline\AssetPipeline $pipeline)
+//    {
+//        $themeClassName = Text::ucamelize($this->definition['name']) . "Theme";
+//        $path = realpath($this->themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php");
+//        if($path !== false) {
+//            $themeClass = "foonoo\\themes\\{$this->definition['name']}\\$themeClassName";
+//            include_once $path;
+//            (new $themeClass())->activated($this->templateEngine, $pipeline, $this->themeOptions, $this->definition);
+//        }
+//        $this->templateEngine->setPathHierarchy($this->templateHierachy);
+//    }
 
     /**
      * The name of the default template for the theme.
@@ -92,5 +97,13 @@ class Theme
     public function getPath(): string
     {
         return $this->themePath;
+    }
+    
+    public abstract function activate(AssetPipeline $assetPipeline);
+    
+    public final function initialize(AssetPipeline $assetPipeline)
+    {
+        $this->activate($assetPipeline);
+        $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }
 }

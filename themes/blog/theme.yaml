@@ -1,4 +1,5 @@
-name: Default foonoo blog theme
+name: blog
+description: Foonoo's built in blog theme.
 author: Ekow Abaka
 
 default_layout: layout

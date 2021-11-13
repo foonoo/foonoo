@@ -6,6 +6,7 @@ use foonoo\sites\AbstractSite;
 use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
 use foonoo\exceptions\SiteGenerationException;
+use ntentan\utils\Text;
 
 /**
  * Loads themes by injecting their paths into the global template hierarchy and copying all required assets to the
@@ -27,6 +28,8 @@ class ThemeManager
     }
 
     /**
+     * Load an instance of the theme class for a given site.
+     * 
      * @param AbstractSite $site
      * @return Theme
      * @throws \Exception
@@ -36,6 +39,7 @@ class ThemeManager
         $theme = $site->getMetaData()['theme'] ?? $site->getDefaultTheme();
         $sourcePath = $site->getSourcePath();
 
+        // Resolve the theme's name and options.
         if (is_array($theme)) {
             $themeName = $theme['name'];
             $themeOptions = $theme;
@@ -44,6 +48,7 @@ class ThemeManager
             $themeOptions = [];
         }
 
+        // Determine the actual path of the theme, while distinguishing between a built in theme and an external one.
         $builtInTheme = __DIR__ . "/../../themes/{$themeName}";
         $customTheme = "{$sourcePath}/_foonoo/themes/{$themeName}";
 
@@ -54,16 +59,29 @@ class ThemeManager
         }
         $key = "$themePath$sourcePath";
 
-        if (!isset($this->themes[$key])) {
-            if (is_dir($themePath) && file_exists("$themePath/theme.yaml")) {
-                $definition = $this->yamlParser->parse(file_get_contents("$themePath/theme.yaml"));
-                $definition['path'] = $themePath;
-                $definition['template_hierarchy'] = $this->getTemplateHierarchy($site, $definition);
-                $theme = new Theme($themePath, $this->templateEngine, $definition, $themeOptions);
-                $this->themes[$key] = $theme;
-            } else {
-                throw new SiteGenerationException("Failed to load theme '$themeName'.");
+        if (isset($this->themes[$key])) {
+            $theme = $this->themes[$key];
+            $theme->setOptions($themeOptions);
+            return $theme;
+        }
+
+        if (is_dir($themePath) && file_exists("$themePath/theme.yaml")) {
+            $definition = $this->yamlParser->parse(file_get_contents("$themePath/theme.yaml"));
+            //$definition['path'] = $themePath;
+            $definition['template_hierarchy'] = $this->getTemplateHierarchy($site, $definition, $themePath);
+            //$theme = new Theme($themePath, $this->templateEngine, $definition, $themeOptions);
+            $themeClassName = Text::ucamelize($definition['name']) . "Theme";                
+            $expectedClassFilePath = $themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php";
+            $classFilePath = realpath($expectedClassFilePath);
+            if($classFilePath === false) {
+                throw new SiteGenerationException("Failed to load theme '$themeName'. Could not find the class file [$expectedClassFilePath]");
             }
+            include_once $classFilePath;
+            $themeClass = "foonoo\\themes\\{$definition['name']}\\$themeClassName";
+            $theme = new $themeClass($themePath, $this->templateEngine, $definition, $themeOptions);
+            $this->themes[$key] = $theme;
+        } else {
+            throw new SiteGenerationException("Failed to load theme '$themeName'. Could not find a theme.yaml file.");
         }
 
         return $this->themes[$key];
@@ -74,7 +92,7 @@ class ThemeManager
         $theme = $this->loadTheme($site);
         $assetPipeline = $site->getAssetPipeline();
         $assetPipeline->merge($theme->getAssets(), $theme->getPath() . DIRECTORY_SEPARATOR . "assets");
-        $theme->activate($assetPipeline);
+        $theme->initialize($assetPipeline);
         return $theme;
     }
 
@@ -83,7 +101,7 @@ class ThemeManager
      * @param array $themeDefinition
      * @return array
      */
-    private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition): array
+    private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition, string $themePath): array
     {
         $hierarchy = [__DIR__ . "/../../themes/parser"];
         $path = $site->getSourcePath();
@@ -104,7 +122,7 @@ class ThemeManager
         if (isset($themeDefinition['template_hierarchy'])) {
             $hierarchy = array_merge($hierarchy, $themeDefinition['template_hierarchy']);
         } else {
-            $hierarchy[] = "{$themeDefinition['path']}/templates";
+            $hierarchy[] = "$themePath/templates";
         }
 
         return $hierarchy;
