@@ -123,9 +123,6 @@ class DefaultSite extends AbstractSite
         if(isset($this->metaData['title'])) {
             $templateData['site_title'] = $this->metaData['title'];
         }
-        if(isset($this->metaData['menu'])) {
-            $templateData['site_menu'] = $this->metaData['menu'];
-        }
         return $templateData;
     }
 

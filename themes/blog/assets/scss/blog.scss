@@ -11,11 +11,17 @@ body{
  }
 
 #banner{
-    height:200px;
+    height:250px;
     width:100%;
     text-align: center;
-    line-height: 250px;
-    font-family: "Montserrat", sans-serif
+    font-family: "Montserrat", sans-serif;
+    background-color: $banner-color;
+    a{
+        text-decoration: none;
+        color: $banner-fore-color;
+        font-size: 3em;
+        font-weight: 700;
+    }
 }
 
 h2.post-title {
@@ -33,13 +39,6 @@ h2{
     margin-top:30px;
     color: black;
     line-height: 1.1;
-}
-
-#banner a{
-    text-decoration: none;
-    color: #a0a0a0;
-    font-size: 3em;
-    font-weight: 700;
 }
 
 .post{

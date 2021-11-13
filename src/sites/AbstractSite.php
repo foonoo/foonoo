@@ -148,6 +148,7 @@ abstract class AbstractSite
      */
     public function getTemplateData(string $contentDestination = null): array
     {
+        $this->templateData['site_menu'] = $this->metaData['menu'] ?? [];
         if ($contentDestination !== null) {
             $relativeSitePath = $this->makeRelativeLocation($contentDestination, $this->getDestinationPath());
             return array_merge([
@@ -161,7 +162,10 @@ abstract class AbstractSite
                 $this->templateData
             );
         }
-        return array_merge(['assets_markup' => $this->assetPipeline->getMarkup('')], $this->templateData);
+        return array_merge(
+            ['assets_markup' => $this->assetPipeline->getMarkup('')], 
+            $this->templateData
+        );
     }
 
     private function makeRelativeLocation($path, $relativeTo): string
