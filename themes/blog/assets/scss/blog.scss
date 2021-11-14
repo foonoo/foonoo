@@ -11,56 +11,87 @@ body{
  }
 
 #banner{
-    height:250px;
     width:100%;
     text-align: center;
     font-family: "Montserrat", sans-serif;
     background-color: $banner-color;
-    a{
-        text-decoration: none;
-        color: $banner-fore-color;
-        font-size: 3em;
-        font-weight: 700;
+    padding: 70px;
+    box-sizing: border-box;
+    #site-title {
+        display: block;
+        position: relative;
+        a{
+            text-decoration: none;
+            color: $banner-fore-color;
+            font-size: 3em;
+            font-weight: 700;
+        }         
+    }
+    #site-tagline {
+        display: block;
+        position: relative;
+        top: -15px;
+        color: lighten($banner-color, 20%)
     }
 }
 
-h2.post-title {
-    font-size: xx-large;
-    font-weight: bold;
-    margin: 5px 0px 20px;
-    color: black;
-    line-height: 1.1;
-}
-
-h2{
-    font-family: "Montserrat", sans-serif;
-    font-weight: bold;
-    font-size: x-large;
-    margin-top:30px;
-    color: black;
-    line-height: 1.1;
+nav#main-nav {
+    ul {
+        display: block;
+        text-align: center;
+        margin: 0px;
+        list-style: none;
+        background-color: $secondary-color;
+        li {
+            display: inline-block;
+            padding: 7px;
+            padding-left: 10px;
+            padding-right: 10px;
+            a {
+                color: lighten($secondary-color, 30%);
+            }
+        }
+    }
 }
 
 .post{
     max-width: 996px;
     margin: 30px auto;
     padding: 15px;
-}
+    
+    h2{
+        font-family: "Montserrat", sans-serif;
+        font-weight: bold;
+        font-size: x-large;
+        margin-top:30px;
+        color: $secondary-color;
+        line-height: 1.1;
+        a {
+            color: darken($secondary-color, 10%)
+        }
+    }    
+    
+    .time{
+        font-weight: bold;
+        color:#a0a0a0;
+        font-size: small;
+    }    
 
-.post .time{
-    font-weight: bold;
-    color:#a0a0a0;
-    font-size: small;
-}
-
-.post p{
-    text-align: justify;
-    margin-bottom: 15px;
-    margin-top: 15px;
-}
-
-.post img {
-    width: 100%
+    p{
+        text-align: justify;
+        margin-bottom: 15px;
+        margin-top: 15px;
+    }    
+    
+    img {
+        width: 100%;
+        display: inline-block
+    }    
+    
+    img.half {
+        width: 50%;
+        display: inline-block
+    }
 }
 
 #footer{
@@ -89,7 +120,7 @@ h2{
 
 a{
     text-decoration: none;
-    color:#00a9fb;
+    color:$secondary-color;
 }
 
 #listing_title{
@@ -113,17 +144,6 @@ ul > li {
 
 ol > li {
     list-style: decimal;
-}
-
-
-
-code {
-    font-family: "Fira Code", monospace;
-    font-size: 0.9em;
-    background-color: #f0f0f0;
-    color:#000;
-    border-radius: 3px;
-    padding: 3px;
 }
 
 @media only screen and (max-width:700px) {

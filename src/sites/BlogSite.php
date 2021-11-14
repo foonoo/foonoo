@@ -16,22 +16,26 @@ class BlogSite extends AbstractSite
     use Nomenclature;
 
     /**
-     * @var array An array of all the posts in the blog site
+     * An array of all the posts in the blog site.
+     * @var array 
      */
     private $posts = [];
 
     /**
-     * @var array An array of posts organized by dates. This is used for creating the historical archives.
+     * An array of posts organized by dates. This is used for creating the historical archives.
+     * @var array 
      */
     private $archives = [];
 
     /**
-     * @var BlogContentFactory Content factory for creating blog posts and pages.
+     * Content factory for creating blog posts and pages.
+     * @var BlogContentFactory 
      */
     private $blogContentFactory;
 
     /**
-     * @var array|null When set, this property contains an array of frontmatter properties from which taxonomies should be built.
+     * When set, this property contains an array of frontmatter properties from which taxonomies should be built.
+     * @var array|null 
      */
     private $taxonomies;
     
@@ -110,7 +114,6 @@ class BlogSite extends AbstractSite
         $data = $this->getTemplateData($this->getDestinationPath($target));
         $data['listing_title'] = $title;
         $data['previews'] = true;
-        //$data['page_type'] = $template;
         $listingContent = $this->blogContentFactory->createListing($posts, $target, $data, $title);
         $listingContent->setTemplate($template);
         return $listingContent;
@@ -249,5 +252,12 @@ class BlogSite extends AbstractSite
     public function getDefaultTheme(): string
     {
         return 'blog';
+    }
+    
+    public function getTemplateData(mixed $contentDestination = null): array
+    {
+        $templateData = parent::getTemplateData($contentDestination);
+        $templateData['site_tagline'] = $this->metaData['tagline'] ?? '';
+        return $templateData;
     }
 }

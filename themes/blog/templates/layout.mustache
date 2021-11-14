@@ -14,8 +14,11 @@
     </head>
     <body>
         <div id="wrapper">
-            <ul>{{#site_menu}}<li><a href="{{url}}">{{title}}</a></li>{{/site_menu}}</ul>        
-            <div id="banner"><span id='site-name'><a href="{{site_path}}index.html">{{site_name}}</a></span></div>
+            <nav id="main-nav"><ul>{{#site_menu}}<li><a href="{{url}}">{{title}}</a></li>{{/site_menu}}</ul></nav>
+            <div id="banner">
+                <span id='site-title'><a href="{{site_path}}index.html">{{site_title}}</a></span>
+                <span id='site-tagline'>{{site_tagline}}</span>
+            </div>
             <div id="body">
                 {{{body}}}
             </div>

@@ -1,5 +1,5 @@
 <div class="post">
-    <div class="time">{{date}} under {{frontmatter.category}}</div>
+    <div class="time">{{date}} {{#frontmatter.category}}under{{/frontmatter.category}} {{frontmatter.category}}</div>
     <div>
         <h2 class='post-title'>{{#previews_only}}<a href="{{site_path}}{{path}}">{{/previews_only}}{{title}}{{#previews_only}}</a>{{/previews_only}}</h2>
         {{#previews_only}}

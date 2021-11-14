@@ -154,7 +154,7 @@ abstract class AbstractSite
             return array_merge([
                     'home_path' => $this->makeRelativeLocation($contentDestination, $this->destinationRoot),
                     'site_path' => $relativeSitePath,
-                    'site_name' => $this->metaData['name'] ?? '',
+                    'site_title' => $this->metaData['title'] ?? '',
                     'date' => date('jS F Y'),
                     'description' => $this->metaData['description'] ?? '',
                     'assets_markup' => $this->assetPipeline->getMarkup($relativeSitePath)
