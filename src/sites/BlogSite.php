@@ -253,11 +253,4 @@ class BlogSite extends AbstractSite
     {
         return 'blog';
     }
-    
-    public function getTemplateData(mixed $contentDestination = null): array
-    {
-        $templateData = parent::getTemplateData($contentDestination);
-        $templateData['site_tagline'] = $this->metaData['tagline'] ?? '';
-        return $templateData;
-    }
 }
