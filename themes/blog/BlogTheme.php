@@ -17,10 +17,8 @@ class BlogTheme extends Theme
                 \$primary-color: $primaryColor;
                 \$secondary-color: $secondaryColor;
                 
-                @import "colors.scss";
-                @import "site.scss";
-                @import "toc.scss";   
-                @import "tables.scss";
+                @import "reset.scss";
+                @import "blog.scss";                
             SCSS;
             $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', ['base_directory' => "{$this->getPath()}/assets/scss"]);
         }        
