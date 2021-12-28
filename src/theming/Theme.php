@@ -106,4 +106,14 @@ abstract class Theme
         $this->activate($assetPipeline);
         $this->templateEngine->setPathHierarchy($this->templateHierachy);
     }
+
+    protected function getOptions() : array
+    {
+        return $this->themeOptions;
+    }
+
+    protected function getDefinition() : array
+    {
+        return $this->definition;
+    }
 }
