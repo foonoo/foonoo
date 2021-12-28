@@ -1,15 +1,13 @@
-<div class="post">
-    <div>
-        <h1 class='post-title'>{{#previews_only}}<a href="{{site_path}}{{path}}">{{/previews_only}}{{title}}{{#previews_only}}</a>{{/previews_only}}</h1>
-        <div class="time">{{date}} {{#frontmatter.category}}under{{/frontmatter.category}} {{frontmatter.category}}</div>
-        {{#previews_only}}
-            {{{preview}}}
-            <a href="{{site_path}}{{path}}">Continue reading</a>
-        {{/previews_only}}
-        {{^previews_only}}
-            {{{body}}}
-        {{/previews_only}}
-    </div>
+<div class="post{{#previews_only}} preview{{/previews_only}}" >
+    <h1 class='post-title'>{{#previews_only}}<a href="{{site_path}}{{path}}">{{/previews_only}}{{title}}{{#previews_only}}</a>{{/previews_only}}</h1>
+    <div class="time">Posted on {{date}}{{#frontmatter.category}} under{{/frontmatter.category}} {{frontmatter.category}}</div>
+    {{#previews_only}}
+        {{{preview}}}
+        <a href="{{site_path}}{{path}}">Continue reading</a>
+    {{/previews_only}}
+    {{^previews_only}}
+        {{{body}}}
+    {{/previews_only}}
     {{^previews_only}}
     <div id="bottomnav">
         {{#prev}}

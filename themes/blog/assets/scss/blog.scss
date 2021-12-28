@@ -1,7 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400,600,700,800);
-@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
-
-body{
+body {
     margin:0px;
     font-family: "Open Sans", sans-serif;
     font-weight: 400;
@@ -9,6 +6,11 @@ body{
     line-height: 1.6;
     color: #505050;
  }
+
+a {
+    text-decoration: none;
+    color:$secondary-color;
+}
 
 #banner{
     width:100%;
@@ -58,7 +60,9 @@ nav#main-nav {
 
 .post{
     max-width: 996px;
-    margin: 30px auto;
+    //margin: 30px auto;
+    margin-left: auto;
+    margin-right: auto;
     padding: 15px;
     
     h1{
@@ -66,8 +70,11 @@ nav#main-nav {
         font-weight: bold;
         font-size: xx-large;
         margin-top:30px;
-        color: $secondary-color;
-        line-height: 1.1;        
+        color: $primary-color;
+        line-height: 1.1; 
+        a {
+            color: $primary-color
+        }       
     }
     
     h2{
@@ -75,14 +82,15 @@ nav#main-nav {
         font-weight: bold;
         font-size: x-large;
         margin-top:30px;
-        color: $secondary-color;
+        color: primary-color;
         line-height: 1.1;
     }    
     
     .time{
         font-weight: bold;
-        color:lighten($primary-color, 5%);
-        font-size: small;
+        color:lighten($secondary-color, 10%);
+        margin-top: 10px;
+        margin-bottom: 40px;
     }    
 
     p{
@@ -113,8 +121,15 @@ nav#main-nav {
             margin: 0px;
         }
         figcaption {
-            color: lighten($secondary-color, 20%);
+            color: $secondary-color
         }
+    }
+}
+
+.post.preview {
+    .time {
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
 }
 
@@ -140,11 +155,6 @@ nav#main-nav {
 
 #bottomnav > #next{
     text-align: right;
-}
-
-a{
-    text-decoration: none;
-    color:$secondary-color;
 }
 
 #listing_title{
