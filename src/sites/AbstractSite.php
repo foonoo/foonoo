@@ -172,7 +172,7 @@ abstract class AbstractSite
     private function makeRelativeLocation($path, $relativeTo): string
     {
         // Generate a relative location for the assets
-        $dir = substr(preg_replace('#/+#', '/', $path), strlen($relativeTo));
+        $dir = substr(preg_replace('#(/\\\\)+|(\\\\/)+|/+|\\\\+#', '/', $path), strlen($relativeTo));
         $relativeLocation = '';
         if ($dir != '' && $dir != '.') {
             $dir .= substr($dir, -1) == '/' ? '' : '/';
