@@ -58,7 +58,11 @@ class ServeCommand implements CommandInterface
         $this->io->output("Generating site to {$options['output']} ...\n");
         $this->generateCommand->execute($options);
         declare(ticks=1)
-        pcntl_signal(SIGINT, [$this, 'shutdown']);
+        if(function_exists("pcntl_signal")) {
+            pcntl_signal(SIGINT, [$this, 'shutdown']);
+        } else if (function_exists("sapi_windows_set_ctrl_handler")) {
+            sapi_windows_set_ctrl_handler([$this, 'shutdown'], true);
+        }
         $spec = [STDOUT, STDIN, STDERR];
         $pipes = [];
         $this->io->output("Starting the web server ...\n");
@@ -69,7 +73,6 @@ class ServeCommand implements CommandInterface
         while (proc_get_status($process)['running']) {
             usleep(500);
         }
-        $this->shutdown();
     }
 
     /**

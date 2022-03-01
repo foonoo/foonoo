@@ -6,12 +6,13 @@
 - A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
 - The ability to to add assets directly from the `site.yml` file to customize the theme.
 - An `AssetPipelineFactory` for creating the asset pipelines so pipelines are only created when sites are.
-- A way to prioritize assets added outside of a theme. Basically, a site can define assets to precede theme assets with the `assets_precede` setting, and another set to follow the theme assets with `assets_follow`.
+- A built in SASS compiler to allow for processing of SASS stylesheets.
+- 
 
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.
-- Errors are now reported in a friendlier form with more information about what may have gone wrong.
-- Sticking to a convention where extensions for templates and convertible text content cannot contain a dot '.' character.
+- Some errors are now reported in a friendlier form with more information about what may have gone wrong.
+- Sticking to a convention where the names of extensions for templates and convertible text content cannot contain a dot '.' character.
 
 ## Fixed
 - A friendlier error message is now shown whenever the site files are deleted before the server is terminated.
@@ -22,6 +23,7 @@
 - A bug in the asset pipeline which causes it to write only to the last site in a multi-site setup.
 - A bug that causes source and destination paths to contain double slashes on windows.
 - A bug in the table of contents generator, which causes the TOC status of the last initialized site to leak to all other previously loaded ones.
+- An error that occurs when the site content is somehow deleted while the server is still running. In such cases, servers terminate more gracefully.
 
 ## v0.5.0 - 2021-08-12
 ### Added
