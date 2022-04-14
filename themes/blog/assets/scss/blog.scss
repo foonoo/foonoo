@@ -1,35 +1,38 @@
 body {
-    margin:0px;
+    margin: 0px;
     font-family: "Open Sans", sans-serif;
     font-weight: 400;
     background-color: #fff;
-    line-height: 1.6;
+    line-height: 1.4;
     color: #505050;
- }
+}
 
 a {
     text-decoration: none;
-    color:$secondary-color;
+    color: $secondary-color;
 }
 
-#banner{
-    width:100%;
+#banner {
+    width: 100%;
     text-align: center;
-    font-family: "Montserrat", sans-serif;
+    font-family: Montserrat, sans-serif;
     padding: 70px;
     box-sizing: border-box;
     border-bottom: 1px solid lighten($secondary-color, 25%);
     background-color: lighten($secondary-color, 35%);
+
     #site-title {
         display: block;
         position: relative;
-        a{
+
+        a {
             text-decoration: none;
             color: $primary-color;
             font-size: 3em;
             font-weight: 700;
-        }         
+        }
     }
+
     #site-tagline {
         display: block;
         position: relative;
@@ -40,16 +43,19 @@ a {
 
 nav#main-nav {
     border-bottom: 1px solid lighten($secondary-color, 25%);
+
     ul {
         display: block;
         text-align: center;
         margin: 0px;
         list-style: none;
+
         li {
             display: inline-block;
             padding: 7px;
             padding-left: 10px;
             padding-right: 10px;
+
             a {
                 color: $secondary-color;
                 font-weight: bold
@@ -58,70 +64,75 @@ nav#main-nav {
     }
 }
 
-.post{
+.post {
     max-width: 996px;
     //margin: 30px auto;
     margin-left: auto;
     margin-right: auto;
     padding: 15px;
-    
-    h1{
-        font-family: "Montserrat", sans-serif;
+
+    h1 {
+        font-family: Montserrat, sans-serif;
         font-weight: bold;
         font-size: xx-large;
-        margin-top:30px;
+        margin-top: 30px;
         color: $primary-color;
-        line-height: 1.1; 
+        line-height: 1.1;
+
         a {
             color: $primary-color
-        }       
+        }
     }
-    
-    h2{
-        font-family: "Montserrat", sans-serif;
+
+    h2 {
+        font-family: Montserrat, sans-serif;
         font-weight: bold;
         font-size: x-large;
-        margin-top:30px;
+        margin-top: 30px;
         color: primary-color;
         line-height: 1.1;
-    }    
-    
-    .time{
+    }
+
+    .time {
         font-weight: bold;
-        color:lighten($secondary-color, 10%);
+        color: lighten($secondary-color, 10%);
         margin-top: 10px;
         margin-bottom: 40px;
-    }    
+    }
 
-    p{
+    p {
         text-align: justify;
         margin-bottom: 15px;
         margin-top: 15px;
-    }    
-    
+    }
+
     img {
         width: 100%;
         display: inline-block;
         margin-top: 20px;
         margin-bottom: 20px;
-    }    
-    
+    }
+
     img.half {
         width: 50%;
         display: inline-block;
         margin-top: 30px;
         margin-bottom: 30px;
     }
-    
+
     figure {
-        margin:0px;
+        margin: 0px;
         margin-top: 30px;
         margin-bottom: 30px;
+        border-bottom: 1px solid lighten($secondary-color, 20%);
+
         img {
             margin: 0px;
         }
+
         figcaption {
-            color: $secondary-color
+            color: $secondary-color;
+            padding: 5px;
         }
     }
 }
@@ -133,50 +144,51 @@ nav#main-nav {
     }
 }
 
-#footer{
+#footer {
     font-size: small;
     text-align: center;
-    padding:50px;
-    margin-top:50px;
+    padding: 50px;
+    margin-top: 50px;
 }
 
-#bottomnav{
-    margin-top:80px;
+#bottomnav {
+    margin-top: 80px;
 }
 
-#bottomnav > div{
-    width:49%;
+#bottomnav>div {
+    width: 49%;
     display: inline-block;
 }
 
-#bottomnav > #prev{
+#bottomnav>#prev {
     text-align: left;
 }
 
-#bottomnav > #next{
+#bottomnav>#next {
     text-align: right;
 }
 
-#listing_title{
-    width:50%;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:30px;
+#listing_title {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
     font-weight: bold;
-    color:#808080;
+    color: #808080;
     font-size: large;
     font-family: sans-serif, Montserrat
 }
 
-ul, ol {
+ul,
+ol {
     margin-left: 30px;
 }
 
-ul > li {
+ul>li {
     list-style: disc;
 }
 
-ol > li {
+ol>li {
     list-style: decimal;
 }
 
