@@ -11,7 +11,7 @@ use foonoo\asset_pipeline\AssetPipeline;
  * A class wrapped around a theme.
  * 
  */
-abstract class Theme
+class Theme
 {
     /**
      * Path to the theme
@@ -84,7 +84,11 @@ abstract class Theme
         return $this->themePath;
     }
     
-    public abstract function activate(AssetPipeline $assetPipeline);
+    protected function activate(AssetPipeline $assetPipeline) : void
+    {
+        // Do nothing
+        // can be extended by sub-classes that need to modify the assets pipeline when themes are loaded
+    }
     
     public final function initialize(AssetPipeline $assetPipeline)
     {

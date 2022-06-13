@@ -7,7 +7,7 @@ use foonoo\asset_pipeline\AssetPipeline;
 /**
  * Class for the default site theme.
  */
-class SiteTheme extends Theme //implements ThemeInterface
+class SiteTheme extends Theme
 {
     /**
      * Activation call back to inject new stylesheets when colors are changed.

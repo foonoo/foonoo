@@ -67,17 +67,19 @@ class ThemeManager
 
         if (is_dir($themePath) && file_exists("$themePath/theme.yaml")) {
             $definition = $this->yamlParser->parse(file_get_contents("$themePath/theme.yaml"));
-            //$definition['path'] = $themePath;
             $definition['template_hierarchy'] = $this->getTemplateHierarchy($site, $definition, $themePath);
-            //$theme = new Theme($themePath, $this->templateEngine, $definition, $themeOptions);
             $themeClassName = Text::ucamelize($definition['name']) . "Theme";                
             $expectedClassFilePath = $themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php";
             $classFilePath = realpath($expectedClassFilePath);
-            if($classFilePath === false) {
-                throw new SiteGenerationException("Failed to load theme '$themeName'. Could not find the class file [$expectedClassFilePath]");
+            
+            // Load a theme class file if one exists or use the default instead.
+            if($classFilePath !== false) {
+                include_once $classFilePath;
+                $themeClass = "foonoo\\themes\\{$definition['name']}\\$themeClassName";                
+            } else {
+                $themeClass = Theme::class;
             }
-            include_once $classFilePath;
-            $themeClass = "foonoo\\themes\\{$definition['name']}\\$themeClassName";
+            
             $theme = new $themeClass($themePath, $this->templateEngine, $definition, $themeOptions);
             $this->themes[$key] = $theme;
         } else {
