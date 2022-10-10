@@ -52,7 +52,7 @@ class Theme
         $this->themeOptions = $themeOptions;
     }
     
-    public function setOptions($options)
+    public function setOptions($options) : void
     {
         $this->themeOptions = $options;
     }

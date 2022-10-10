@@ -14,7 +14,7 @@ class SiteTheme extends Theme
      * 
      * @param AssetPipeline $assetPipeline
      */
-    public function activate(AssetPipeline $assetPipeline)
+    public function activate(AssetPipeline $assetPipeline) : void
     {
         $options = $this->getOptions();
 
