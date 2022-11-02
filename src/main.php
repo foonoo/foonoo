@@ -250,16 +250,6 @@ $parser->addOption([
     'default' => '7000',
     'command' => 'serve'
 ]);
-
-
-$parser->addOption([
-    'short_name' => 't',
-    'name' => 'type',
-    'type' => 'string',
-    'help' => 'the type of site to create',
-    'default' => 'default',
-    'command' => 'create'
-]);
 $parser->addOption([
     'short_name' => 'd',
     'name' => 'description',

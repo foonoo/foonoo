@@ -27,7 +27,7 @@ class DefaultSiteFactory implements SiteFactoryInterface
         $this->textConverter = $textConverter;
     }
 
-    public function create(array $metadata, string $path): AbstractSite
+    public function create(): AbstractSite 
     {
         $instance = new DefaultSite($this->templateEngine, $this->tocGenerator, $this->textConverter);
         $instance->setAutomaticContentFactory($this->automaticContentFactory);

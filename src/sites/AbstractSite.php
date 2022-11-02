@@ -258,4 +258,9 @@ abstract class AbstractSite
      * @return string
      */
     public abstract function getDefaultTheme(): string;
+    
+    /**
+     * Called to initialize a new site directory with the requirements of a particular site generator.
+     */
+    public abstract function initialize(string $path, array $metadata) : void;
 }

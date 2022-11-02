@@ -21,7 +21,7 @@ class BlogSiteFactory implements SiteFactoryInterface
         $this->io = $io;
     }
 
-    public function create(array $metadata, string $path): AbstractSite
+    public function create(): AbstractSite //array $metadata, string $path): AbstractSite
     {
         $site = new BlogSite($this->blogContentFactory, $this->io);
         $site->setAssetPipeline($this->assetPipelineFactory->create());

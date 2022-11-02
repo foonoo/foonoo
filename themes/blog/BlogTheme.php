@@ -7,7 +7,7 @@ use foonoo\asset_pipeline\AssetPipeline;
 
 class BlogTheme extends Theme
 {
-    public function activate(AssetPipeline $assetPipeline)
+    public function activate(AssetPipeline $assetPipeline): void
     {
         $options = $this->getOptions();
         if (isset($options['primary-color']) || isset($options['secondary-color'])) {

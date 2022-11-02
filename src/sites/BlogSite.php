@@ -6,6 +6,7 @@ use foonoo\content\BlogListingContent;
 use foonoo\content\BlogPostContent;
 use foonoo\utils\Nomenclature;
 use clearice\io\Io;
+use ntentan\utils\Filesystem;
 
 /**
  * Represents a blog site that has posts and pages.
@@ -253,4 +254,9 @@ class BlogSite extends AbstractSite
     {
         return 'blog';
     }
+
+    public function initialize(string $path, array $metadata): void {
+        Filesystem::directory("$path/posts")->createIfNotExists();
+    }
+
 }
