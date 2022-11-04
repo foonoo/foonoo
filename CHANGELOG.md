@@ -5,9 +5,8 @@
 ### Added
 - A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
 - The ability to to add assets directly from the `site.yml` file to customize the theme.
-- An `AssetPipelineFactory` for creating the asset pipelines so pipelines are only created when sites are.
+- An `AssetPipelineFactory` for creating the asset pipelines.
 - A built in SASS compiler to allow for processing of SASS stylesheets.
-- 
 
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.

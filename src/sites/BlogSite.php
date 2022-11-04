@@ -257,6 +257,7 @@ class BlogSite extends AbstractSite
 
     public function initialize(string $path, array $metadata): void {
         Filesystem::directory("$path/posts")->createIfNotExists();
+        Filesystem::directory("$path/pages")->createIfNotExists();
     }
 
 }
