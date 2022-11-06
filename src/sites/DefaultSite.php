@@ -133,4 +133,9 @@ class DefaultSite extends AbstractSite
     {
         return 'default';
     }
+
+    public function initialize(string $path, array $metadata): void {
+        // Do nothing
+    }
+
 }
