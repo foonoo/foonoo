@@ -237,6 +237,10 @@ abstract class AbstractSite
         $this->assetPipeline = $assetPipeline;
     }
 
+    /**
+     * Get an instance of the asset pipeline.
+     * @return AssetPipeline
+     */
     public function getAssetPipeline() : AssetPipeline
     {
         return $this->assetPipeline;
@@ -263,4 +267,5 @@ abstract class AbstractSite
      * Called to initialize a new site directory with the requirements of a particular site generator.
      */
     public abstract function initialize(string $path, array $metadata) : void;
+
 }

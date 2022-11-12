@@ -35,7 +35,7 @@ class BlogSite extends AbstractSite
     private $blogContentFactory;
 
     /**
-     * When set, this property contains an array of frontmatter properties from which taxonomies should be built.
+     * When set, this property contains an array of front matter properties from which taxonomies should be built.
      * @var array|null 
      */
     private $taxonomies;
@@ -146,6 +146,12 @@ class BlogSite extends AbstractSite
         return $pages;
     }
 
+    /**
+     * 
+     * @param type $stage
+     * @param type $value
+     * @return type
+     */
     private function formatValue($stage, $value)
     {
         switch ($stage) {

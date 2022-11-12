@@ -187,13 +187,15 @@ $container->bind(\foonoo\text\TocGenerator::class)->asSingleton();
 
 $parser = new ArgumentParser();
 $parser->addCommand(['name' => 'generate', 'help' => 'Generate a static site with sources from a given directory']);
-$parser->addCommand(['name' => 'plugins', 'help' => 'list all plugins and the plugin path hierarchy']);
+$parser->addCommand(['name' => 'plugins', 'help' => 'List all plugins and the plugin path hierarchy']);
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
 $parser->addCommand(['name' => 'create', 'help' => 'Create a new site in this location']);
 
 $parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
-$parser->addOption(['name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 'repeats' => true, 'type' => 'string', 'value' => "PATH"]);
-
+$parser->addOption([
+    'name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 
+    'repeats' => true, 'type' => 'string', 'value' => "PATH"
+]);
 $parser->addOption([
     'short_name' => 'i',
     'name' => 'input',
@@ -224,7 +226,6 @@ $parser->addOption([
     'help' => 'set the name for the entire site',
     'command' => ['generate', 'serve']
 ]);
-
 $parser->addOption([
     'short_name' => 'D',
     'name' => 'add-data',
@@ -233,7 +234,6 @@ $parser->addOption([
     'command' => ['generate', 'serve'],
     'repeats' => true
 ]);
-
 $parser->addOption([
     'short_name' => 'h',
     'name' => 'host',
