@@ -24,7 +24,7 @@ class FrontMatterReader
         while (!feof($file)) {
             $line = fgets($file);
             if (trim($line) == "---") {
-                $frontMatter = $this->extractAndDecodeFrontMatter($file);
+                $frontMatter = $this->extractAndDecodeFrontMatter($file, $path);
                 break;
             } else {  
                 $body .= $line;
@@ -40,7 +40,7 @@ class FrontMatterReader
         return [$frontMatter, $body];
     }
 
-    private function extractAndDecodeFrontMatter($file): array
+    private function extractAndDecodeFrontMatter($file, $path): array
     {
         $frontmatter = '';
         do {
@@ -54,7 +54,7 @@ class FrontMatterReader
         try {
             return $this->yamlParser->parse($frontmatter);
         } catch (ParseException $e) {
-            throw new ParseException("While parsing {$this->document}: {$e->getMessage()}");
+            throw new ParseException("Could not parse frontmatter from {$path}: {$e->getMessage()}");
         }
     }
 

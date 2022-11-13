@@ -250,7 +250,7 @@ class Builder
     /**
      * 
      * 
-     * @param array $options
+     * @param array $options A copy of the command line options passed to the script.
      * @param CacheFactory $cacheFactory
      * @param PluginManager $pluginManager
      * @throws FoonooException
@@ -275,9 +275,11 @@ class Builder
                 throw $e;
             }
             $this->io->error(
-                "An error occured while building the " .
-                ($this->currentSite === null ? "" : "[{$this->currentSite->getPath()}] ") . 
-                "site:\n{$e->getMessage()}\n");
+                "\n*** The following error occured while processing " .
+                (
+                    $this->currentSite === null ? 
+                    "site" : "the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"") . 
+                ":\n{$e->getMessage()}\n");
             exit(102);
         }
     }

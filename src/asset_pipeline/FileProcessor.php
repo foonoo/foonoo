@@ -23,6 +23,6 @@ class FileProcessor implements Processor
         $f = Filesystem::get(($options['base_directory'] ? "{$options['base_directory']}/" : ""). $path);
         Filesystem::directory(dirname($destination))->createIfNotExists(true);
         $f->copyTo($destination);
-        return [];
+        return $options;
     }
 }

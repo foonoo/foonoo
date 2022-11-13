@@ -1,6 +1,4 @@
 <?php
-
-
 namespace foonoo\sites;
 
 
@@ -9,7 +7,8 @@ use foonoo\utils\Cache;
 use foonoo\content\AutomaticContentFactory;
 
 /**
- * Base abstract class for all sites
+ * Base abstract class for all site generators.
+ * 
  * @package nyansapow\sites
  */
 abstract class AbstractSite
@@ -43,9 +42,17 @@ abstract class AbstractSite
      * @var array
      */
     private $templateData;
-
+    
+    /**
+     * The path to the site's sources.
+     * @var string
+     */
     private $sourcePath;
     
+    /**
+     * The path to the site's destination.
+     * @var string
+     */
     private $destinationPath;
 
     /**
@@ -135,6 +142,12 @@ abstract class AbstractSite
         $this->automaticContentFactory = $automaticContentFactory;
     }
 
+    /**
+     * Inject data into the template.
+     * 
+     * @param array $templateData
+     * @return void
+     */
     public function setTemplateData(array $templateData): void
     {
         $this->templateData = $templateData;
@@ -169,6 +182,13 @@ abstract class AbstractSite
         );
     }
 
+    /**
+     * Generate a string that represents a path that's relative to another.
+     * 
+     * @param type $path
+     * @param type $relativeTo
+     * @return string
+     */
     private function makeRelativeLocation($path, $relativeTo): string
     {
         // Generate a relative location for the assets
