@@ -34,7 +34,7 @@ class CreateCommand implements CommandInterface
     {
         return [
             "type" => $siteType,
-            "name" => $options['name'] ?? "A foonoo $siteType site",
+            "title" => $options['title'] ?? "A foonoo $siteType site",
             "description" => $options['description'] ?? "This is a foonoo $siteType site."
         ];
     }

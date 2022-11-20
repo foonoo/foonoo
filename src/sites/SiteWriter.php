@@ -84,7 +84,7 @@ class SiteWriter
         }, $site->getContent());
         $event = $this->eventDispatcher->dispatch(ContentReady::class, ['contents' => $contents]);
         $contents = $event ? $event->getPages() : $contents;
-        $outputs = [];
+        $outputs = []; // Contains the raw output of all content
 
         // Render content
         /** @var Content $content */

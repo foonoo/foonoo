@@ -163,6 +163,9 @@ class BlogSite extends AbstractSite
         }
     }
 
+    /**
+     * Get all posts.
+     */
     private function getBlogPosts($files): array
     {
         $pages = [];
@@ -192,6 +195,9 @@ class BlogSite extends AbstractSite
         return $pages;
     }
 
+    /**
+     * Returns all the blog pages that are available.
+     */
     private function getBlogPages(): array
     {
         $pages = [];

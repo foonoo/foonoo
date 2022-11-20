@@ -265,10 +265,10 @@ $parser->addOption([
     'command' => 'create'
 ]);
 $parser->addOption([
-    'short_name' => 'n',
-    'name' => 'site-name',
+    'short_name' => 't',
+    'name' => 'site-title',
     'type' => 'string',
-    'help' => 'the name of your site',
+    'help' => 'the title of your site',
     'command' => 'create'
 ]);
 $parser->addOption([
