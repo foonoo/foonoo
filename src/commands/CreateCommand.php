@@ -21,12 +21,20 @@ class CreateCommand implements CommandInterface
     
     public function execute(array $options = [])
     {
+        $inputDirectory = $options['input'] ?? '.';
+        $files = array_filter(scandir($inputDirectory), fn ($item) => !in_array($item, [".", ".."]));
+
+        if(count($files) > 0) {
+            $this->io->error("The target path, {$inputDirectory}, is not empty.\n");
+            exit(103);
+        }
+
         $siteType = $options["__args"][0];
         $factory = $this->siteTypeRegistry->get($siteType);
         $site = $factory->create();
         $siteMetadata = $this->getInitialMetadata($siteType, $options);
-        $site->initialize($options['input'] ?? '.', $siteMetadata);
-        $this->writeSiteYml($siteMetadata);
+        $site->initialize($inputDirectory, $siteMetadata);
+        $this->writeSiteYml($inputDirectory, $siteMetadata);
     }
     
     
@@ -45,20 +53,9 @@ class CreateCommand implements CommandInterface
      * 
      * @param array $options
      */
-    private function writeSiteYml(array $options) : void
+    private function writeSiteYml(string $inputPath, array $options) : void
     {
-        $inputPath = $options['input'] ?? '.';
         $file = Filesystem::file($inputPath . "/site.yml");
-        try {
-            Filesystem::checkNotExists($file->getPath());
-        } catch (FileAlreadyExistsException $e) {
-            if(!isset($options['force'])) {
-                $this->io->error("A site probably exists in this location because we found a site.yml file.\n");
-                exit(102);
-            }
-        }
-        
-
 
         // Any other elegant way? templates?
         $input = "# Default configuration \n\n" . Yaml::dump($options) .

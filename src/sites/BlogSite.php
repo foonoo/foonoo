@@ -1,4 +1,5 @@
 <?php
+
 namespace foonoo\sites;
 
 use foonoo\content\BlogContentFactory;
@@ -39,7 +40,7 @@ class BlogSite extends AbstractSite
      * @var array|null 
      */
     private $taxonomies;
-    
+
 
     /**
      * 
@@ -88,7 +89,7 @@ class BlogSite extends AbstractSite
      */
     public function getContent(): array
     {
-        if(!file_exists($this->getSourcePath("posts"))) {
+        if (!file_exists($this->getSourcePath("posts"))) {
             return [];
         }
         $content = $this->posts = $this->getBlogPosts($this->getFiles("posts"));
@@ -267,9 +268,9 @@ class BlogSite extends AbstractSite
         return 'blog';
     }
 
-    public function initialize(string $path, array $metadata): void {
+    public function initialize(string $path, array $metadata): void
+    {
         Filesystem::directory("$path/posts")->createIfNotExists();
         Filesystem::directory("$path/pages")->createIfNotExists();
     }
-
 }
