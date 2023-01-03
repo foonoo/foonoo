@@ -6,6 +6,7 @@ use clearice\io\Io;
 use foonoo\events\EventDispatcher;
 use foonoo\events\PluginsInitialized;
 use ntentan\utils\Text;
+use Composer\Autoload\ClassLoader;
 
 /**
  * Resolves paths to plugin files, loads classes when needed, and dispatches initial plugin events.
@@ -31,12 +32,15 @@ class PluginManager
      * @var Io
      */
     private $io;
+    
+    private $classLoader;
 
-    public function __construct(EventDispatcher $eventDispatcher, Io $io)
+    public function __construct(EventDispatcher $eventDispatcher, Io $io, ClassLoader $classLoader)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->pluginPaths = [$this->getUserDataDir() . DIRECTORY_SEPARATOR . "foonoo" . DIRECTORY_SEPARATOR . "plugins"];
         $this->io = $io;
+        $this->classLoader = $classLoader;
     }
     
     /**
@@ -117,17 +121,20 @@ class PluginManager
         $namespace = dirname($plugin);
         $pluginName = basename($plugin);
         $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
-        $pluginClass = "\\foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
+        $pluginClass = "foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
         foreach($pluginPaths as $pluginPath) {
             $pluginFile = "$pluginPath/$namespace/$pluginName/$pluginClassName.php";
             if (file_exists($pluginFile)) {
                 require_once $pluginFile;
-                return new $pluginClass($plugin, $this->io, $options);
+                $instance = new $pluginClass($plugin, $this->io, $options);
+                $this->classLoader->addPsr4("foonoo\\plugins\\$namespace\\$pluginName\\", "$pluginPath/$namespace/$pluginName/");
+                return $instance;
             }
         }
         throw new \Exception(
-            "It seems foonoo failed to load the [$plugin] plugin required by the site. The class, [$pluginClass], which is expected to hold the plugin's code could not be found in any of the following paths:\n - "
-            . implode("\n - ", $pluginPaths) . "\n"
+            "Foonoo failed to load the [$plugin] plugin required by the site. The [$pluginClass], which is expected to ".
+            "hold the plugin's code, could not be found in any of the following paths:\n - " . implode("\n - ", $pluginPaths) . 
+            "\nYou can also specify your own plugin path with the `-P` tag."
         );
     }
 

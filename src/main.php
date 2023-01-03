@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../vendor/autoload.php";
+$composer = require __DIR__ . "/../vendor/autoload.php";
 
 use clearice\argparser\ArgumentParser;
 use foonoo\asset_pipeline\AssetPipelineFactory;
@@ -41,6 +41,11 @@ use ntentan\utils\Text;
 
 /** @var Container $container */
 $container = new Container();
+
+
+//$container->bind(Composer\Autoload\ClassLoader::class, fn () => $composer);
+
+$container->bind(Composer\Autoload\ClassLoader::class)->to(fn() => $composer);
 
 $container->bind(TemplateRenderer::class)->to(function ($container) {
     /** @var EngineRegistry $engineRegistry */
@@ -105,7 +110,7 @@ $container->bind(SiteTypeRegistry::class)->to(function (Container $container) {
     $registry->register($container->get(DefaultSiteFactory::class), 'default');
     $registry->register($container->get(BlogSiteFactory::class), 'blog');
     return $registry;
-});
+})->asSingleton();
 
 $container->bind(EventDispatcher::class)->to(function (Container $container) {
     $eventDispatcher = new EventDispatcher();

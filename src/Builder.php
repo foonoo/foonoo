@@ -104,7 +104,7 @@ class Builder
         } else if (file_exists("{$path}site.yaml")) {
             $file = "${path}site.yaml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
-        }
+        }        
         return $meta;
     }
 
@@ -116,16 +116,25 @@ class Builder
      */
     private function getSites(string $path, bool $root = false): array
     {
+        // An array to contain all the sites in the root
         $sites = array();
         $dir = dir($path);
         $metaData = $this->readSiteMetadata($path);
-
+        
+        // Return sites only if there is a `site.yml` (as determined by a metaData) or its a root site with a metaData.
         if(!empty($metaData) || $root) {
-            $site = $this->createSite($metaData, $path);
-            $sites []= $site;
+            
+            if (empty($metaData)) {
+                $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
+            }
+            $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"] + ($metaData['excluded_paths'] ?? []);
+            
+            //$site = $this->createSite($metaData, $path);
+            $sites []= ['meta_data' => $metaData, 'path' => $path] ;//$site;
             while (false !== ($file = $dir->read())) {
+                //@todo I feel there's an easier way to accomplish this
                 if (array_reduce(
-                    $site->getSetting('excluded_paths'),
+                    $metaData['excluded_paths'] ?? [], //$site->getSetting('excluded_paths'),
                     function ($carry, $item) use ($path, $file) {
                         return $carry | fnmatch($item, "{$path}{$file}", FNM_NOESCAPE);
                     },
@@ -153,11 +162,6 @@ class Builder
      */
     private function createSite(array $metaData, string $path): AbstractSite
     {
-        if (empty($metaData)) {
-            $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
-        }
-        $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"]
-            + ($metaData['excluded_paths'] ?? []);
         if(DIRECTORY_SEPARATOR != "/") {
             $metaData['excluded_paths'] = array_map(
                 function($value) { 
@@ -196,11 +200,12 @@ class Builder
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
 
         /** @var AbstractSite $site */
-        foreach ($sites as $site) {
+        foreach ($sites as $siteDetails) {
+            $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? null, $siteDetails['path']);
+            $site = $this->createSite($siteDetails['meta_data'], $siteDetails['path']);
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $this->currentSite = $site;
             $site->setTemplateData($this->readData($site->getSourcePath("_foonoo/data")));
-            $this->pluginManager->initializePlugins($site->getMetaData()['plugins'] ?? null, $site->getSourcePath());
             $this->siteWriter->write($site);
 
             if (is_dir($site->getSourcePath("_foonoo/images")) && is_dir($site->getDestinationPath())) {
