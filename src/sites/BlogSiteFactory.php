@@ -4,27 +4,27 @@
 namespace foonoo\sites;
 
 
-use foonoo\asset_pipeline\AssetPipelineFactory;
+//use foonoo\asset_pipeline\AssetPipelineFactory;
 use foonoo\content\BlogContentFactory;
 use clearice\io\Io;
 
 class BlogSiteFactory implements SiteFactoryInterface
 {
     private $blogContentFactory;
-    private $assetPipelineFactory;
+    //private $assetPipelineFactory;
     private $io;
 
-    public function __construct(BlogContentFactory $blogContentFactory, AssetPipelineFactory $assetPipelineFactory, Io $io)
+    public function __construct(BlogContentFactory $blogContentFactory, Io $io)
     {
         $this->blogContentFactory = $blogContentFactory;
-        $this->assetPipelineFactory = $assetPipelineFactory;
+        //$this->assetPipelineFactory = $assetPipelineFactory;
         $this->io = $io;
     }
 
-    public function create(): AbstractSite //array $metadata, string $path): AbstractSite
+    public function create(): AbstractSite
     {
         $site = new BlogSite($this->blogContentFactory, $this->io);
-        $site->setAssetPipeline($this->assetPipelineFactory->create());
+        //$site->setAssetPipeline($this->assetPipelineFactory->create());
         return $site;
     }
 }

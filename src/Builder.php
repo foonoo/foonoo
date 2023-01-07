@@ -2,16 +2,17 @@
 
 namespace foonoo;
 
+use clearice\io\Io;
 use foonoo\exceptions\FoonooException;
 use foonoo\utils\CacheFactory;
-use ntentan\utils\Filesystem;
-use clearice\io\Io;
-use ntentan\utils\filesystem\File;
 use foonoo\events\EventDispatcher;
 use foonoo\events\SiteObjectCreated;
 use foonoo\sites\AbstractSite;
 use foonoo\sites\SiteWriter;
 use foonoo\sites\SiteTypeRegistry;
+use foonoo\asset_pipeline\AssetPipelineFactory;
+use ntentan\utils\Filesystem;
+use ntentan\utils\filesystem\File;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
 /**
@@ -71,6 +72,13 @@ class Builder
      * @var AbstractSite
      */
     private $currentSite;
+    
+    /**
+     * An instance of the asset pipeline factory.
+     * 
+     * @var AssetPipeline
+     */
+    private $assetPipelineFactory;
 
 
     /**
@@ -82,13 +90,14 @@ class Builder
      * @param SiteWriter $builder
      * @param EventDispatcher $eventDispatcher
      */
-    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, SiteWriter $builder, EventDispatcher $eventDispatcher)
+    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, SiteWriter $builder, EventDispatcher $eventDispatcher, AssetPipelineFactory $assetPipelineFactory)
     {
         $this->io = $io;
         $this->siteTypeRegistry = $siteTypeRegistry;
         $this->yamlParser = $yamlParser;
         $this->siteWriter = $builder;
         $this->eventDispatcher = $eventDispatcher;
+        $this->assetPipelineFactory = $assetPipelineFactory;
     }
 
     /**
@@ -203,6 +212,7 @@ class Builder
         foreach ($sites as $siteDetails) {
             $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? null, $siteDetails['path']);
             $site = $this->createSite($siteDetails['meta_data'], $siteDetails['path']);
+            $site->setAssetPipeline($this->assetPipelineFactory->create());
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");
             $this->currentSite = $site;
             $site->setTemplateData($this->readData($site->getSourcePath("_foonoo/data")));
