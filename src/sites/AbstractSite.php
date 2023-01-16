@@ -66,6 +66,8 @@ abstract class AbstractSite
      */
     protected $assetPipeline;
 
+    private $cache;
+
     /**
      * Set the path to this site, relative to the root path
      * @param string $path

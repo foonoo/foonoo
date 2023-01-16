@@ -20,11 +20,27 @@ class ThemeManager
     private $themes;
     private $templateEngine;
     private $yamlParser;
+    private $themePathHierarchy = [];
 
     public function __construct(TemplateEngine $templateEngine, Parser $yamlParser)
     {
         $this->templateEngine = $templateEngine;
         $this->yamlParser = $yamlParser;
+    }
+
+    public function reset(): void
+    {
+        $this->themePathHierarchy = [realpath(__DIR__ . "/../../themes/")];        
+    }
+
+    public function prependToThemePath(string $path): void
+    {
+        array_unshift($this->themePathHierarchy, $path);
+    }
+
+    public function appendToThemePath(string $path): void
+    {
+        $this->themePathHierarchy[] = $path;
     }
 
     /**
@@ -38,6 +54,7 @@ class ThemeManager
     {
         $theme = $site->getMetaData()['theme'] ?? $site->getDefaultTheme();
         $sourcePath = $site->getSourcePath();
+        $themePathHierarchy = array_merge([realpath("{$sourcePath}/_foonoo/themes")], $this->themePathHierarchy);
 
         // Resolve the theme's name and options.
         if (is_array($theme)) {
@@ -49,14 +66,13 @@ class ThemeManager
         }
 
         // Determine the actual path of the theme, while distinguishing between a built in theme and an external one.
-        $builtInTheme = __DIR__ . "/../../themes/{$themeName}";
-        $customTheme = "{$sourcePath}/_foonoo/themes/{$themeName}";
-
-        if (!file_exists($customTheme)) {
-            $themePath = $builtInTheme;
-        } else {
-            $themePath = $customTheme;
+        foreach($themePathHierarchy as $pathToTheme) {
+            $themePath = "{$pathToTheme}/{$themeName}";
+            if(file_exists($themePath)) {
+                break;
+            }
         }
+
         $key = "$themePath$sourcePath";
 
         if (isset($this->themes[$key])) {
@@ -129,5 +145,4 @@ class ThemeManager
 
         return $hierarchy;
     }
-
 }

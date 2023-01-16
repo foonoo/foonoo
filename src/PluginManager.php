@@ -35,6 +35,8 @@ class PluginManager
     
     private $classLoader;
 
+    private $pluginPaths;
+
     public function __construct(EventDispatcher $eventDispatcher, Io $io, ClassLoader $classLoader)
     {
         $this->eventDispatcher = $eventDispatcher;
@@ -108,7 +110,7 @@ class PluginManager
     /**
      * Run through the entire plugin hierarchy path to load classes for a given plugin.
      * Plugin names are in the format [namespace]/[plugin], and these translate into the following class name: 
-     * \foonoo\plugins\[namespace]\[plugin]/[Plugin]ClassName.
+     * \foonoo\plugins\[namespace]\[plugin]\[Plugin]ClassName.
      * 
      * @param string $plugin
      * @param array $options
@@ -120,7 +122,7 @@ class PluginManager
     {
         $namespace = dirname($plugin);
         $pluginName = basename($plugin);
-        $pluginClassName = Text::ucamelize("${pluginName}") . "Plugin";
+        $pluginClassName = Text::ucamelize("{$pluginName}") . "Plugin";
         $pluginClass = "foonoo\\plugins\\$namespace\\$pluginName\\$pluginClassName";
         foreach($pluginPaths as $pluginPath) {
             $pluginFile = "$pluginPath/$namespace/$pluginName/$pluginClassName.php";

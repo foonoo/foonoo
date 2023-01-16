@@ -111,7 +111,7 @@ class Builder
             $file = "{$path}site.yml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
         } else if (file_exists("{$path}site.yaml")) {
-            $file = "${path}site.yaml";
+            $file = "{$path}site.yaml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
         }        
         return $meta;

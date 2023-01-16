@@ -36,6 +36,7 @@ use foonoo\text\MarkdownConverter;
 use foonoo\text\TagParser;
 use foonoo\text\TemplateEngine;
 use foonoo\text\TextConverter;
+use foonoo\theming\ThemeManager;
 use Symfony\Component\Yaml\Parser;
 use ntentan\utils\Text;
 
@@ -66,6 +67,7 @@ $container->bind(TemplateFileResolver::class)->to(TemplateFileResolver::class)->
 $container->bind(EventDispatcher::class)->to(EventDispatcher::class)->asSingleton();
 $container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton();
 $container->bind(Parser::class)->to(Parser::class)->asSingleton();
+$container->bind(ThemeManager::class)->to(ThemeManager::class)->asSingleton();
 
 $container->bind(TagParser::class)->to(function ($container) {
     /** @var DefaultTags $defaultTags */
@@ -142,8 +144,10 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
         }
     );
     $eventDispatcher->registerEventType(SiteWriteStarted::class,
-        function ($args) {
-            return new SiteWriteStarted($args['site']);
+        function ($args) use ($container) {
+            return new SiteWriteStarted(
+                $args['site'], $container->get(TemplateEngine::class), $container->get(ThemeManager::class)
+            );
         }
     );
     $eventDispatcher->registerEventType(SiteWriteEnded::class,

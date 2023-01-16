@@ -1,9 +1,8 @@
 <?php
 
-
 namespace foonoo\events;
 
-
+use foonoo\theming\ThemeManager;
 use foonoo\content\AutomaticContentFactory;
 use foonoo\sites\SiteTypeRegistry;
 use foonoo\text\TagParser;
@@ -14,7 +13,6 @@ class PluginsInitialized //extends Event
     private $tagParser;
     private $automaticContentFactory;
     private $siteTypeRegistry;
-    private $templateEngine;
 
     /**
      * PluginsInitialized constructor.
@@ -24,12 +22,11 @@ class PluginsInitialized //extends Event
      * @param SiteTypeRegistry $siteTypeRegistry So plugins can register new site types.
      * @param TemplateEngine $templateEngine So plugins can register new template engines.
      */
-    public function __construct(TagParser $tagParser, AutomaticContentFactory $automaticContentFactory, SiteTypeRegistry $siteTypeRegistry, TemplateEngine $templateEngine)
+    public function __construct(TagParser $tagParser, AutomaticContentFactory $automaticContentFactory, SiteTypeRegistry $siteTypeRegistry)
     {
         $this->tagParser = $tagParser;
         $this->automaticContentFactory = $automaticContentFactory;
         $this->siteTypeRegistry = $siteTypeRegistry;
-        $this->templateEngine = $templateEngine;
     }
 
     public function getTagParser() : TagParser
@@ -45,10 +42,5 @@ class PluginsInitialized //extends Event
     public function getSiteTypeRegistry() : SiteTypeRegistry
     {
         return $this->siteTypeRegistry;
-    }
-
-    public function getTemplateEngine() : TemplateEngine
-    {
-        return $this->templateEngine;
     }
 }

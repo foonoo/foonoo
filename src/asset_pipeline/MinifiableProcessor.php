@@ -11,8 +11,6 @@ use ntentan\utils\Filesystem;
 
 abstract class MinifiableProcessor implements Processor, MarkupGenerator
 {
-    private $minifier;
-    
     /**
      * The site for which minifiable content is being created.
      * @var AbstractSite
@@ -20,7 +18,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
     private $site;
     
     /**
-     * 
+     * Buffers holding the minified contents.
      * @var array
      */
     private $buffers = [];
@@ -54,9 +52,7 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
             return $bundle;
         }
         $this->buffers[$bundle] = ['inline' => '', 'external' => ''];
-        usort($processed, function ($a, $b) {
-            return $a['order'] > $b['order'];
-        });
+        usort($processed, fn ($a, $b) => $a['order'] - $b['order']);
         foreach ($processed as $item) {
             $this->buffers[$bundle][$item['target']] = "{$this->buffers[$bundle][$item['target']]}{$item['processed']}{$this->glue}";
         }

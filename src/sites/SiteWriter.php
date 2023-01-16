@@ -70,6 +70,7 @@ class SiteWriter
      */
     public function write(AbstractSite $site)
     {
+        $this->themeManager->reset();
         $this->eventDispatcher->dispatch(SiteWriteStarted::class, ['site' => $site]);
         $assetPipeline = $site->getAssetPipeline();
         $theme = $this->themeManager->getTheme($site);
@@ -106,10 +107,10 @@ class SiteWriter
         $this->eventDispatcher->dispatch(SiteWriteEnded::class, ['site' => $site]);
     }
 
-    public function setOptions($options)
-    {
-        $this->options = $options;
-    }
+    // public function setOptions($options)
+    // {
+    //     $this->options = $options;
+    // }
 
     /**
      * @param AbstractSite $site
