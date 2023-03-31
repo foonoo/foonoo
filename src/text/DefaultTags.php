@@ -68,12 +68,12 @@ class DefaultTags
     public function getRegexMap()
     {
         return [
-            ["regex" => "/block\:(?<block_class>[a-zA-Z0-9\-\_]*)/", "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
-            ["regex" => "/\/block/", "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
-            ["regex" => "/(?<protocol>[a-z]+:\/\/)(?<link>.*)/", "callable" => [$this, "renderLink"], 'name' => 'http link '],
-            ["regex" => "/(?<image>.*\.(jpeg|jpg|png|gif|webp))/", "callable" => [$this, "renderImageTag"], 'name' => 'name'],
-            ['regex' => "/_TOC_/", 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
-            ["regex" => "|(?<markup>[a-zA-Z0-9 _\-.]*)|", "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
+            ["regex" => "block\:(?<block_class>[a-zA-Z0-9\-\_]*)", "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
+            ["regex" => "\/block", "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
+            ["regex" => "(?<protocol>[a-z]+:\/\/)(?<link>.*)", "callable" => [$this, "renderLink"], 'name' => 'http link '],
+            ["regex" => "(?<image>.*\.(jpeg|jpg|png|gif|webp))", "callable" => [$this, "renderImageTag"], 'name' => 'name'],
+            ['regex' => "_TOC_", 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
+            ["regex" => "(?<markup>[a-zA-Z0-9 _\-.]*)", "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
         ];
     }
 

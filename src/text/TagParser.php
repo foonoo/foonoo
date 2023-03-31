@@ -3,15 +3,15 @@
 namespace foonoo\text;
 
 /**
- * This class provides the infrastructure for parsing special foonoo tags from text files. These tags start with a 
- * doul
- *
- * @package nyansapow
+ * This class provides the code for parsing special foonoo tags from text files. These tags start with a double square
+ * brace and end with same.
  */
 class TagParser
 {
+    // A list of all registered tags
     private $registeredTags;
 
+    // A list of all tokens
     private const TOKENS = [
         'START_TAG' => '\[\[',
         'END_TAG' => '\]\]',
@@ -22,9 +22,11 @@ class TagParser
     ];
 
     /**
-     * Register a foonoo Tag
+     * Register a foonoo Tag.
+     * This operation requires you to specify a regular expression for the tag, a priority, and a function for 
+     * generating the tag's output.
      *
-     * @param string $regex
+     * @param string $regex A regular expression
      * @param int $priority
      * @param callable $callable
      * @param string|null $name
@@ -73,7 +75,7 @@ class TagParser
     private function processTag($text, $attributes)
     {
         foreach ($this->registeredTags as $tag) {
-            if (preg_match($tag['regex'], $text, $matches)) {
+            if (preg_match("/^{$tag['regex']}/", $text, $matches)) {
                 return $tag['callable']($matches, $text, $attributes);
             }
         }
