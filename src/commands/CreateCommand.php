@@ -4,7 +4,6 @@ namespace foonoo\commands;
 use clearice\io\Io;
 use foonoo\CommandInterface;
 use ntentan\utils\Filesystem;
-use ntentan\utils\exceptions\FileAlreadyExistsException;
 use foonoo\sites\SiteTypeRegistry;
 use Symfony\Component\Yaml\Yaml;
 
