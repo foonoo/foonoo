@@ -9,8 +9,9 @@ use ntentan\utils\exceptions\FileNotFoundException;
  * Manages all the assets for a site.
  * Stylesheets and Javascripts added to the pipeline can be combined and minified. Other files are just copied to
  * specified destinations when sites are built.
- *
- * @package foonoo\sites
+ * 
+ * # Architecture
+ * 
  */
 class AssetPipeline
 {
@@ -19,6 +20,9 @@ class AssetPipeline
     private $processors = [];
     private $markupGenerators = [];
 
+    /**
+     * Register a processor with the asset pipeline.
+     */
     public function registerProcessor(string $type, Processor $processor)
     {
         if (!isset($this->processors[$type])) {
@@ -27,6 +31,9 @@ class AssetPipeline
         $this->processors[$type][] = $processor;
     }
 
+    /**
+     * Register a markup generator with the asset pipeline.
+     */
     public function registerMarkupGenerator(string $type, MarkupGenerator $generator)
     {
         $this->markupGenerators[$type] = $generator;
@@ -121,17 +128,18 @@ class AssetPipeline
 
     public function merge(array $assets, string $baseDirectory = null): void
     {
-        foreach ($assets as $type => $items) {
+        foreach ($assets as $type => $definition) {
+            $options = $definition;
+            $items = $options["items"];
+            unset($options["items"]);
             foreach ($items as $item) {
                 if(is_array($item)) {
                     $contents = array_key_first($item);
-                    $options = $item[$contents];
                     if(!is_array($options)) {
                         $options = ['param' => $options];
                     }
                 } else {
                     $contents = $item;
-                    $options = [];
                 }
                 if(isset($baseDirectory)) {
                     $options['base_directory'] = $baseDirectory;

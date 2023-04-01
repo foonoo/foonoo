@@ -1,0 +1,14 @@
+
+@mixin block($color) {
+    border: 3px solid darken($color, 5%);
+    background-color: $color;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: larger;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.block.note {
+    @include block(#daf0ff)
+}

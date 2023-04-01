@@ -30,7 +30,12 @@ class SiteTheme extends Theme
                 @import "toc.scss";   
                 @import "tables.scss";
             SCSS;
-            $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', ['base_directory' => "{$this->getPath()}/assets/scss"]);
+            $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', 
+                [
+                    'base_directory' => "{$this->getPath()}/assets/scss",
+                    'include_path' => "../../../shared/scss"
+                ]
+            );
         }
     }
 }

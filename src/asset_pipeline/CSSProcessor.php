@@ -1,6 +1,4 @@
 <?php
-
-
 namespace foonoo\asset_pipeline;
 
 
@@ -59,6 +57,15 @@ class CSSProcessor extends MinifiableProcessor
             $contents = $item;
             $includePath = $options['base_directory'] ?? '.';
         }
+
+        if (isset($options["include_path"])) {
+            $includePaths = is_array($options["include_path"]) ? $options['include_path'] : [$options['include_path']];
+            $includePaths = array_map(fn($x) => $options['base_directory'] . DIRECTORY_SEPARATOR . $x, $includePaths);
+            foreach($includePaths as $path) {
+                Filesystem::checkExists($path);
+                $this->sassCompiler->addImportPath($path);    
+            }
+          }
                 
         if($options['asset_type'] === "scss") {
             $this->sassCompiler->addImportPath($includePath);

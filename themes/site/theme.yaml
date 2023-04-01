@@ -4,6 +4,9 @@ author: Ekow Abaka
 default_layout: layout
 assets:
   scss:
-    - scss/main.scss
+    items:
+      - scss/main.scss
+    include_path: ../../shared/scss  
   js:
-    - js/site.js
+    items:
+      - js/site.js
