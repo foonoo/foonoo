@@ -13,6 +13,7 @@ class TagParser
 
     // A list of all tokens
     private const TOKENS = [
+        'COMMENT_START_TAG' => '\\\[\[',
         'START_TAG' => '\[\[',
         'END_TAG' => '\]\]',
         'IDENTIFIER' => '([a-zA-Z_\.\-][a-zA-Z_\.\-]*)(\s*)(=)',
