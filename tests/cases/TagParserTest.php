@@ -2,6 +2,7 @@
 namespace foonoo\tests;
 
 use foonoo\text\TagParser;
+use foonoo\text\TagToken;
 use PHPUnit\Framework\TestCase;
 
 class TagParserTest extends TestCase
@@ -11,7 +12,7 @@ class TagParserTest extends TestCase
     public function setUp(): void
     {
         $this->tagParser = new TagParser();
-        $this->tagParser->registerTag("/caps (.*)/", 0,
+        $this->tagParser->registerTag([TagToken::TEXT, "caps"], 0,
             function($matches, $text, $attributes = []) {
                 $attrs = "";
                 foreach($attributes as $attribute => $value) {
@@ -28,7 +29,7 @@ class TagParserTest extends TestCase
 
     public function testTagRegistration()
     {
-        $response = $this->tagParser->parse("Hello [[caps world]], this is an interesting tag.");
+        $response = $this->tagParser->parse("Hello [[world | caps]], this is an interesting tag.");
         $this->assertEquals("Hello [WORLD]->[], this is an interesting tag.\n", $response);
     }
 
