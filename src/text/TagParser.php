@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 
 enum TagToken: string {
-    case COMMENT_START_TAG = '\\\[\[';
+    //case COMMENT_START_TAG = '\\\[\[';
     case START_TAG = '\[\[';
     case END_TAG = '\]\]';
     case ARGS_START = '([a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)(\'|")';
@@ -50,15 +50,16 @@ class TagParser
      */
     public function parse(string $content): string
     {
-        $parsed = '';
-        foreach (explode("\n", $content) as $line) {
+        $parsed = [];
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
             if (trim($line) == "") {
                 $parsed .= "\n";
                 continue;
             }
-            $parsed .= $this->parseLine($line) . "\n";
+            $parsed[]= $this->parseLine($line);
         }
-        return $parsed;
+        return implode("\n", $parsed);
     }
 
     private function getTokens($line)
@@ -73,7 +74,7 @@ class TagParser
                 }
             }
         }
-        yield ['token' => TagToken::DONE];
+        yield ['token' => TagToken::DONE, "value" => ""];
     }
 
     private function processTag($text, $attributes)
@@ -137,17 +138,25 @@ class TagParser
         }
     }
 
-    private function findMatchingTag($matchedTokens, $tags) : array
+    private function processFoonooTag($matchedTokens, $tags, $passThrough) : string
     {
         foreach ($tags as $tag) {
+            $args = [];
             foreach ($tag['definition'] as $key => $value) {
-                if ($value === TagToken::TEXT) {
-                    var_dump(is_string($value));
-                } else if (is_string($value)) {
-                    var_dump($value);
+                if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$key]["value"], $matches))  {
+                    $args[] = $matches;
+                } else if ($value === TagToken::TEXT) {
+                    $args[] = $matchedTokens[$key]["value"];
+                } else {
+                    break;
                 }
             }
+            if (count($args) == count($tag['definition'])) {
+                return $tag['callable']($args);
+            }
         }
+
+        return $passThrough;
     }
 
     /**
@@ -163,7 +172,7 @@ class TagParser
         $lasToken = null;
 
         // Todo: Get a token and match the text with all registered tags
-        while ($currentToken !== null && !in_array($currentToken['token'], [TagToken::END_TAG, TagToken::START_TAG])) {
+        while ($currentToken !== null && !in_array($currentToken['token'], [TagToken::END_TAG, TagToken::START_TAG, TagToken::DONE])) {
             $tag .= $currentToken['value'];
 
             if($currentToken['token'] == TagToken::SEPARATOR) {
@@ -182,10 +191,10 @@ class TagParser
                 $this->registeredTags, 
                 fn($tag) => count($tag['definition']) == count($matchedTokens)
             );
-            $this->findMatchingTag($matchedTokens, $compatibleTags);
+            return $this->processFoonooTag($matchedTokens, $compatibleTags, $tag);
         } else if ($currentToken['token'] == TagToken::START_TAG) {
             // Start parsing a new tag for incomplete tags
-            return $this->parseFoonooTag($tokens);
+            return "[[$tag{$this->parseFoonooTag($tokens)}";
         }
 
         return "[[$tag" . ($currentToken !== null ? $currentToken['value'] : "");
@@ -197,7 +206,7 @@ class TagParser
      * @param $line
      * @return string|string[]|null
      */
-    private function parseLine($line)
+    private function parseLine($line) : string
     {
         $output = "";
         $tokens = $this->getTokens($line);
