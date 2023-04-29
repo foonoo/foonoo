@@ -7,11 +7,12 @@ enum TagToken: string {
     case COMMENT_START_TAG = "\\\\\[\[";
     case START_TAG = '\[\[';
     case END_TAG = '\]\]';
-    case ARGS_START = '([a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)(\'|")';
+    case ARGS_LIST = '(?<identifier>[a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)(\'|")';
     case TEXT = '((?![\[\]\|])\S)+|\]|\[';
     case WHITESPACE = '[\s]+';
     case SEPARATOR = '\|';
-    case DONE = 'DONE';
+    case DONE = "DONE";
+    case STRING = "STRING";
 }
 
 
@@ -69,21 +70,27 @@ class TagParser
                 $regex = $token->value;
                 if (preg_match("%^($regex)%", $line, $matches)) {
                     $line = substr($line, strlen($matches[0]));
-                    yield ['token' => $token, 'value' => $matches[0]];
+                    yield ['token' => $token, 'value' => $matches[0], 'matches' => $matches];
                     break;
                 }
             }
-        }
-        yield ['token' => TagToken::DONE, "value" => ""];
-    }
 
-    private function processTag($text, $attributes)
-    {
-        foreach ($this->registeredTags as $tag) {
-            if (preg_match("/^{$tag['regex']}/", $text, $matches)) {
-                return $tag['callable']($matches, $text, $attributes);
+            // Parse strings here
+            if(strlen($line) > 0 && ($line[0] === "'" || $line[0] === '"')) {
+                $string = "";
+                $delimiter = $line[0];
+                $escaped = false;
+                $index = 1;
+                while(!$escaped && $line[$index] != $delimiter) {
+                    $string .= $line[$index];
+                    $index += 1;
+                }
+
+                yield ['token' => TagToken::STRING, "value" => $string, 'matches' => [$string]];
             }
         }
+
+        yield ['token' => TagToken::DONE, "value" => ""];
     }
 
     /**
@@ -96,46 +103,17 @@ class TagParser
         }
     }
 
-    private function parseAttributeTags(\Generator $tokens)
+    private function parseAttributes(\Generator $tokens)
     {
         $attributes = [];
-        while($tokens->current()['token'] == 'IDENTIFIER') {
-            $key = trim(substr($tokens->current()['value'], 0, -1));
+        while($tokens->current()['token'] == TagToken::ARGS_LIST) {
+            $key = trim(substr($tokens->current()['matches']['identifier'], 0, -1));
             $tokens->next();
             $attributes[$key] = $tokens->current()['value'];
             $tokens->next();
             $this->eatWhite($tokens);
         }
         return $attributes;
-    }
-
-    private function parseDefaultAttribute($tokens) {
-        $tag = "";
-        $currentToken = $tokens->current();
-        while (!in_array($currentToken['token'], ['SEPARATOR', 'END_TAG', 'START_TAG', 'END'])) {
-            $tag .= $currentToken['value'];
-            $tokens->next();
-            $currentToken = $tokens->current();
-        }
-        return ['__default' => trim($tag)];
-    }
-
-    /**
-     * @param \Generator $tokens
-     */
-    private function parseAttributes(\Generator $tokens)
-    {
-        $tokens->next();
-        $this->eatWhite($tokens);
-        if ($tokens->current()['token'] == "IDENTIFIER") {
-            return $this->parseAttributeTags($tokens);
-        } else {
-            $attributes = $this->parseDefaultAttribute($tokens);
-            if($tokens->current()['token'] == "SEPARATOR") {
-                $attributes = $attributes + $this->parseAttributes($tokens);
-            }
-            return $attributes;
-        }
     }
 
     private function processFoonooTag($matchedTokens, $tags, $passThrough) : string
@@ -177,6 +155,8 @@ class TagParser
 
             if($currentToken['token'] == TagToken::SEPARATOR) {
                 $matchedTokens[] = $lasToken;
+            } else if ($currentToken['token'] == TagToken::ARGS_LIST) {
+                $this->parseAttributes($tokens);
             } else if($currentToken['token'] != TagToken::WHITESPACE) {
                 $lasToken = $currentToken;
             }

@@ -12,11 +12,8 @@ class TagParserTest extends TestCase
     public function setUp(): void
     {
         $this->tagParser = new TagParser();
-        $this->tagParser->registerTag([TagToken::TEXT, "caps"], 0,
-            function($matches) {
-                return json_encode($matches);
-            }, "test");
-
+        $this->tagParser->registerTag([TagToken::TEXT, "caps"], 0, fn($matches) => json_encode($matches), "test");
+        $this->tagParser->registerTag([TagToken::TEXT, "caps", TagToken::ARGS_LIST], 1, fn($matches) => json_encode($matches), "test");
     }
 
     public function testTagRegistration()
@@ -47,11 +44,11 @@ class TagParserTest extends TestCase
         $this->assertEquals('Hello [[world|caps]], this is an interesting tag.', $response);
     }
 
-    // public function testDefaultAttributes()
-    // {
-    //     $response = $this->tagParser->parse("Hello [[caps world|augmented]], this is an interesting tag.");
-    //     $this->assertEquals("Hello [WORLD]->[__default:augmented ], this is an interesting tag.\n", $response);
-    // }
+    public function testAttributes()
+    {
+        $response = $this->tagParser->parse("Hello [[world|caps|attributed=\"heey\"]], this is an interesting tag.");
+        $this->assertEquals("Hello [WORLD]->[__default:augmented ], this is an interesting tag.\n", $response);
+    }
 
     // public function testAttributes()
     // {
