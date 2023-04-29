@@ -41,6 +41,12 @@ class TagParserTest extends TestCase
         $this->assertEquals('Hello [[world|caps, this is an interesting ["tag",["caps"]].', $response);
     }
 
+    public function testCommentTag()
+    {
+        $response = $this->tagParser->parse("Hello \[[world|caps]], this is an interesting tag.");
+        $this->assertEquals('Hello [[world|caps]], this is an interesting tag.', $response);
+    }
+
     // public function testDefaultAttributes()
     // {
     //     $response = $this->tagParser->parse("Hello [[caps world|augmented]], this is an interesting tag.");

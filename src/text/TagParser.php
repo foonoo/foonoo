@@ -4,7 +4,7 @@ namespace foonoo\text;
 
 
 enum TagToken: string {
-    //case COMMENT_START_TAG = '\\\[\[';
+    case COMMENT_START_TAG = "\\\\\[\[";
     case START_TAG = '\[\[';
     case END_TAG = '\]\]';
     case ARGS_START = '([a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)(\'|")';
@@ -212,11 +212,11 @@ class TagParser
         $tokens = $this->getTokens($line);
         while ($tokens->current() !== null && $tokens->current()['token'] != TagToken::DONE) {
             $currentToken = $tokens->current();
-            if ($currentToken['token'] == TagToken::START_TAG) {
-                $output .= $this->parseFoonooTag($tokens);
-            } else {
-                $output .= $currentToken['value'];
-            }
+            $output .= match($currentToken['token']) {
+                TagToken::START_TAG => $this->parseFoonooTag($tokens),
+                TagToken::COMMENT_START_TAG => "[[",
+                default => $currentToken['value']
+            };
             $tokens->next();
         }
         return $output;
