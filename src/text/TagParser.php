@@ -7,7 +7,7 @@ enum TagToken: string {
     case COMMENT_START_TAG = "\\\\\[\[";
     case START_TAG = '\[\[';
     case END_TAG = '\]\]';
-    case ARGS_LIST = '(?<identifier>[a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)(\'|")';
+    case ARGS_LIST = '(?<identifier>[a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)';
     case TEXT = '((?![\[\]\|])\S)+|\]|\[';
     case WHITESPACE = '[\s]+';
     case SEPARATOR = '\|';
@@ -79,14 +79,19 @@ class TagParser
             if(strlen($line) > 0 && ($line[0] === "'" || $line[0] === '"')) {
                 $string = "";
                 $delimiter = $line[0];
+                $raw = $delimiter;
                 $escaped = false;
                 $index = 1;
                 while(!$escaped && $line[$index] != $delimiter) {
                     $string .= $line[$index];
+                    $raw .= $line[$index];
                     $index += 1;
                 }
+                $raw .= $delimiter;
 
-                yield ['token' => TagToken::STRING, "value" => $string, 'matches' => [$string]];
+                print("String: $string");
+
+                yield ['token' => TagToken::STRING, "value" => $string, 'matches' => [$string], "raw" => $raw];
             }
         }
 
@@ -94,28 +99,42 @@ class TagParser
     }
 
     /**
+     * 
      * @param $tokens
      */
-    private function eatWhite(\Generator $tokens)
+    private function eatWhite(\Generator $tokens) : string
     {
+        $whitespaces = "";
         while ($tokens->current()['token'] == 'WHITESPACE') {
+            $whitespaces .= $tokens->current()["value"];
             $tokens->next();
         }
+        return $whitespaces;
     }
 
     private function parseAttributes(\Generator $tokens)
     {
         $attributes = [];
+        $parsed = ""; // Keep a parsed string to pass on, so a failed tag can be regurgitated.
         while($tokens->current()['token'] == TagToken::ARGS_LIST) {
+            $parsed .= $tokens->current()["value"];
             $key = trim(substr($tokens->current()['matches']['identifier'], 0, -1));
             $tokens->next();
-            $attributes[$key] = $tokens->current()['value'];
+            if($tokens->current()['token'] == TagToken::STRING) {
+                $parsed .= $tokens->current()["raw"];
+                $attributes[$key] = $tokens->current()['value'];
+            } else {
+                $parsed .= $tokens->current()["value"];
+            }
             $tokens->next();
-            $this->eatWhite($tokens);
+            $parsed .= $this->eatWhite($tokens);
         }
-        return $attributes;
+        return [$attributes, $parsed];
     }
 
+    /**
+     * Process a foonoo tag by calling the associated tag callbacks.
+     */
     private function processFoonooTag($matchedTokens, $tags, $passThrough) : string
     {
         foreach ($tags as $tag) {
@@ -156,7 +175,8 @@ class TagParser
             if($currentToken['token'] == TagToken::SEPARATOR) {
                 $matchedTokens[] = $lasToken;
             } else if ($currentToken['token'] == TagToken::ARGS_LIST) {
-                $this->parseAttributes($tokens);
+                list($attributes, $parsed) = $this->parseAttributes($tokens);
+                $matchedTokens[] = ['token' => TagToken::ARGS_LIST, 'value' => $parsed, 'attributes' => $attributes];
             } else if($currentToken['token'] != TagToken::WHITESPACE) {
                 $lasToken = $currentToken;
             }
@@ -181,7 +201,7 @@ class TagParser
     }
 
     /**
-     * Parse a single tag from a line.
+     * Parse a all tags in a given line.
      *
      * @param $line
      * @return string|string[]|null
