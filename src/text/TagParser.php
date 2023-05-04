@@ -88,8 +88,7 @@ class TagParser
                     $index += 1;
                 }
                 $raw .= $delimiter;
-
-                print("String: $string");
+                $line = substr($line, strlen($raw));
 
                 yield ['token' => TagToken::STRING, "value" => $string, 'matches' => [$string], "raw" => $raw];
             }
@@ -99,26 +98,27 @@ class TagParser
     }
 
     /**
-     * 
+     * Parse out all whitespace tokens.
      * @param $tokens
      */
     private function eatWhite(\Generator $tokens) : string
     {
-        $whitespaces = "";
-        while ($tokens->current()['token'] == 'WHITESPACE') {
-            $whitespaces .= $tokens->current()["value"];
+        $whiteSpaces = "";
+        while ($tokens->current()['token'] === TagToken::WHITESPACE) {
+            $whiteSpaces .= $tokens->current()["value"];
             $tokens->next();
         }
-        return $whitespaces;
+        return $whiteSpaces;
     }
 
     private function parseAttributes(\Generator $tokens)
     {
         $attributes = [];
         $parsed = ""; // Keep a parsed string to pass on, so a failed tag can be regurgitated.
+
         while($tokens->current()['token'] == TagToken::ARGS_LIST) {
             $parsed .= $tokens->current()["value"];
-            $key = trim(substr($tokens->current()['matches']['identifier'], 0, -1));
+            $key = trim($tokens->current()['matches']['identifier']);
             $tokens->next();
             if($tokens->current()['token'] == TagToken::STRING) {
                 $parsed .= $tokens->current()["raw"];
@@ -129,6 +129,7 @@ class TagParser
             $tokens->next();
             $parsed .= $this->eatWhite($tokens);
         }
+
         return [$attributes, $parsed];
     }
 
@@ -142,7 +143,7 @@ class TagParser
             foreach ($tag['definition'] as $key => $value) {
                 if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$key]["value"], $matches))  {
                     $args[] = $matches;
-                } else if ($value === TagToken::TEXT) {
+                } else if ($value === TagToken::TEXT || $value === TagToken::ARGS_LIST) {
                     $args[] = $matchedTokens[$key]["value"];
                 } else {
                     break;
@@ -166,27 +167,34 @@ class TagParser
         $tag = "";
         $currentToken = $tokens->current();
         $matchedTokens = [];
-        $lasToken = null;
+        $lastToken = $currentToken;
 
         // Todo: Get a token and match the text with all registered tags
         while ($currentToken !== null && !in_array($currentToken['token'], [TagToken::END_TAG, TagToken::START_TAG, TagToken::DONE])) {
-            $tag .= $currentToken['value'];
 
+            // Because the ARGS_LIST is not matched in full through a regex, we have to treat it separately.
             if($currentToken['token'] == TagToken::SEPARATOR) {
-                $matchedTokens[] = $lasToken;
+                $matchedTokens[] = $lastToken;
             } else if ($currentToken['token'] == TagToken::ARGS_LIST) {
                 list($attributes, $parsed) = $this->parseAttributes($tokens);
-                $matchedTokens[] = ['token' => TagToken::ARGS_LIST, 'value' => $parsed, 'attributes' => $attributes];
+                $lastToken = [
+                    'token' => TagToken::ARGS_LIST, 
+                    'value' => $attributes
+                ];
+                $currentToken = $tokens->current();
+                $tag .= $parsed;
+                continue;
             } else if($currentToken['token'] != TagToken::WHITESPACE) {
-                $lasToken = $currentToken;
-            }
+                $lastToken = $currentToken;
+            } 
 
+            $tag .= $currentToken['value'];
             $tokens->next();
             $currentToken = $tokens->current();
         }
 
         if($currentToken['token'] == TagToken::END_TAG) {
-            $matchedTokens[] = $lasToken;
+            $matchedTokens[] = $lastToken;
             $compatibleTags = array_filter(
                 $this->registeredTags, 
                 fn($tag) => count($tag['definition']) == count($matchedTokens)

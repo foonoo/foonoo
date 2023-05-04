@@ -47,20 +47,8 @@ class TagParserTest extends TestCase
     public function testAttributes()
     {
         $response = $this->tagParser->parse("Hello [[world|caps|attributed=\"heey\"]], this is an interesting tag.");
-        $this->assertEquals("Hello [WORLD]->[__default:augmented ], this is an interesting tag.\n", $response);
+        $this->assertEquals('Hello ["world",["caps"],{"attributed":"heey"}], this is an interesting tag.', $response);
+        $response = $this->tagParser->parse("Hello [[world|caps| key=\"value\" word=\"meaning\" ]] arguments");
+        $this->assertEquals('Hello ["world",["caps"],{"key":"value","word":"meaning"}] arguments', $response);
     }
-
-    // public function testAttributes()
-    // {
-    //     $response = $this->tagParser->parse("Hello [[caps Args| key=value ]] arguments");
-    //     $this->assertEquals("Hello [ARGS]->[key:value ] arguments\n", $response);
-    //     $response = $this->tagParser->parse("Hello [[caps Args| key=value word=meaning ]] arguments");
-    //     $this->assertEquals("Hello [ARGS]->[key:value word:meaning ] arguments\n", $response);
-    // }
-
-    // public function testCombinedAttributes()
-    // {
-    //     $response = $this->tagParser->parse("Combined attributes [[caps combined| Value of default | key=value]]. Yeah!");
-    //     $this->assertEquals("Combined attributes [COMBINED]->[__default:Value of default key:value ]. Yeah!\n", $response);
-    // }
 }
