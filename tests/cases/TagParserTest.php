@@ -44,11 +44,28 @@ class TagParserTest extends TestCase
         $this->assertEquals('Hello [[world|caps]], this is an interesting tag.', $response);
     }
 
-    public function testAttributes()
+    public function testAttributesSingleQuote()
     {
         $response = $this->tagParser->parse("Hello [[world|caps|attributed=\"heey\"]], this is an interesting tag.");
         $this->assertEquals('Hello ["world",["caps"],{"attributed":"heey"}], this is an interesting tag.', $response);
         $response = $this->tagParser->parse("Hello [[world|caps| key=\"value\" word=\"meaning\" ]] arguments");
         $this->assertEquals('Hello ["world",["caps"],{"key":"value","word":"meaning"}] arguments', $response);
     }
+
+    public function testAttributesDoubleQuote()
+    {
+        $response = $this->tagParser->parse("Hello [[world|caps|attributed='heey']], this is an interesting tag.");
+        $this->assertEquals('Hello ["world",["caps"],{"attributed":"heey"}], this is an interesting tag.', $response);
+        $response = $this->tagParser->parse("Hello [[world|caps| key='value' word='meaning' ]] arguments");
+        $this->assertEquals('Hello ["world",["caps"],{"key":"value","word":"meaning"}] arguments', $response);
+    }
+
+    public function testAttributesQuoteEscape()
+    {
+        $response = $this->tagParser->parse("Hello [[world|caps|attributed=\"He's \\\"Quoted\\\" \"]], this is an interesting tag.");
+        $this->assertEquals('Hello ["world",["caps"],{"attributed":"He\'s \"Quoted\" "}], this is an interesting tag.', $response);
+        $response = $this->tagParser->parse('Hello [[world|caps|attributed=\'He\\\'s "Quoted" \']], this is an interesting tag.');
+        $this->assertEquals('Hello ["world",["caps"],{"attributed":"He\'s \"Quoted\" "}], this is an interesting tag.', $response);
+    }
+
 }

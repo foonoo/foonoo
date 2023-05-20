@@ -80,12 +80,18 @@ class TagParser
                 $string = "";
                 $delimiter = $line[0];
                 $raw = $delimiter;
-                $escaped = false;
                 $index = 1;
-                while(!$escaped && $line[$index] != $delimiter) {
-                    $string .= $line[$index];
-                    $raw .= $line[$index];
-                    $index += 1;
+                while($index < strlen($line) && $line[$index] != $delimiter) {
+                    if ($line[$index] == "\\") {
+                        $raw .= $line[$index];
+                        $index +=1;
+                        $raw .= $line[$index];
+                        $string .= $line[$index];
+                    } else {
+                        $string .= $line[$index];
+                        $raw .= $line[$index];
+                    }
+                    $index += 1;    
                 }
                 $raw .= $delimiter;
                 $line = substr($line, strlen($raw));
