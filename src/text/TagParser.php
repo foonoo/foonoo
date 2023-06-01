@@ -147,6 +147,7 @@ class TagParser
         foreach ($tags as $tag) {
             $args = [];
             foreach ($tag['definition'] as $key => $value) {
+                // Either match with a token in the tag definition or a text or exit on an error.
                 if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$key]["value"], $matches))  {
                     $args[] = $matches;
                 } else if ($value === TagToken::TEXT || $value === TagToken::ARGS_LIST) {

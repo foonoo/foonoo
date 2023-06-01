@@ -1,10 +1,9 @@
 <?php
+namespace foonoo\tests;
 
-
-namespace cases;
-
-
+use foonoo\events\ContentGenerationStarted;
 use foonoo\events\EventDispatcher;
+use foonoo\events\SiteWriteStarted;
 use foonoo\text\DefaultTags;
 use foonoo\text\TagParser;
 use foonoo\text\TemplateEngine;
@@ -27,14 +26,21 @@ class DefaultTagsTest extends TestCase
         $templateFileResolver->appendToPathHierarchy(__DIR__ .  "/../../themes/parser");
         $engineRegistry = new EngineRegistry();
         $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
-        $engineRegistry->registerEngine([".tpl.php"], new PhpEngineFactory($templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()));
+        $engineRegistry->registerEngine(
+            [".tpl.php"], 
+            new PhpEngineFactory(
+                $templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()
+            )
+        );
         $templateEngine = new TemplateEngine($templateFileResolver, $templateRenderer);
         $tocGenerator = $this->getMockBuilder(TocGenerator::class)->disableOriginalConstructor()->getMock();
         $tocGenerator->method('createContainer')->willReturn('[TOC anticipated]');
         //$eventDispatcher = $this->getMockBuilder(EventDispatcher::class)->getMock();
         
         $eventDispatcher = new EventDispatcher();
-        
+        $eventDispatcher->registerEventType(SiteWriteStarted::class, function($args) {});
+        $eventDispatcher->registerEventType(ContentGenerationStarted::class, function($args) {});
+
         $defaultTags = new DefaultTags($templateEngine, $tocGenerator, $eventDispatcher);
 
         $this->tagParser = new TagParser();
