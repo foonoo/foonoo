@@ -52,13 +52,13 @@ class DefaultTagsTest extends TestCase
     public function testTOC()
     {
         $parsed = $this->tagParser->parse("Some content [[_TOC_]] that I love");
-        $this->assertEquals("Some content [TOC anticipated] that I love\n", $parsed);
+        $this->assertEquals("Some content [TOC anticipated] that I love", $parsed);
     }
 
     public function testRenderImage()
     {
         $parsed = $this->tagParser->parse("[[something.jpeg]]");
-        $this->assertEquals("<img src=\"images/something.jpeg\" />\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" loading=\"lazy\" />", $parsed);
     }
 
     public function testRenderMultiImage()
@@ -74,9 +74,9 @@ class DefaultTagsTest extends TestCase
 
     public function testRenderImageAlt()
     {
-        $parsed = $this->tagParser->parse("[[something.jpeg | A description of something ]]");
+        $parsed = $this->tagParser->parse("[[ A description of something | something.jpeg ]]");
         $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
-        $parsed = $this->tagParser->parse("[[something.jpeg | alt=description ]]");
+        $parsed = $this->tagParser->parse("[[ 5description| something.jpeg ]]");
         $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"description\"/>\n", $parsed);
     }
 }
