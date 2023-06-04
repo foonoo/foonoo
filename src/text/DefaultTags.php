@@ -71,12 +71,12 @@ class DefaultTags
         $imgLinkRegex = "(?<image>.*\.(jpeg|jpg|png|gif|webp))";
 
         return [
-            ["regex" => [TagToken::TEXT, TagToken::TEXT], "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
-            ["regex" => [TagToken::TEXT], "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
-            ["regex" => [TagToken::TEXT, $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
-            ["regex" => [$httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
-            ["regex" => [$imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
-            ["regex" => [TagToken::TEXT, $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
+            ["regex" => ["description" => TagToken::TEXT, "page" => TagToken::TEXT], "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
+            ["regex" => ["page" => TagToken::TEXT], "callable" => [$this, "renderPageLink"], 'name' => 'page link'],
+            ["regex" => ["description" => TagToken::TEXT, "link" => $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
+            ["regex" => ["link" => $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
+            ["regex" => ["link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
+            ["regex" => ["description" => TagToken::TEXT, "link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
             ["regex" => ["\/block"], "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
             ["regex" => ["block\:(?<block_class>[a-zA-Z0-9\-\_]*)"], "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
             ['regex' => ["_TOC_"], 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],

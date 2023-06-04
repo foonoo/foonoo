@@ -146,15 +146,18 @@ class TagParser
     {
         foreach ($tags as $tag) {
             $args = [];
+            $index = 0;
             foreach ($tag['definition'] as $key => $value) {
                 // Either match with a token in the tag definition or a text or exit on an error.
-                if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$key]["value"], $matches))  {
-                    $args[] = $matches;
+                if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$index]["value"], $matches))  {
+                    $args[$key] = $matches;
                 } else if ($value === TagToken::TEXT || $value === TagToken::ARGS_LIST) {
-                    $args[] = $matchedTokens[$key]["value"];
+                    //$args[$key] = $matchedTokens[$index]["value"];
+                    $args[$value == TagToken::ARGS_LIST ? "__args" : $key] = $matchedTokens[$index]["value"];
                 } else {
                     break;
                 }
+                $index++;
             }
             if (count($args) == count($tag['definition'])) {
                 return $tag['callable']($args);
