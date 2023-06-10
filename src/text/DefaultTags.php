@@ -76,7 +76,7 @@ class DefaultTags
             ["regex" => ["description" => TagToken::TEXT, "link" => $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
             ["regex" => ["link" => $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
             ["regex" => ["link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
-            ["regex" => ["description" => TagToken::TEXT, "link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
+            ["regex" => ["alt" => TagToken::TEXT, "link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
             ["regex" => ["\/block"], "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
             ["regex" => ["block\:(?<block_class>[a-zA-Z0-9\-\_]*)"], "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
             ['regex' => ["_TOC_"], 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
@@ -88,13 +88,6 @@ class DefaultTags
         $this->data = $data;
     }
 
-    private function getImages($string)
-    {
-        preg_match_all("/((?<image>.*\.(jpeg|jpg|png|gif|webp))\s*,\s*)*(?<last_image>.*\.(jpeg|jpg|png|gif|webp))/", $string, $matches);
-        $images = array_values(array_filter(array_merge($matches['image'], $matches['last_image']), function($item){return $item !== "";}));
-        return $images;
-    }
-
     /**
      * Renders an image tag.
      *
@@ -103,14 +96,14 @@ class DefaultTags
      */
     public function renderImageTag(array $args)
     {
-        $matches = $args[0];
+        $matchedLink = $args["link"];
         return trim($this->templateEngine->render('image_tag',
             [
-                'alt' => $matches['alt'] ?? '',
+                'alt' => $args['alt'] ?? '',
                 'site_path' => $this->templateData['site_path'] ?? '',
                 'home_path' => $this->templateData['home_path'] ?? '',
-                'images' => $this->getImages($matches['image']),
-                'attributes' => $args[1] ?? array()
+                'image' => $matchedLink['image'],
+                'attributes' => $args["__attr"] ?? array()
             ]
         ));
     }

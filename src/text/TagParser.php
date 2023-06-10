@@ -148,11 +148,9 @@ class TagParser
             $args = [];
             $index = 0;
             foreach ($tag['definition'] as $key => $value) {
-                // Either match with a token in the tag definition or a text or exit on an error.
                 if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$index]["value"], $matches))  {
                     $args[$key] = $matches;
                 } else if ($value === TagToken::TEXT || $value === TagToken::ARGS_LIST) {
-                    //$args[$key] = $matchedTokens[$index]["value"];
                     $args[$value == TagToken::ARGS_LIST ? "__args" : $key] = $matchedTokens[$index]["value"];
                 } else {
                     break;
@@ -163,8 +161,20 @@ class TagParser
                 return $tag['callable']($args);
             }
         }
-
         return $passThrough;
+    }
+
+    private function parseText(\Generator $tokens) {
+        $parsed = "";
+        $currentToken = $tokens->current();
+
+        while(in_array($currentToken['token'], [TagToken::TEXT, TagToken::WHITESPACE])) {
+            $parsed .= $currentToken['value'];
+            $tokens->next();
+            $currentToken = $tokens->current();
+        }
+
+        return $parsed;
     }
 
     /**
@@ -185,6 +195,15 @@ class TagParser
             // Because the ARGS_LIST is not matched in full through a regex, we have to treat it separately.
             if($currentToken['token'] == TagToken::SEPARATOR) {
                 $matchedTokens[] = $lastToken;
+            } else if ($currentToken['token'] == TagToken::TEXT) {
+                $text = $this->parseText($tokens);
+                $lastToken = [
+                    'token' => TagToken::TEXT,
+                    'value' => $text
+                ];
+                $currentToken = $tokens->current();
+                $tag .= $text;
+                continue;
             } else if ($currentToken['token'] == TagToken::ARGS_LIST) {
                 list($attributes, $parsed) = $this->parseAttributes($tokens);
                 $lastToken = [

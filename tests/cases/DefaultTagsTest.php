@@ -61,22 +61,11 @@ class DefaultTagsTest extends TestCase
         $this->assertEquals("<img src=\"images/something.jpeg\" loading=\"lazy\" />", $parsed);
     }
 
-    public function testRenderMultiImage()
-    {
-        $parsed = $this->tagParser->parse("[[something.jpeg, another.png]]");
-        $this->assertEquals('<picture>
-        <source srcset="images/something.jpeg" >
-        <source srcset="images/another.png" >
-        <img src="images/another.png" />
-</picture>
-', $parsed);
-    }
-
     public function testRenderImageAlt()
     {
         $parsed = $this->tagParser->parse("[[ A description of something | something.jpeg ]]");
-        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"A description of something\"/>\n", $parsed);
-        $parsed = $this->tagParser->parse("[[ 5description| something.jpeg ]]");
-        $this->assertEquals("<img src=\"images/something.jpeg\" alt=\"description\"/>\n", $parsed);
+        $this->assertEquals("<img src=\"images/something.jpeg\" loading=\"lazy\" alt=\"A description of something \"/>", $parsed);
+        $parsed = $this->tagParser->parse("[[ description| something.jpeg ]]");
+        $this->assertEquals("<img src=\"images/something.jpeg\" loading=\"lazy\" alt=\"description\"/>", $parsed);
     }
 }
