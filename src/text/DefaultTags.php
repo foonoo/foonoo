@@ -117,7 +117,7 @@ class DefaultTags
             if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
                     'href' => $this->templateData['site_path'] . $targetPage->getDestination(),
-                    'link_text' => $matches['description'] ?? null 
+                    'link_text' => $matches['description'] ?? $matches['page']
                 ]);
             }
         }
