@@ -49,7 +49,7 @@ class AssetPipeline
      */
     public function addItem(string $item, string $type, array $options=[]): void
     {
-        $bundles = $options['bundles'] ?? ["default"];
+        $bundles = $options['parameters']['bundles'] ?? ["default"];
         $options['priority'] = $options['priority'] ?? 0;
         unset($options['bundles']);
         foreach ($bundles as $bundle) {
@@ -135,9 +135,13 @@ class AssetPipeline
             foreach ($items as $item) {
                 if(is_array($item)) {
                     $contents = array_key_first($item);
-                    if(!is_array($options)) {
-                        $options = ['param' => $options];
-                    }
+                    $parameters = $item[$contents];
+                    $options['parameters'] = $item[$contents];
+                    // if(is_array($)) {
+                    //     $options['param'] = $item[$contents];
+                    // } else {
+                    //     $options['param' = 
+                    // }
                 } else {
                     $contents = $item;
                 }
