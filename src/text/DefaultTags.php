@@ -124,11 +124,11 @@ class DefaultTags
         return "[[{$passThrough}]]";
     }
 
-    public function renderLink(array $matches, string $text, array $args)
+    public function renderLink(array $matches)
     {
         return $this->templateEngine->render('anchor_tag', [
-            'href' => "{$matches['protocol']}//{$matches['link']}",
-            'link_text' => $args['__default'] ?? "{$matches['protocol']}//{$matches['link']}"
+            'href' => "{$matches['link']['protocol']}//{$matches['link']['link']}",
+            'link_text' => $matches['description'] ?? "{$matches['link']['protocol']}//{$matches['link']['link']}"
                 
         ]);
     }
