@@ -73,4 +73,10 @@ class TagParserTest extends TestCase
         $response = $this->tagParser->parse("[[who|not-caps]]");
         $this->assertEquals("[[who|not-caps]]", $response);
     }
+
+    public function testFailedAttributeParsing()
+    {
+        $response = $this->tagParser->parse("[[why|caps|not attributes]]");
+        $this->assertEquals("[[why|caps|not attributes]]", $response);
+    }
 }
