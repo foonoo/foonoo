@@ -146,7 +146,7 @@ class TagParser
             $args = [];
             $index = 0;
             foreach ($tag['definition'] as $key => $value) {
-                if($value != $matchedTokens[$index]['token']) {
+                if(is_a($value, TagToken::class) && $value != $matchedTokens[$index]['token']) {
                     break;
                 }
                 if (is_string($value) && preg_match("/^{$value}/", $matchedTokens[$index]["value"], $matches))  {
