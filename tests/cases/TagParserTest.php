@@ -68,4 +68,9 @@ class TagParserTest extends TestCase
         $this->assertEquals('Hello {"text":"world","command":["caps"],"__args":{"attributed":"He\'s \"Quoted\" "}}, this is an interesting tag.', $response);
     }
 
+    public function testUndeclaredTags()
+    {
+        $response = $this->tagParser->parse("[[who|not-caps]]");
+        $this->assertEquals("[[who|not-caps]]", $response);
+    }
 }

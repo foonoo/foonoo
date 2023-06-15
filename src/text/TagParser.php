@@ -159,7 +159,7 @@ class TagParser
                 return $tag['callable']($args, $passThrough);
             }
         }
-        return $passThrough;
+        return "[[$passThrough]]";
     }
 
     private function parseText(\Generator $tokens) {
