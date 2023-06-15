@@ -108,20 +108,20 @@ class DefaultTags
         ));
     }
 
-    public function renderPageLink(array $matches)
+    public function renderPageLink(array $matches, string $passThrough)
     {
-        $link = strtolower($matches['markup']);
+        $link = strtolower($matches['page']);
         foreach ($this->site->getContent() as $targetPage) {
             $title = $targetPage->getMetaData()['frontmatter']['title']
                    ?? $this->makeLabel(pathinfo($targetPage->getDestination(), PATHINFO_FILENAME));
             if (strtolower($title) == $link) {
                 return $this->templateEngine->render('anchor_tag', [
                     'href' => $this->templateData['site_path'] . $targetPage->getDestination(),
-                    'link_text' => $title
+                    'link_text' => $matches['description'] ?? null 
                 ]);
             }
         }
-        return "[[{$matches['markup']}]]";
+        return "[[{$passThrough}]]";
     }
 
     public function renderLink(array $matches, string $text, array $args)
@@ -133,9 +133,9 @@ class DefaultTags
         ]);
     }
 
-    public function renderBlockOpenTag(array $matches)
+    public function renderBlockOpenTag(array $args)
     {
-        return $this->templateEngine->render('block_open_tag', ['block' => $matches['block_class']]);
+        return $this->templateEngine->render('block_open_tag', ['block' => $args[0]['block_class']]);
     }
 
     public function renderBlockCloseTag()

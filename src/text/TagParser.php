@@ -38,7 +38,7 @@ class TagParser
     public function registerTag(array $definition, int $priority, callable $callable, string $name): void
     {
         $this->registeredTags[] = ['definition' => $definition, 'priority' => $priority, 'callable' => $callable, 'name' => $name];
-        usort($this->registeredTags, function ($a, $b) { return $b['priority'] - $a['priority'];});
+        usort($this->registeredTags, fn ($a, $b) => $b['priority'] <=> $a['priority']);
     }
 
     /**
@@ -55,7 +55,7 @@ class TagParser
         $lines = explode("\n", $content);
         foreach ($lines as $line) {
             if (trim($line) == "") {
-                $parsed .= "\n";
+                $parsed[] = "";
                 continue;
             }
             $parsed[]= $this->parseLine($line);
@@ -75,7 +75,7 @@ class TagParser
                 }
             }
 
-            // Parse strings here
+            // Parse strings here if none of the other tokens do not match.
             if(strlen($line) > 0 && ($line[0] === "'" || $line[0] === '"')) {
                 $string = "";
                 $delimiter = $line[0];
@@ -96,7 +96,7 @@ class TagParser
                 $raw .= $delimiter;
                 $line = substr($line, strlen($raw));
 
-                yield ['token' => TagToken::STRING, "value" => $string, 'matches' => [$string], "raw" => $raw];
+                yield ['token' => TagToken::STRING, "string" => $string, 'matches' => [$string], "value" => $raw];
             }
         }
 
@@ -127,11 +127,9 @@ class TagParser
             $key = trim($tokens->current()['matches']['identifier']);
             $tokens->next();
             if($tokens->current()['token'] == TagToken::STRING) {
-                $parsed .= $tokens->current()["raw"];
-                $attributes[$key] = $tokens->current()['value'];
-            } else {
-                $parsed .= $tokens->current()["value"];
-            }
+                $attributes[$key] = $tokens->current()['string'];
+            } 
+            $parsed .= $tokens->current()["value"];
             $tokens->next();
             $parsed .= $this->eatWhite($tokens);
         }
@@ -158,7 +156,7 @@ class TagParser
                 $index++;
             }
             if (count($args) == count($tag['definition'])) {
-                return $tag['callable']($args);
+                return $tag['callable']($args, $passThrough);
             }
         }
         return $passThrough;

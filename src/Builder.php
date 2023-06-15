@@ -231,6 +231,8 @@ class Builder
                 $this->io->output("- Copying public files from $assetsSource to $assetsDestination\n");
                 Filesystem::directory($assetsSource)->getFiles()->copyTo($assetsDestination, File::OVERWRITE_OLDER);                    
             }
+            $this->io->output("- Done generating {$site->getType()}.\n");
+
         }
     }
 
