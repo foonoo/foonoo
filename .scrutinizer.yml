@@ -34,6 +34,7 @@ filter:
     excluded_paths:
         - tests/*   
 build:
+  image: default-bionic
   nodes:
     analysis:
       tests:
