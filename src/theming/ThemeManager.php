@@ -121,7 +121,7 @@ class ThemeManager
      */
     private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition, string $themePath): array
     {
-        $hierarchy = [__DIR__ . "/../../themes/parser"];
+        $hierarchy = []; 
         $path = $site->getSourcePath();
 
         if (is_dir("{$path}_foonoo/templates")) {
@@ -143,6 +143,7 @@ class ThemeManager
             $hierarchy[] = "$themePath/templates";
         }
 
+        $hierarchy[] = __DIR__ . "/../../themes/parser";
         return $hierarchy;
     }
 }
