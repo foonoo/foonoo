@@ -10,5 +10,5 @@ if($alt != ""){
 $loading = $attributes['loading'] ?? "lazy";
 ?>
 <img src="<?="{$site_path}images/{$image}" ?>" loading="<?= $loading ?>" <?= $altString ?>/>
-<?php if($attributes['frame'] == "figure"): ?><figcaption> <?= $alt ?></figcaption><?php endif; ?>
+<?php if($attributes['frame'] == "figure"): ?><figcaption> <?= $alt ?></figcaption></figure><?php endif; ?>
 <?php if($attributes['frame'] == "div"):?></div><?php endif; ?>

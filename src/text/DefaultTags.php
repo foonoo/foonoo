@@ -77,6 +77,7 @@ class DefaultTags
             ["regex" => ["link" => $httpLinkRegex], "callable" => [$this, "renderLink"], 'name' => 'http link '],
             ["regex" => ["link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
             ["regex" => ["alt" => TagToken::TEXT, "link" => $imgLinkRegex], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
+            ["regex" => ["alt" => TagToken::TEXT, "link" => $imgLinkRegex, TagToken::ARGS_LIST], "callable" => [$this, "renderImageTag"], 'name' => 'image'],
             ["regex" => ["\/block"], "callable" => [$this, "renderBlockCloseTag"], "name" => 'close block'],
             ["regex" => ["block\:(?<block_class>[a-zA-Z0-9\-\_]*)"], "callable" => [$this, "renderBlockOpenTag"], 'name' => 'open block'],
             ['regex' => ["_TOC_"], 'callable' => [$this, 'renderTableOfContents'], 'name' => 'table of contents'],
@@ -103,7 +104,7 @@ class DefaultTags
                 'site_path' => $this->templateData['site_path'] ?? '',
                 'home_path' => $this->templateData['home_path'] ?? '',
                 'image' => $matchedLink['image'],
-                'attributes' => $args["__attr"] ?? array()
+                'attributes' => $args["__args"] ?? array()
             ]
         ));
     }
