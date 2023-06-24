@@ -27,6 +27,7 @@ class Builder
      * Contains default options for the site builder.
      * Most of these options are set directly through the command line arguments. Default values are provided by the
      * command line argument parser.
+     * @var array<string,mixed>
      */
     private array $options;
 
@@ -98,10 +99,9 @@ class Builder
     }
 
     /**
-     * @param $path
-     * @return array
+     * @return array<string, mixed> The data from the Yaml site data.
      */
-    private function readSiteMetadata($path) : array
+    private function readSiteMetadata(string $path) : array
     {
         $meta = [];
         if (file_exists("{$path}site.yml")) {
@@ -117,7 +117,7 @@ class Builder
     /**
      * @param string $path
      * @param bool $root
-     * @return array
+     * @return array<array<string, mixed>>
      * @throws FoonooException
      */
     private function getSites(string $path, bool $root = false): array
@@ -159,11 +159,9 @@ class Builder
 
     /**
      * Creates an instance of the AbstractSite for a given site metadata array.
-     *
-     * @param array $metaData
-     * @param string $path
-     *
-     * @return AbstractSite
+     * 
+     * @param array<string,mixed> $metaData Site meta data
+     * @param string $path Path to the site
      * @throws FoonooException
      */
     private function createSite(array $metaData, string $path): AbstractSite
@@ -199,7 +197,7 @@ class Builder
      * @throws \ntentan\utils\exceptions\FileNotWriteableException
      * @throws \ntentan\utils\exceptions\FilesystemException
      */
-    private function buildSites()
+    private function buildSites(): void
     {
         $sites = $this->getSites($this->options['input'], true);
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
@@ -233,7 +231,7 @@ class Builder
     }
 
     /**
-     * @param $options
+     * @param array<string,mixed> $options
      * @throws FoonooException
      */
     private function setOptions(array $options): void
@@ -261,19 +259,11 @@ class Builder
     }
 
     /**
-     * 
-     * 
-     * @param array $options A copy of the command line options passed to the script.
+     * @param array<string,mixed> $options A copy of the command line options passed to the script.
      * @param CacheFactory $cacheFactory
      * @param PluginManager $pluginManager
-     * @throws FoonooException
-     * @throws \ntentan\utils\exceptions\FileAlreadyExistsException
-     * @throws \ntentan\utils\exceptions\FileNotFoundException
-     * @throws \ntentan\utils\exceptions\FileNotReadableException
-     * @throws \ntentan\utils\exceptions\FileNotWriteableException
-     * @throws \ntentan\utils\exceptions\FilesystemException
      */
-    public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager)
+    public function build(array $options, CacheFactory $cacheFactory, PluginManager $pluginManager): void
     {
         try {
             $startTime = hrtime(true);
@@ -304,10 +294,10 @@ class Builder
     /**
      * Read data from a bunch of YAML files and put them into a single array.
      * 
-     * @param $path
-     * @return array
+     * @param string $path
+     * @return array<string,mixed>
      */
-    private function readData($path): array
+    private function readData(string $path): array
     {
         $data = [];
         if(!is_dir($path)) {
