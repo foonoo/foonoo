@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "phing/phing": "@stable",
-        "phpunit/phpunit": "@stable"
+        "phpunit/phpunit": "@stable",
+        "phpstan/phpstan": "^1.10"
     },
     "license": "MIT",
     "homepage": "https://ekowabaka.me/projects/foonoo",

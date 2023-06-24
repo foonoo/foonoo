@@ -14,6 +14,7 @@ use foonoo\asset_pipeline\AssetPipelineFactory;
 use ntentan\utils\Filesystem;
 use ntentan\utils\filesystem\File;
 use Symfony\Component\Yaml\Parser as YamlParser;
+use foonoo\asset_pipeline\AssetPipeline;
 
 /**
  * Builds sites.
@@ -26,59 +27,55 @@ class Builder
      * Contains default options for the site builder.
      * Most of these options are set directly through the command line arguments. Default values are provided by the
      * command line argument parser.
-     * 
-     * @var array
      */
-    private $options;
+    private array $options;
 
     /**
      * @var Io
      */
-    private $io;
+    private Io $io;
 
     /**
      * @var SiteTypeRegistry
      */
-    private $siteTypeRegistry;
+    private SiteTypeRegistry $siteTypeRegistry;
 
     /**
      * @var YamlParser
      */
-    private $yamlParser;
+    private YamlParser $yamlParser;
 
     /**
-     * @var SiteWriter
+     * 
      */
-    private $siteWriter;
+    private SiteWriter $siteWriter;
 
     /**
      * @var EventDispatcher
      */
-    private $eventDispatcher;
+    private EventDispatcher $eventDispatcher;
 
     /**
      * @var CacheFactory
      */
-    private $cacheFactory;
+    private CacheFactory $cacheFactory;
 
     /**
      * @var PluginManager
      */
-    private $pluginManager;
+    private PluginManager $pluginManager;
     
     /**
      * An instance of the current site being built.
      * 
      * @var AbstractSite
      */
-    private $currentSite;
+    private AbstractSite $currentSite;
     
     /**
      * An instance of the asset pipeline factory.
-     * 
-     * @var AssetPipeline
      */
-    private $assetPipelineFactory;
+    private AssetPipelineFactory $assetPipelineFactory;
 
 
     /**
@@ -102,7 +99,7 @@ class Builder
 
     /**
      * @param $path
-     * @return array|false|mixed|\stdClass|\Symfony\Component\Yaml\Tag\TaggedValue|null
+     * @return array
      */
     private function readSiteMetadata($path) : array
     {
@@ -179,7 +176,7 @@ class Builder
                 $metaData['excluded_paths']
             );
         }
-        $site = $this->siteTypeRegistry->get($metaData['type'])->create($metaData, $path);
+        $site = $this->siteTypeRegistry->get($metaData['type'])->create();
         $shortPath = substr($path, strlen($this->options['input']));
 
         $site->setPath($shortPath);
@@ -208,7 +205,6 @@ class Builder
         $this->io->output(sprintf("Found %d site%s in \"%s\"\n", count($sites), count($sites) > 1 ? 's' : '', $this->options['input']));
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
 
-        /** @var AbstractSite $site */
         foreach ($sites as $siteDetails) {
             $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? null, $siteDetails['path']);
             $site = $this->createSite($siteDetails['meta_data'], $siteDetails['path']);
@@ -240,7 +236,7 @@ class Builder
      * @param $options
      * @throws FoonooException
      */
-    private function setOptions($options)
+    private function setOptions(array $options): void
     {
         if (!isset($options['input']) || $options['input'] === '') {
             $options['input'] = getcwd();

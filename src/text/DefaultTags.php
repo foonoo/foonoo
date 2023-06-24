@@ -92,7 +92,7 @@ class DefaultTags
     /**
      * Renders an image tag.
      *
-     * @param array $matches
+     * @param array $args
      * @return string
      */
     public function renderImageTag(array $args)

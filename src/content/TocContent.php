@@ -14,15 +14,13 @@ class TocContent extends Content
 {
     /**
      * An instance of the table of contents generator.
-     * @var TocGenerator
      */
-    private $tocGenerator;
+    private TocGenerator $tocGenerator;
     
     /**
      * An instance of the template engine.
-     * @var TemplateEngine
      */
-    private $templateEngine;
+    private TemplateEngine $templateEngine;
     
     /**
      * @param TocGenerator $tocGenerator
@@ -43,5 +41,9 @@ class TocContent extends Content
     public function render(): string
     {
         return $this->templateEngine->render("toc", ['tree' => $this->tocGenerator->getGlobalTOC()]);
+    }
+
+    public function getID(): string {
+        return uniqid("toc_");
     }
 }

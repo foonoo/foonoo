@@ -9,10 +9,8 @@ class IndexWrapper extends Content implements ThemableInterface
 {
     /**
      * The content to be wrapped.
-     * 
-     * @var Content
      */
-    private $content;
+    private ThemableInterface|Content $content;
     
     /**
      * Create a new index wrapper.

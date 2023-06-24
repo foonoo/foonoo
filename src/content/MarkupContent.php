@@ -7,14 +7,11 @@ use foonoo\text\TextConverter;
 
 /**
  * Class MarkupContent
- *
- * @package foonoo\sites
  */
 class MarkupContent extends Content implements ThemableInterface
 {
     private $body;
     private $frontMatter;
-    private $firstLineOfBody = 0;
     private $textConverter;
     private $frontMatterReader;
     private $rendered;
@@ -34,7 +31,6 @@ class MarkupContent extends Content implements ThemableInterface
     /**
      * Return the front matter from the markup.
      * 
-     * @throws ParseException
      * @return array
      */
     protected function getFrontMatter() : array

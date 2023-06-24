@@ -66,11 +66,6 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
     {
         $this->metaData = $metaData;
     }
-    
-    public function setFirstLineOfBody(int $firstLineOfBody): void
-    {
-        $this->firstLineOfBody = $firstLineOfBody;
-    }
 
     public function setData($data): void
     {

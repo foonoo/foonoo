@@ -41,10 +41,7 @@ class AssetPipeline
 
     /**
      * Add an item to the pipeline.
-     *
-     * @param string $item
-     * @param string $type
-     * @param array|string $options
+     * 
      * @throws FileNotFoundException
      */
     public function addItem(string $item, string $type, array $options=[]): void

@@ -7,6 +7,7 @@ namespace foonoo\asset_pipeline;
 use MatthiasMullie\Minify\JS;
 use MatthiasMullie\Minify\Minify;
 use ntentan\utils\Filesystem;
+use ntentan\utils\exceptions\FileNotFoundException;
 
 
 class JSProcessor extends MinifiableProcessor

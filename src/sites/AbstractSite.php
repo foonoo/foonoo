@@ -8,63 +8,53 @@ use foonoo\content\AutomaticContentFactory;
 
 /**
  * Base abstract class for all site generators.
- * 
- * @package nyansapow\sites
  */
 abstract class AbstractSite
 {
     /**
      * Meta data for the site, read from the site's site.yml file.
-     * @var array
      */
-    protected $metaData;
+    protected array $metaData;
 
     /**
      * A path to the site relative to the root site.
-     * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * Absolute path to the root site.
-     * @var string
      */
-    private $sourceRoot;
+    private string $sourceRoot;
 
     /**
      * Absolute path to the destination site.
-     * @var string
      */
-    private $destinationRoot;
+    private string $destinationRoot;
 
     /**
      * Data that should be sent to templates for this site when rendered.
-     * @var array
      */
-    private $templateData;
+    private array $templateData;
     
     /**
      * The path to the site's sources.
-     * @var string
      */
-    private $sourcePath;
+    private string $sourcePath;
     
     /**
      * The path to the site's destination.
-     * @var string
      */
-    private $destinationPath;
+    private string $destinationPath;
 
     /**
      * Used for creating automatic content from files.
-     * @var AutomaticContentFactory
      */
-    protected $automaticContentFactory;
+    protected AutomaticContentFactory $automaticContentFactory;
 
     /**
-     * @var AssetPipeline
+     * An instance of the asset pipeline.
      */
-    protected $assetPipeline;
+    protected AssetPipeline $assetPipeline;
 
     private $cache;
 
@@ -186,12 +176,8 @@ abstract class AbstractSite
 
     /**
      * Generate a string that represents a path that's relative to another.
-     * 
-     * @param type $path
-     * @param type $relativeTo
-     * @return string
      */
-    private function makeRelativeLocation($path, $relativeTo): string
+    private function makeRelativeLocation(string $path, string $relativeTo): string
     {
         // Generate a relative location for the assets
         $dir = substr(preg_replace('#(/\\\\)+|(\\\\/)+|/+|\\\\+#', '/', $path), strlen($relativeTo));

@@ -149,19 +149,18 @@ class BlogSite extends AbstractSite
 
     /**
      * 
-     * @param type $stage
-     * @param type $value
-     * @return type
      */
-    private function formatValue($stage, $value)
+    private function formatValue(string $stage, string $value) : string
     {
+        $formatted = "";
         switch ($stage) {
             case 'days':
             case 'years':
-                return $value;
+                $formatted = $value;
             case 'months':
-                return date("M", $value);
+                $formatted = date("M", $value);
         }
+        return $formatted;
     }
 
     /**

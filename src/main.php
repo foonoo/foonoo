@@ -40,16 +40,12 @@ use foonoo\theming\ThemeManager;
 use Symfony\Component\Yaml\Parser;
 use ntentan\utils\Text;
 
-/** @var Container $container */
+
 $container = new Container();
-
-
-//$container->bind(Composer\Autoload\ClassLoader::class, fn () => $composer);
-
 $container->bind(Composer\Autoload\ClassLoader::class)->to(fn() => $composer);
 
 $container->bind(TemplateRenderer::class)->to(function ($container) {
-    /** @var EngineRegistry $engineRegistry */
+    /** @var \ntentan\honam\EngineRegistry $engineRegistry */
     $engineRegistry = $container->get(EngineRegistry::class);
     $templateFileResolver = $container->get(TemplateFileResolver::class);
     $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
@@ -70,7 +66,7 @@ $container->bind(Parser::class)->to(Parser::class)->asSingleton();
 $container->bind(ThemeManager::class)->to(ThemeManager::class)->asSingleton();
 
 $container->bind(TagParser::class)->to(function ($container) {
-    /** @var DefaultTags $defaultTags */
+    /** @var \foonoo\text\DefaultTags $defaultTags */
     $defaultTags = $container->get(DefaultTags::class);
     $tagParser = new TagParser();
     $regexMap = $defaultTags->getRegexMap();

@@ -17,8 +17,6 @@ use foonoo\utils\Nomenclature;
  * After any content is rendered, the registered event in this class is then used to replace the the container with
  * an actual table of contents. This delayed process is necessary because all other changes to the content must be made
  * so the TOC generator can capture those, too.
- *
- * @package nyansapow
  */
 class TocGenerator
 {

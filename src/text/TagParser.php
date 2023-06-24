@@ -33,7 +33,7 @@ class TagParser
      * @param array $definition A regular expression
      * @param int $priority
      * @param callable $callable
-     * @param string|null $name
+     * @param string $name
      */
     public function registerTag(array $definition, int $priority, callable $callable, string $name): void
     {
@@ -240,11 +240,8 @@ class TagParser
 
     /**
      * Parse a all tags in a given line.
-     *
-     * @param $line
-     * @return string|string[]|null
      */
-    private function parseLine($line) : string
+    private function parseLine(string $line) : string
     {
         $output = "";
         $tokens = $this->getTokens($line);

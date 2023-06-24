@@ -21,24 +21,18 @@ class DefaultSite extends AbstractSite
 {
     /**
      * Instance of the template engine for rendering templated pages.
-     *
-     * @var TemplateEngine
      */
-    private $templateEngine;
+    private TemplateEngine $templateEngine;
 
     /**
      * Generates the table of contents for a site.
-     * 
-     * @var TocGenerator
      */
-    private $tocGenerator;
+    private TocGenerator $tocGenerator;
     
     /**
      * Converts texts between different formats.
-     * 
-     * @var TextConnverter
      */
-    private $textConverter;
+    private TextConverter $textConverter;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, TextConverter $textConverter)
     {
