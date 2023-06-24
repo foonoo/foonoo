@@ -117,7 +117,7 @@ class Builder
     /**
      * @param string $path
      * @param bool $root
-     * @return array<AbstractSite>
+     * @return array
      * @throws FoonooException
      */
     private function getSites(string $path, bool $root = false): array
@@ -140,7 +140,7 @@ class Builder
             while (false !== ($file = $dir->read())) {
                 //@todo I feel there's an easier way to accomplish this
                 if (array_reduce(
-                    $metaData['excluded_paths'] ?? [], //$site->getSetting('excluded_paths'),
+                    $metaData['excluded_paths'], 
                     function ($carry, $item) use ($path, $file) {
                         return $carry | fnmatch($item, "{$path}{$file}", FNM_NOESCAPE);
                     },
@@ -288,11 +288,15 @@ class Builder
                 throw $e;
             }
             $this->io->error(
-                "\n*** The following error occured while processing " .
-                (
-                    $this->currentSite === null ? 
-                    "site" : "the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"") . 
+                "\n*** The following error occured while processing the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"" . 
                 ":\n{$e->getMessage()}\n");
+                                
+//                "\n*** The following error occured while processing " .
+//                (
+//                    $this->currentSite === null ? 
+//                    "site" : "the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"") . 
+//                ":\n{$e->getMessage()}\n"
+//            );
             exit(102);
         }
     }

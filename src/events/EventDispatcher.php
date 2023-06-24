@@ -32,7 +32,7 @@ class EventDispatcher
         unset($this->listeners[$eventType][$id]);
     }
 
-    public function dispatch(string $eventType, array $args)
+    public function dispatch(string $eventType, array $args) : mixed
     {
         $this->checkEventType($eventType);
         if(empty($this->listeners[$eventType])) {

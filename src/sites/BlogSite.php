@@ -11,7 +11,6 @@ use ntentan\utils\Filesystem;
 
 /**
  * Represents a blog site that has posts and pages.
- * @package foonoo\sites
  */
 class BlogSite extends AbstractSite
 {
@@ -126,17 +125,17 @@ class BlogSite extends AbstractSite
      *
      * @param array $archive posts to be archived
      * @param array $order The order, in terms of period, in which posts should be categorized.
-     * @param null $stage The current stage of the order.
+     * @param string $stage The current stage of the order.
      * @param string $title The title of the archive.
      * @param string $baseUrl The base URL on which to build the archive.
      * @return array
      */
-    private function getArchive(array $archive, $order = array(), $stage = null, $title = 'Archive', $baseUrl = ''): array
+    private function getArchive(array $archive, array $order = array(), string $stage = null, string $title = 'Archive', string $baseUrl = ''): array
     {
         $pages = [];
         $nextStage = array_shift($order);
         foreach ($archive as $value => $posts) {
-            $newTitle = $this->formatValue($stage, $value) . " $title";
+            $newTitle = $this->formatDateValue($stage, $value) . " $title";
             $newBaseUrl = "$baseUrl$value/";
             $pages[] = $this->getIndexPage("{$newBaseUrl}index.html", $posts['posts'], $newTitle);
             if ($nextStage != null) {
@@ -150,7 +149,7 @@ class BlogSite extends AbstractSite
     /**
      * 
      */
-    private function formatValue(string $stage, string $value) : string
+    private function formatDateValue(string $stage, int $value) : string
     {
         $formatted = "";
         switch ($stage) {
@@ -158,7 +157,7 @@ class BlogSite extends AbstractSite
             case 'years':
                 $formatted = $value;
             case 'months':
-                $formatted = date("M", $value);
+                $formatted = date("F", mktime(0, 0, 0, $value, 10));
         }
         return $formatted;
     }
@@ -181,7 +180,7 @@ class BlogSite extends AbstractSite
                 $page->setTemplateData($this->getTemplateData($this->getDestinationPath($page->getDestination())));
                 $page->setSiteTaxonomies($this->getTaxonomies());
                 $pages[] = $page;
-                if ($nextPost) {
+                if ($nextPost !== null) {
                     $page->setNext($nextPost);
                     $nextPost->setPrevious($page);
                 }

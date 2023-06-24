@@ -11,4 +11,9 @@ class SiteWriteEnded
     public function __construct(AbstractSite $site) {
         $this->site = $site;
     }
+    
+    public function getSite() : AbstractSite
+    {
+        return $this->site;
+    }
 }

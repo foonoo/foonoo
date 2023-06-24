@@ -4,10 +4,7 @@
 namespace foonoo\utils;
 
 /**
- * A utility trait for classes that need to convert strings between human readable text formats and code friendly
- * labels.
- *
- * @package foonoo\utils
+ * A utility trait for classes that need to convert strings between human readable text formats and code friendly labels.
  */
 trait Nomenclature
 {
@@ -19,9 +16,9 @@ trait Nomenclature
      *
      * @param string $text Any text to be converted
      * @param array $ids An array of already generated IDs within which our new ID must be unique.
-     * @return string|string[]|null
+     * @return string
      */
-    private function makeId(string $text, array $ids=[])
+    private function makeId(string $text, array $ids=[]): string
     {
         $baseId = preg_replace("/([^a-zA-Z0-9\._]+)/", "-", strtolower($text));
         $id = $baseId;

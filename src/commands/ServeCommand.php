@@ -59,9 +59,9 @@ class ServeCommand implements CommandInterface
         $this->generateCommand->execute($options);
         declare(ticks=1)
         if(function_exists("pcntl_signal")) {
-            pcntl_signal(SIGINT, [$this, 'shutdown']);
+            pcntl_signal(SIGINT, fn() => $this->shutdown());
         } else if (function_exists("sapi_windows_set_ctrl_handler")) {
-            sapi_windows_set_ctrl_handler([$this, 'shutdown'], true);
+            sapi_windows_set_ctrl_handler(fn() => $this->shutdown(), true);
         }
         $spec = [STDOUT, STDIN, STDERR];
         $pipes = [];

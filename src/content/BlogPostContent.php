@@ -18,20 +18,17 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
     protected $template = "post";
 
     /**
-     * The next post
-     * @var BlogPostContent
+     * The next post.
      */
     private $next;
 
     /**
-     * The previous post
-     * @var BlogPostContent
+     * The previous post.
      */
     private $previous;
 
     /**
-     * An instance of the HTML renderer
-     * @var TextConverter
+     * An instance of the HTML renderer.
      */
     private $textConverter;
     private $templateEngine;

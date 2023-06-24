@@ -94,8 +94,10 @@ class SiteWriter
             $this->eventDispatcher->dispatch(ContentGenerationStarted::class, ['content' => $content]);
             $output = $content->render();
             /** @var ContentOutputGenerated $event */
-            $event = $this->eventDispatcher->dispatch(ContentOutputGenerated::class, ['output' => $output, 'content' => $content, 'site' => $site]);
-            $outputs[$i] = $event ? $event->getOutput() : $output;
+            $event = $this->eventDispatcher->dispatch(
+                    ContentOutputGenerated::class, ['output' => $output, 'content' => $content, 'site' => $site]
+                );
+            $outputs[$i] = $event !== null ? $event->getOutput() : $output;
         }
 
         $this->eventDispatcher->dispatch(AllContentsRendered::class, ['site' => $site]);

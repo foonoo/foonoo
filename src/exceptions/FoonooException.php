@@ -19,5 +19,8 @@ class FoonooException extends \Exception
         $this->currentSite = $site;
     }
     
-    
+    public function getSite() : AbstractSite
+    {
+        return $this->currentSite;
+    }
 }

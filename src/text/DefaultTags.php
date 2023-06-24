@@ -29,11 +29,6 @@ class DefaultTags
     private $tocGenerator;
 
     /**
-     * @var array
-     */
-    private $data;
-
-    /**
      * @var AbstractSite
      */
     private $site;
@@ -84,16 +79,8 @@ class DefaultTags
         ];
     }
 
-    public function setData(array $data)
-    {
-        $this->data = $data;
-    }
-
     /**
      * Renders an image tag.
-     *
-     * @param array $args
-     * @return string
      */
     public function renderImageTag(array $args)
     {

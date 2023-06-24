@@ -5,8 +5,6 @@ namespace foonoo\events;
 
 /**
  * This event is triggered after the output of any content is generated and ready to be written.
- *
- * @package foonoo\events
  */
 class ContentLayoutApplied extends BaseOutputEvent
 {
@@ -18,7 +16,7 @@ class ContentLayoutApplied extends BaseOutputEvent
     public function getDOM(): ?\DOMDocument
     {
         // Create a DOM tree for objects that are possibly themed
-        if (!$this->dom && $this->hasDOM()) {
+        if ($this->dom === null && $this->hasDOM()) {
             $this->dom = new \DOMDocument();
             @$this->dom->loadHTML($this->output, LIBXML_HTML_NODEFDTD);
         }
@@ -33,7 +31,7 @@ class ContentLayoutApplied extends BaseOutputEvent
      */
     public function getOutput(): string
     {
-        if ($this->dom && $this->domPossiblyModified) {
+        if ($this->dom !== null && $this->domPossiblyModified) {
             $this->output = $this->dom->saveHTML();
             $this->domPossiblyModified = false;
         }
