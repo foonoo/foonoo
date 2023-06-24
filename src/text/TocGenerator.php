@@ -63,7 +63,6 @@ class TocGenerator
      * as a placeholder while the rest of the page is genereted. After all content is ready, the ContentOutputGenerated
      * event registered through the constructor calls the
      *
-     * @param $destination
      * @return string
      */
     public function createContainer($id): string
