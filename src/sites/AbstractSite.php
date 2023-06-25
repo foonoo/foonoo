@@ -39,12 +39,12 @@ abstract class AbstractSite
     /**
      * The path to the site's sources.
      */
-    private string $sourcePath;
+    private string $sourcePath = "";
     
     /**
      * The path to the site's destination.
      */
-    private string $destinationPath;
+    private string $destinationPath = "";
 
     /**
      * Used for creating automatic content from files.
