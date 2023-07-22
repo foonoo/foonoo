@@ -14,7 +14,6 @@ use foonoo\asset_pipeline\AssetPipelineFactory;
 use ntentan\utils\Filesystem;
 use ntentan\utils\filesystem\File;
 use Symfony\Component\Yaml\Parser as YamlParser;
-use foonoo\asset_pipeline\AssetPipeline;
 
 /**
  * Builds sites.
@@ -71,7 +70,7 @@ class Builder
      * 
      * @var AbstractSite
      */
-    private AbstractSite $currentSite;
+    private ?AbstractSite $currentSite = null;
     
     /**
      * An instance of the asset pipeline factory.
@@ -277,16 +276,11 @@ class Builder
             if ($options['debug']) {
                 throw $e;
             }
+            $siteName = $this->currentSite == null ? "" : $this->currentSite->getType();
+            $siteSource = $this->currentSite == null ? "" : " from {$this->currentSite->getSourcePath()}";
             $this->io->error(
-                "\n*** The following error occured while processing the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"" . 
-                ":\n{$e->getMessage()}\n");
-                                
-//                "\n*** The following error occured while processing " .
-//                (
-//                    $this->currentSite === null ? 
-//                    "site" : "the {$this->currentSite->getType()} site from \"{$this->currentSite->getSourcePath()}\"") . 
-//                ":\n{$e->getMessage()}\n"
-//            );
+                "\n*** The following error occurred while processing the{$siteName} site{$siteSource}:" . 
+                "\n{$e->getMessage()}\n");
             exit(102);
         }
     }
