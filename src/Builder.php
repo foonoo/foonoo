@@ -134,7 +134,6 @@ class Builder
             }
             $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"] + ($metaData['excluded_paths'] ?? []);
             
-            //$site = $this->createSite($metaData, $path);
             $sites []= ['meta_data' => $metaData, 'path' => $path] ;//$site;
             while (false !== ($file = $dir->read())) {
                 //@todo I feel there's an easier way to accomplish this
@@ -286,7 +285,7 @@ class Builder
     }
 
     /**
-     * Read data from a bunch of YAML files and put them into a single array.
+     * Read data from a bunch of YAML or JSON files that could later be injected into pages.
      * 
      * @param string $path
      * @return array<string,mixed>
@@ -298,11 +297,17 @@ class Builder
             return $data;
         }
         $dir = dir($path);
+        $extensions = ["json", "yml", "yaml"];
         while (false !== ($file = $dir->read())) {
-            $extension = pathinfo($file, PATHINFO_EXTENSION);
-            if ($extension === 'yml' || $extension === 'yaml') {
-                $data[pathinfo($file, PATHINFO_FILENAME)] = $this->yamlParser->parse(file_get_contents("$path/$file"));
+            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            if (array_key_exists($filename, $data) || !in_array($extension, $extensions)) {
+                continue;
             }
+            $data[$filename] = match($extension) {
+                'yml', 'yaml' => $this->yamlParser->parse(file_get_contents("$path/$file")),
+                'json' => json_decode(file_get_contents("$path/$file"))
+            };
         }
         return $data;
     }
