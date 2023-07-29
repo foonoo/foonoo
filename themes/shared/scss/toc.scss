@@ -29,16 +29,23 @@ $side-toc-color: lighten($secondary-color, 50%);
         margin-left: 15px;
     }
     
-    >ul {
+    >ul.toc-level-1 {
         padding: 20px;
         margin-left: 0px;
         > li {
-            margin-bottom: 25px;
+            padding: 5px;
+            padding-left: 7px;
+            padding-right: 7px;
             > a {
-                color: darken($secondary-color, 20%);
+                color: darken($secondary-color, 10%);
                 font-size: 1em;
             }
-        }        
+        }
+        
+        >li.active {
+            > a {color: darken($secondary-color, 30%)}
+            background-color: lighten($secondary-color, 50%);
+        }
     }  
 }
 

@@ -155,7 +155,10 @@ abstract class AbstractSite
     {
         $this->templateData['site_menu'] = $this->metaData['menu'] ?? [];
         $this->templateData['site_tagline'] = $this->metaData['tagline'] ?? '';
+        $this->templateData['destination'] = $contentDestination;
+        
         if ($contentDestination !== null) {
+            $contentDestination = $this->getDestinationPath($contentDestination);
             $relativeSitePath = $this->makeRelativeLocation($contentDestination, $this->getDestinationPath());
             return array_merge([
                     'home_path' => $this->makeRelativeLocation($contentDestination, $this->destinationRoot),

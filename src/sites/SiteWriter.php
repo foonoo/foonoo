@@ -122,7 +122,7 @@ class SiteWriter
         $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();
 
         if ($layout) {
-            $templateData = array_merge($site->getTemplateData($destinationPath), $content->getMetaData());
+            $templateData = array_merge($site->getTemplateData($content->getDestination()), $content->getMetaData());
             $templateData['body'] = $output;
             $templateData['content_title'] = $content->getMetaData()['frontmatter']['title'] ?? $content->getMetaData()['title'] ?? "";
             if (is_a($content, ThemableInterface::class)) {

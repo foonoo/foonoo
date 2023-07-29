@@ -112,7 +112,9 @@ class DefaultSite extends AbstractSite
         if(isset($this->metaData['enable-toc']) && $this->metaData['enable-toc'] == true) {
             $globalToc = $this->tocGenerator->getGlobalTOC();
             $templateData['has_toc'] = true;
-            $templateData['global_toc'] = $globalToc;            
+            $templateData['global_toc'] = $globalToc;         
+            $contentToc = array_filter($globalToc, fn ($x) => $x["destination"] == $contentDestination);
+            $templateData['content_toc'] = count($contentToc) > 0 ? reset($contentToc)["children"] : [];
         }
         if(isset($this->metaData['title'])) {
             $templateData['site_title'] = $this->metaData['title'];

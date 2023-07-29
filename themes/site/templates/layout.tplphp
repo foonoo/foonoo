@@ -18,7 +18,7 @@
             <?php if(isset($has_toc) && $has_toc): ?>
             <div id="left-toc" class="side-toc-container">
                 <div class="side-toc">
-                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1]) ?>
+                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1, 'destination' => $destination]) ?>
                 </div>            
             </div>
             <div id="side-toc-modal" class="modal"></div>                                        
@@ -29,7 +29,7 @@
             <?php if(isset($has_toc) && $has_toc): ?>
             <div class="side-toc-container">
                 <div class="side-toc">
-                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'min_level' => 2]) ?>
+                    <?= $this->partial("table_of_contents_tag", ['tree' => $content_toc->u()]) ?>
                 </div>            
             </div>
             <div id="side-toc-modal" class="modal"></div>                                        
