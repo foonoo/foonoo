@@ -11,7 +11,7 @@ if(count($tree) > 0 && $min_level <= $tree[0]['level'] && $max_level >= $tree[0]
         <li class="<?= $item['destination'] == $destination ? "active" : "inactive" ?>">
             <a href="<?= $item['destination'] ?><?= $item['level'] > 1 ? "#{$item['id']}" : "" ?>"><?= $item['title'] ?></a>
             <?php if(!empty($item['children']->u())) {
-                $this->partial('table_of_contents_tag', 
+                print $this->partial('table_of_contents_tag', 
                     ['tree' => $item['children'], 'min_level' => $min_level, 'max_level' => $max_level, 'destination' => $destination]
                 ); 
             }?>

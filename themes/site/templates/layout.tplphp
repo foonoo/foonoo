@@ -27,7 +27,7 @@
             <article id="body"><?= $body->u() ?></article>
 
             <?php if(isset($has_toc) && $has_toc): ?>
-            <div class="side-toc-container">
+            <div id="right-toc" class="side-toc-container">
                 <div class="side-toc">
                     <?= $this->partial("table_of_contents_tag", ['tree' => $content_toc->u()]) ?>
                 </div>            

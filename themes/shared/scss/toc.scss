@@ -23,19 +23,28 @@ $side-toc-color: lighten($secondary-color, 50%);
     
     ul {
         margin:0px;
-        padding: 0px;
-        list-style: none;
+        padding-left: 15px;
         font-size: 0.98em;
-        margin-left: 15px;
+        list-style-type:"\2022";
+
+        li {
+            color: darken($secondary-color, 10%);
+            padding: 2px;
+            margin-left: 5px;
+        }
     }
     
     >ul.toc-level-1 {
-        padding: 20px;
+        padding: 10px;
+        padding-top: 20px;
+        list-style: none;
         margin-left: 0px;
+        font-size: normal;
         > li {
             padding: 5px;
             padding-left: 7px;
             padding-right: 7px;
+            font-weight: bold;
             > a {
                 color: darken($secondary-color, 10%);
                 font-size: 1em;
@@ -50,9 +59,26 @@ $side-toc-color: lighten($secondary-color, 50%);
 }
 
 #left-toc.side-toc-container {
-    margin-right: 30px;
+    box-sizing: border-box;
+    width: $toc-width;    
     .side-toc {
-        border-right: 1px solid lighten($secondary-color, 45%)
+        border-right: 1px solid lighten($secondary-color, 50%);
+        width: $toc-width - 30px;
+        margin-right: 30px;
+    }
+}
+
+#right-toc.side-toc-container {
+    font-size: 14px;
+    ul:first-child {
+        border-left: 1px solid lighten($secondary-color, 50%);
+        margin-left: 30px;
+        padding-top: 20px;
+        padding-left: 10px;
+        li::marker {
+            line-height: 14px;
+            padding-bottom: 5px;
+        }
     }
 }
 

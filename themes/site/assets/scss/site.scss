@@ -5,7 +5,7 @@ $banner-height: 52px;
 $max-content-width: 850px;
 
 // The maximum width of the Table of contents section on either side of the content.
-$toc-width: 250px;
+$toc-width: 280px;
 
 // The full width of any page that is rendered with TOC.
 $full-max-width: ($toc-width * 2) + $max-content-width;
@@ -78,8 +78,6 @@ html {
         width: $max-content-width;
         margin-left: auto;
         margin-right: auto;
-        //padding-left: 10px;
-        //padding-right: 10px;
         box-sizing: border-box;
         
         > header {

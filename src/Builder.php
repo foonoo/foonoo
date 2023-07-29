@@ -132,7 +132,9 @@ class Builder
             if (empty($metaData)) {
                 $metaData = ['name' => $this->options['site-name'] ?? "", 'type' => $this->options['site-type']];
             }
-            $metaData['excluded_paths'] = ['*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"] + ($metaData['excluded_paths'] ?? []);
+            $metaData['excluded_paths'] = [
+                    '*/.', '*/..', "*/.*", "*/site.yml", "*/site.yaml", $this->options['output'], "*/_foonoo*"
+                ] + ($metaData['excluded_paths'] ?? []);
             
             $sites []= ['meta_data' => $metaData, 'path' => $path] ;//$site;
             while (false !== ($file = $dir->read())) {
@@ -172,6 +174,7 @@ class Builder
                 $metaData['excluded_paths']
             );
         }
+
         $site = $this->siteTypeRegistry->get($metaData['type'])->create();
         $shortPath = substr($path, strlen($this->options['input']));
 
