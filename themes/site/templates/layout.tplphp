@@ -16,13 +16,24 @@
         <?= $this->partial("header", ['site_title' => $site_title, 'toc_tag' => $toc_tag, 'site_menu' => $site_menu ?? []]) ?>
         <div id="body-wrapper" class="wrapper <?= $toc_tag ?>">
             <?php if(isset($has_toc) && $has_toc): ?>
-            <div id="side-toc">
-                <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u()]) ?>
+            <div id="left-toc" class="side-toc-container">
+                <div class="side-toc">
+                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1]) ?>
+                </div>            
             </div>
-            <div id="side-toc-container"></div>
-            <div id="side-toc-modal" class="modal"></div>                            
+            <div id="side-toc-modal" class="modal"></div>                                        
             <?php endif; ?>
+
             <article id="body"><?= $body->u() ?></article>
+
+            <?php if(isset($has_toc) && $has_toc): ?>
+            <div class="side-toc-container">
+                <div class="side-toc">
+                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'min_level' => 2]) ?>
+                </div>            
+            </div>
+            <div id="side-toc-modal" class="modal"></div>                                        
+            <?php endif; ?>            
         </div>
     </body>
 </html>

@@ -1,10 +1,21 @@
-$banner-height: 48px;
+// The height of the top banner
+$banner-height: 52px;
+
+// The maximum width of any piece of content
+$max-content-width: 850px;
+
+// The maximum width of the Table of contents section on either side of the content.
+$toc-width: 250px;
+
+// The full width of any page that is rendered with TOC.
+$full-max-width: ($toc-width * 2) + $max-content-width;
+
 
 body{
     margin:0px;
     font-family: 'Open Sans', sans-serif;
     line-height: 1.4;
-    font-size: larger;
+    //font-size: larger;
     min-width: 300px;
 }
 
@@ -27,7 +38,7 @@ html {
 
 .wrapper {
     width: 100%;
-    max-width: 950px;
+    max-width: $max-content-width;
     margin-left: auto;
     margin-right: auto;
 }
@@ -64,6 +75,9 @@ html {
     
     > #banner-wrapper {
         display: flex;
+        width: $max-content-width;
+        margin-left: auto;
+        margin-right: auto;
         //padding-left: 10px;
         //padding-right: 10px;
         box-sizing: border-box;
@@ -76,6 +90,10 @@ html {
             margin-left: 10px
         }
     }
+
+    > #banner-wrapper.has-toc {
+        width: $full-max-width;
+    }
     
     #banner {
         font-family: Montserrat, sans-serif;
@@ -83,6 +101,10 @@ html {
         font-weight: bold;
         line-height: $banner-height;
     }
+}
+
+#body-wrapper.has-toc {
+    width: $full-max-width;
 }
 
 #main-navigation {
@@ -124,7 +146,7 @@ html {
     
     .wrapper.has-toc {
         width: 100%;
-        max-width: 950px;
+        max-width: $max-content-width;
         margin-left: auto;
         margin-right: auto;
     }
@@ -160,7 +182,7 @@ html {
 
 
 article {
-    max-width: 950px;
+    max-width: $max-content-width;
     width: 100%;
     margin-left: auto;
     margin-right: auto;

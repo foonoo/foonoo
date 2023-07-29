@@ -109,11 +109,6 @@ class SiteWriter
         $this->eventDispatcher->dispatch(SiteWriteEnded::class, ['site' => $site]);
     }
 
-    // public function setOptions($options)
-    // {
-    //     $this->options = $options;
-    // }
-
     /**
      * @param AbstractSite $site
      * @param Theme $theme

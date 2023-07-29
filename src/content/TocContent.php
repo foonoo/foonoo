@@ -6,7 +6,7 @@ use foonoo\text\TocGenerator;
 use foonoo\text\TemplateEngine;
 
 /**
- * Description of TOCContent
+ * Renders a page that presents the sites entire table of contents. Typically used when site index is defined as _TOC_.
  *
  * @author ekow
  */

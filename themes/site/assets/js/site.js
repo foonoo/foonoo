@@ -1,26 +1,10 @@
-let sideToc = document.getElementById('side-toc');
-let modalBackgrounds = document.querySelectorAll(".modal");
-let tocHamburger = document.getElementById('toc-hamburger');
-let menuHamburger = document.getElementById('menu-hamburger');
-let topMenu = document.getElementById('main-navigation');
-let currentModal = {menu: null, button: null, modalBackground: null};
+const sideToc = document.getElementById('side-toc');
+const modalBackgrounds = document.querySelectorAll(".modal");
+const tocHamburger = document.getElementById('toc-hamburger');
+const menuHamburger = document.getElementById('menu-hamburger');
+const topMenu = document.getElementById('main-navigation');
+const currentModal = {menu: null, button: null, modalBackground: null};
 
-function resizeSideToc() {
-     
-    // Automatically adjust the height of the side menu
-    // @todo find a way to prevent this from running when menu is hidden
-    
-    let height = window.innerHeight || document.body.clientHeight;
-    height = height - document.getElementById('banner-wrapper').clientHeight;
-    sideToc.style.height = height + 'px';
-    modalBackgrounds.forEach(x => x.style.height = height + 'px');
-}
-
-//function toggleSideToc() {
-//    sideToc.classList.toggle("active");
-//    modalBackground.classList.toggle("active");
-//    tocHamburger.classList.toggle('active');
-//}
 
 function toggleMenu(menu, modalBackground) {
     return function(e) {
@@ -37,9 +21,7 @@ function toggleMenu(menu, modalBackground) {
 }
 
 if(sideToc !== null) {
-    window.addEventListener('load', resizeSideToc);
-    window.addEventListener('resize', resizeSideToc);
-    tocHamburger.addEventListener('click', toggleMenu(sideToc, document.getElementById('side-toc-modal')));//toggleSideToc);
+    tocHamburger.addEventListener('click', toggleMenu(sideToc, document.getElementById('side-toc-modal')));
 }
 
 if(topMenu !== null) {
