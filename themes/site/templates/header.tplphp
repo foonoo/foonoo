@@ -1,7 +1,7 @@
-<?php if(isset($site_title)): ?>
+<?php if(isset($site_title) && $site_title->u() != ""): ?>
 <div id="banner-container">
-    <div id="banner-wrapper" class="<?= $toc_tag ?>">
-        <?php if($toc_tag->u() !== ""): ?>
+    <div id="banner-wrapper" class="<?= $has_toc ? "has-toc" : "" ?>">
+        <?php if($has_toc): ?>
         <svg
            id="toc-hamburger"
            class="hamburger"

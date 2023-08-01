@@ -31,7 +31,7 @@ class IndexWrapper extends Content implements ThemableInterface
     public function getMetaData(): array
     {
         $metaData = $this->content->getMetaData();
-        $metaData['skip-from-toc'] = true;
+        $metaData['toc-skip'] = true;
         return $metaData;
     }
 

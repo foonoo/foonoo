@@ -2,6 +2,7 @@
 
 namespace foonoo\text;
 
+use foonoo\events\AllContentsRendered;
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
 use foonoo\events\SiteWriteStarted;
@@ -46,14 +47,19 @@ class TocGenerator
      */
     private $collectTOC;
 
+    private $globalTOCComplete;
+
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
     {
         $events->addListener(ContentOutputGenerated::class, $this->getRenderer());
         $events->addListener(SiteWriteStarted::class, function (SiteWriteStarted $event) {
+            // Reset TOC collection
             $this->globalTOC = [];
+            $this->globalTOCComplete = false;
             $meta = $event->getSite()->getMetaData();
             $this->collectTOC = (bool)($meta['enable-toc'] ?? false);
         });
+        $events->addListener(AllContentsRendered::class, fn() => $this->globalTOCComplete = true);
         $this->templateEngine = $templateEngine;
     }
 
@@ -93,9 +99,12 @@ class TocGenerator
             }
             $xpath = new \DOMXPath($dom);
             $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
+            $tocWeight = $metaData["frontmatter"]["toc-weight"] ?? 0;
+
+            for($i = 0; $i < count($tree); $i++) { $tree[$i]["weight"] = $tocWeight; }
 
             // Use this for the global TOC
-            if ($this->collectTOC && !($metaData['skip-from-toc'] ?? false)) {
+            if ($this->collectTOC && !($metaData['toc-skip'] ?? false)) {
                 $this->globalTOC[$destination] = $tree;
             }
             if ($render) {
@@ -182,12 +191,19 @@ class TocGenerator
      */
     public function getGlobalTOC(): array
     {
+        if(!$this->globalTOCComplete) {
+            return [];
+        }
+
         $toc = [];
         foreach ($this->globalTOC as $contentTOC) {
             foreach ($contentTOC as $item) {
                 $toc[] = $item;
             }
         }
+
+        usort($toc, fn($a, $b) => $b["weight"] <=> $a["weight"]);
         return $toc;
     }
 }
+

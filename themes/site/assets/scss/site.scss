@@ -75,7 +75,7 @@ html {
     
     > #banner-wrapper {
         display: flex;
-        width: $max-content-width;
+        max-width: $max-content-width;
         margin-left: auto;
         margin-right: auto;
         box-sizing: border-box;
@@ -90,7 +90,7 @@ html {
     }
 
     > #banner-wrapper.has-toc {
-        width: $full-max-width;
+        max-width: $full-max-width;
     }
     
     #banner {
@@ -137,10 +137,10 @@ html {
     }
 }
 
-@media screen and (max-width: 1350px) {
-    body {
-        font-size: normal;
-    }
+@media screen and (max-width: $full-max-width) {
+    // body {
+    //     font-size: normal;
+    // }
     
     .wrapper.has-toc {
         width: 100%;
@@ -149,28 +149,30 @@ html {
         margin-right: auto;
     }
     
-    .hamburger {
-        display: block
-    }
+    #banner-wrapper.has-toc {
+        .hamburger {
+            display: block
+        }    
     
-    #main-navigation {
-        width: 100%;
-        display: none;
-        position: absolute;
-        top: $banner-height;
-        left: 0px;
-    }
-    
-    #main-navigation.active {
-        display: block;
-        background-color: darken($banner-color, 10%);
-        z-index: 100;
-        ul {
+        #main-navigation {
             width: 100%;
-            >li {
-                display:block;
-            }
-        }        
+            display: none;
+            position: absolute;
+            top: $banner-height;
+            left: 0px;
+        }
+        
+        #main-navigation.active {
+            display: block;
+            background-color: darken($banner-color, 10%);
+            z-index: 100;
+            ul {
+                width: 100%;
+                >li {
+                    display:block;
+                }
+            }        
+        }
     }
 }
 
@@ -185,7 +187,6 @@ article {
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
-    margin-top:$banner-height;
     color:#404040;
     box-sizing: border-box;
     
@@ -213,6 +214,10 @@ article {
     }
 }
 
+article.has-header {
+    margin-top:$banner-height;
+}
+
 img {
     width: 100%;
     display: inline-block;
@@ -233,6 +238,7 @@ figure {
         color: $secondary-color;
         padding: 5px;
         font-size: 0.9em;
+        text-align: center;
     }
 }
 
