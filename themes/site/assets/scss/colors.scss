@@ -9,3 +9,8 @@ $header-colors: darken($banner-color, 15%);
 .ashes-banner-foreground {
     color: $banner-text;
 }
+
+.ashes-primary-foreground { color: $primary-color }
+.ashes-primary-background { background-color: $primary-color }
+.ashes-secondary-foreground { color: $secondary-color }
+.ashes-secondary-background { background-color: $secondary-color }
