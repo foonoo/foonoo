@@ -20,11 +20,11 @@ function toggleMenu(menu, modalBackground) {
     }
 }
 
-if(sideToc !== null) {
+if(sideToc !== null && tocHamburger !== null) {
     tocHamburger.addEventListener('click', toggleMenu(sideToc, document.getElementById('side-toc-modal')));
 }
 
-if(topMenu !== null) {
+if(topMenu !== null && menuHamburger !== null) {
     menuHamburger.addEventListener('click', toggleMenu(topMenu, document.getElementById('menu-modal')));
 }
 

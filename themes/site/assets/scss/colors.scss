@@ -2,5 +2,10 @@ $banner-color: $primary-color;
 $banner-text: lighten($banner-color, 60%);
 $header-colors: darken($banner-color, 15%);
 
+.ashes-banner-background {
+    background-color: $banner-color;
+}
 
-
+.ashes-banner-foreground {
+    color: $banner-text;
+}

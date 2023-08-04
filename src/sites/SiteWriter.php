@@ -119,7 +119,7 @@ class SiteWriter
     private function writeContentToOutputPath(AbstractSite $site, Theme $theme, string $output, Content $content)
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
-        $layout = $content->getMetaData()['layout'] ?? $theme->getDefaultLayoutTemplate();
+        $layout = $content->getMetaData()['frontmatter']['layout'] ?? $theme->getDefaultLayoutTemplate();
 
         if ($layout) {
             $templateData = array_merge($site->getTemplateData($content->getDestination()), $content->getMetaData());
@@ -134,9 +134,11 @@ class SiteWriter
         } else {
             $finalOutput = $content->render();
         }
+
         if (!is_dir(dirname($destinationPath))) {
             Filesystem::directory(dirname($destinationPath))->create(true);
         }
+        
         file_put_contents($destinationPath, $finalOutput);
         $this->eventDispatcher->dispatch(ContentWritten::class, ['content' => $content, 'destination_path' => $destinationPath]);
     }

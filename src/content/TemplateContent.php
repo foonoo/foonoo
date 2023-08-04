@@ -55,16 +55,12 @@ class TemplateContent extends Content implements DataRenderer, ThemableInterface
     public function render(): string
     {
         $extension = pathinfo($this->source, PATHINFO_EXTENSION);
-        list($this->metaData, $body) = $this->frontMatterParser->read($this->source);
+        list($frontmatter, $body) = $this->frontMatterParser->read($this->source);
+        $this->metaData = ["frontmatter" => $frontmatter];
         return $this->templates->render(
                 $this->parser->parse($body),
                 $this->data, true, $extension
             );
-    }
-
-    public function setMetaData(array $metaData): void
-    {
-        $this->metaData = $metaData;
     }
 
     public function setData($data): void

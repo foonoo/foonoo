@@ -1,6 +1,5 @@
 <?php
 
-
 namespace foonoo\content;
 
 use foonoo\sites\FrontMatterReader;

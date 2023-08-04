@@ -47,7 +47,7 @@ class AssetPipeline
     public function addItem(string $item, string $type, array $options=[]): void
     {
         $bundles = $options['parameters']['bundles'] ?? ["default"];
-        $options['priority'] = $options['priority'] ?? 0;
+        $options['priority'] = $options['parameters']['priority'] ?? 0;
         unset($options['bundles']);
         foreach ($bundles as $bundle) {
             if (!isset($this->items[$bundle])) {
@@ -126,26 +126,21 @@ class AssetPipeline
     public function merge(array $assets, string $baseDirectory = null): void
     {
         foreach ($assets as $type => $definition) {
-            $options = $definition;
-            $items = $options["items"];
-            unset($options["items"]);
+            //$options = $definition;
+            $items = $definition["items"];
+            unset($definition["items"]);
             foreach ($items as $item) {
                 if(is_array($item)) {
                     $contents = array_key_first($item);
                     $parameters = $item[$contents];
-                    $options['parameters'] = $item[$contents];
-                    // if(is_array($)) {
-                    //     $options['param'] = $item[$contents];
-                    // } else {
-                    //     $options['param' = 
-                    // }
+                    $definition['parameters'] = $item[$contents];
                 } else {
                     $contents = $item;
                 }
                 if(isset($baseDirectory)) {
-                    $options['base_directory'] = $baseDirectory;
+                    $definition['base_directory'] = $baseDirectory;
                 }
-                $this->addItem($contents, $type, $options);
+                $this->addItem($contents, $type, $definition);
             }
         }
     }
