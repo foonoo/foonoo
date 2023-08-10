@@ -146,7 +146,7 @@ abstract class AbstractSite
     }
 
     /**
-     * Get template data that is relevant for rendering a particular content item.
+     * Get template data that is relevant for rendering a particular content page.
      *
      * @param string|null $contentDestination Destination path of the content.
      * @return array

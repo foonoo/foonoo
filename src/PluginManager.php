@@ -27,6 +27,8 @@ class PluginManager
      */
     private $loadedPluginEvents = [];
 
+    private $loadedPlugins = [];
+
     /**
      * An instance of the IO channel to be passed on to loaded plugins. 
      * @var Io
@@ -116,10 +118,15 @@ class PluginManager
      * @param array $options
      * @param array $pluginPaths
      * @throws \Exception
+     * 
      * @return Plugin
+     * 
      */
-    private function getPluginClass(string $plugin, array $options, array $pluginPaths) : Plugin
+    private function getPluginInstance(string $plugin, array $options, array $pluginPaths) : Plugin
     {
+        if(isset($this->loadedPlugins[$plugin])) {
+            return $this->loadedPlugins[$plugin];
+        }
         $namespace = dirname($plugin);
         $pluginName = basename($plugin);
         $pluginClassName = Text::ucamelize("{$pluginName}") . "Plugin";
@@ -130,6 +137,7 @@ class PluginManager
                 require_once $pluginFile;
                 $instance = new $pluginClass($plugin, $this->io, $options);
                 $this->classLoader->addPsr4("foonoo\\plugins\\$namespace\\$pluginName\\", "$pluginPath/$namespace/$pluginName/");
+                $this->loadedPlugins[$plugin] = $instance;
                 return $instance;
             }
         }
@@ -147,7 +155,7 @@ class PluginManager
      * @param mixed $plugins
      * @param string $sitePath
      */
-    public function initializePlugins($plugins, $sitePath) : void
+    public function initializePlugins(array $plugins, string $sitePath) : void
     {
         $this->removePluginEvents();
         if($plugins === null) {
@@ -157,7 +165,7 @@ class PluginManager
 
         foreach ($plugins as $plugin) {
             list($plugin, $options) = $this->getPluginOptions($plugin);
-            $pluginInstance = $this->getPluginClass($plugin, $options, $allPluginPaths);
+            $pluginInstance = $this->getPluginInstance($plugin, $options, $allPluginPaths);
             foreach($pluginInstance->getEvents() as $event => $callable) {
                 $id = $this->eventDispatcher->addListener($event, $callable);
                 if(!isset($this->loadedPluginEvents[$event])) {

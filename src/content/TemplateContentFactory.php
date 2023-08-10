@@ -1,6 +1,4 @@
 <?php
-
-
 namespace foonoo\content;
 
 
@@ -9,11 +7,12 @@ use foonoo\events\EventDispatcher;
 use foonoo\events\SiteWriteStarted;
 use foonoo\text\TagParser;
 use foonoo\sites\FrontMatterReader;
+use foonoo\sites\AbstractSite;
 
 class TemplateContentFactory implements ContentFactory
 {
     private $templateRenderer;
-    private $site;
+    private AbstractSite $site;
     private $parser;
     /**
      * 
@@ -37,8 +36,9 @@ class TemplateContentFactory implements ContentFactory
     {
         $content = new TemplateContent($this->templateRenderer, $this->parser, $this->frontMatterReader, $source, $destination);
         if($this->site) {
-            $content->setData($this->site->getTemplateData($this->site->getDestinationPath($destination)));
+            $content->setData($this->site->getTemplateData($destination)); //$this->site->getDestinationPath($destination)));
         }
         return $content;
     }
 }
+
