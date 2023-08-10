@@ -26,6 +26,7 @@ class SiteTheme extends Theme
                 \$secondary-color: $secondaryColor;
                 
                 @import "colors.scss";
+                @import "blocks.scss";
                 @import "site.scss";
                 @import "toc.scss";   
                 @import "tables.scss";

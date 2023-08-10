@@ -4,11 +4,14 @@
     background-color: $color;
     border-radius: 5px;
     padding: 10px;
-    font-size: larger;
     margin-top: 30px;
     margin-bottom: 30px;
 }
 
 .block.note {
     @include block(#daf0ff)
+}
+
+.block.warning {
+    @include block(#ff7d7d)
 }
