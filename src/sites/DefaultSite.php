@@ -115,7 +115,7 @@ class DefaultSite extends AbstractSite
             $globalToc = $this->tocGenerator->getGlobalTOC();
             $templateData['has_toc'] = true;
             $templateData['global_toc'] = $globalToc;         
-            $contentToc = array_filter($globalToc, fn ($x) => $x["destination"] == $contentDestination);
+            $contentToc = array_filter($globalToc, fn ($x) => $x["destination"] == $contentDestination || (isset($this->metaData["title"]) && isset($content->getMetaData()["frontmatter"]["title"]) && $content->getMetaData()["frontmatter"]["title"] == $this->metaData["index"]));
             $templateData['content_toc'] = count($contentToc) > 0 ? reset($contentToc)["children"] : [];
         }
         if(isset($this->metaData['title'])) {
