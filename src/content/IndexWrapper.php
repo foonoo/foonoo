@@ -32,6 +32,7 @@ class IndexWrapper extends Content implements ThemableInterface
     {
         $metaData = $this->content->getMetaData();
         $metaData['toc-skip'] = true;
+        $metaData['site_path'] = ".";
         return $metaData;
     }
 

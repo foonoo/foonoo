@@ -6,7 +6,7 @@ use foonoo\sites\FrontMatterReader;
 use foonoo\text\TextConverter;
 
 /**
- * Class MarkupContent
+ * A class for content that's represented as Markdown files.
  */
 class MarkupContent extends Content implements ThemableInterface
 {

@@ -126,13 +126,13 @@ class AssetPipeline
     public function merge(array $assets, string $baseDirectory = null): void
     {
         foreach ($assets as $type => $definition) {
-            //$options = $definition;
+            // $options = $definition;
             $items = $definition["items"];
             unset($definition["items"]);
             foreach ($items as $item) {
                 if(is_array($item)) {
                     $contents = array_key_first($item);
-                    $parameters = $item[$contents];
+                    // $parameters = $item[$contents];
                     $definition['parameters'] = $item[$contents];
                 } else {
                     $contents = $item;
@@ -145,3 +145,4 @@ class AssetPipeline
         }
     }
 }
+

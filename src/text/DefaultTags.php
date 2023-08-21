@@ -55,7 +55,7 @@ class DefaultTags
         $eventDispatcher->addListener(ContentGenerationStarted::class,
             function (ContentGenerationStarted $event) {
                 $this->contentID = $event->getContent()->getID();
-                $this->templateData = $this->site->getTemplateData($event->getContent()->getDestination());
+                $this->templateData = $this->site->getTemplateData($event->getContent());
             }
         );
     }

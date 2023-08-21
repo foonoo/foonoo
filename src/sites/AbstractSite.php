@@ -5,6 +5,7 @@ namespace foonoo\sites;
 use foonoo\asset_pipeline\AssetPipeline;
 use foonoo\utils\Cache;
 use foonoo\content\AutomaticContentFactory;
+use foonoo\content\Content;
 
 /**
  * Base abstract class for all site generators.
@@ -151,8 +152,9 @@ abstract class AbstractSite
      * @param string|null $contentDestination Destination path of the content.
      * @return array
      */
-    public function getTemplateData(string $contentDestination = null): array
+    public function getTemplateData(Content $content = null): array
     {
+        $contentDestination = $content !==null ? $content->getDestination() : null;
         $this->templateData['site_menu'] = $this->metaData['menu'] ?? [];
         $this->templateData['site_tagline'] = $this->metaData['tagline'] ?? '';
         $this->templateData['destination'] = $contentDestination;

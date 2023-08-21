@@ -36,7 +36,7 @@ class TemplateContentFactory implements ContentFactory
     {
         $content = new TemplateContent($this->templateRenderer, $this->parser, $this->frontMatterReader, $source, $destination);
         if($this->site) {
-            $content->setData($this->site->getTemplateData($destination)); //$this->site->getDestinationPath($destination)));
+            $content->setData($this->site->getTemplateData($content)); //$this->site->getDestinationPath($destination)));
         }
         return $content;
     }

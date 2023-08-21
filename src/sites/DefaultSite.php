@@ -7,6 +7,7 @@ use foonoo\text\TocGenerator;
 use foonoo\content\TocContent;
 use foonoo\text\TextConverter;
 use foonoo\content\IndexWrapper;
+use foonoo\content\Content;
 
 /**
  * The default site generated when there are either no configurations in the root directory or a site type is not
@@ -106,9 +107,10 @@ class DefaultSite extends AbstractSite
      * @param string $contentDestination
      * @return array
      */
-    public function getTemplateData(string $contentDestination = null): array
+    public function getTemplateData(Content $content = null): array
     {
-        $templateData = parent::getTemplateData($contentDestination);
+        $contentDestination = $content === null ? $content->getDestination() : null;
+        $templateData = parent::getTemplateData($content);
         if(isset($this->metaData['enable-toc']) && $this->metaData['enable-toc'] == true) {
             $globalToc = $this->tocGenerator->getGlobalTOC();
             $templateData['has_toc'] = true;

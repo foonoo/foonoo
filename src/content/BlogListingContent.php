@@ -15,12 +15,11 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
     private $template = 'listing';
     private $id;
 
-    public function __construct(TemplateEngine $templateRenderer, array $posts, string $destination, array $data)
+    public function __construct(TemplateEngine $templateRenderer, array $posts, string $destination)
     {
         $this->posts = $posts;
         $this->templateEngine = $templateRenderer;
         $this->destination = $destination;
-        $this->data = $data;
         $this->id = uniqid("bl_", true);
     }
 
@@ -55,6 +54,11 @@ class BlogListingContent extends Content implements ThemableInterface, ContentGr
 
         $templateVars = array_merge($this->data, ['posts' => $posts]);
         return $this->templateEngine->render($this->template, $templateVars);
+    }
+
+    public function setData(array $data) : void
+    {
+        $this->data = $data;
     }
 
     public function getLayoutData()

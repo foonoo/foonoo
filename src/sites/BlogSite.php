@@ -112,11 +112,15 @@ class BlogSite extends AbstractSite
      */
     private function getIndexPage($target, $posts, $title = 'Posts', $template = 'listing'): BlogListingContent
     {
-        $data = $this->getTemplateData($target); //$this->getDestinationPath($target));
+        $listingContent = $this->blogContentFactory->createListing($posts, $target, $title);
+        $listingContent->setTemplate($template);
+
+        $data = $this->getTemplateData($listingContent);
         $data['listing_title'] = $title;
         $data['previews'] = true;
-        $listingContent = $this->blogContentFactory->createListing($posts, $target, $data, $title);
-        $listingContent->setTemplate($template);
+
+        $listingContent->setData($data);
+
         return $listingContent;
     }
 
@@ -177,7 +181,7 @@ class BlogSite extends AbstractSite
                 $destinationPath = "{$matches['year']}/{$matches['month']}/{$matches['day']}/{$matches['title']}.html";
                 // Force content factory to generate blog content
                 $page = $this->blogContentFactory->createPost($this->getSourcePath($file), $destinationPath);
-                $page->setTemplateData($this->getTemplateData($page->getDestination())); //$this->getDestinationPath($page->getDestination())));
+                $page->setTemplateData($this->getTemplateData($page)); //$this->getDestinationPath($page->getDestination())));
                 $page->setSiteTaxonomies($this->getTaxonomies());
                 $pages[] = $page;
                 if ($nextPost !== null) {
