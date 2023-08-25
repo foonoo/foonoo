@@ -110,7 +110,7 @@ class Builder
             $file = "{$path}site.yaml";
             $meta = $this->yamlParser->parse(file_get_contents($file));
         }        
-        return $meta;
+        return $meta ?? [];
     }
 
     /**
@@ -205,7 +205,7 @@ class Builder
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
 
         foreach ($sites as $siteDetails) {
-            $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? null, $siteDetails['path']);
+            $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? [], $siteDetails['path']);
             $site = $this->createSite($siteDetails['meta_data'], $siteDetails['path']);
             $site->setAssetPipeline($this->assetPipelineFactory->create());
             $this->io->output("\nGenerating {$site->getType()} site from \"{$site->getSourcePath()}\"\n");

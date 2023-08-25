@@ -47,6 +47,9 @@ class TocGenerator
      */
     private $collectTOC;
 
+    /**
+     * A flag that is set whenever global table of content collection is complete.
+     */
     private $globalTOCComplete;
 
     public function __construct(EventDispatcher $events, TemplateEngine $templateEngine)
@@ -105,6 +108,9 @@ class TocGenerator
 
             // Use this for the global TOC
             if ($this->collectTOC && !($metaData['toc-skip'] ?? false)) {
+                if (isset($event->getSite()->getMetaData()["groups"]) && isset($metaData["frontmatter"]["group"])) {
+                    $tree[0]["group"] = $content->getMetaData()["group"];
+                }
                 $this->globalTOC[$destination] = $tree;
             }
             if ($render) {

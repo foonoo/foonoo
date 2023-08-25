@@ -194,11 +194,12 @@ abstract class AbstractSite
         return $relativeLocation == "" ? "./" : $relativeLocation;
     }
 
-    protected function getFiles(string $base = ''): array
+    protected function getFiles(string $base = '', bool $includeDirectories=false): array
     {
         $files = array();
         $base = $base == '' ? '' : "$base" . DIRECTORY_SEPARATOR;
         $dir = scandir("{$this->sourceRoot}{$this->path}". DIRECTORY_SEPARATOR . $base, SCANDIR_SORT_ASCENDING);
+
         foreach ($dir as $file) {
             $path = "{$this->sourceRoot}{$this->path}" . DIRECTORY_SEPARATOR . $base . $file;
             if (array_reduce(
@@ -207,10 +208,12 @@ abstract class AbstractSite
                     return $carry | fnmatch($item, $path, FNM_NOESCAPE);
                 }, false)
             ) { continue; }
-            if (!is_dir($path)) {
-                $files[] = "$base$file";
+            if (is_dir($path) && !$includeDirectories) {
+                continue;
             }
+            $files[] = "$base$file";
         }
+
         return $files;
     }
     

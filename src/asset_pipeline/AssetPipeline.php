@@ -11,7 +11,6 @@ use ntentan\utils\exceptions\FileNotFoundException;
  * specified destinations when sites are built.
  * 
  * # Architecture
- * 
  */
 class AssetPipeline
 {
