@@ -1,5 +1,5 @@
 name: site
-description: This is Ash, the default theme that is used by the default site whenever nothing is provided.
+description: This is Ash, the default theme used by the default site.
 author: Ekow Abaka
 default_layout: layout
 assets:

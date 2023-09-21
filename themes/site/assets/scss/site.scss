@@ -15,8 +15,6 @@ body{
     margin:0px;
     font-family: 'Open Sans', sans-serif;
     line-height: 1.4;
-    //font-size: larger;
-    min-width: 300px;
 }
 
 a{
@@ -32,8 +30,8 @@ html {
 :target:before {
     content: "";
     display: block;
-    height: ($banner-height + 10);
-    margin: -($banner-height + 10) 0 0;
+    height: ($banner-height + 30);
+    margin: -($banner-height + 30) 0 0;
 }
 
 .wrapper {
@@ -44,7 +42,7 @@ html {
 }
 
 .wrapper.has-toc {
-    max-width:initial;
+    max-width: $full-max-width;
 }
 
 .modal.active {
@@ -87,6 +85,11 @@ html {
             white-space: nowrap;
             margin-left: 10px
         }
+
+        .hamburger {
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
     }
 
     > #banner-wrapper.has-toc {
@@ -99,10 +102,6 @@ html {
         font-weight: bold;
         line-height: $banner-height;
     }
-}
-
-#body-wrapper.has-toc {
-    width: $full-max-width;
 }
 
 #main-navigation {
@@ -134,45 +133,6 @@ html {
     display: none;
     > path {
         fill: $banner-text
-    }
-}
-
-@media screen and (max-width: $full-max-width) {
-    // body {
-    //     font-size: normal;
-    // }
-    
-    .wrapper.has-toc {
-        width: 100%;
-        max-width: $max-content-width;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    #banner-wrapper.has-toc {
-        .hamburger {
-            display: block
-        }    
-    
-        #main-navigation {
-            width: 100%;
-            display: none;
-            position: absolute;
-            top: $banner-height;
-            left: 0px;
-        }
-        
-        #main-navigation.active {
-            display: block;
-            background-color: darken($banner-color, 10%);
-            z-index: 100;
-            ul {
-                width: 100%;
-                >li {
-                    display:block;
-                }
-            }        
-        }
     }
 }
 
@@ -226,8 +186,10 @@ article {
     }
 }
 
-article.has-header {
-    margin-top:$banner-height;
+.wrapper.has-header{
+    article {
+        margin-top:$banner-height;
+    }    
 }
 
 img {

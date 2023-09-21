@@ -5,7 +5,7 @@ use foonoo\theming\Theme;
 use foonoo\asset_pipeline\AssetPipeline;
 
 /**
- * Class for the default site theme.
+ * The ashes theme
  */
 class SiteTheme extends Theme
 {
@@ -26,10 +26,11 @@ class SiteTheme extends Theme
                 \$secondary-color: $secondaryColor;
                 
                 @import "colors.scss";
-                @import "blocks.scss";
+                @import "foonoo-blocks.scss";
                 @import "site.scss";
-                @import "toc.scss";   
-                @import "tables.scss";
+                @import "foonoo-toc.scss";   
+                @import "toc.scss";
+                @import "foonoo-tables.scss";
             SCSS;
             $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', 
                 [

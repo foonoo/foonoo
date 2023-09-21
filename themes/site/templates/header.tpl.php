@@ -1,25 +1,6 @@
 <?php if(isset($site_title) && $site_title->u() != ""): ?>
 <div id="banner-container">
     <div id="banner-wrapper" class="<?= $has_toc ? "has-toc" : "" ?>">
-        <?php if($has_toc): ?>
-        <svg
-           id="toc-hamburger"
-           class="hamburger"
-           width="32px"
-           height="32px"
-           viewBox="0 0 512 512"
-           version="1.1"
-           xmlns="http://www.w3.org/2000/svg"
-           xmlns:svg="http://www.w3.org/2000/svg">
-          <defs
-             id="defs7" />
-          <path
-             id="path2"
-             style="stroke-width:0.0625"
-             d="m 2,6 v 4 H 5.9394531 V 6 Z M 9.9394531,7.0067816 V 8.9932184 H 30 V 7.0067816 Z M 2,14 v 4 h 3.9394531 v -4 z m 7.9394531,1.006782 v 1.986436 H 30 V 15.006782 Z M 2,22 v 4 h 3.9394531 v -4 z m 7.9394531,1.006782 v 1.986436 H 30 v -1.986436 z"
-             transform="scale(16)" />
-        </svg>
-        <?php endif; ?>
         <header id="banner">
             <span id="site-title"><?= $site_title ?></span>
         </header>

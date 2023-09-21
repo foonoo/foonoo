@@ -18,7 +18,10 @@ class BlogTheme extends Theme
                 \$secondary-color: $secondaryColor;
                 
                 @import "reset.scss";
-                @import "blog.scss";                
+                @import "blog.scss";
+                @import "foonoo-blocks.scss";
+                @import "foonoo-tables.scss";
+                @import "foonoo-toc.scss";
             SCSS;
             $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', ['base_directory' => "{$this->getPath()}/assets/scss"]);
         }
