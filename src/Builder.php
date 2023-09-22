@@ -281,7 +281,7 @@ class Builder
             $siteName = $this->currentSite == null ? "" : $this->currentSite->getType();
             $siteSource = $this->currentSite == null ? "" : " from {$this->currentSite->getSourcePath()}";
             $this->io->error(
-                "\n*** The following error occurred while processing the{$siteName} site{$siteSource}:" . 
+                "\n*** The following error occurred while processing the {$siteName} site{$siteSource}:" . 
                 "\n{$e->getMessage()}\n");
             exit(102);
         }

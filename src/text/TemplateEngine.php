@@ -4,10 +4,13 @@ namespace foonoo\text;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 
+/**
+ * A small wrapper around honam's template engine.
+ */
 class TemplateEngine
 {
-    private $templateRenderer;
-    private $templateFileResolver;
+    private TemplateRenderer $templateRenderer;
+    private TemplateFileResolver $templateFileResolver;
 
     public function __construct(TemplateFileResolver $templateFileResolver, TemplateRenderer $templateRenderer)
     {
