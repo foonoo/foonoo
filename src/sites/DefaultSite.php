@@ -109,7 +109,7 @@ class DefaultSite extends AbstractSite
      */
     public function getTemplateData(Content $content = null): array
     {
-        $contentDestination = $content === null ? $content->getDestination() : null;
+        $contentDestination = $content !== null ? $content->getDestination() : null;
         $templateData = parent::getTemplateData($content);
         if(isset($this->metaData['enable-toc']) && $this->metaData['enable-toc'] == true) {
             $globalToc = $this->tocGenerator->getGlobalTOC();
