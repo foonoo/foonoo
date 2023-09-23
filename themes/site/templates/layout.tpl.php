@@ -23,7 +23,7 @@
                 <div id="sliding-toc" class="side-toc">
                     <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1, 'destination' => $destination]) ?>
                 </div>
-                <div id="toc-tab">≫</div>
+                <div id="toc-tab"></div>
             </div>                                        
             <?php endif; ?>
 

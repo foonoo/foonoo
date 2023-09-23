@@ -175,6 +175,9 @@ article.has-header {
         #toc-tab {
             left: 0px;
         }
+        #toc-tab::before {
+            content: "≫";
+        } 
     }
 
     #left-toc.active {
@@ -186,6 +189,9 @@ article.has-header {
         #toc-tab {
             left: $toc-width - 31px;
         }
+        #toc-tab::before {
+            content: "≪";
+        } 
     }
 
     #banner-wrapper.has-toc {
