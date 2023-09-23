@@ -1,6 +1,6 @@
-const sideToc = document.getElementById('side-toc');
+const sideToc = document.getElementById('left-toc');
 const modalBackgrounds = document.querySelectorAll(".modal");
-const tocHamburger = document.getElementById('toc-hamburger');
+const tocHamburger = document.getElementById('toc-tab');
 const menuHamburger = document.getElementById('menu-hamburger');
 const topMenu = document.getElementById('main-navigation');
 const currentModal = {menu: null, button: null, modalBackground: null};
@@ -8,15 +8,15 @@ const currentModal = {menu: null, button: null, modalBackground: null};
 
 function toggleMenu(menu, modalBackground) {
     return function(e) {
+        console.log("Hello!");
         menu.classList.toggle("active");
-        e.target.classList.toggle('active');
-        modalBackground.classList.toggle('active');
-        if(currentModal.menu !== null && currentModal.menu !== menu) {
-            currentModal.menu.classList.toggle('active');
-            currentModal.button.classList.toggle('active');
-            currentModal.modalBackground.classList.toggle('active');
-        }
-        currentModal = {menu: menu, button: e.target, modalBackground: modalBackground};
+        // modalBackground.classList.toggle('active');
+        // if(currentModal.menu !== null && currentModal.menu !== menu) {
+        //     currentModal.menu.classList.toggle('active');
+        //     currentModal.button.classList.toggle('active');
+        //     currentModal.modalBackground.classList.toggle('active');
+        // }
+        // currentModal = {menu: menu, button: e.target, modalBackground: modalBackground};
     }
 }
 

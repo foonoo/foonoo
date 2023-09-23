@@ -275,9 +275,6 @@ class Builder
             $duration = hrtime(true) - $startTime;
             $this->io->output(sprintf("Total build time: %.02fs\n", $duration / 1e+9));
         } catch (\Exception $e) {
-            if ($options['debug']) {
-                throw $e;
-            }
             $siteName = $this->currentSite == null ? "" : $this->currentSite->getType();
             $siteSource = $this->currentSite == null ? "" : " from {$this->currentSite->getSourcePath()}";
             $this->io->error(

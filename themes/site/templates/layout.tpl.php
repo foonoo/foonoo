@@ -19,10 +19,11 @@
         <div id="body-wrapper" class="wrapper <?= $has_toc ? "has-toc" : "" ?> <?=$has_header ? "has-header" : "" ?>">
             <?php if($has_toc): ?>
             <!-- Note: The container wraps a fixed content item that stays put while the user scrolls. -->
-            <div id="left-toc" class="side-toc-container">
-                <div class="side-toc">
+            <div id="left-toc" class="side-toc-container inactive">
+                <div id="sliding-toc" class="side-toc">
                     <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1, 'destination' => $destination]) ?>
                 </div>
+                <div id="toc-tab">≫</div>
             </div>                                        
             <?php endif; ?>
 

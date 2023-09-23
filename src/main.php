@@ -196,7 +196,7 @@ $parser->addCommand(['name' => 'plugins', 'help' => 'List all plugins and the pl
 $parser->addCommand(['name' => 'serve', 'help' => 'Run a local server on a the generated static site']);
 $parser->addCommand(['name' => 'create', 'help' => 'Create a new site in this location']);
 
-$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
+//$parser->addOption(['name' => 'debug', 'help' => 'Do not intercept any uncaught exceptions', 'default' => false]);
 $parser->addOption([
     'name' => 'plugin-path', 'short_name' => 'P', 'help' => 'Adds Path to the list of plugin paths', 
     'repeats' => true, 'type' => 'string', 'value' => "PATH"
