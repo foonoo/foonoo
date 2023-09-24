@@ -56,9 +56,10 @@ html {
     top: $banner-height;
     background-color: darken($banner-color, 30%);
     width: 100%;
+    height: 100%;
     opacity: 0;
     display: none;
-    transition: opacity 1s;
+    transition: opacity 3s;
 }
 
 #banner-container {

@@ -16,6 +16,8 @@
         <?php if($has_header): ?>
             <?= $this->partial("header", ['site_title' => $site_title, 'has_toc' => $has_toc, 'site_menu' => $site_menu ?? []]) ?>
         <?php endif; ?>
+        <div id="side-toc-modal" class="modal"></div>          
+        <div id="menu-modal" class="modal"></div>          
         <div id="body-wrapper" class="wrapper <?= $has_toc ? "has-toc" : "" ?> <?=$has_header ? "has-header" : "" ?>">
             <?php if($has_toc): ?>
             <!-- Note: The container wraps a fixed content item that stays put while the user scrolls. -->
@@ -24,7 +26,7 @@
                     <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1, 'destination' => $destination]) ?>
                 </div>
                 <div id="toc-tab"></div>
-            </div>                                        
+            </div>                       
             <?php endif; ?>
 
             <article id="text-content"><?= $body->u() ?></article>
