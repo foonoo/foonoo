@@ -23,7 +23,13 @@
             <!-- Note: The container wraps a fixed content item that stays put while the user scrolls. -->
             <div id="left-toc" class="side-toc-container inactive">
                 <div id="sliding-toc" class="side-toc">
-                    <?= $this->partial("table_of_contents_tag", ['tree' => $global_toc->u(), 'max_level' => 1, 'destination' => $destination]) ?>
+                    <?= $this->partial("table_of_contents_tag", [
+                            'tree' => $global_toc->u(), 
+                            'max_level' => 1, 
+                            'destination' => $destination,
+                            'is_index' => $is_index ?? false,
+                            'title' => $content_title
+                        ]) ?>
                 </div>
                 <div id="toc-tab"></div>
             </div>                       
