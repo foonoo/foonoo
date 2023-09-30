@@ -22,8 +22,17 @@ enum TagToken: string {
  */
 class TagParser
 {
-    // A list of all registered tags
-    private $registeredTags;
+    /**
+     *  A list of all registered tags currently in the system.
+     */ 
+    private array $registeredTags;
+
+    private DefaultTags $defaultTags;
+
+    public function __construct(DefaultTags $defaultTags)
+    {
+        $this->defaultTags = $defaultTags;
+    }
 
     /**
      * Register a foonoo Tag.
@@ -39,6 +48,20 @@ class TagParser
     {
         $this->registeredTags[] = ['definition' => $definition, 'priority' => $priority, 'callable' => $callable, 'name' => $name];
         usort($this->registeredTags, fn ($a, $b) => $b['priority'] <=> $a['priority']);
+    }
+
+    // public function freezeTags()
+    // {
+    //     $this->frozenTags = array_map(fn ($x) => clone $x, $this->registeredTags);
+    // }
+
+    public function resetTags(): void
+    {
+        $this->registeredTags = [];
+        $regexMap = $this->defaultTags->getRegexMap();
+        foreach ($regexMap as $i => $regex) {
+            $this->registerTag($regex['regex'], $i, $regex['callable'], $regex['name']);
+        }
     }
 
     /**
@@ -180,6 +203,7 @@ class TagParser
 
     /**
      * Parses any detected foonoo tags.
+     * 
      * @param $tokens
      */
     private function parseFoonooTag(\Generator $tokens) : string

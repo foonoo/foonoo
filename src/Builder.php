@@ -14,6 +14,7 @@ use foonoo\asset_pipeline\AssetPipelineFactory;
 use ntentan\utils\Filesystem;
 use ntentan\utils\filesystem\File;
 use Symfony\Component\Yaml\Parser as YamlParser;
+use foonoo\text\TagParser;
 
 /**
  * Builds sites.
@@ -31,11 +32,13 @@ class Builder
     private array $options;
 
     /**
+     * An instance of clearices I/O class for console I/O.
      * @var Io
      */
     private Io $io;
 
     /**
+     * A registry of all possible site types.
      * @var SiteTypeRegistry
      */
     private SiteTypeRegistry $siteTypeRegistry;
@@ -77,6 +80,8 @@ class Builder
      */
     private AssetPipelineFactory $assetPipelineFactory;
 
+    private TagParser $tagParser;
+
 
     /**
      * Create an instance of the context object through which Foonoo works.
@@ -87,7 +92,8 @@ class Builder
      * @param SiteWriter $builder
      * @param EventDispatcher $eventDispatcher
      */
-    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, SiteWriter $builder, EventDispatcher $eventDispatcher, AssetPipelineFactory $assetPipelineFactory)
+    public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry, YamlParser $yamlParser, SiteWriter $builder, 
+        EventDispatcher $eventDispatcher, AssetPipelineFactory $assetPipelineFactory, TagParser $tagParser)
     {
         $this->io = $io;
         $this->siteTypeRegistry = $siteTypeRegistry;
@@ -95,6 +101,7 @@ class Builder
         $this->siteWriter = $builder;
         $this->eventDispatcher = $eventDispatcher;
         $this->assetPipelineFactory = $assetPipelineFactory;
+        $this->tagParser = $tagParser;
     }
 
     /**
@@ -205,6 +212,7 @@ class Builder
         $this->io->output("Writing all outputs to \"{$this->options['output']}\"\n");
 
         foreach ($sites as $siteDetails) {
+            $this->tagParser->resetTags();
             $this->pluginManager->initializePlugins($siteDetails['meta_data']['plugins'] ?? [], $siteDetails['path']);
             $site = $this->createSite($siteDetails['meta_data'], $siteDetails['path']);
             $site->setAssetPipeline($this->assetPipelineFactory->create());
