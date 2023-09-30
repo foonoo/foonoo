@@ -10,3 +10,6 @@ assets:
   js:
     items:
       - js/site.js
+  files:
+    items:
+      - images/foonoo-footer.svg

@@ -65,18 +65,6 @@ $container->bind(TemplateEngine::class)->to(TemplateEngine::class)->asSingleton(
 $container->bind(Parser::class)->to(Parser::class)->asSingleton();
 $container->bind(ThemeManager::class)->to(ThemeManager::class)->asSingleton();
 $container->bind(TagParser::class)->to(TagParser::class)->asSingleton();
-// function ($container) {
-    // /** @var \foonoo\text\DefaultTags $defaultTags */
-    //$defaultTags = $container->get(DefaultTags::class);
-    // $tagParser = $container->get(TagParser::class);
-    // $tagParser->resetTags();
-    // $regexMap = $defaultTags->getRegexMap();
-    // foreach ($regexMap as $i => $regex) {
-    //     $tagParser->registerTag($regex['regex'], $i, $regex['callable'], $regex['name']);
-    // }
-    // return $tagParser;
-// })->asSingleton();
-
 
 $container->bind(AutomaticContentFactory::class)->to(function (Container $container) {
     $registry = new AutomaticContentFactory($container->get(CopiedContentFactory::class));
@@ -302,7 +290,6 @@ if (!isset($options['__command'])) {
     }
     exit(1);
 }
-
 
 $commandClass = sprintf('\foonoo\commands\%sCommand', Text::ucamelize($options['__command']));
 $container->resolve($commandClass)->execute($options);

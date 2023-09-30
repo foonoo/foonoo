@@ -187,6 +187,30 @@ article {
         border: none;
         border-radius: 5px;
     }
+
+    img {
+        width: 100%;
+        display: inline-block;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    figure {
+        margin: 0px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    
+        img {
+            margin: 0px;
+        }
+    
+        figcaption {
+            color: $secondary-color;
+            padding: 5px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+    }    
 }
 
 .wrapper.has-header{
@@ -195,27 +219,28 @@ article {
     }    
 }
 
-img {
-    width: 100%;
-    display: inline-block;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
 
-figure {
-    margin: 0px;
-    margin-top: 30px;
-    margin-bottom: 30px;
 
-    img {
-        margin: 0px;
-    }
+#footer {
+    margin-top: 50px;
+    background-color: desaturate($banner-color, 50%);
+    line-height: 14px;
+    font-size: 14px;
+    text-align: center;
+    padding:50px;
+    color: $banner-text;
 
-    figcaption {
-        color: $secondary-color;
-        padding: 5px;
-        font-size: 0.9em;
-        text-align: center;
+    a{
+        text-decoration: none;
+        color: $banner-text;
+    }    
+
+    #footer-logo {
+        top: 2px;
+        height:18px; 
+        width:auto;
+        vertical-align: middle;
+        margin-right: 10px;
     }
 }
 

@@ -45,5 +45,8 @@
             </div>                                        
             <?php endif; ?>            
         </div>
+        <?php if($has_header): ?>
+            <?= $this->partial("footer") ?>
+        <?php endif; ?>        
     </body>
 </html>
