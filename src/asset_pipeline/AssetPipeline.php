@@ -129,17 +129,18 @@ class AssetPipeline
             $items = $definition["items"];
             unset($definition["items"]);
             foreach ($items as $item) {
+                $itemDefinition = $definition;
                 if(is_array($item)) {
                     $contents = array_key_first($item);
                     // $parameters = $item[$contents];
-                    $definition['parameters'] = $item[$contents];
+                    $itemDefinition['parameters'] = $item[$contents];
                 } else {
                     $contents = $item;
                 }
                 if(isset($baseDirectory)) {
-                    $definition['base_directory'] = $baseDirectory;
+                    $itemDefinition['base_directory'] = $baseDirectory;
                 }
-                $this->addItem($contents, $type, $definition);
+                $this->addItem($contents, $type, $itemDefinition);
             }
         }
     }
