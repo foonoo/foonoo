@@ -31,6 +31,7 @@ class SiteTheme extends Theme
                 @import "foonoo-toc.scss";   
                 @import "toc.scss";
                 @import "foonoo-tables.scss";
+                @import "print.scss";
             SCSS;
             $assetPipeline->replaceItem("scss/main.scss", $scss, 'sass', 
                 [
