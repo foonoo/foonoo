@@ -14,10 +14,10 @@ use ntentan\utils\exceptions\FileNotFoundException;
  */
 class AssetPipeline
 {
-    private $items = [];
-    private $builtItems = [];
-    private $processors = [];
-    private $markupGenerators = [];
+    private array $items = [];
+    private array $builtItems = [];
+    private array $processors = [];
+    private array $markupGenerators = [];
 
     /**
      * Register a processor with the asset pipeline.
@@ -43,7 +43,7 @@ class AssetPipeline
      * 
      * @throws FileNotFoundException
      */
-    public function addItem(string $item, string $type, array $options=[]): void
+    public function addItem(string $content, string $type, array $options=[]): void
     {
         $bundles = $options['parameters']['bundles'] ?? ["default"];
         $options['priority'] = $options['parameters']['priority'] ?? 0;
@@ -55,7 +55,7 @@ class AssetPipeline
             if (!isset($this->items[$bundle][$type])) {
                 $this->items[$bundle][$type] = [];
             }
-            $this->items[$bundle][$type][] = ['contents' => $item, 'options' => $options];
+            $this->items[$bundle][$type][] = ['contents' => $content, 'options' => $options];
         }
     }
     
