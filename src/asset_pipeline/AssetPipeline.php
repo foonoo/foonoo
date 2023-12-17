@@ -4,6 +4,7 @@ namespace foonoo\asset_pipeline;
 
 
 use ntentan\utils\exceptions\FileNotFoundException;
+use clearice\io\Io;
 
 /**
  * Manages all the assets for a site.
@@ -18,6 +19,12 @@ class AssetPipeline
     private array $builtItems = [];
     private array $processors = [];
     private array $markupGenerators = [];
+    private Io $io;
+
+    public function __construct(Io $io) 
+    {
+        $this->io = $io;
+    }
 
     /**
      * Register a processor with the asset pipeline.

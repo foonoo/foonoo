@@ -5,5 +5,15 @@
 
     #banner-container {
         position: relative;
+        nav {
+            display: none;
+        }
+    }
+
+    #body-wrapper {
+        article {
+            padding: 0px;
+            margin: 0px;
+        }
     }
 }

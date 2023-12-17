@@ -67,7 +67,7 @@ class BlogSite extends AbstractSite
      *
      * @return array
      */
-    public function getTaxonomies()
+    private function getTaxonomies()
     {
         if (!$this->taxonomies) {
             $this->taxonomies = [];

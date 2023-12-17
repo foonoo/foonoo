@@ -1,6 +1,4 @@
 <?php
-
-
 namespace foonoo\content;
 
 
@@ -13,28 +11,28 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 {
     use Nomenclature;
 
-    private $templateData = [];
-    private $metaData;
-    protected $template = "post";
+    private array $templateData = [];
+    private array $metaData = [];
+    protected string $template = "post";
 
     /**
      * The next post.
      */
-    private $next;
+    private BlogPostContent $next;
 
     /**
      * The previous post.
      */
-    private $previous;
+    private BlogPostContent $previous;
 
     /**
      * An instance of the HTML renderer.
      */
-    private $textConverter;
-    private $templateEngine;
-    private $rendered;
-    private $preview;
-    private $siteTaxonomies = [];
+    private TextConverter $textConverter;
+    private TemplateEngine $templateEngine;
+    private string $rendered;
+    private string $preview;
+    private array $siteTaxonomies = [];
 
     public function __construct(TemplateEngine $templateEngine, TextConverter $htmlRenderer, FrontMatterReader $frontMatterReader, $document, $destination)
     {
@@ -45,7 +43,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 
     public function getMetaData() : array
     {
-        if(!$this->metaData) {
+        if(empty($this->metaData)) {
             preg_match(
             "|((?<year>[0-9]{4})/(?<month>[0-9]{2})/(?<day>[0-9]{2})/)?(?<title>[A-Za-z0-9\-\_]*)\.(html)|",
                 $this->getDestination(), $matches);
@@ -96,9 +94,9 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 
     public function render(): string
     {
-        if(!$this->rendered) {
-            $nextPost = $this->next ? $this->next->getMetaData() : [];
-            $prevPost = $this->previous ? $this->previous->getMetaData() : [];
+        if(!isset($this->rendered)) {
+            $nextPost = isset($this->next) ? $this->next->getMetaData() : [];
+            $prevPost = isset($this->previous) ? $this->previous->getMetaData() : [];
             $this->rendered = $this->templateEngine->render($this->template,
                 array_merge(
                     ['body' => parent::render(), 'page_type' => 'post', 'next' => $nextPost, 'prev' => $prevPost],
@@ -111,7 +109,7 @@ class BlogPostContent extends MarkupContent implements ThemableInterface, Serial
 
     public function getPreview() : string
     {
-        if(!$this->preview) {
+        if(!isset($this->preview)) {
             $splitPost = $this->splitPost();
             $format = pathinfo($this->document, PATHINFO_EXTENSION);
             $this->preview = $this->textConverter->convert($splitPost['preview'], $format, 'html');
