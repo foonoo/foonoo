@@ -19,12 +19,6 @@ class AssetPipeline
     private array $builtItems = [];
     private array $processors = [];
     private array $markupGenerators = [];
-    private Io $io;
-
-    public function __construct(Io $io) 
-    {
-        $this->io = $io;
-    }
 
     /**
      * Register a processor with the asset pipeline.
