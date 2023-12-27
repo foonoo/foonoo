@@ -1,12 +1,25 @@
 @media print {
-    .side-toc {
+
+    body {
+        font-size: small;
+    }
+
+    .side-toc-container {
         display: none;
     }
 
     #banner-container {
         position: relative;
+        background-color: transparent;
+        box-shadow: none;
+        color: $banner-color;
+        border-bottom: 1px solid $banner-color;
         nav {
             display: none;
+        }
+
+        >#banner-wrapper > header {
+            margin: 0px
         }
     }
 
@@ -15,6 +28,17 @@
             padding: 0px;
             margin: 0px;
             max-width: 100%;
+
+            h1, h2, h3, h4, h5, h6 {
+                margin-bottom: 2px;
+                margin-top: 10px;
+            }
+
+            p {
+                margin: 0px;
+                margin-top: 2px;
+                margin-bottom: 5px;
+            }
         }
     }
 }
