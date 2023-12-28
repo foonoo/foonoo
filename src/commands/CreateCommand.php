@@ -66,12 +66,7 @@ class CreateCommand implements CommandInterface
         
         $file->putContents($input);
         $this->io->output("Created the site.yml file.\n");
-        
-        $paths = ['media', 'assets'];
-        foreach($paths as $path) {
-            $dir = Filesystem::directory("$inputPath/$path");
-            $dir->createIfNotExists(true);
-        }
+        Filesystem::directory('_foonoo')->createIfNotExists();
         $this->io->output("Created the _foonoo directory.\n");
         
     }
