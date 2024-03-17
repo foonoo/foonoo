@@ -112,11 +112,11 @@ class SiteWriter
     /**
      * @param AbstractSite $site
      * @param Theme $theme
-     * @param Content $content
+     * @param Content|ThemableInterface $content
      * @throws FileAlreadyExistsException
      * @throws FileNotWriteableException
      */
-    private function writeContentToOutputPath(AbstractSite $site, Theme $theme, string $output, Content $content)
+    private function writeContentToOutputPath(AbstractSite $site, Theme $theme, string $output, Content|ThemableInterface $content)
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
         $layout = $content->getMetaData()['frontmatter']['layout'] ?? $theme->getDefaultLayoutTemplate();
@@ -143,3 +143,4 @@ class SiteWriter
         $this->eventDispatcher->dispatch(ContentWritten::class, ['content' => $content, 'destination_path' => $destinationPath]);
     }
 }
+

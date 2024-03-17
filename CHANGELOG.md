@@ -7,11 +7,16 @@
 - The ability to to add assets directly from the `site.yml` file to customize the theme.
 - An `AssetPipelineFactory` for creating the asset pipelines.
 - A built in SASS compiler to allow for processing of SASS stylesheets.
+- Type hints for several types to improve code quality.
+- Improved exception messages and added code to display these messages as friendly error messages during execution.
+- A new event to signal the end of site writing was added.
+- Print stylesheets to default themes to improve the quality of printed pages. 
 
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.
 - Some errors are now reported in a friendlier form with more information about what may have gone wrong.
 - Sticking to a convention where the names of extensions for templates and convertible text content cannot contain a dot '.' character.
+- Improved the default built-in themes for sites and blogs.
 
 ## Fixed
 - A friendlier error message is now shown whenever the site files are deleted before the server is terminated.
@@ -23,6 +28,7 @@
 - A bug that causes source and destination paths to contain double slashes on windows.
 - A bug in the table of contents generator, which causes the TOC status of the last initialized site to leak to all other previously loaded ones.
 - An error that occurs when the site content is somehow deleted while the server is still running. In such cases, servers terminate more gracefully.
+- Bugs in the frontmatter parser by adding clearer error messages for cases where parsing failed.
 
 ## v0.5.0 - 2021-08-12
 ### Added

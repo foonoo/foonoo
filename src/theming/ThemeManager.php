@@ -7,10 +7,11 @@ use foonoo\text\TemplateEngine;
 use Symfony\Component\Yaml\Parser;
 use foonoo\exceptions\SiteGenerationException;
 use ntentan\utils\Text;
+use Phar;
 
 /**
- * Loads themes by injecting their paths into the global template hierarchy and copying all required assets to the
- * site's destination path.
+ * Loads themes by injecting their paths into the global template hierarchy and 
+ * copying all required assets to the site's destination path.
  *
  * @package foonoo\theming
  */
@@ -30,7 +31,11 @@ class ThemeManager
 
     public function reset(): void
     {
-        $this->themePathHierarchy = [realpath(__DIR__ . "/../../themes/")];        
+        $this->themePathHierarchy = [realpath(__DIR__ . "/../../themes/")];
+        $pharDirectory = Phar::running();
+        if ($pharDirectory != "") {
+            $this->themePathHierarchy[]= $pharDirectory . "/themes/";
+        }
     }
 
     public function prependToThemePath(string $path): void
@@ -85,11 +90,10 @@ class ThemeManager
             $definition = $this->yamlParser->parse(file_get_contents("$themePath/theme.yaml"));
             $definition['template_hierarchy'] = $this->getTemplateHierarchy($site, $definition, $themePath);
             $themeClassName = Text::ucamelize($definition['name']) . "Theme";                
-            $expectedClassFilePath = $themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php";
-            $classFilePath = realpath($expectedClassFilePath);
+            $classFilePath = $themePath . DIRECTORY_SEPARATOR . $themeClassName . ".php";
             
             // Load a theme class file if one exists or use the default instead.
-            if($classFilePath !== false) {
+            if(file_exists($classFilePath)) {
                 include_once $classFilePath;
                 $themeClass = "foonoo\\themes\\{$definition['name']}\\$themeClassName";                
             } else {
@@ -99,7 +103,7 @@ class ThemeManager
             $theme = new $themeClass($themePath, $this->templateEngine, $definition, $themeOptions);
             $this->themes[$key] = $theme;
         } else {
-            throw new SiteGenerationException("Failed to load theme '$themeName'. Could not find a theme.yaml file.");
+            throw new SiteGenerationException("Failed to load theme '$themeName'. Could not find a valid theme.yaml file in any of the directories in the theme hierarchy: {implode(',', $this->themePathHierarchy)}");
         }
 
         return $this->themes[$key];
@@ -115,11 +119,13 @@ class ThemeManager
     }
 
     /**
+     * Generate a template hierarchy for the current site based on the current theme.
+     * 
      * @param AbstractSite $site
      * @param array $themeDefinition
      * @return array
      */
-    private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition, string $themePath): array
+    private function getTemplateHierarchy(AbstractSite $site, array $themeDefinition, string $themePath) : array
     {
         $hierarchy = []; 
         $path = $site->getSourcePath();

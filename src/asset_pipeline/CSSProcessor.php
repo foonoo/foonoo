@@ -40,7 +40,10 @@ class CSSProcessor extends MinifiableProcessor
         return new CSS();
     }
     
+//    private
+    
     /**
+     * Process the CSS file or CSS content depending on what is attached. 
      * 
      * @param string $item
      * @param array $options
@@ -53,7 +56,7 @@ class CSSProcessor extends MinifiableProcessor
             Filesystem::checkExists($file);
             $includePath = pathinfo($file, PATHINFO_DIRNAME);
             $contents = file_get_contents($file);
-        } catch (FileNotFoundException $_) {
+        } catch (FileNotFoundException) {
             $contents = $item;
             $includePath = $options['base_directory'] ?? '.';
         }

@@ -1,15 +1,13 @@
 <?php
-
-
 namespace foonoo\theming;
-
 
 use foonoo\text\TemplateEngine;
 use foonoo\asset_pipeline\AssetPipeline;
 
 /**
- * A class wrapped around a theme.
- * 
+ * The base class for foonoo themes. 
+ * In cases where themes are simple YAML files, this class simply wraps the YAML. Themes that are represented as 
+ * classes, must however extend this class.
  */
 class Theme
 {
@@ -17,31 +15,31 @@ class Theme
      * Path to the theme
      * @var string
      */
-    private $themePath;
+    private string $themePath;
     
     /**
      * An instance of the template engine.
      * @var TemplateEngine
      */
-    private $templateEngine;
+    private TemplateEngine $templateEngine;
     
     /**
      * The template path hierarchy for this theme.
      * @var array
      */
-    private $templateHierachy;
+    private array $templateHierachy;
     
     /**
      * Data read out from the theme.yml definition file.
      * @var array
      */
-    private $definition;
+    private array $definition;
     
     /**
      * Options passed to this theme.
      * @var array
      */
-    private $themeOptions;
+    private array $themeOptions;
 
     public final function __construct(string $themePath, TemplateEngine $templateEngine, array $themeDefinition, array $themeOptions)
     {
@@ -52,7 +50,7 @@ class Theme
         $this->themeOptions = $themeOptions;
     }
     
-    public function setOptions($options) : void
+    public function setOptions(array $options) : void
     {
         $this->themeOptions = $options;
     }

@@ -142,9 +142,9 @@ class PluginManager
             }
         }
         throw new \Exception(
-            "Foonoo failed to load the [$plugin] plugin required by the site. The [$pluginClass], which is expected to ".
-            "hold the plugin's code, could not be found in any of the following paths:\n - " . implode("\n - ", $pluginPaths) . 
-            "\nYou can also specify your own plugin path with the `-P` tag."
+            "Foonoo failed to load the [$plugin] plugin required by the site. The [$namespace/$pluginName/$pluginClassName.php] ". 
+            "file, which is expected to hold the plugin's code, could not be found in any of the following paths:\n - " . 
+            implode("\n - ", $pluginPaths) . "\nYou can also specify your own plugin path with the `-P` tag."
         );
     }
 
