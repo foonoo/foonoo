@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## Unreleased
+## v0.6.0 - 2024-03-17 
+
+This release features a complete redo of the entire architecture of foonoo. Components are less coupled, and more extensible. More attention was paid to improving code quality.
 
 ### Added
 - A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
