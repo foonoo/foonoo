@@ -21,7 +21,7 @@ class FileProcessor implements Processor
     public function process(string $path, array $options): array
     {
         $destination = "$this->outputPath/assets/{$path}"; //{$options['param']}";
-        $f = Filesystem::get(($options['base_directory'] ? "{$options['base_directory']}/" : ""). $path);
+        $f = Filesystem::get((isset($options['base_directory']) ? "{$options['base_directory']}/" : ""). $path);
         Filesystem::directory(dirname($destination))->createIfNotExists(true);
         $f->copyTo($destination);
         return $options;
