@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased 
+
+### Fixed
+- Code rendering in the default blog template.
+- A bug in the asset pipeline's file processor that was mis representing the base directory.
+
 ## v0.6.0 - 2024-03-17 
 
 This release features a complete redo of the entire architecture of foonoo. Components are less coupled, and more extensible. More attention was paid to improving code quality.
