@@ -3,8 +3,9 @@
 ## Unreleased 
 
 ### Fixed
-- Code rendering in the default blog template.
-- A bug in the asset pipeline's file processor that was mis representing the base directory.
+- A bug that prevented plugins from reveiving settings in multi-site configurations.
+- Code rendering in the default blog template. Code blocks are now more compact, and they are better looking. 
+- A bug in the asset pipeline's file processor that was mis-representing the base directory.
 
 ## v0.6.0 - 2024-03-17 
 
