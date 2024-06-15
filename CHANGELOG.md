@@ -2,14 +2,17 @@
 
 ## Unreleased 
 
+### Changed
+- Code rendering in the default blog template. Code blocks are now more compact and better looking. 
+- How images are displayed in blogs. They are now centered, along with their captions.
+
 ### Fixed
 - A bug that prevented plugins from reveiving settings in multi-site configurations.
-- Code rendering in the default blog template. Code blocks are now more compact, and they are better looking. 
 - A bug in the asset pipeline's file processor that was mis-representing the base directory.
 
 ## v0.6.0 - 2024-03-17 
 
-This release features a complete redo of the entire architecture of foonoo. Components are less coupled, and more extensible. More attention was paid to improving code quality.
+This release features a complete redo of the entire architecture of foonoo. Components are less coupled and more extensible. A sigificant attention was paid to improving code quality.
 
 ### Added
 - A `create` command to help with initializing site directories when needed. The create command creates a `site.yml` file and the `_foonoo` directory.
@@ -23,7 +26,7 @@ This release features a complete redo of the entire architecture of foonoo. Comp
 
 ### Changed
 - The `main.php` script now resides directly in the `/src` root.
-- Some errors are now reported in a friendlier form with more information about what may have gone wrong.
+- Some errors are now reported in a friendlier form, with more information about what may have gone wrong.
 - Sticking to a convention where the names of extensions for templates and convertible text content cannot contain a dot '.' character.
 - Improved the default built-in themes for sites and blogs.
 
