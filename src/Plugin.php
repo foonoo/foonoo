@@ -18,17 +18,21 @@ abstract class Plugin
         $this->name = $name;
     }
 
-    protected function getOption($option, $default = null)
+    public function setOptions(array $options) {
+        $this->options = $options;
+    }
+
+    protected function getOption(string $option, mixed $default = null)
     {
         return $this->options[$option] ?? $default;
     }
 
-    public function stdOut($message, $verbosity = Io::OUTPUT_LEVEL_2)
+    protected function stdOut(string $message, int $verbosity = Io::OUTPUT_LEVEL_2)
     {
         $this->io->output("  - [{$this->name}] $message", $verbosity);
     }
 
-    public function errOut($message, $verbosity = Io::OUTPUT_LEVEL_2)
+    protected function errOut(string $message, int $verbosity = Io::OUTPUT_LEVEL_2)
     {
         $this->io->error("  - [{$this->name}] $message", $verbosity);
     }

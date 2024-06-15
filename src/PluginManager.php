@@ -19,25 +19,30 @@ class PluginManager
      * An instance of an event dispatcher.
      * @var EventDispatcher
      */
-    private $eventDispatcher;
+    private EventDispatcher $eventDispatcher;
 
     /**
-     * Keeps track of the events of all currently loaded plugins. 
+     * Keeps track of the events of all currently loaded plugins.
      * @var array
      */
-    private $loadedPluginEvents = [];
+    private array $loadedPluginEvents = [];
 
-    private $loadedPlugins = [];
+    /**
+     * Keeps track of all currently loaded plugins.
+     * Plugins are kept and their options are reset when new instances are needed.
+     * @var array
+     */
+    private array $loadedPlugins = [];
 
     /**
      * An instance of the IO channel to be passed on to loaded plugins. 
      * @var Io
      */
-    private $io;
+    private Io $io;
     
-    private $classLoader;
+    private ClassLoader $classLoader;
 
-    private $pluginPaths;
+    private array $pluginPaths;
 
     public function __construct(EventDispatcher $eventDispatcher, Io $io, ClassLoader $classLoader)
     {
@@ -74,7 +79,7 @@ class PluginManager
      * When loading plugins, this class works its way through this hierarcgy to find plugin code.
      * @param array $paths
      */
-    public function addPluginPaths(array $paths)
+    public function addPluginPaths(array $paths) : void
     {
         $this->pluginPaths = array_merge(array_map(function ($path) {return realpath($path);}, $paths), $this->pluginPaths);
     }
@@ -82,7 +87,7 @@ class PluginManager
     /**
      * Remove the events of all loaded plugins.
      */
-    private function removePluginEvents()
+    private function removePluginEvents() : void
     {
         foreach ($this->loadedPluginEvents as $eventType => $listeners) {
             foreach ($listeners as $listener) {
@@ -125,7 +130,9 @@ class PluginManager
     private function getPluginInstance(string $plugin, array $options, array $pluginPaths) : Plugin
     {
         if(isset($this->loadedPlugins[$plugin])) {
-            return $this->loadedPlugins[$plugin];
+            $instance = $this->loadedPlugins[$plugin];
+            $instance->setOptions($options);
+            return $instance;
         }
         $namespace = dirname($plugin);
         $pluginName = basename($plugin);
@@ -180,10 +187,11 @@ class PluginManager
     /**
      * Get the plugin paths hierarchy. 
      * 
-     * @return string[]|array
+     * @return array
      */
-    public function getPluginPaths()
+    public function getPluginPaths() : array
     {
         return $this->pluginPaths;
     }
 }
+
