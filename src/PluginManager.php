@@ -1,5 +1,4 @@
 <?php
-
 namespace foonoo;
 
 use clearice\io\Io;
