@@ -292,5 +292,5 @@ if (!isset($options['__command'])) {
 }
 
 $commandClass = sprintf('\foonoo\commands\%sCommand', Text::ucamelize($options['__command']));
-$container->resolve($commandClass)->execute($options);
+$container->get($commandClass)->execute($options);
 
