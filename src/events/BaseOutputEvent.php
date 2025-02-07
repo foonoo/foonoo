@@ -6,6 +6,7 @@ namespace foonoo\events;
 use foonoo\content\Content;
 use foonoo\content\ThemableInterface;
 use foonoo\sites\AbstractSite;
+use Dom\Node;
 
 /**
  * Class BaseOutputEvent
@@ -13,15 +14,24 @@ use foonoo\sites\AbstractSite;
  */
 abstract class BaseOutputEvent
 {
-    protected $output;
-    protected $content;
-    protected $site;
-
     /**
-     * @var \DOMDocument
+     * The final output of concert to the event.
+     * @var string
      */
-    protected $dom;
-    protected $domPossiblyModified;
+    protected string $output;
+
+    public Content $content {
+        get {
+            return $this->content;
+        }
+    }
+    public AbstractSite $site {
+        get {
+            return $this->site;
+        }
+    }
+
+    protected bool $domPossiblyModified = false;
 
     public function __construct(string $output, Content $content, AbstractSite $site)
     {
@@ -45,22 +55,7 @@ abstract class BaseOutputEvent
         $this->output = $output;
     }
 
-    /**
-     * Get the site for which this output was generated.
-     *
-     * @return AbstractSite
-     */
-    public function getSite(): AbstractSite
-    {
-        return $this->site;
-    }
-
-    public function getContent(): Content
-    {
-        return $this->content;
-    }
-    
     public abstract function getOutput() : string;
     
-    public abstract function getDom(): ?\DOMDocument;
+//    public abstract function getDom(): ?Node;
 }

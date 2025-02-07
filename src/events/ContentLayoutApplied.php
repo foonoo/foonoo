@@ -3,25 +3,26 @@
 namespace foonoo\events;
 
 
+use Dom\HTMLDocument;
+use Dom\Node;
+
 /**
  * This event is triggered after the output of any content is generated and ready to be written.
  */
 class ContentLayoutApplied extends BaseOutputEvent
 {
+    private ?HTMLDocument $document = null;
     /**
      * If content has a DOM, you can use this to get it.
-     *
-     * @return \DOMDocument
      */
-    public function getDOM(): ?\DOMDocument
+    public function getDocument(): ?HTMLDocument
     {
         // Create a DOM tree for objects that are possibly themed
-        if ($this->dom === null && $this->hasDOM()) {
-            $this->dom = new \DOMDocument();
-            @$this->dom->loadHTML($this->output, LIBXML_HTML_NODEFDTD);
+        if ($this->document === null && $this->hasDOM()) {
+            $this->document = HTMLDocument::createFromString($this->output);
         }
         $this->domPossiblyModified = true;
-        return $this->dom;
+        return $this->document;
     }
 
     /**
@@ -31,8 +32,8 @@ class ContentLayoutApplied extends BaseOutputEvent
      */
     public function getOutput(): string
     {
-        if ($this->dom !== null && $this->domPossiblyModified) {
-            $this->output = $this->dom->saveHTML();
+        if ($this->document !== null && $this->domPossiblyModified) {
+            $this->output = $this->document->saveHtml();
             $this->domPossiblyModified = false;
         }
         return $this->output;

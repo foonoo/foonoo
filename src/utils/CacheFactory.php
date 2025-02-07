@@ -9,6 +9,6 @@ class CacheFactory
 {
     public function create($path): Cache
     {
-        return new Cache(new \ntentan\kaikai\Cache(new FileCache(['path' => $path])));
+        return new Cache(new \ntentan\kaikai\Cache(new FileCache($path)));
     }
 }

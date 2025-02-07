@@ -2,6 +2,7 @@
 
 namespace foonoo\text;
 
+use Dom\NodeList;
 use foonoo\events\AllContentsRendered;
 use foonoo\events\EventDispatcher;
 use foonoo\events\ContentOutputGenerated;
@@ -88,27 +89,31 @@ class TocGenerator
     private function getRenderer(): callable
     {
         return function (ContentOutputGenerated $event) {
-            $content = $event->getContent();
+            $content = $event->content;
             $metaData = $content->getMetaData();
             $destination = $content->getDestination();
             $id = $content->getID();
-            $render = in_array($id, $this->pendingTables);//isset($this->pendingTables[$destination]);
+            $render = in_array($id, $this->pendingTables);
+
             if (!$render && !$this->collectTOC) {
                 return;
             }
+
             $dom = $event->getDOM();
+
             if($dom === null) {
                 return;
             }
-            $xpath = new \DOMXPath($dom);
-            $tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
+
+            $tree = $this->getTableOfContentsTree($dom->querySelectorAll("h1, h2, h3, h4, h5, h6"), $destination); //new \DOMXPath($dom);
+            //$tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
             $tocWeight = $metaData["frontmatter"]["toc-weight"] ?? 0;
 
             for($i = 0; $i < count($tree); $i++) { $tree[$i]["weight"] = $tocWeight; }
 
             // Use this for the global TOC
             if ($this->collectTOC && !($metaData['toc-skip'] ?? false)) {
-                if (isset($event->getSite()->getMetaData()["groups"]) && isset($metaData["frontmatter"]["group"])) {
+                if (isset($event->site->getMetaData()["groups"]) && isset($metaData["frontmatter"]["group"])) {
                     $tree[0]["group"] = $content->getMetaData()["group"];
                 }
                 $this->globalTOC[$destination] = $tree;
@@ -135,7 +140,7 @@ class TocGenerator
      * @param int $index
      * @return array
      */
-    private function getTableOfContentsTree(\DOMNodeList $nodes, string $destination, int $level = 1, int $index = 0): array
+    private function getTableOfContentsTree(NodeList $nodes, string $destination, int $level = 1, int $index = 0): array
     {
         $tocTree = [];
 
