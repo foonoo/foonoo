@@ -105,8 +105,7 @@ class TocGenerator
                 return;
             }
 
-            $tree = $this->getTableOfContentsTree($dom->querySelectorAll("h1, h2, h3, h4, h5, h6"), $destination); //new \DOMXPath($dom);
-            //$tree = $this->getTableOfContentsTree($xpath->query("//h1|//h2|//h3|//h4|//h5|//h6"), $destination);
+            $tree = $this->getTableOfContentsTree($dom->querySelectorAll("h1, h2, h3, h4, h5, h6"), $destination);
             $tocWeight = $metaData["frontmatter"]["toc-weight"] ?? 0;
 
             for($i = 0; $i < count($tree); $i++) { $tree[$i]["weight"] = $tocWeight; }
@@ -146,7 +145,7 @@ class TocGenerator
 
         for ($i = $index; $i < $nodes->length; $i++) {
             $node = $nodes->item($i);
-            if ($node && $node->nodeName == "h{$level}") {
+            if ($node && $node->nodeName == "H{$level}") {
                 $id = $this->makeId($node->textContent) . "-" . ($i + 1);
                 $nextItem = $nodes->item($i + 1);
                 $nextItemLevel = (int)(isset($nextItem) ? substr($nextItem->nodeName, -1) : 0);
@@ -156,7 +155,7 @@ class TocGenerator
                     // Add node and continue to node on same level
                     $tocTree[] = array(
                         'id' => $id,
-                        'title' => $node->nodeValue,
+                        'title' => $node->textContent,
                         'level' => $level,
                         'children' => array(),
                         'destination' => $destination
@@ -165,7 +164,7 @@ class TocGenerator
                     // Add node on current level and exit for node on lower level
                     $tocTree[] = array(
                         'id' => $id,
-                        'title' => $node->nodeValue,
+                        'title' => $node->textContent,
                         'level' => $level,
                         'children' => array(),
                         'destination' => $destination
@@ -177,7 +176,7 @@ class TocGenerator
                     unset($children['index']);
                     $tocTree[] = array(
                         'id' => $id,
-                        'title' => $node->nodeValue,
+                        'title' => $node->textContent,
                         'level' => $level,
                         'children' => $children,
                         'destination' => $destination

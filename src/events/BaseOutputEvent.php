@@ -56,6 +56,4 @@ abstract class BaseOutputEvent
     }
 
     public abstract function getOutput() : string;
-    
-//    public abstract function getDom(): ?Node;
 }

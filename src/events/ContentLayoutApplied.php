@@ -19,7 +19,7 @@ class ContentLayoutApplied extends BaseOutputEvent
     {
         // Create a DOM tree for objects that are possibly themed
         if ($this->document === null && $this->hasDOM()) {
-            $this->document = HTMLDocument::createFromString($this->output);
+            $this->document = HTMLDocument::createFromString($this->output, LIBXML_NOERROR);
         }
         $this->domPossiblyModified = true;
         return $this->document;

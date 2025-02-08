@@ -3,11 +3,12 @@
 ## Unreleased 
 
 ### Changed
+- HTML parsing from the old `DOMDocument` class to the new `HTMLDocument` class.
 - Code rendering in the default blog template. Code blocks are now more compact and better looking. 
 - How images are displayed in blogs. They are now centered, along with their captions.
 
 ### Fixed
-- A bug that prevented plugins from reveiving settings in multi-site configurations.
+- A bug that prevented plugins from reviving settings in multi-site configurations.
 - A bug in the asset pipeline's file processor that was mis-representing the base directory.
 
 ## v0.6.0 - 2024-03-17 
