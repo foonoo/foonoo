@@ -89,7 +89,7 @@ class TocGenerator
     private function getRenderer(): callable
     {
         return function (ContentOutputGenerated $event) {
-            $content = $event->content;
+            $content = $event->getContent();
             $metaData = $content->getMetaData();
             $destination = $content->getDestination();
             $id = $content->getID();

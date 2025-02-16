@@ -20,27 +20,27 @@ class DefaultTags
     /**
      * @var TemplateEngine
      */
-    private $templateEngine;
+    private TemplateEngine $templateEngine;
 
     /**
      * @var TocGenerator
      */
-    private $tocGenerator;
+    private TocGenerator $tocGenerator;
 
     /**
      * @var AbstractSite
      */
-    private $site;
+    private AbstractSite $site;
 
     /**
      * @var array
      */
-    private $templateData;
+    private array $templateData;
 
     /**
      * @var string
      */
-    private $contentID;
+    private string $contentID;
 
     public function __construct(TemplateEngine $templateEngine, TocGenerator $tocGenerator, EventDispatcher $eventDispatcher)
     {

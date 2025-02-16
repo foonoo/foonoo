@@ -167,7 +167,15 @@ $container->bind(EventDispatcher::class)->to(function (Container $container) {
     );
     return $eventDispatcher;
 });
-
+$container->bind(TagParser::class)->to(function(Container $container) {
+    $defaultTags = $container->get(DefaultTags::class);
+    $tagParser = new TagParser();
+    foreach ($defaultTags->getRegexMap() as $priority => $regex) {
+        $tagParser->registerTag($regex['regex'], $priority, $regex['callable'], $regex["name"]);
+    }
+    $tagParser->freezeTags();
+    return $tagParser;
+});
 $container->bind(TextConverter::class)->to(
     function ($container) {
         $converter = new TextConverter($container->get(TagParser::class));

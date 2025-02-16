@@ -3,19 +3,6 @@
 namespace foonoo\text;
 
 
-enum TagToken: string {
-    case COMMENT_START_TAG = "\\\\\[\[";
-    case START_TAG = '\[\[';
-    case END_TAG = '\]\]';
-    case ARGS_LIST = '(?<identifier>[a-zA-Z][a-zA-Z0-9_\.\-]*)(\s*)(=)(\s*)';
-    case TEXT = '((?![\[\]\|])\S)+|\]|\[';
-    case WHITESPACE = '[\s]+';
-    case SEPARATOR = '\|';
-    case DONE = "DONE";
-    case STRING = "STRING";
-}
-
-
 /**
  * This class provides the code for parsing special foonoo tags from text files. These tags start with a double square
  * brace and end with same.
@@ -27,12 +14,12 @@ class TagParser
      */ 
     private array $registeredTags;
 
-    private DefaultTags $defaultTags;
+    private int $frozenTags;
 
-    public function __construct(DefaultTags $defaultTags)
-    {
-        $this->defaultTags = $defaultTags;
-    }
+//    public function __construct(DefaultTags $defaultTags)
+//    {
+//        $this->frozenTags = $defaultTags;
+//    }
 
     /**
      * Register a foonoo Tag.
@@ -50,17 +37,15 @@ class TagParser
         usort($this->registeredTags, fn ($a, $b) => $b['priority'] <=> $a['priority']);
     }
 
-    // public function freezeTags()
-    // {
-    //     $this->frozenTags = array_map(fn ($x) => clone $x, $this->registeredTags);
-    // }
+     public function freezeTags()
+     {
+         $this->frozenTags = count($this->registeredTags);
+     }
 
     public function resetTags(): void
     {
-        $this->registeredTags = [];
-        $regexMap = $this->defaultTags->getRegexMap();
-        foreach ($regexMap as $i => $regex) {
-            $this->registerTag($regex['regex'], $i, $regex['callable'], $regex['name']);
+        if (count($this->registeredTags) > $this->frozenTags) {
+            $this->registeredTags = array_slice($this->registeredTags, 0, $this->frozenTags);
         }
     }
 

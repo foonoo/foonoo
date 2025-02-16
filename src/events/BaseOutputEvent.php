@@ -3,6 +3,7 @@
 
 namespace foonoo\events;
 
+use Dom\HTMLDocument;
 use foonoo\content\Content;
 use foonoo\content\ThemableInterface;
 use foonoo\sites\AbstractSite;
@@ -20,18 +21,13 @@ abstract class BaseOutputEvent
      */
     protected string $output;
 
-    public Content $content {
-        get {
-            return $this->content;
-        }
-    }
-    public AbstractSite $site {
-        get {
-            return $this->site;
-        }
-    }
+    private Content $content;
 
-    protected bool $domPossiblyModified = false;
+    private AbstractSite $site;
+
+    private ?HTMLDocument $dom = null;
+
+    private bool $domAccessed = false;
 
     public function __construct(string $output, Content $content, AbstractSite $site)
     {
@@ -53,7 +49,40 @@ abstract class BaseOutputEvent
     public function setOutput(string $output): void
     {
         $this->output = $output;
+        $this->dom = null;
+        $this->domAccessed = false;
     }
 
-    public abstract function getOutput() : string;
+    public function getDOM(): ?Node
+    {
+        // Create a DOM tree for objects that are possibly themed
+        if ($this->dom === null && $this->hasDOM()) {
+            $this->dom = HTMLDocument::createFromString($this->output, LIBXML_NOERROR);
+            $this->domAccessed = true;
+        }
+        return $this->dom;
+    }
+
+    public abstract function getOutput(): string;
+
+    public function getContent(): Content
+    {
+        return $this->content;
+    }
+
+    public function getSite(): AbstractSite
+    {
+        return $this->site;
+    }
+
+    public function isDomAccessed(): bool
+    {
+        return $this->domAccessed;
+    }
+
+    public function resetDom(): void
+    {
+        $this->dom = null;
+        $this->domAccessed = false;
+    }
 }

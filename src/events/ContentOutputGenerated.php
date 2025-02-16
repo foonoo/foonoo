@@ -13,23 +13,13 @@ use Dom\Node;
  */
 class ContentOutputGenerated extends BaseOutputEvent
 {
-    private ?HTMLElement $dom = null { get { return $this->dom; }}
-
-    public function getDOM(): ?Node
-    {
-        // Create a DOM tree for objects that are possibly themed
-        if ($this->dom === null && $this->hasDOM()) {
-            $this->dom = HTMLDocument::createFromString("<!DOCTYPE html><html><body>{$this->output}</body></html>", LIBXML_NOERROR)->querySelector("body");
-        }
-        $this->domPossiblyModified = true;
-        return $this->dom;
-    }
-
     public function getOutput(): string
     {
-        if ($this->dom !== null && $this->domPossiblyModified) {
-            $this->output = $this->dom->innerHTML;
-            $this->domPossiblyModified = false;
+        // Override output with any modifications made to the DOM.
+        if ($this->isDomAccessed()) {
+            $dom = $this->getDom();
+            $this->output = $dom->querySelector('body')->innerHTML;
+            $this->resetDom();
         }
         return $this->output;
     }

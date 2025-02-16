@@ -6,9 +6,9 @@ use clearice\io\Io;
 
 abstract class Plugin
 {
-    private $options;
-    private $io;
-    private $name;
+    private array $options;
+    private Io $io;
+    private string $name;
 
     public function __construct(string $name, Io $io, array $options)
     {
@@ -17,11 +17,12 @@ abstract class Plugin
         $this->name = $name;
     }
 
-    public function setOptions(array $options) {
+    public function setOptions(array $options): void
+    {
         $this->options = $options;
     }
 
-    protected function getOption(string $option, mixed $default = null)
+    protected function getOption(string $option, mixed $default = null): mixed
     {
         return $this->options[$option] ?? $default;
     }
