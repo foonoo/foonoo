@@ -20,7 +20,7 @@ class CreateCommand implements CommandInterface
     
     public function execute(array $options = [])
     {
-        $inputDirectory = $options['input'] ?? '.';
+        $inputDirectory = $options['input'] ?? getcwd();
         $files = array_filter(scandir($inputDirectory), fn ($item) => !in_array($item, [".", ".."]));
 
         if(count($files) > 0) {
@@ -66,7 +66,7 @@ class CreateCommand implements CommandInterface
         
         $file->putContents($input);
         $this->io->output("Created the site.yml file.\n");
-        Filesystem::directory('_foonoo')->createIfNotExists();
+        Filesystem::directory($inputPath . '/_foonoo')->createIfNotExists();
         $this->io->output("Created the _foonoo directory.\n");
         
     }

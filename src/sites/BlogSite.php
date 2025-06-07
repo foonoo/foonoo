@@ -272,6 +272,7 @@ class BlogSite extends AbstractSite
 
     public function initialize(string $path, array $metadata): void
     {
+        $this->io->output("Creating a new blog at location \"$path\"\n");
         Filesystem::directory("$path/posts")->createIfNotExists();
         Filesystem::directory("$path/pages")->createIfNotExists();
     }
