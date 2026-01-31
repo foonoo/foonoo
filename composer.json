@@ -18,7 +18,7 @@
         "ext-libxml": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "php": ">=8.4"
+        "php": ">=8.5"
     },
     "require-dev": {
         "phing/phing": "@stable",

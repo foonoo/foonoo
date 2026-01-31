@@ -112,7 +112,7 @@ class TocGenerator
 
             // Use this for the global TOC
             if ($this->collectTOC && !($metaData['toc-skip'] ?? false)) {
-                if (isset($event->site->getMetaData()["groups"]) && isset($metaData["frontmatter"]["group"])) {
+                if (isset($event->getSite()->getMetaData()["groups"]) && isset($metaData["frontmatter"]["group"])) {
                     $tree[0]["group"] = $content->getMetaData()["group"];
                 }
                 $this->globalTOC[$destination] = $tree;

@@ -6,6 +6,7 @@ use foonoo\asset_pipeline\AssetPipelineFactory;
 use foonoo\events\ContentLayoutApplied;
 use foonoo\events\AllContentsRendered;
 use ntentan\honam\EngineRegistry;
+use ntentan\honam\engines\php\HelperFactory;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
 use ntentan\honam\factories\MustacheEngineFactory;
@@ -52,7 +53,7 @@ $container->bind(TemplateRenderer::class)->to(function ($container) {
     $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
     $engineRegistry->registerEngine(['tpl.php', 'tplphp'],
         new PhpEngineFactory($templateRenderer,
-            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
+            new HelperVariable($container->get(HelperFactory::class), $templateRenderer),
             $container->get(Janitor::class)
         ));
     return $templateRenderer;
