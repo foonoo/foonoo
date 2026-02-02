@@ -15,14 +15,15 @@ abstract class MinifiableProcessor implements Processor, MarkupGenerator
      * The site for which minifiable content is being created.
      * @var AbstractSite
      */
-    private $site;
+    private AbstractSite $site;
     
     /**
      * Buffers holding the minified contents.
      * @var array
      */
-    private $buffers = [];
-    protected $glue = "";
+    private array $buffers = [];
+    
+    protected string $glue = "";
 
     public function __construct(EventDispatcher $eventDispatcher) {
         $eventDispatcher->addListener(SiteWriteStarted::class, function(SiteWriteStarted $event) {

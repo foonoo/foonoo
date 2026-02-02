@@ -9,8 +9,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class CreateCommand implements CommandInterface
 {
-    private $io;
-    private $siteTypeRegistry;
+    private Io $io;
+    private SiteTypeRegistry $siteTypeRegistry;
     
     public function __construct(Io $io, SiteTypeRegistry $siteTypeRegistry)
     {
@@ -18,7 +18,7 @@ class CreateCommand implements CommandInterface
         $this->siteTypeRegistry = $siteTypeRegistry;
     }
     
-    public function execute(array $options = [])
+    public function execute(array $options = []): void
     {
         $inputDirectory = $options['input'] ?? getcwd();
         $files = array_filter(scandir($inputDirectory), fn ($item) => !in_array($item, [".", ".."]));
@@ -35,7 +35,6 @@ class CreateCommand implements CommandInterface
         $site->initialize($inputDirectory, $siteMetadata);
         $this->writeSiteYml($inputDirectory, $siteMetadata);
     }
-    
     
     private function getInitialMetadata(string $siteType, array $options) : array
     {

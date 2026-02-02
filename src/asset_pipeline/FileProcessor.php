@@ -8,7 +8,7 @@ use ntentan\utils\Filesystem;
 
 class FileProcessor implements Processor
 {
-    private $outputPath;
+    private string $outputPath;
 
     public function __construct(EventDispatcher $eventDispatcher) {
         $eventDispatcher->addListener(SiteWriteStarted::class, 

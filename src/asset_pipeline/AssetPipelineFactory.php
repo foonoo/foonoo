@@ -4,6 +4,7 @@ namespace foonoo\asset_pipeline;
 
 use foonoo\events\EventDispatcher;
 use clearice\io\Io;
+use ScssPhp\ScssPhp\Compiler;
 
 /**
  * Description of AssetPipelineFactory
@@ -13,7 +14,7 @@ use clearice\io\Io;
 class AssetPipelineFactory
 {
     private EventDispatcher $eventDispatcher;
-    private $io;
+    private Io $io;
     
     public function __construct(EventDispatcher $eventDispatcher, Io $io)
     {
@@ -24,7 +25,7 @@ class AssetPipelineFactory
     public function create() : AssetPipeline
     {
         $pipeline = new AssetPipeline($this->io);
-        $cssProcessor = new CSSProcessor($this->eventDispatcher, new \ScssPhp\ScssPhp\Compiler());
+        $cssProcessor = new CSSProcessor($this->eventDispatcher, new Compiler());
         $jsProcessor = new JSProcessor($this->eventDispatcher);
         $pipeline->registerProcessor('css', $cssProcessor);
         $pipeline->registerProcessor('js', $jsProcessor);

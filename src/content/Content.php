@@ -12,12 +12,12 @@ abstract class Content
     /**
      * @var string
      */
-    protected $sitePath;
+    protected string $sitePath;
 
     /**
      * @var string
      */
-    protected $destination;
+    protected string $destination;
 
     /**
      * Get the meta-data for a given content object.

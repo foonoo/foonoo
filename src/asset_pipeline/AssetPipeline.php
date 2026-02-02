@@ -71,7 +71,6 @@ class AssetPipeline
      */
     public function replaceItem(string $contents, string $newContents, string $type, array $options=[]): void
     {
-        //$bundles = $options['bundles'] ?? ["default"];
         $options['priority'] = $options['priority'] ?? 0;
         unset($options['bundles']);
         foreach($this->items as $bundle => $types) {
@@ -126,14 +125,12 @@ class AssetPipeline
     public function merge(array $assets, string $baseDirectory = null): void
     {
         foreach ($assets as $type => $definition) {
-            // $options = $definition;
             $items = $definition["items"];
             unset($definition["items"]);
             foreach ($items as $item) {
                 $itemDefinition = $definition;
                 if(is_array($item)) {
                     $contents = array_key_first($item);
-                    // $parameters = $item[$contents];
                     $itemDefinition['parameters'] = $item[$contents];
                 } else {
                     $contents = $item;

@@ -20,13 +20,13 @@ class ServeCommand implements CommandInterface
      * The generated site is deleted whenever the process is terminated.
      * @var GenerateCommand
      */
-    private $generateCommand;
+    private GenerateCommand $generateCommand;
 
     /**
      * A path to the directory where the temporary site is stored.
      * @var string
      */
-    private $output;
+    private string $output;
 
     /**
      * Instance of clearice IO
@@ -52,7 +52,7 @@ class ServeCommand implements CommandInterface
      *
      * @param $options
      */
-    public function execute(array $options = [])
+    public function execute(array $options = []): void
     {
         $this->output = Filesystem::getAbsolutePath($options['output'] = $options['output'] ?? $this->output);
         $this->io->output("Generating site to {$options['output']} ...\n");
@@ -80,7 +80,7 @@ class ServeCommand implements CommandInterface
      *
      * @throws \ntentan\utils\exceptions\FileNotFoundException
      */
-    private function shutdown()
+    private function shutdown(): void
     {
         print "\nShutting down ... ";
         try {

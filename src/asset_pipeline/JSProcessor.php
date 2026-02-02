@@ -12,7 +12,7 @@ use ntentan\utils\exceptions\FileNotFoundException;
 
 class JSProcessor extends MinifiableProcessor
 {
-    protected $glue = ";\n\n";
+    protected string $glue = ";\n\n";
 
     public function getMinifier(): Minify
     {

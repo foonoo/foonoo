@@ -16,7 +16,7 @@ class CSSProcessor extends MinifiableProcessor
      * 
      * @var Compiler
      */
-    private $sassCompiler;
+    private Compiler $sassCompiler;
     
     /**
      * Create a new CSSProcessor.

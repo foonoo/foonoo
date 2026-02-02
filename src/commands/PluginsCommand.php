@@ -13,8 +13,8 @@ use foonoo\PluginManager;
  */
 class PluginsCommand implements CommandInterface
 {
-    private $pluginManager;
-    private $io;
+    private PluginManager $pluginManager;
+    private Io $io;
 
     public function __construct(PluginManager $pluginManager, Io $io)
     {
@@ -22,7 +22,7 @@ class PluginsCommand implements CommandInterface
         $this->io = $io;
     }
 
-    public function execute(array $options = [])
+    public function execute(array $options = []): void
     {
         $hierarchy = array_merge(["[input_path]" . DIRECTORY_SEPARATOR . "_foonoo/plugins"], $this->pluginManager->getPluginPaths());
         $this->io->output("Plugin path hierarchy:\n");
