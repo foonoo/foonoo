@@ -12,14 +12,14 @@ use foonoo\text\TemplateEngine;
 use foonoo\text\TocGenerator;
 use foonoo\theming\ThemeManager;
 use ntentan\honam\EngineRegistry;
+use ntentan\honam\engines\php\HelperFactory;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
 use ntentan\honam\factories\PhpEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
-use PHPUnit\Framework\TestCase;
 
-class DefaultTagsTest extends TestCase
+class DefaultTagsTest extends BaseTestCase
 {
     private TagParser $tagParser;
     private EventDispatcher $eventDispatcher;
@@ -33,11 +33,11 @@ class DefaultTagsTest extends TestCase
         $engineRegistry->registerEngine(
             [".tpl.php"], 
             new PhpEngineFactory(
-                $templateRenderer, new HelperVariable($templateRenderer, $templateFileResolver), new Janitor()
+                $templateRenderer, new HelperVariable(new HelperFactory(), $templateRenderer), new Janitor()
             )
         );
         $templateEngine = new TemplateEngine($templateFileResolver, $templateRenderer);
-        $tocGenerator = $this->getMockBuilder(TocGenerator::class)->disableOriginalConstructor()->getMock();
+        $tocGenerator = $this->createStub(TocGenerator::class);
         $tocGenerator->method('createContainer')->willReturn('[TOC anticipated]');
         
         $this->eventDispatcher = new EventDispatcher();

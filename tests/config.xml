@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" cacheDirectory=".phpunit.cache">
-  <coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd" 
+         cacheDirectory=".phpunit.cache"
+         bootstrap="../vendor/autoload.php">
+  <source ignoreIndirectDeprecations="true" restrictNotices="true">
     <include>
       <directory suffix=".php">../src</directory>
     </include>
-  </coverage>
+  </source>
   <testsuites>
     <testsuite name="Main Test Suite">
-      <directory>.</directory>
+      <directory>cases</directory>
     </testsuite>
   </testsuites>
 </phpunit>
+

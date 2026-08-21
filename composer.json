@@ -23,7 +23,8 @@
     "require-dev": {
         "phing/phing": "@stable",
         "phpunit/phpunit": "@stable",
-        "phpstan/phpstan": "^1.10"
+        "phpstan/phpstan": "^1.10",
+        "mikey179/vfsstream": "^1.6"
     },
     "license": "MIT",
     "homepage": "https://ekowabaka.me/projects/foonoo",
@@ -38,8 +39,15 @@
     ],
     "autoload": {
         "psr-4": {
-            "foonoo\\": "src/",
-            "foonoo\\tests\\": "tests/cases/"
+            "foonoo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "foonoo\\tests\\": [
+                "tests/cases/",
+                "tests/helpers/"
+            ]
         }
     },
     "bin": [

@@ -152,7 +152,7 @@ abstract class AbstractSite
      * @param string|null $contentDestination Destination path of the content.
      * @return array
      */
-    public function getTemplateData(Content $content = null): array
+    public function getTemplateData(?Content $content = null): array
     {
         $contentDestination = $content !==null ? $content->getDestination() : null;
         $this->templateData['site_menu'] = $this->metaData['menu'] ?? [];

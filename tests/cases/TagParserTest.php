@@ -3,9 +3,8 @@ namespace foonoo\tests;
 
 use foonoo\text\TagParser;
 use foonoo\text\TagToken;
-use PHPUnit\Framework\TestCase;
 
-class TagParserTest extends TestCase
+class TagParserTest extends BaseTestCase
 {
     private $tagParser;
 
