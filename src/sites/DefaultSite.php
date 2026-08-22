@@ -103,11 +103,10 @@ class DefaultSite extends AbstractSite
     }
 
     /**
-     * 
-     * @param string $contentDestination
+     * @param Content|null $content
      * @return array
      */
-    public function getTemplateData(Content $content = null): array
+    public function getTemplateData(?Content $content = null): array
     {
         $contentDestination = $content !== null ? $content->getDestination() : null;
         $templateData = parent::getTemplateData($content);

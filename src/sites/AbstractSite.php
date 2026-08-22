@@ -149,7 +149,7 @@ abstract class AbstractSite
     /**
      * Get template data that is relevant for rendering a particular content page.
      *
-     * @param string|null $contentDestination Destination path of the content.
+     * @param Content|null $content
      * @return array
      */
     public function getTemplateData(?Content $content = null): array
@@ -200,10 +200,11 @@ abstract class AbstractSite
         $base = $base == '' ? '' : "$base" . DIRECTORY_SEPARATOR;
         $dir = scandir("{$this->sourceRoot}{$this->path}". DIRECTORY_SEPARATOR . $base, SCANDIR_SORT_ASCENDING);
 
+        $excludedPaths = $this->metaData['excluded_paths'] ?? [];
         foreach ($dir as $file) {
             $path = "{$this->sourceRoot}{$this->path}" . DIRECTORY_SEPARATOR . $base . $file;
             if (array_reduce(
-                $this->metaData['excluded_paths'],
+                $excludedPaths,
                 function ($carry, $item) use ($path) {
                     return $carry | fnmatch($item, $path, FNM_NOESCAPE);
                 }, false)
@@ -219,7 +220,12 @@ abstract class AbstractSite
     
     private function getBasePath($root): string
     {
-        return preg_replace(["|\\\\+|", "|/+|"], ["\\", "/"], $root . DIRECTORY_SEPARATOR . $this->path . DIRECTORY_SEPARATOR);
+        $scheme = '';
+        if (preg_match('|^([a-zA-Z0-9]+://)(.*)$|', $root, $matches)) {
+            $scheme = $matches[1];
+            $root = $matches[2];
+        }
+        return $scheme . preg_replace(["|\\\\+|", "|/+|"], ["\\", "/"], $root . DIRECTORY_SEPARATOR . $this->path . DIRECTORY_SEPARATOR);
     }
 
     public function getSourcePath(string $path = ""): string

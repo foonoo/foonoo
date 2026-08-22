@@ -122,11 +122,18 @@ class AssetPipeline
         return $markups;
     }
 
-    public function merge(array $assets, string $baseDirectory = null): void
+    public function merge(array $assets, ?string $baseDirectory = null): void
     {
         foreach ($assets as $type => $definition) {
-            $items = $definition["items"];
-            unset($definition["items"]);
+            if (isset($definition["items"])) {
+                $items = $definition["items"];
+                unset($definition["items"]);
+            } else if (is_array($definition)) {
+                $items = $definition;
+                $definition = [];
+            } else {
+                continue;
+            }
             foreach ($items as $item) {
                 $itemDefinition = $definition;
                 if(is_array($item)) {

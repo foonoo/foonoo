@@ -158,13 +158,13 @@ class PluginManager
      * Initialize the plugin subsystem for a site by loading all plugin classes and sending the PluginsInitialized
      * event.
      * 
-     * @param mixed $plugins
+     * @param array $plugins
      * @param string $sitePath
      */
     public function initializePlugins(array $plugins, string $sitePath) : void
     {
         $this->removePluginEvents();
-        if($plugins === null) {
+        if(empty($plugins)) {
             return;
         }
         $allPluginPaths = array_merge(["{$sitePath}_foonoo/plugins"], $this->pluginPaths);

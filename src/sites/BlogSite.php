@@ -134,7 +134,7 @@ class BlogSite extends AbstractSite
      * @param string $baseUrl The base URL on which to build the archive.
      * @return array
      */
-    private function getArchive(array $archive, array $order = array(), string $stage = null, string $title = 'Archive', string $baseUrl = ''): array
+    private function getArchive(array $archive, array $order = array(), ?string $stage = null, string $title = 'Archive', string $baseUrl = ''): array
     {
         $pages = [];
         $nextStage = array_shift($order);

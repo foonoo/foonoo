@@ -119,7 +119,8 @@ class SiteWriter
     private function writeContentToOutputPath(AbstractSite $site, Theme $theme, string $output, Content|ThemableInterface $content)
     {
         $destinationPath = $site->getDestinationPath($content->getDestination());
-        $layout = $content->getMetaData()['frontmatter']['layout'] ?? $theme->getDefaultLayoutTemplate();
+        $metaData = $content->getMetaData();
+        $layout = $metaData['frontmatter']['layout'] ?? $metaData['layout'] ?? ($content instanceof ThemableInterface ? $theme->getDefaultLayoutTemplate() : false);
 
         if ($layout) {
             $templateData = array_merge($site->getTemplateData($content), $content->getMetaData());

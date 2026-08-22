@@ -1,0 +1,13 @@
+parameters:
+    level: 3
+    paths:
+        - src
+        - tests/cases
+        - tests/helpers
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Dom\\HTMLDocument#'
+        - '#Dom\\Node#'
+        - '#Dom\\NodeList#'
+        - '#foonoo\\plugins\\testorg\\sample\\SamplePlugin#'

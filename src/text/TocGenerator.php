@@ -122,7 +122,7 @@ class TocGenerator
                 if (count($tree) == 1 && !empty($tree[0]['children']) && (!isset($metaData['title']) || $tree[0]['title'] == $content->getMetaData()['title'])) {
                     $tree = $tree[0]['children'];
                 }
-                $tocContainer = $xpath->query("//div[@fntoc='{$id}']")->item(0);
+                $tocContainer = $dom->querySelector("div[fntoc='{$id}']");
                 $toc = $dom->createDocumentFragment();
                 $toc->appendXML($this->templateEngine->render('table_of_contents_tag', ['tree' => $tree]));
                 $tocContainer->appendChild($toc);

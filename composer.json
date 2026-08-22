@@ -52,5 +52,13 @@
     },
     "bin": [
         "bin/foonoo"
-    ]
+    ],
+    "scripts": {
+        "test": "./vendor/bin/phpunit -c tests/config.xml",
+        "phpstan": "./vendor/bin/phpstan analyse",
+        "check": [
+            "@phpstan",
+            "@test"
+        ]
+    }
 }
